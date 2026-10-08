@@ -144,7 +144,7 @@ p { margin: 0; }
 
 
 /* footer: cărbune închis în A (diferit de banda finală gri), albastru-noapte în B */
-.ftr { --f-bg: #101216; --f-ink: #ECEEF2; --f-muted: #8E939D; --f-line: rgba(255, 255, 255, .09); --f-card: #181B21; --f-hi: #8DB6F0;
+.ftr { --f-bg: #34373E; --f-ink: #F3F4F6; --f-muted: #B3B7BF; --f-line: rgba(255, 255, 255, .13); --f-card: #3E4149; --f-hi: #A9C8F5;
   position: relative; z-index: 2; background: var(--f-bg); color: var(--f-ink); padding-top: clamp(56px, 7vw, 88px); overflow: hidden; }
 [data-brand="b"] .ftr { --f-bg: #0F1522; --f-card: #151D2E; --f-muted: #8A94A7; --f-line: #232C3E; --f-hi: var(--accent); }
 .ftr a { color: inherit; text-decoration: none; }
