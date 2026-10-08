@@ -105,7 +105,7 @@ async function handler(req, res) {
 
 module.exports = handler;
 
-// local: node server.js; pe Vercel, handler-ul e folosit de api/index.js
+// local: node server.js pornește serverul; pe Vercel (presetul Node), server.js rulează ca funcție și primește toate cererile
 if (require.main === module) {
   http.createServer(handler).listen(PORT, () => {
     console.log(`Antreprenoria – site:   http://localhost:${PORT}/`);
