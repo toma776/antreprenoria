@@ -303,3 +303,20 @@ details.obs-done > summary { cursor: pointer; font-weight: 600; padding: 6px 0; 
 .bv-preview { height: 560px; overflow: hidden; border: 1px solid var(--line); border-radius: 10px; position: relative; background: var(--panel-2); }
 .bv-preview iframe { width: 1440px; height: 900px; border: 0; transform-origin: 0 0; pointer-events: none; }
 @media (max-width: 860px) { .type-spec { grid-template-columns: 1fr; } }
+
+/* branding: iconul de meniu */
+.seg { display: inline-flex; }
+.seg button { border-radius: 0; }
+.seg button:first-child { border-radius: 8px 0 0 8px; }
+.seg button:last-child { border-radius: 0 8px 8px 0; margin-left: -1px; }
+.mi-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr)); margin-top: 16px; }
+.mi-card { border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+.mi-card.is-on { border-color: var(--ok); box-shadow: inset 0 0 0 1px var(--ok); }
+.mi-demos { display: grid; gap: 8px; margin-bottom: 12px; }
+.mi-demo { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); }
+.mi-logo { width: 26px; height: 26px; border-radius: 7px; display: grid; place-items: center; font-weight: 800; font-size: 14px; }
+.mi-now { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: center; margin-top: 18px; padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; }
+.mi-now p { margin: 0 0 6px; }
+.mi-demos.row { grid-template-columns: 1fr 1fr; }
+.mi-card .seg button:disabled { opacity: 1; cursor: default; }
+@media (max-width: 860px) { .mi-now { grid-template-columns: 1fr; } }

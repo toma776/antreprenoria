@@ -333,15 +333,12 @@ p { margin: 0; }
 [data-brand="b"] .mm-badge.open { background: color-mix(in srgb, var(--accent) 15%, transparent); color: var(--accent); }
 
 /* butonul de meniu (mobil și tabletă) */
-.menu-btn { display: none; width: 44px; height: 44px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); flex-direction: column; justify-content: center; align-items: center; gap: 5px; cursor: pointer; }
-.menu-btn span { width: 18px; height: 2px; background: var(--ink); border-radius: 2px; transition: transform .2s, opacity .2s; }
-.menu-btn[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-.menu-btn[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
-.menu-btn[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.menu-btn { display: none; } /* forma iconului: menu-icon.css */
 
 /* sub 1180px: meniu lateral, secțiunile se deschid ca acordeon */
 @media (max-width: 1180px) {
   .menu-btn { display: flex; }
+  .hdr-cta { margin-left: auto; } /* meniul e lateral, deci nu mai împinge butoanele spre dreapta */
   .nav { position: fixed; inset: 72px 0 0 auto; width: min(440px, 100%); margin: 0; flex-direction: column; align-items: stretch; gap: 0; padding: 8px 16px 24px; background: var(--bg); border-left: 1px solid var(--line); overflow-y: auto;
     transform: translateX(100%); visibility: hidden; transition: transform .25s ease, visibility 0s linear .25s; }
   .nav.open { transform: none; visibility: visible; transition: transform .25s ease; }

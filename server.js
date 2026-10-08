@@ -5,6 +5,7 @@
 //   /manage[/...]       -> panoul de administrare (manage/index.html): dashboard, entități, branding
 //   GET /api/entitati   -> data/entitati.json (generat de npm run sync)
 //   GET /api/brand      -> data/brand.json        PUT /api/brand/activ {id} -> schimbă varianta folosită pe site
+//   PUT /api/brand/icon {activ?, deschis?, culori?} -> iconul de meniu pe mobil: așezarea închis/deschis și culorile
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
@@ -65,6 +66,18 @@ http.createServer(async (req, res) => {
       B.activ = id;
       fs.writeFileSync(brand.FILE, JSON.stringify(B, null, 2));
       return sendJson(res, 200, { ok: true, activ: id });
+    }
+    if (url === '/api/brand/icon' && req.method === 'PUT') {
+      const { activ, deschis, culori } = await body(req);
+      const brand = fresh('./site/brand'), B = brand.load(), I = B.icon_meniu;
+      if (activ !== undefined && !I.variante.some((v) => v.id === activ)) return sendJson(res, 400, { error: 'icon inexistent' });
+      if (deschis !== undefined && !I.variante.some((v) => v.id === deschis)) return sendJson(res, 400, { error: 'icon inexistent' });
+      if (culori !== undefined && !I.moduri_culoare.some((m) => m.id === culori)) return sendJson(res, 400, { error: 'mod de culoare inexistent' });
+      if (activ !== undefined) I.activ = activ;
+      if (deschis !== undefined) I.deschis = deschis;
+      if (culori !== undefined) I.culori = culori;
+      fs.writeFileSync(brand.FILE, JSON.stringify(B, null, 2));
+      return sendJson(res, 200, { ok: true, activ: I.activ, deschis: I.deschis, culori: I.culori });
     }
     if (url.startsWith('/api/')) return sendJson(res, 404, { error: 'rută necunoscută' });
     if (url.startsWith('/manage/assets/')) return sendFile(res, safe(path.join(ROOT, 'manage', 'assets'), url.slice('/manage/assets/'.length)) || '');

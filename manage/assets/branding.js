@@ -66,6 +66,54 @@ function fitPreviews() {
 }
 window.addEventListener("resize", fitPreviews);
 
+// iconul butonului de meniu pe mobil: așezarea cu meniul închis, cea cu meniul deschis și modul de culoare
+function iconSection(B) {
+  const I = B.icon_meniu;
+  if (!I) return '';
+  const name = (id) => I.variante.find((v) => v.id === id)?.nume || id;
+  const vars = (v) => ['ink', 'primary', 'accent', 'highlight', 'line', 'surface', 'bg'].map((t) => `--${t}:${colorOf(v, t)}`).join(';');
+  // un buton demonstrativ; „anim” = se deschide și se închide singur, ca să se vadă trecerea
+  const demo = (closed, open, v, anim) => `<div class="mi-demo" data-brand="${esc(v.id)}" style="${vars(v)};background:${colorOf(v, 'bg')}">
+      <span class="mi-logo" style="background:${colorOf(v, 'primary')};color:${colorOf(v, 'primary-ink')}">A</span>
+      <button class="menu-btn mi-${esc(closed)} mo-${esc(open)} mc-${esc(I.culori)}" data-mi-toggle ${anim ? 'data-mi-anim' : ''} aria-label="Previzualizare icon, varianta ${esc(v.id.toUpperCase())}"><span></span><span></span><span></span></button></div>`;
+  return `<section class="card brand-var">
+    <div class="bv-head"><div><h2>Icon meniu pe mobil</h2>
+      <p class="lead" style="margin:6px 0 0">Trei cercuri pline înscrise într-un pătrat imaginar. Când meniul se deschide, cercurile se rearanjează în altă așezare.</p></div>
+      <div class="bv-act seg">${I.moduri_culoare.map((m) => `<button class="${m.id === I.culori ? 'on' : ''}" data-mi-set="culori" data-mi-val="${esc(m.id)}" title="${esc(m.descriere)}">${esc(m.nume)}</button>`).join('')}</div></div>
+
+    <div class="mi-now">
+      <div><h4 class="bh" style="margin-top:0">Pe site acum</h4>
+        <p><b>${esc(name(I.activ))}</b> <span class="muted">închis</span> → <b>${esc(name(I.deschis))}</b> <span class="muted">deschis</span></p>
+        <p class="small muted">Se deschide și se închide singur, ca să vezi trecerea. Apasă pe el ca să-l oprești într-o stare.</p></div>
+      <div class="mi-demos row">${B.variante.map((v) => demo(I.activ, I.deschis, v, true)).join('')}</div>
+    </div>
+
+    <h4 class="bh">Toate așezările</h4>
+    <div class="mi-grid">${I.variante.map((ic) => {
+      const isClosed = ic.id === I.activ, isOpen = ic.id === I.deschis;
+      return `<div class="mi-card ${isClosed || isOpen ? 'is-on' : ''}">
+        <div class="mi-demos">${B.variante.map((v) => demo(ic.id, ic.id, v, false)).join('')}</div>
+        <b>${esc(ic.nume)}</b> ${isClosed ? '<span class="tag ok">închis</span>' : ''}${isOpen ? '<span class="tag">deschis</span>' : ''}
+        <p class="small muted" style="margin:4px 0 10px">${esc(ic.descriere)}</p>
+        <div class="seg">
+          <button class="sm ${isClosed ? 'on' : ''}" data-mi-set="activ" data-mi-val="${esc(ic.id)}" ${isClosed ? 'disabled' : ''}>Închis</button>
+          <button class="sm ${isOpen ? 'on' : ''}" data-mi-set="deschis" data-mi-val="${esc(ic.id)}" ${isOpen ? 'disabled' : ''}>Deschis</button>
+        </div>
+      </div>`;
+    }).join('')}</div>
+  </section>`;
+}
+// previzualizarea combinației de pe site se deschide și se închide singură, până când e apăsată
+let miTimer;
+function animateIcons() {
+  clearInterval(miTimer);
+  miTimer = setInterval(() => {
+    const els = $$('[data-mi-anim]');
+    if (!els.length) return clearInterval(miTimer);
+    els.forEach((b) => b.classList.toggle('on'));
+  }, 1400);
+}
+
 routes.branding = async function renderBranding() {
   $('#view').innerHTML = '<div class="empty">Se încarcă…</div>';
   const B = await api.get('/api/brand');
@@ -76,11 +124,27 @@ routes.branding = async function renderBranding() {
     <div class="head"><div><div class="crumb">manage › branding · data/brand.json</div><h1>Branding</h1></div>
       <a class="btn" href="/" target="_blank" rel="noopener">Deschide site-ul ↗</a></div>
     <p class="lead">Variantele de identitate vizuală ale site-ului. Cea activă se aplică imediat pe toate paginile: culori, fonturi, colțuri. Acum e activă <b>${esc(activ.id.toUpperCase())} · ${esc(activ.nume)}</b>.</p>
-    ${[activ, ...B.variante.filter((v) => v !== activ)].map((v) => variantHtml(v, B.activ)).join('')}`;
+    ${[activ, ...B.variante.filter((v) => v !== activ)].map((v) => variantHtml(v, B.activ)).join('')}
+    ${iconSection(B)}`;
+  animateIcons();
   fitPreviews();
 };
 
 document.addEventListener('click', async (e) => {
+  const t = e.target.closest('[data-mi-toggle]');
+  if (t) { t.removeAttribute('data-mi-anim'); t.classList.toggle('on'); return; }
+  const set = e.target.closest('[data-mi-set]');
+  if (set) {
+    const payload = { [set.dataset.miSet]: set.dataset.miVal };
+    try {
+      await api.send('/api/brand/icon', 'PUT', payload);
+      const y = window.scrollY;
+      await routes.branding();
+      window.scrollTo(0, y);
+      toast({ activ: 'Așezarea cu meniul închis s-a schimbat', deschis: 'Așezarea cu meniul deschis s-a schimbat', culori: 'Modul de culoare s-a schimbat' }[set.dataset.miSet]);
+    } catch { toast('Nu s-a putut salva'); }
+    return;
+  }
   const b = e.target.closest('[data-activate]');
   if (!b) return;
   b.disabled = true;

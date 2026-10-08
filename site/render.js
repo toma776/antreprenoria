@@ -65,8 +65,13 @@ function head(title, desc, brandId) {
 <title>${esc(title)}</title><meta name="description" content="${esc(desc)}">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="${esc(brand.fontsHref(v))}" rel="stylesheet">
-<link rel="stylesheet" href="/assets/brand.css"><link rel="stylesheet" href="/assets/site.css"><link rel="icon" href="/manage/assets/logo-letter.png">
+<link rel="stylesheet" href="/assets/brand.css"><link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/menu-icon.css"><link rel="icon" href="/manage/assets/logo-letter.png">
 </head><body>`;
+}
+// butonul de meniu pe mobil: iconul (trei cercuri) și modul de culoare vin din data/brand.json › icon_meniu
+function menuButton() {
+  const I = brand.load().icon_meniu || { activ: 'mare-si-doua-mici', deschis: 'triunghi', culori: 'mono' };
+  return `<button class="menu-btn mi-${esc(I.activ)} mo-${esc(I.deschis)} mc-${esc(I.culori)}" aria-label="Deschide meniul" aria-expanded="false" aria-controls="nav"><span></span><span></span><span></span></button>`;
 }
 function header(F, ctx) {
   return `<header class="hdr"><div class="wrap hdr-in">
@@ -78,7 +83,7 @@ function header(F, ctx) {
     <div class="hdr-cta">
       ${F.ongoing ? `<span class="live"><i></i>Ediția #${F.ongoing.numar} în desfășurare</span>` : ''}
       <a class="btn btn-primary" href="/aplica">Aplică</a>
-      <button class="menu-btn" aria-label="Deschide meniul" aria-expanded="false" aria-controls="nav"><span></span><span></span><span></span></button>
+      ${menuButton()}
     </div>
   </div><div class="mm-scrim" hidden></div></header>`;
 }

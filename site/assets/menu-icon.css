@@ -1,0 +1,42 @@
+/* Iconul butonului de meniu: trei cercuri pline înscrise într-un pătrat imaginar (data/brand.json › icon_meniu).
+   .mi-<așezare> = cum stau cercurile cu meniul închis; .mo-<așezare> = cum se rearanjează când meniul e deschis
+   (aria-expanded="true" pe site, .on în panou). Culorile vin din token-urile brandului. */
+.menu-btn { position: relative; width: 44px; height: 44px; padding: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); cursor: pointer; }
+.menu-btn span { position: absolute; width: 7px; height: 7px; border-radius: 50%; background: var(--ink); transition: top .4s cubic-bezier(.6, 0, .2, 1), left .4s cubic-bezier(.6, 0, .2, 1), width .4s, height .4s, background .3s; }
+
+/* așezările, cu meniul închis (pătratul imaginar: 18×18px, centrat în buton) */
+.mi-colt-liber span:nth-child(1) { top: 12px; left: 12px; }
+.mi-colt-liber span:nth-child(2) { top: 23px; left: 12px; }
+.mi-colt-liber span:nth-child(3) { top: 23px; left: 23px; }
+.mi-triunghi span:nth-child(1) { top: 12px; left: 17.5px; }
+.mi-triunghi span:nth-child(2) { top: 23px; left: 12px; }
+.mi-triunghi span:nth-child(3) { top: 23px; left: 23px; }
+.mi-diagonala span:nth-child(1) { top: 11px; left: 11px; }
+.mi-diagonala span:nth-child(2) { top: 17.5px; left: 17.5px; }
+.mi-diagonala span:nth-child(3) { top: 24px; left: 24px; }
+.mi-mare-si-doua-mici span:nth-child(1) { top: 11px; left: 11px; width: 11px; height: 11px; }
+.mi-mare-si-doua-mici span:nth-child(2) { top: 25px; left: 14px; width: 5px; height: 5px; }
+.mi-mare-si-doua-mici span:nth-child(3) { top: 14px; left: 25px; width: 5px; height: 5px; }
+
+/* aceleași așezări, cu meniul deschis (dimensiunile se repetă, ca trecerea dintre așezări să le schimbe și pe ele) */
+:is(.mo-colt-liber[aria-expanded="true"], .mo-colt-liber.on) span:nth-child(1) { top: 12px; left: 12px; width: 7px; height: 7px; }
+:is(.mo-colt-liber[aria-expanded="true"], .mo-colt-liber.on) span:nth-child(2) { top: 23px; left: 12px; width: 7px; height: 7px; }
+:is(.mo-colt-liber[aria-expanded="true"], .mo-colt-liber.on) span:nth-child(3) { top: 23px; left: 23px; width: 7px; height: 7px; }
+:is(.mo-triunghi[aria-expanded="true"], .mo-triunghi.on) span:nth-child(1) { top: 12px; left: 17.5px; width: 7px; height: 7px; }
+:is(.mo-triunghi[aria-expanded="true"], .mo-triunghi.on) span:nth-child(2) { top: 23px; left: 12px; width: 7px; height: 7px; }
+:is(.mo-triunghi[aria-expanded="true"], .mo-triunghi.on) span:nth-child(3) { top: 23px; left: 23px; width: 7px; height: 7px; }
+:is(.mo-diagonala[aria-expanded="true"], .mo-diagonala.on) span:nth-child(1) { top: 11px; left: 11px; width: 7px; height: 7px; }
+:is(.mo-diagonala[aria-expanded="true"], .mo-diagonala.on) span:nth-child(2) { top: 17.5px; left: 17.5px; width: 7px; height: 7px; }
+:is(.mo-diagonala[aria-expanded="true"], .mo-diagonala.on) span:nth-child(3) { top: 24px; left: 24px; width: 7px; height: 7px; }
+:is(.mo-mare-si-doua-mici[aria-expanded="true"], .mo-mare-si-doua-mici.on) span:nth-child(1) { top: 11px; left: 11px; width: 11px; height: 11px; }
+:is(.mo-mare-si-doua-mici[aria-expanded="true"], .mo-mare-si-doua-mici.on) span:nth-child(2) { top: 25px; left: 14px; width: 5px; height: 5px; }
+:is(.mo-mare-si-doua-mici[aria-expanded="true"], .mo-mare-si-doua-mici.on) span:nth-child(3) { top: 14px; left: 25px; width: 5px; height: 5px; }
+
+/* culori: monocrom (textul, apoi principala la deschidere) sau culorile brandului (câte una pe cerc) */
+.mc-mono:is([aria-expanded="true"], .on) span { background: var(--primary); }
+[data-brand="b"] .mc-mono:is([aria-expanded="true"], .on) span { background: var(--accent); }
+.mc-brand span:nth-child(1) { background: var(--primary); }
+.mc-brand span:nth-child(2) { background: var(--accent); }
+.mc-brand span:nth-child(3) { background: var(--highlight); }
+
+@media (prefers-reduced-motion: reduce) { .menu-btn span { transition: none; } }
