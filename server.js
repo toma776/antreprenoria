@@ -46,7 +46,7 @@ function safe(base, rel) {
 }
 // modulele site-ului se reîncarcă la fiecare cerere, ca schimbările din data/ și site/ să apară fără repornire
 function fresh(mod) {
-  ['./site/render', './site/brand'].forEach((m) => delete require.cache[require.resolve(m)]);
+  ['./site/render', './site/brand', './site/menu'].forEach((m) => delete require.cache[require.resolve(m)]);
   return require(mod);
 }
 

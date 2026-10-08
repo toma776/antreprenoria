@@ -1,13 +1,56 @@
-/* Interacțiunile site-ului: meniul pe mobil și testul „Ești potrivit?”. */
+/* Interacțiunile site-ului: mega-meniul (desktop: hover/click; mobil: meniu lateral cu acordeon) și testul „Ești potrivit?”. */
 (() => {
   const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 
-  // meniul pe mobil
-  const btn = $('.menu-btn'), nav = $('#nav');
-  btn?.addEventListener('click', () => {
-    const open = nav.classList.toggle('open');
-    btn.setAttribute('aria-expanded', String(open));
+  const btn = $('.menu-btn'), nav = $('#nav'), scrim = $('.mm-scrim');
+  const items = $$('.mm-item');
+  const desktop = matchMedia('(min-width: 1181px)');
+
+  function setOpen(item, open) {
+    item.classList.toggle('open', open);
+    $('.mm-trigger', item).setAttribute('aria-expanded', String(open));
+  }
+  function openOnly(item) {
+    items.forEach((i) => setOpen(i, i === item));
+    if (scrim) scrim.hidden = !(item && desktop.matches);
+  }
+  const closeAll = () => openOnly(null);
+
+  // desktop: se deschide la hover (cu o mică întârziere, ca să nu clipească la trecerea mouse-ului) și la click
+  let timer;
+  items.forEach((item) => {
+    const trigger = $('.mm-trigger', item);
+    item.addEventListener('mouseenter', () => { if (!desktop.matches) return; clearTimeout(timer); timer = setTimeout(() => openOnly(item), 90); });
+    item.addEventListener('mouseleave', () => { if (!desktop.matches) return; clearTimeout(timer); timer = setTimeout(closeAll, 160); });
+    trigger.addEventListener('click', () => {
+      clearTimeout(timer);
+      if (item.classList.contains('open')) { setOpen(item, false); if (scrim) scrim.hidden = true; } else openOnly(item);
+    });
   });
+  scrim?.addEventListener('click', closeAll);
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    const open = items.find((i) => i.classList.contains('open'));
+    if (open) { closeAll(); $('.mm-trigger', open).focus(); } else if (nav.classList.contains('open')) toggleNav(false);
+  });
+  // focusul care iese din meniu îl închide (navigare cu tastatura)
+  nav?.addEventListener('focusout', (e) => { if (desktop.matches && !nav.contains(e.relatedTarget)) closeAll(); });
+
+  // mobil: butonul deschide meniul lateral
+  function toggleNav(open) {
+    nav.classList.toggle('open', open);
+    btn.setAttribute('aria-expanded', String(open));
+    btn.setAttribute('aria-label', open ? 'Închide meniul' : 'Deschide meniul');
+    document.body.style.overflow = open ? 'hidden' : '';
+    if (!open) closeAll();
+  }
+  btn?.addEventListener('click', () => toggleNav(!nav.classList.contains('open')));
+  desktop.addEventListener('change', () => { toggleNav(false); closeAll(); });
+
+  // ?meniu=<secțiune> deschide direct un panou (pentru previzualizări și capturi)
+  const m = new URLSearchParams(location.search).get('meniu'), deschis = items.find((i) => i.dataset.mm === m);
+  if (deschis) { if (!desktop.matches) toggleNav(true); openOnly(deschis); }
 
   // „Ești potrivit?”: răspuns imediat, fără date trimise nicăieri
   const quiz = $('#quiz'), out = $('#quiz-out');

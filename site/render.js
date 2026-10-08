@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const brand = require('./brand');
+const { megaMenu } = require('./menu');
 
 const DATA = path.join(__dirname, '..', 'data', 'entitati.json');
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -67,16 +68,19 @@ function head(title, desc, brandId) {
 <link rel="stylesheet" href="/assets/brand.css"><link rel="stylesheet" href="/assets/site.css"><link rel="icon" href="/manage/assets/logo-letter.png">
 </head><body>`;
 }
-function header(F) {
+function header(F, ctx) {
   return `<header class="hdr"><div class="wrap hdr-in">
     <a class="logo" href="/" aria-label="Antreprenoria – acasă"><span class="logo-mark">A</span><span class="logo-txt">Antreprenoria<small>by Romanian Business Leaders</small></span></a>
-    <nav class="nav" id="nav" aria-label="Meniu principal">${NAV.map(([t, u]) => `<a href="${u}">${t}</a>`).join('')}</nav>
+    <nav class="nav" id="nav" aria-label="Meniu principal">
+      ${megaMenu(ctx, F)}
+      <div class="nav-foot"><a class="btn btn-primary btn-lg" href="/aplica">Aplică</a>${F.ongoing ? `<span class="live"><i></i>Ediția #${F.ongoing.numar} în desfășurare</span>` : ''}</div>
+    </nav>
     <div class="hdr-cta">
       ${F.ongoing ? `<span class="live"><i></i>Ediția #${F.ongoing.numar} în desfășurare</span>` : ''}
       <a class="btn btn-primary" href="/aplica">Aplică</a>
-      <button class="menu-btn" aria-label="Deschide meniul" aria-expanded="false" aria-controls="nav"><span></span><span></span></button>
+      <button class="menu-btn" aria-label="Deschide meniul" aria-expanded="false" aria-controls="nav"><span></span><span></span><span></span></button>
     </div>
-  </div></header>`;
+  </div><div class="mm-scrim" hidden></div></header>`;
 }
 function footer() {
   return `<footer class="ftr"><div class="wrap ftr-in">
@@ -101,7 +105,7 @@ function renderHome(opt = {}) {
   const heroFaces = F.topTrainers.slice(0, 6);
 
   return `${head('Antreprenoria – acceleratorul antreprenorilor Romanian Business Leaders', 'Program de accelerare pentru companii în creștere: ateliere cu antreprenori de top, un grup selectat de colegi și comunitatea Romanian Business Leaders. Din 2013.', opt.brand)}
-${header(F)}
+${header(F, ctx)}
 <main>
   <section class="hero"><div class="wrap hero-in">
     <div class="hero-copy">
