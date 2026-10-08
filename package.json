@@ -8,8 +8,7 @@
     "crawl": "node scripts/crawl.js",
     "extract": "node scripts/extract-editions.js",
     "build": "node scripts/build-entities.js",
-    "sync": "npm run crawl && npm run extract && npm run build",
-    "vercel-build": "echo \"Pe Vercel nu se reconstruiește creierul: data/entitati.json vine din git (npm run sync local).\""
+    "sync": "npm run crawl && npm run extract && npm run build"
   },
   "engines": {
     "node": ">=18"
