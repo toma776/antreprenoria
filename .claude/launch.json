@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "antreprenoria",
+      "runtimeExecutable": "C:/Program Files/nodejs/node.exe",
+      "runtimeArgs": ["server.js"],
+      "port": 3200,
+      "autoPort": true
+    }
+  ]
+}

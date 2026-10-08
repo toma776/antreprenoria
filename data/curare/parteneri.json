@@ -1,0 +1,25 @@
+{
+  "_despre": "Partenerii și sponsorii: fiecare se recunoaște după domeniul linkului sau numele fișierului de logo (cheile din „potriviri”).",
+  "parteneri": [
+    { "id": "rbl", "nume": "Fundația Romanian Business Leaders", "url": "https://www.rbls.ro/", "tip": "Organizator", "potriviri": ["rbls.ro", "rbl-logo"] },
+    { "id": "garanti-bbva", "nume": "Garanti BBVA", "url": "https://www.garantibbva.ro/", "tip": "Bancă", "potriviri": ["garantibbva.ro", "garanti-bank-bbva"] },
+    { "id": "dwf", "nume": "DWF", "url": "https://dwf.ro/", "tip": "Agenție marketing digital", "potriviri": ["dwf.ro", "dwf-logo"] },
+    { "id": "zitec", "nume": "Zitec", "url": "https://zitec.com/", "tip": "Tech", "potriviri": ["zitec.com", "zitec", "lifeatzitec"] },
+    { "id": "unicredit", "nume": "UniCredit Bank", "url": "https://www.unicredit.ro/", "tip": "Bancă", "potriviri": ["unicredit"] },
+    { "id": "cluj-business-campus", "nume": "Cluj Business Campus", "url": null, "tip": "Spațiu de birouri", "potriviri": ["cluj-business-campus"] },
+    { "id": "wlc", "nume": "WLC", "url": "https://wlc.ro/", "tip": "Servicii juridice", "potriviri": ["wlc.ro", "wlc-logo", "logo_wlc"] },
+    { "id": "termene-ro", "nume": "Termene.ro", "url": "https://termene.ro/", "tip": "Date firme", "potriviri": ["termene.ro", "termene-log"] },
+    { "id": "leadder", "nume": "Leadder", "url": "https://leadder.ro/", "tip": "Training vânzări", "potriviri": ["leadder"] },
+    { "id": "domeniile-saftica", "nume": "Domeniile Săftica", "url": "https://domeniilesaftica.ro/", "tip": "Locație evenimente", "potriviri": ["domeniilesaftica", "domeniile-saftica", "saftica-logo"] },
+    { "id": "mentorizator", "nume": "Mentorizator", "url": "https://www.linkedin.com/company/mentorizator/", "tip": "Mentorat", "potriviri": ["mentorizator"] },
+    { "id": "exit-by-choice", "nume": "Exit by Choice", "url": "https://exitbychoice.ro/", "tip": "Consultanță M&A", "potriviri": ["exitbychoice", "exitby"] },
+    { "id": "taxhouse", "nume": "TaxHouse", "url": "https://taxhouse.ro/", "tip": "Consultanță fiscală", "potriviri": ["taxhouse", "tax-house"] },
+    { "id": "formtex", "nume": "Formtex", "url": "https://www.formtex.ro/", "tip": "Producție", "potriviri": ["formtex"] },
+    { "id": "nixodor", "nume": "Nixodor", "url": "https://www.nixodor.ro/", "tip": "Producție", "potriviri": ["nixodor"] },
+    { "id": "kangoopack", "nume": "Kangoo Pack", "url": "https://kangoopack.ro/", "tip": "Ambalaje", "potriviri": ["kangoopack", "kangoo70"] },
+    { "id": "tema-energy", "nume": "Tema Energy", "url": "https://tema-energy.ro", "tip": "Inginerie", "potriviri": ["tema-energy", "tema-logo"] },
+    { "id": "radial-solutions", "nume": "Radial Solutions", "url": "https://www.radialsolutions.ro/", "tip": "Construcții", "potriviri": ["radialsolutions", "radial-solutions"] },
+    { "id": "themarketer", "nume": "theMarketer", "url": "https://themarketer.com/ro", "tip": "Tech marketing", "potriviri": ["themarketer"] },
+    { "id": "cargotrack", "nume": "CargoTrack", "url": "https://cargotrack.ro/", "tip": "Logistică", "potriviri": ["cargotrack", "cargo-track"] }
+  ]
+}

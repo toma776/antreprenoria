@@ -1,0 +1,16 @@
+{
+  "_despre": "Curriculum: temele care se repetă de la o ediție la alta. Fiecare titlu de atelier de pe site se potrivește cu o temă prin „potriviri” (regex, fără diacritice, litere mici). „format” = full-day | seară | networking.",
+  "teme": [
+    { "id": "viziune", "nume": "Viziune și Leadership", "format": "full-day", "potriviri": ["^viziune"], "nota": "S-a numit „Viziune și Misiune” până la #20." },
+    { "id": "model-business", "nume": "Modelul de business", "format": "full-day", "potriviri": ["^modelul de business"], "nota": "„în Era Digitală” până la #21, „în era AI” la #22." },
+    { "id": "marketing", "nume": "Marketing", "format": "full-day", "potriviri": ["marketing"], "nota": "„Interdependența dintre Modelul de Business și Marketing Strategic” până la #20, „Marketing și Inovare” de la #21." },
+    { "id": "vanzari", "nume": "Vânzări și Motorul de Vânzări", "format": "full-day", "potriviri": ["vanzari"] },
+    { "id": "cultura", "nume": "Cultura organizațională", "format": "full-day", "potriviri": ["people management", "cultura"], "nota": "„People Management & Leadership” până la #18." },
+    { "id": "finantare", "nume": "Finanțare", "format": "seară", "potriviri": ["finantare"] },
+    { "id": "fiscalitate", "nume": "Fiscalitate și taxe", "format": "seară", "potriviri": ["fiscalitate"] },
+    { "id": "mastermind", "nume": "Mastermind", "format": "seară", "potriviri": ["mastermind"] },
+    { "id": "board", "nume": "Board of Advisors", "format": "seară", "potriviri": ["board of advisors", "advisory board"] },
+    { "id": "ai", "nume": "Inteligența artificială", "format": "seară", "potriviri": ["inteligenta artificiala"] },
+    { "id": "networking", "nume": "Petrecere de networking RBL", "format": "networking", "potriviri": ["party", "cocktail"] }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "antreprenoria",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Entitățile antreprenoria.ro (ediții, ateliere, participanți, oameni, companii, parteneri, curriculum) + panou de administrare local",
+  "scripts": {
+    "start": "node server.js",
+    "crawl": "node scripts/crawl.js",
+    "extract": "node scripts/extract-editions.js",
+    "build": "node scripts/build-entities.js",
+    "sync": "npm run crawl && npm run extract && npm run build"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

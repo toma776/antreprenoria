@@ -1,0 +1,247 @@
+// Construiește data/entitati.json din extracția brută (data/extract/editii-brut.json) + curarea manuală (data/curare/*.json).
+// Model: registre globale (oameni, companii, parteneri, teme) + ediții care fac referire la ele prin id.
+const fs = require('fs');
+const path = require('path');
+const { ORIGIN, SOURCE, text, slug, readJson, writeJson, today } = require('./lib');
+
+const brut = readJson('extract/editii-brut.json');
+const curOameni = readJson('curare/oameni.json');
+const curCompanii = readJson('curare/companii.json');
+const curParteneri = readJson('curare/parteneri.json');
+const curTeme = readJson('curare/teme.json');
+if (!brut) throw new Error('Rulează întâi: npm run extract');
+
+const plain = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const observatii = [];
+const obs = (nivel, zona, text, extra = {}) => observatii.push({ id: `o${observatii.length + 1}`, nivel, zona, text, ...extra });
+
+// ---------- ediții: identitate ----------
+function editionId(e) {
+  const m = e.slug.match(/^antreprenoria-(\d+)$/);
+  return m ? { id: `bucuresti-${m[1]}`, serie: 'București', numar: Number(m[1]), cheie: m[1] } : { id: 'cluj-1', serie: 'Cluj', numar: 1, cheie: 'cluj' };
+}
+function period(p) {
+  const m = String(p || '').match(/([A-Za-zăâîșț]+)\s*-\s*([A-Za-zăâîșț]+)\s+(\d{4})/);
+  if (!m) return { an: null, sezon: null };
+  return { an: Number(m[3]), sezon: /^mar/i.test(m[1]) ? 'primăvară' : 'toamnă' };
+}
+
+// ---------- teme ----------
+const teme = curTeme.teme.map((t) => ({ id: t.id, nume: t.nume, format: t.format, nota: t.nota || null, titluri: [], editii: [], ateliere: 0 }));
+const temaById = Object.fromEntries(teme.map((t) => [t.id, t]));
+const temaFor = (titlu) => curTeme.teme.find((t) => t.potriviri.some((re) => new RegExp(re).test(plain(titlu))))?.id || null;
+
+// ---------- parteneri ----------
+const parteneri = curParteneri.parteneri.map((p) => ({ id: p.id, nume: p.nume, url: p.url, tip: p.tip, logo: null, roluri: [] }));
+const partById = Object.fromEntries(parteneri.map((p) => [p.id, p]));
+function partnerFor(url, logo) {
+  const hay = plain(`${url || ''} ${String(logo || '').split('/').pop()}`);
+  const p = curParteneri.parteneri.find((x) => x.potriviri.some((k) => hay.includes(plain(k))));
+  return p ? partById[p.id] : null;
+}
+const sameRole = (a, b) => a.editie === b.editie && a.rol === b.rol && a.atelier === b.atelier;
+function addPartnerRole(p, rol) {
+  if (!p.roluri.some((r) => sameRole(r, rol))) p.roluri.push(rol);
+}
+
+// ---------- oameni ----------
+const oameni = new Map();
+const personId = (nume) => { const s = slug(nume); return curOameni.aliasuri[s] || s; };
+function person(id, nume) {
+  if (!oameni.has(id)) oameni.set(id, { id, nume: curOameni.nume_corect[id] || nume, variante: [], tipuri: [], imagine: null, linkedin: null, companii: [], aparitii: [], editii: [] });
+  const p = oameni.get(id);
+  if (nume && nume !== p.nume && !p.variante.includes(nume)) p.variante.push(nume);
+  return p;
+}
+const addTo = (arr, v) => { if (v && !arr.includes(v)) arr.push(v); };
+const rolFromActivity = (a, format) => (/^training/i.test(a) ? 'trainer' : /prezentare/i.test(a) ? 'antreprenor invitat' : format === 'seară' ? 'facilitator' : 'invitat');
+
+// ---------- companii ----------
+const companii = curCompanii.companii.map((c) => ({ id: slug(c.nume), nume: c.nume, sector: c.sector, incert: !!c.incert, nota: c.nota || null, descriere: null, participari: [] }));
+const compByKey = {};
+curCompanii.companii.forEach((c, i) => c.participanti.forEach((k) => (compByKey[k] = companii[i])));
+
+// ---------- ediții ----------
+const editii = brut.editii.map((e) => {
+  const idn = editionId(e);
+  const per = period(e.perioada);
+  const ed = { ...idn, slug: e.slug, url: e.url, titlu: e.titlu, subtitlu: e.subtitlu, perioada: e.perioada, ...per, status: e.status,
+    deschisa: /deschise/i.test(e.status || ''), link_inscriere: e.link_inscriere, beneficii: e.beneficii, valoare_estimata: e.valoare_estimata,
+    preturi: e.preturi, metodologie: e.metodologie, participanti_titlu: e.participanti_titlu, locatii: [], ateliere: [], participanti: [], parteneri: [] };
+
+  // parteneri din hero
+  e.parteneri_hero.logo.forEach((logo) => {
+    const p = partnerFor(null, logo);
+    if (!p) return obs('minor', 'Date', `Logo de partener nerecunoscut în hero-ul ${ed.id}: ${logo}`, { editie: ed.id });
+    p.logo ||= logo;
+    const rol = { editie: ed.id, rol: e.parteneri_hero.eticheta ? e.parteneri_hero.eticheta.replace(/^parteneri /, 'partener ') : 'partener ediție', atelier: null };
+    addPartnerRole(p, rol);
+    ed.parteneri.push({ partener: p.id, rol: rol.rol });
+  });
+
+  // ateliere
+  e.ateliere.forEach((a) => {
+    const tema = temaFor(a.titlu);
+    const format = tema ? temaById[tema].format : 'full-day';
+    if (!tema) obs('minor', 'Date', `Atelier fără temă din curriculum: „${a.titlu}” (${ed.id})`, { editie: ed.id });
+    let sponsor = null;
+    if (a.sponsor) {
+      const p = partnerFor(a.sponsor.url, a.sponsor.logo);
+      if (p) {
+        p.logo ||= a.sponsor.logo;
+        sponsor = p.id;
+        addPartnerRole(p, { editie: ed.id, rol: 'sponsor atelier', atelier: a.nr });
+        if (!ed.parteneri.some((x) => x.partener === p.id && x.rol === 'sponsor atelier')) ed.parteneri.push({ partener: p.id, rol: 'sponsor atelier' });
+        // link și logo care arată spre parteneri diferiți
+        const byUrl = partnerFor(a.sponsor.url, null), byLogo = partnerFor(null, a.sponsor.logo);
+        if (byUrl && byLogo && byUrl.id !== byLogo.id) obs('mediu', 'Conținut', `${ed.id}, atelierul ${a.nr}: logo-ul sponsorului (${byLogo.nume}) duce spre site-ul altui partener (${a.sponsor.url}).`, { editie: ed.id, url: e.url });
+        if (!a.sponsor.url) obs('minor', 'Conținut', `${ed.id}, atelierul ${a.nr}: logo-ul sponsorului ${p.nume} nu are link.`, { editie: ed.id, url: e.url });
+      } else obs('minor', 'Date', `Sponsor nerecunoscut: ${a.sponsor.url || a.sponsor.logo} (${ed.id} #${a.nr})`, { editie: ed.id });
+    }
+    addTo(ed.locatii, a.locatie);
+    const program = a.program.map((p) => ({
+      interval: p.interval, activitate: p.activitate || null,
+      speakeri: p.speakeri.filter((s) => !curOameni.ignora.includes(slug(s.nume))).map((s) => {
+        const id = personId(s.nume), pers = person(id, s.nume), rol = rolFromActivity(p.activitate, format);
+        addTo(pers.tipuri, rol);
+        pers.imagine = s.imagine || pers.imagine; // ultima fotografie folosită pe site
+        pers.linkedin ||= s.linkedin;
+        addTo(pers.companii, s.companie && s.companie !== 'Trainer' ? s.companie.trim() : null);
+        addTo(pers.editii, ed.id);
+        pers.aparitii.push({ editie: ed.id, atelier: a.nr, tema, titlu: a.titlu, rol, companie: s.companie || null, data: a.data });
+        return { persoana: id, rol, companie: s.companie || null };
+      }),
+    }));
+    const placeholders = a.program.flatMap((p) => p.speakeri).filter((s) => curOameni.ignora.includes(slug(s.nume)));
+    if (placeholders.length) obs('mediu', 'Conținut', `${ed.id}, atelierul ${a.nr} („${a.titlu}”): speaker necompletat („${placeholders.map((s) => s.nume).join('”, „')}”).`, { editie: ed.id, url: e.url });
+    if (tema) { const t = temaById[tema]; t.ateliere++; addTo(t.titluri, a.titlu); addTo(t.editii, ed.id); }
+    ed.ateliere.push({ id: `${ed.id}-a${a.nr}`, nr: a.nr, data: a.data, data_text: a.data_text, locatie: a.locatie, titlu: a.titlu, tema, format,
+      descriere: a.descriere, sponsor, cauta_sponsor: !!a.cauta_sponsor, program });
+  });
+
+  // participanți
+  e.participanti.forEach((p) => {
+    const key = `${idn.cheie}:${p.nume}`;
+    const c = compByKey[key];
+    const id = personId(p.nume), pers = person(id, p.nume);
+    addTo(pers.tipuri, 'participant');
+    pers.imagine ||= p.imagine;
+    addTo(pers.editii, ed.id);
+    if (c) {
+      addTo(pers.companii, c.nume);
+      c.descriere ||= p.descriere;
+      c.participari.push({ editie: ed.id, persoana: id, cifra_afaceri: p.cifra_afaceri, angajati: p.angajati });
+    } else if (!curCompanii.fara_companie.participanti.includes(key)) {
+      obs('minor', 'Date', `Participant fără companie în curare: ${key}`, { editie: ed.id });
+    }
+    ed.participanti.push({ persoana: id, nume: p.nume, companie: c?.id || null, cifra_afaceri: p.cifra_afaceri, angajati: p.angajati, descriere: p.descriere, imagine: p.imagine });
+  });
+
+  // ---- inconsecvențe pe ediție ----
+  const an = per.an;
+  ed.ateliere.filter((a) => a.data && an && Number(a.data.slice(0, 4)) !== an)
+    .forEach((a) => obs('critic', 'Conținut', `${ed.id}, atelierul ${a.nr} („${a.titlu}”): data „${a.data_text}” nu e în anul ediției (${an}).`, { editie: ed.id, url: e.url }));
+  const nedatate = ed.ateliere.filter((a) => !a.data).length;
+  if (nedatate) obs(nedatate === ed.ateliere.length ? 'mediu' : 'minor', 'Conținut', `${ed.id}: ${nedatate} din ${ed.ateliere.length} ateliere nu au dată pe pagină.`, { editie: ed.id, url: e.url });
+  const numeric = (re) => Number((e.beneficii.find((b) => re.test(b)) || '').match(/\d+/)?.[0]) || null;
+  const colegi = numeric(/colegi/);
+  if (colegi && e.participanti.length && colegi !== e.participanti.length) obs('mediu', 'Conținut', `${ed.id}: „${colegi} de colegi antreprenori” în beneficii, dar pagina listează ${e.participanti.length} participanți.`, { editie: ed.id, url: e.url });
+  const fullDay = numeric(/full day/), seara = numeric(/de seară/);
+  const realFull = ed.ateliere.filter((a) => a.format === 'full-day').length;
+  const realSeara = ed.ateliere.filter((a) => a.format === 'seară' && a.tema !== 'mastermind').length;
+  if (fullDay && fullDay !== realFull) obs('mediu', 'Conținut', `${ed.id}: beneficiile anunță ${fullDay} ateliere full-day, agenda are ${realFull}.`, { editie: ed.id, url: e.url });
+  if (seara && seara !== realSeara) obs('minor', 'Conținut', `${ed.id}: beneficiile anunță ${seara} ateliere de seară, agenda are ${realSeara} (fără mastermind).`, { editie: ed.id, url: e.url });
+  if (ed.deschisa) {
+    const start = ed.ateliere.map((a) => a.data).filter((d) => d && Number(d.slice(0, 4)) === an).sort()[0];
+    if (start && start < today()) obs('critic', 'Conversie', `${ed.id} apare cu „${e.status}”, dar primul atelier a avut loc pe ${start}.`, { editie: ed.id, url: e.url });
+    e.preturi.filter((p) => !p.ascuns).forEach((p) => {
+      const m = (p.nota || '').match(/(\d{1,2})\s+([a-zăâîșț]+)\s+(\d{4})/i);
+      if (m && p.eticheta) obs('critic', 'Conversie', `${ed.id}: prețul „${p.pret_text}” e afișat cu „${p.eticheta}” și termen „${p.nota}”, deși termenul a trecut.`, { editie: ed.id, url: e.url });
+    });
+    const vizibile = e.preturi.filter((p) => !p.ascuns);
+    if (vizibile.length && vizibile.every((p) => !/standard/i.test(p.nota || '')) && ed.serie === 'București') obs('mediu', 'Conversie', `${ed.id}: e afișat doar prețul early-bird; prețul standard nu apare pe pagină.`, { editie: ed.id, url: e.url });
+  }
+  if (!e.participanti.length && !ed.deschisa) obs('minor', 'Date', `${ed.id}: pagina nu listează participanții.`, { editie: ed.id });
+  return ed;
+});
+
+// ---------- program (Antreprenoria + RBL) ----------
+const despre = fs.existsSync(path.join(SOURCE, 'despre-noi.html')) ? fs.readFileSync(path.join(SOURCE, 'despre-noi.html'), 'utf8') : '';
+const despreTxt = text(despre);
+const grab = (re) => (despreTxt.match(re) || [])[1]?.trim() || null;
+const ed22 = editii.find((e) => e.id === 'bucuresti-22') || editii[editii.length - 1];
+const program = {
+  nume: 'Atelierele Antreprenoria',
+  slogan: 'cresc antreprenorii, crește România!',
+  url: ORIGIN,
+  organizator: { nume: 'Fundația Romanian Business Leaders', url: 'https://www.rbls.ro/', descriere: grab(/(Fundația Romanian Business Leaders este o organizație[^]*?Uniunii Europene\.)/) },
+  descriere: grab(/(Atelierele de Antreprenoriat reprezintă[^]*?propria rețetă de scalare\.)/),
+  de_cand: 2013,
+  audienta: grab(/Audiența noastră (companii cu cifră[^]*?semnificativă\.)/),
+  ce_obtii: [grab(/Ce obții\? (Acces direct[^]*?afacerii tale\.)/), grab(/(Înțelegerea aprofundată[^]*?constante\.)/)].filter(Boolean),
+  format_declarat: grab(/Ce mai primești\? ([^]*?lectori\.)/),
+  alumni_mentionati: (grab(/amintim ([^]*?) etc\./) || '').split(/,\s*/).filter(Boolean),
+  metodologie: ed22.metodologie,
+  cifre: [
+    { valoare: '550+', ce: 'IMM-uri care au trecut prin programe din 2013', sursa: '/despre-noi' },
+    { valoare: '500+', ce: 'lideri de business care contribuie pro-bono', sursa: '/despre-noi' },
+    { valoare: '600+', ce: 'membri în comunitatea RBL', sursa: '/despre-noi' },
+    { valoare: '8', ce: 'filiale locale RBL', sursa: '/despre-noi' },
+    { valoare: '15.000 EUR', ce: 'valoarea estimată a accesului la expertiză (pe ediție)', sursa: '/antreprenoria-22' },
+  ],
+  contact: {
+    adresa: 'Calea Dorobanți, 42, etaj 3, ap. 5, Sector 1, București',
+    echipa: curOameni.echipa,
+    inscriere: [...new Set(editii.map((e) => e.link_inscriere).filter(Boolean))],
+  },
+  social: [
+    { retea: 'Facebook', url: 'https://www.facebook.com/antreprenoria/' },
+    { retea: 'LinkedIn', url: 'https://www.linkedin.com/company/antreprenoria' },
+    { retea: 'YouTube', url: 'https://www.youtube.com/user/RBLSummit/playlists' },
+  ],
+};
+curOameni.echipa.forEach((m) => { const p = person(m.id, m.nume); addTo(p.tipuri, 'echipă'); p.rol_echipa = m.rol; });
+
+// inconsecvențe la nivel de program
+obs('mediu', 'Conținut', `/despre-noi anunță „${program.format_declarat}”, edițiile recente au 5 ateliere full-day, 2–3 de seară și un mastermind.`, { url: ORIGIN + '/despre-noi' });
+obs('minor', 'Conținut', '/despre-noi spune „500+ lideri de business” pro-bono și „600+ membri” RBL; homepage-ul și paginile ediției nu folosesc aceleași cifre.', { url: ORIGIN + '/despre-noi' });
+obs('mediu', 'Date', 'Edițiile #1–#15 (2013–2023) nu au pagini pe site; istoria programului începe vizibil abia cu #16.', { url: ORIGIN });
+const tbdLoc = editii.flatMap((e) => e.ateliere.filter((a) => a.locatie === 'TBD').map((a) => `${e.id} #${a.nr}`));
+if (tbdLoc.length) obs('minor', 'Conținut', `Locație „TBD” la: ${tbdLoc.join(', ')}.`);
+
+// ---------- finalizare registre ----------
+const compList = companii.map((c) => ({ ...c, editii: [...new Set(c.participari.map((p) => p.editie))] })).filter((c) => c.participari.length);
+const unused = companii.filter((c) => !c.participari.length);
+unused.forEach((c) => obs('minor', 'Date', `Compania „${c.nume}” din curare nu se potrivește cu niciun participant (verifică numele).`));
+const oameniList = [...oameni.values()].map((p) => ({ ...p, nr_aparitii: p.aparitii.length }));
+// variante de companie pentru același speaker (afiliere schimbată sau scrisă diferit)
+// diferențele doar de majuscule, spații sau un titlu în plus („Founder of …”) nu contează
+const affKey = (c) => plain(c).replace(/[^a-z0-9]/g, '');
+oameniList.filter((p) => !p.tipuri.includes('participant')).forEach((p) => {
+  // păstrăm doar cheile care nu sunt incluse în altă cheie mai lungă
+  const keys = [...new Set(p.companii.map(affKey))];
+  const distinct = keys.filter((k) => !keys.some((o) => o !== k && o.includes(k)));
+  if (distinct.length > 1) obs('minor', 'Conținut', `${p.nume} apare cu afilieri diferite: ${p.companii.join(' / ')}.`, { persoana: p.id });
+});
+oameniList.filter((p) => p.variante.length)
+  .forEach((p) => obs('minor', 'Conținut', `Numele „${p.nume}” e scris diferit pe site: ${p.variante.map((v) => `„${v}”`).join(', ')}.`, { persoana: p.id }));
+const partList = parteneri.filter((p) => p.roluri.length);
+
+const out = {
+  meta: {
+    sursa: ORIGIN, extras_la: brut.extras_la, generat: new Date().toISOString(),
+    pagini: fs.readdirSync(SOURCE).filter((f) => f.endsWith('.html')).length,
+    metoda: 'paginile edițiilor (/antreprenoria-16 … /antreprenoria-22, /antreprenoria-cluj) + /despre-noi + /contact; companii, aliasuri, parteneri și teme curate manual în data/curare/',
+  },
+  program,
+  editii,
+  oameni: oameniList,
+  companii: compList,
+  parteneri: partList,
+  teme: teme.filter((t) => t.ateliere),
+  sectoare: curCompanii.sectoare,
+  observatii,
+};
+writeJson('entitati.json', out);
+console.log(`ediții ${editii.length} · ateliere ${editii.reduce((n, e) => n + e.ateliere.length, 0)} · participări ${editii.reduce((n, e) => n + e.participanti.length, 0)}`);
+console.log(`oameni ${oameniList.length} (speakeri ${oameniList.filter((p) => p.aparitii.length).length}) · companii ${compList.length} · parteneri ${partList.length} · teme ${out.teme.length} · observații ${observatii.length}`);

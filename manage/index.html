@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Administrare · Antreprenoria</title>
+<link rel="icon" href="/manage/assets/logo-letter.png">
+<link rel="stylesheet" href="/manage/assets/app.css">
+</head>
+<body>
+<div class="app">
+  <aside>
+    <a class="logo" href="/manage" data-route="dashboard">
+      <img src="/manage/assets/logo-letter.png" alt="">
+      <span>Antreprenoria<small>Panou de administrare</small></span>
+    </a>
+    <nav id="nav">
+      <a href="/manage" data-route="dashboard">Dashboard</a>
+      <a href="/manage/entitati" data-route="entitati">Entități <span class="n" id="n-entitati"></span></a>
+    </nav>
+    <div class="foot"><a href="https://antreprenoria.ro" target="_blank" rel="noopener">↗ antreprenoria.ro</a></div>
+  </aside>
+  <main id="view"><div class="empty">Se încarcă…</div></main>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="/manage/assets/core.js"></script>
+<script src="/manage/assets/entitati.js"></script>
+<script src="/manage/assets/main.js"></script>
+</body>
+</html>

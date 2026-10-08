@@ -1,0 +1,21 @@
+{
+  "_despre": "Aliasuri pentru speakeri: slug-ul unei variante de nume -> id-ul persoanei. Variantele apar pentru că fiecare pagină de ediție e scrisă de mână. „ignora” = intrări care nu sunt persoane (placeholder-e).",
+  "aliasuri": {
+    "alex-lapusan": "alexandru-lapusan",
+    "eusediu-margasoiu": "eusebiu-margasoiu"
+  },
+  "nume_corect": {
+    "eusebiu-margasoiu": "Eusebiu Mărgăsoiu",
+    "alexandru-lapusan": "Alexandru Lăpușan",
+    "cristian-logofatu": "Cristian Logofătu",
+    "dan-stefan": "Dan Ștefan",
+    "anca-rarau": "Anca Rarău"
+  },
+  "ignora": ["tbd", "reprezentant-garanti-bbva-tbd"],
+  "echipa": [
+    { "id": "sorin-draghici", "nume": "Sorin Drăghici", "rol": "Project Leader Antreprenoria", "email": "sorin@dwf.ro", "sursa": "/contact" },
+    { "id": "raluca-bedereag", "nume": "Raluca Bedereag", "rol": "Project Manager · account manager dedicat", "email": "raluca.bedereag@rbls.ro", "telefon": "0748.884.775", "sursa": "/contact" },
+    { "id": "larisa-slavenie", "nume": "Larisa Slavenie", "rol": "Contact parteneriate", "email": "larisa.slavenie@rbls.ro", "sursa": "/" },
+    { "id": "iulian-rizea", "nume": "Iulian Rizea", "rol": "Contact sponsorizări ateliere (iulian.rizea@rbls.ro) · facilitator Mastermind", "email": "iulian.rizea@rbls.ro", "sursa": "/antreprenoria-22" }
+  ]
+}
