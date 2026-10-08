@@ -93,6 +93,8 @@
           if (p < 1) requestAnimationFrame(tick);
         };
         requestAnimationFrame(tick);
+        // garanție: valoarea finală apare chiar dacă browserul a oprit animațiile (tab în fundal, economie de energie)
+        setTimeout(() => { n.textContent = fmt(to, dec); }, 150 + dur + 300);
       });
     }
 

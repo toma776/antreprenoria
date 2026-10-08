@@ -79,7 +79,7 @@ p { margin: 0; }
 .stat:first-child { border-left: 0; padding-left: 0; }
 .stat b { display: block; font: var(--d-weight) clamp(30px, 3.4vw, 46px)/1 var(--f-num); font-stretch: var(--d-stretch); letter-spacing: var(--d-track); color: var(--ink); }
 .stat b em, .fig b em { font-style: normal; font-size: .45em; font-weight: 600; color: var(--muted); letter-spacing: 0; }
-.stat span { display: block; margin-top: 8px; font-size: 14px; color: var(--muted); line-height: 1.35; }
+.stat > span { display: block; margin-top: 8px; font-size: 14px; color: var(--muted); line-height: 1.35; }
 [data-brand="b"] .stat b { color: var(--accent); font-weight: 600; }
 
 /* secțiuni */
@@ -121,7 +121,7 @@ p { margin: 0; }
 .figures { display: grid; gap: 26px; align-content: start; }
 .fig b { display: block; font: var(--d-weight) clamp(34px, 4vw, 54px)/1 var(--f-num); font-stretch: var(--d-stretch); letter-spacing: var(--d-track); color: var(--highlight); }
 .fig b em { color: var(--dark-muted); }
-.fig span { color: var(--dark-muted); font-size: 15px; }
+.fig > span { color: var(--dark-muted); font-size: 15px; }
 .fine { font-size: 12.5px; color: var(--dark-muted); opacity: .8; }
 .sectors { display: grid; gap: 12px; align-content: start; }
 .sector { display: grid; grid-template-columns: 210px 1fr 32px; gap: 14px; align-items: center; font-size: 15px; }
