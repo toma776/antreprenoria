@@ -436,9 +436,6 @@ html.rv .mz:nth-child(10) { animation-delay: 575ms; }
 /* câmpul interactiv: întrebare, sugestii, răspuns din creier */
 .ask { width: 100%; margin-top: clamp(36px, 5vw, 56px); text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 20px 50px -30px rgba(16, 30, 60, .35); }
 .ask-q { display: flex; align-items: center; gap: 12px; padding: 16px 18px; border-bottom: 1px solid var(--line); font-size: 17px; font-weight: 500; }
-.ask-icon { width: 22px; height: 22px; border-radius: 6px; background: var(--primary); position: relative; flex: none; }
-.ask-icon::after { content: ""; position: absolute; inset: 7px 6px; border-left: 2px solid var(--primary-ink); animation: caret 1.1s steps(1) infinite; }
-@keyframes caret { 50% { opacity: 0; } }
 .ask-chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 18px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
 .ask-chips button { padding: 8px 12px; border: 1px solid var(--line); border-radius: var(--radius-btn); background: var(--surface); color: var(--ink); font: 500 14px/1.2 var(--f-body); cursor: pointer; transition: border-color .15s, background .15s, color .15s; }
 .ask-chips button:hover { border-color: var(--primary); }

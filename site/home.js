@@ -46,7 +46,7 @@ function themeInfo(ctx, F, id) {
 function askHtml(ctx, F) {
   const items = NEEDS.map(([id, label]) => ({ id, label, info: themeInfo(ctx, F, id) })).filter((x) => x.info);
   return `<div class="ask" data-tabs>
-    <div class="ask-q"><span class="ask-icon" aria-hidden="true"></span><span>Ce vrei să rezolvi acum în compania ta?</span></div>
+    <div class="ask-q"><span>Ce vrei să rezolvi acum în compania ta?</span></div>
     <div class="ask-chips" role="tablist" aria-label="Alege o provocare">${items.map((x, i) => `<button role="tab" data-tab="${x.id}" aria-selected="${i === 0}" aria-controls="ask-${x.id}">${esc(x.label)}</button>`).join('')}</div>
     ${items.map((x, i) => {
       const { t, ws, people, desc, next, cluj } = x.info;
