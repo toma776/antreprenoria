@@ -15,6 +15,16 @@ npm start
 
 Portul se schimbă cu variabila `PORT`.
 
+## Noul site (concept)
+
+Paginile se generează în Node.js, fără framework, din `data/entitati.json`. Generatorul e `site/render.js`, iar stilurile și scripturile sunt în `site/assets/`.
+
+- `http://localhost:3200/` – homepage
+- `http://localhost:3200/brand` – cele trei direcții de identitate: A · Albastru RBL, B · Signal, C · Editorial
+- `?brand=a|b|c` deschide o pagină direct într-o direcție. Comutatorul de jos e doar pentru prezentarea conceptului.
+
+Cifrele de afaceri ale participanților apar pe site doar agregat (mediană, intervalul 25–75%), niciodată per companie.
+
 ## Modelul de entități
 
 Edițiile sunt grupuri cu **același set de sub-entități**. Oamenii, organizațiile, locațiile și temele sunt **registre globale**, iar edițiile fac referire la ele prin id. Așa un trainer care revine în 7 ediții e o singură entitate.

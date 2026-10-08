@@ -1,4 +1,7 @@
 // Server local fără dependențe.
+//   /                   -> homepage-ul noului site, generat din creier (site/render.js)
+//   /brand              -> cele trei direcții de identitate (concept)
+//   /assets/...         -> CSS/JS ale site-ului (site/assets)
 //   /manage[/...]       -> panoul de administrare (manage/index.html): dashboard, entități
 //   GET /api/entitati   -> data/entitati.json (generat de npm run sync)
 const http = require('http');
@@ -43,7 +46,15 @@ http.createServer((req, res) => {
     }
     if (url.startsWith('/api/')) return sendJson(res, 404, { error: 'rută necunoscută' });
     if (url.startsWith('/manage/assets/')) return sendFile(res, safe(path.join(ROOT, 'manage', 'assets'), url.slice('/manage/assets/'.length)) || '');
-    if (url === '/' || url === '/manage' || url.startsWith('/manage/')) return sendFile(res, path.join(ROOT, 'manage', 'index.html'));
+    if (url === '/manage' || url.startsWith('/manage/')) return sendFile(res, path.join(ROOT, 'manage', 'index.html'));
+    if (url.startsWith('/assets/')) return sendFile(res, safe(path.join(ROOT, 'site', 'assets'), url.slice('/assets/'.length)) || '');
+    // paginile site-ului se generează la fiecare cerere din data/entitati.json (se reîncarcă după npm run build)
+    const PAGES = { '/': 'renderHome', '/brand': 'renderBrand' };
+    if (PAGES[url]) {
+      delete require.cache[require.resolve('./site/render')];
+      res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' });
+      return res.end(require('./site/render')[PAGES[url]]());
+    }
     sendJson(res, 404, { error: 'pagină inexistentă' });
   } catch (e) {
     sendJson(res, 500, { error: e.message });
