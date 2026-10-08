@@ -71,8 +71,10 @@ routes.dashboard = function renderDashboard() {
   const curr = E.editii.filter((e) => e.deschisa);
   const obsN = (n) => E.observatii.filter((o) => o.nivel === n).length;
   const topPeople = E.oameni.filter((p) => p.aparitii.length).sort((a, b) => b.editii.length - a.editii.length).slice(0, 6);
+  const alumni = E.organizatii.filter((o) => o.tipuri.includes('alumni'));
+  const ciclu = E.organizatii.filter((o) => o.ciclu);
   const sect = {};
-  E.companii.forEach((c) => (sect[c.sector] = (sect[c.sector] || 0) + 1));
+  alumni.forEach((c) => (sect[c.sector] = (sect[c.sector] || 0) + 1));
   const topSect = Object.entries(sect).sort((a, b) => b[1] - a[1]).slice(0, 6);
   const max = topSect[0]?.[1] || 1;
 
@@ -82,8 +84,9 @@ routes.dashboard = function renderDashboard() {
       <a class="kpi" href="/manage/entitati/editii"><b>${E.editii.length}</b><span>ediții pe site</span></a>
       <div class="kpi"><b>${E.editii.reduce((n, e) => n + e.ateliere.length, 0)}</b><span>ateliere</span></div>
       <a class="kpi" href="/manage/entitati/oameni"><b>${E.oameni.filter((p) => p.aparitii.length).length}</b><span>traineri & speakeri</span></a>
-      <a class="kpi" href="/manage/entitati/companii"><b>${E.companii.length}</b><span>companii alumni</span></a>
-      <a class="kpi" href="/manage/entitati/parteneri"><b>${E.parteneri.length}</b><span>parteneri</span></a>
+      <a class="kpi" href="/manage/entitati/organizatii/alumni"><b>${alumni.length}</b><span>companii alumni</span></a>
+      <a class="kpi" href="/manage/entitati/organizatii"><b>${E.organizatii.length}</b><span>organizații</span></a>
+      <a class="kpi" href="/manage/entitati/organizatii/ciclu"><b>${ciclu.length}</b><span>alumni deveniți parteneri</span></a>
     </div>
     <div class="grid2">
       <div class="card">
@@ -100,11 +103,15 @@ routes.dashboard = function renderDashboard() {
         <p>${E.observatii.filter((o) => o.nivel === 'critic').map((o) => '• ' + esc(cut(o.text, 120))).join('<br>')}</p>
       </div>
       <div class="card">
+        <h3><a href="/manage/entitati/organizatii/ciclu">Din alumni, parteneri →</a></h3>
+        ${ciclu.map((o) => `<p><a href="/manage/entitati/organizatii/o/${o.id}"><b>${esc(o.nume)}</b></a> <span class="muted">· alumni ${esc(edShort(o.ciclu.alumni_din))}, apoi ${esc(o.ciclu.apoi.join(', '))}</span></p>`).join('')}
+      </div>
+      <div class="card">
         <h3><a href="/manage/entitati/oameni/traineri">Cei mai constanți traineri →</a></h3>
         ${topPeople.map((p) => `<p><a href="/manage/entitati/oameni/p/${p.id}">${esc(p.nume)}</a> <span class="muted">· ${plural(p.editii.length, 'ediție', 'ediții')} · ${esc(p.companii[p.companii.length - 1] || '')}</span></p>`).join('')}
       </div>
       <div class="card">
-        <h3><a href="/manage/entitati/companii">Companii pe sectoare →</a></h3>
+        <h3><a href="/manage/entitati/organizatii/alumni">Companii alumni pe sectoare →</a></h3>
         ${topSect.map(([k, v]) => `<div class="small" style="margin:8px 0 0">${esc(k)} <span class="muted">· ${v}</span><div class="bar"><i style="width:${(v / max) * 100}%"></i></div></div>`).join('')}
       </div>
     </div>

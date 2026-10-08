@@ -1,12 +1,13 @@
 /* ENTITĂȚI: categorii -> grupuri -> entități (/manage/entitati[/categorie[/grup[/sub]]]).
    Edițiile sunt grupuri cu același set de sub-entități: program, ateliere, participanți, traineri & speakeri, parteneri.
-   Oamenii, companiile, partenerii și temele sunt registre globale; edițiile le referă prin id. */
+   Oamenii, organizațiile, locațiile și temele sunt registre globale; edițiile le referă prin id.
+   O organizație poate avea mai multe roluri: alumni, partener, sponsor, gazdă, angajatorul unui speaker. */
 
-const IX = { P: {}, C: {}, PA: {}, T: {}, ED: {} };
+const IX = { P: {}, O: {}, L: {}, T: {}, ED: {} };
 function indexEntities(D) {
   D.oameni.forEach((x) => (IX.P[x.id] = x));
-  D.companii.forEach((x) => (IX.C[x.id] = x));
-  D.parteneri.forEach((x) => (IX.PA[x.id] = x));
+  D.organizatii.forEach((x) => (IX.O[x.id] = x));
+  D.locatii.forEach((x) => (IX.L[x.id] = x));
   D.teme.forEach((x) => (IX.T[x.id] = x));
   D.editii.forEach((x) => (IX.ED[x.id] = x));
 }
@@ -25,13 +26,26 @@ function personChip(id, extra) {
   const pic = p.imagine ? `<img src="${esc(p.imagine)}" alt="" loading="lazy">` : `<span class="ini">${esc(initials(p.nume))}</span>`;
   return `<a class="chip" href="/manage/entitati/oameni/p/${p.id}">${pic}${esc(p.nume)}${extra ? ` <em>· ${esc(extra)}</em>` : ''}</a>`;
 }
-const partnerName = (id) => IX.PA[id]?.nume || id;
-const partnerLogo = (id) => (IX.PA[id]?.logo ? `<img class="logo-sm" src="${esc(IX.PA[id].logo)}" alt="${esc(partnerName(id))}" loading="lazy">` : '');
+const partnerName = (id) => IX.O[id]?.nume || id;
+const partnerLogo = (id) => (IX.O[id]?.logo ? `<img class="logo-sm" src="${esc(IX.O[id].logo)}" alt="${esc(partnerName(id))}" loading="lazy">` : '');
+const orgHref = (id) => `/manage/entitati/organizatii/o/${id}`;
+const orgLink = (id) => (IX.O[id] ? `<a href="${orgHref(id)}">${esc(IX.O[id].nume)}</a>` : '<span class="muted">—</span>');
+// rolurile unei organizații, în ordinea în care contează pentru poveste
+const ORG_TIP = [['alumni', 'Alumni', 'ok'], ['organizator', 'Organizator', ''], ['partener', 'Partener', ''], ['sponsor', 'Sponsor', ''], ['gazdă', 'Gazdă', 'warn'], ['speaker', 'Angajatorul unui speaker', 'grey']];
+const orgTags = (o) => ORG_TIP.filter(([t]) => o.tipuri.includes(t)).map(([, l, c]) => `<span class="tag ${c}">${l}</span>`).join('');
+// rolul dintr-o ediție -> tipul organizației (la fel ca în build)
+const ROL_TIP_UI = { participant: 'alumni', speaker: 'speaker', 'gazdă': 'gazdă', 'sponsor atelier': 'sponsor', organizator: 'organizator' };
+// organizațiile care susțin o ediție: organizator, parteneri, sponsori, gazde (fără participanți și angajatorii speakerilor)
+function editionPartners(D, e) {
+  const order = ['organizator', 'partener strategic', 'powered by', 'partener ediție', 'gazdă', 'sponsor atelier'];
+  return D.organizatii.map((o) => ({ o, roluri: o.roluri.filter((r) => r.editie === e.id && r.rol !== 'participant' && r.rol !== 'speaker') }))
+    .filter((x) => x.roluri.length)
+    .sort((a, b) => Math.min(...a.roluri.map((r) => order.indexOf(r.rol))) - Math.min(...b.roluri.map((r) => order.indexOf(r.rol))));
+}
 const kvRow = (k, v) => (v ? `<dt>${esc(k)}</dt><dd>${v}</dd>` : '');
 
 /* ---------- categorii ---------- */
 function entityCategories(D) {
-  const sectors = D.sectoare.filter((s) => D.companii.some((c) => c.sector === s));
   return [
     { id: 'program', icon: 'program', title: 'Program', desc: 'Ce este Antreprenoria: identitate, organizatorul RBL, metodologia, cifrele declarate și contactul.',
       groups: ['identitate', 'metodologie', 'cifre', 'contact'] },
@@ -39,17 +53,14 @@ function entityCategories(D) {
       groups: edOrder(D).map((e) => e.id).reverse() },
     { id: 'oameni', icon: 'oameni', title: 'Oameni', desc: 'Registru global: trainerii, antreprenorii invitați, facilitatorii, participanții și echipa, cu toate edițiile în care apar.',
       groups: ['traineri', 'invitati', 'facilitatori', 'participanti', 'echipa'] },
-    { id: 'companii', icon: 'companii', title: 'Companii', desc: 'Companiile participanților (alumni), pe sectoare, cu cifra de afaceri și angajații declarați la fiecare ediție.',
-      groups: sectors.map((s) => 'sec_' + sectorSlug(s)) },
-    { id: 'parteneri', icon: 'parteneri', title: 'Parteneri', desc: 'Partenerii strategici și sponsorii de ateliere, cu rolul avut în fiecare ediție.',
-      groups: ['strategici', 'sponsori'] },
+    { id: 'organizatii', icon: 'companii', title: 'Organizații', desc: 'Registru unic: aceeași firmă poate fi alumni, partener, sponsor, gazdă sau angajatorul unui speaker. Fiecare are parcursul ei pe ediții.',
+      groups: ['ciclu', 'multirol', 'alumni', 'parteneri', 'speakeri', 'locatii'] },
     { id: 'teme', icon: 'teme', title: 'Curriculum', desc: 'Temele atelierelor care se repetă de la o ediție la alta, cu titlurile folosite și trainerii fiecărei teme.',
       groups: ['matrice', 'full-day', 'seara', 'networking'] },
     { id: 'seo', icon: 'seo', title: 'Audit', audit: true, desc: 'Nu sunt entități: inconsecvențele găsite la extragere (date, conținut, conversie).',
       groups: ['observatii'] },
   ];
 }
-const sectorSlug = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z]+/g, '_').replace(/^_|_$/g, '');
 
 /* ---------- grupuri: titlu, număr, descriere, html ---------- */
 function groupInfo(D, catId, g) {
@@ -74,18 +85,20 @@ function groupInfo(D, catId, g) {
       const list = people(def[2]);
       return { title: def[0], count: list.length, desc: def[1], html: () => (g === 'participanti' ? participantsRegistry(list) : g === 'echipa' ? teamList(D) : speakersList(list, g)) };
     }
-    case 'companii': {
-      const s = D.sectoare.find((x) => 'sec_' + sectorSlug(x) === g);
-      if (!s) return null;
-      const list = D.companii.filter((c) => c.sector === s);
-      return { title: s, count: list.length, desc: list.slice(0, 8).map((c) => c.nume).join(', ') + (list.length > 8 ? '…' : ''), html: () => companiesList(list) };
-    }
-    case 'parteneri': {
-      const strat = D.parteneri.filter((p) => p.roluri.some((r) => r.rol !== 'sponsor atelier'));
-      const spons = D.parteneri.filter((p) => p.roluri.some((r) => r.rol === 'sponsor atelier'));
+    case 'organizatii': {
+      const O = D.organizatii, has = (t) => (o) => o.tipuri.includes(t);
+      const ciclu = O.filter((o) => o.ciclu);
+      const multi = O.filter((o) => o.tipuri.filter((t) => t !== 'organizator').length > 1);
+      const alumni = O.filter(has('alumni'));
+      const part = O.filter((o) => ['partener', 'sponsor', 'organizator'].some((t) => o.tipuri.includes(t)));
+      const spk = O.filter(has('speaker'));
       return {
-        strategici: { title: 'Parteneri de ediție', count: strat.length, desc: 'Partenerii afișați în antetul edițiilor (strategic, „powered by”).', html: () => partnersList(strat, (r) => r.rol !== 'sponsor atelier') },
-        sponsori: { title: 'Sponsori de ateliere', count: spons.length, desc: '„Atelier sponsorizat de …”, pe fiecare atelier în parte.', html: () => partnersList(spons, (r) => r.rol === 'sponsor atelier') },
+        ciclu: { title: 'Din alumni, parteneri', count: ciclu.length, desc: 'Companii care au participat la program și s-au întors într-o ediție ulterioară ca sponsor, gazdă sau cu un speaker.', html: () => orgCards(ciclu) },
+        multirol: { title: 'Cu mai multe roluri', count: multi.length, desc: 'Organizațiile care apar pe site în cel puțin două roluri diferite.', html: () => orgCards(multi) },
+        alumni: { title: 'Companii alumni', count: alumni.length, desc: 'Companiile participanților, cu sectorul, cifra de afaceri și angajații declarați la fiecare ediție.', html: () => alumniTable(D, alumni) },
+        parteneri: { title: 'Parteneri & sponsori', count: part.length, desc: 'Organizatorul, partenerii din antetul edițiilor și sponsorii de ateliere.', html: () => partnersList(part) },
+        speakeri: { title: 'Companiile speakerilor', count: spk.length, desc: 'Firmele din care vin trainerii și antreprenorii invitați.', html: () => speakerOrgs(spk) },
+        locatii: { title: 'Locații', count: D.locatii.length, desc: 'Unde s-au ținut atelierele și cine a găzduit.', html: () => locationsList(D) },
       }[g];
     }
     case 'teme': {
@@ -140,7 +153,7 @@ function editionCards(D) {
     <a class="ed-card ${e.serie === 'Cluj' ? 'cluj' : ''}" href="/manage/entitati/editii/${e.id}">
       <div class="cat-top"><span class="ed-num">${esc(edLabel(e))}<small>${esc(e.serie)}</small></span>${tags(e.status, e.deschisa ? 'ok' : 'grey')}</div>
       <div class="muted small">${esc(e.perioada)}${e.locatii.length ? ' · ' + esc(e.locatii.filter((l) => l !== 'TBD')[0] || '') : ''}</div>
-      <div class="ed-stats"><span><b>${e.ateliere.length}</b> ateliere</span><span><b>${e.participanti.length}</b> participanți</span><span><b>${new Set(e.ateliere.flatMap((a) => a.program.flatMap((p) => p.speakeri.map((s) => s.persoana)))).size}</b> speakeri</span><span><b>${e.parteneri.length}</b> parteneri</span></div>
+      <div class="ed-stats"><span><b>${e.ateliere.length}</b> ateliere</span><span><b>${e.participanti.length}</b> participanți</span><span><b>${new Set(e.ateliere.flatMap((a) => a.program.flatMap((p) => p.speakeri.map((s) => s.persoana)))).size}</b> speakeri</span><span><b>${editionPartners(D, e).length}</b> parteneri</span></div>
     </a>`).join('')}</div>`;
 }
 const ED_SUBS = [['program', 'Program'], ['ateliere', 'Ateliere'], ['participanti', 'Participanți'], ['speakeri', 'Traineri & speakeri'], ['parteneri', 'Parteneri']];
@@ -154,7 +167,7 @@ function editionSpeakers(e) {
 }
 function editionPage(D, e, sub) {
   const sp = editionSpeakers(e);
-  const counts = { program: null, ateliere: e.ateliere.length, participanti: e.participanti.length, speakeri: sp.length, parteneri: e.parteneri.length };
+  const counts = { program: null, ateliere: e.ateliere.length, participanti: e.participanti.length, speakeri: sp.length, parteneri: editionPartners(D, e).length };
   const obs = D.observatii.filter((o) => o.editie === e.id);
   const order = edOrder(D), i = order.findIndex((x) => x.id === e.id);
   const prev = order[i - 1], next = order[i + 1];
@@ -181,16 +194,16 @@ function editionPage(D, e, sub) {
     body = e.ateliere.map(workshopHtml).join('');
   } else if (sub === 'participanti') {
     const total = e.participanti.reduce((n, p) => n + (p.cifra_afaceri || 0), 0);
-    const comps = new Set(e.participanti.map((p) => p.companie).filter(Boolean));
+    const comps = new Set(e.participanti.map((p) => p.organizatie).filter(Boolean));
     body = e.participanti.length ? `
       <div class="kpis"><div class="kpi"><b>${e.participanti.length}</b><span>participanți</span></div><div class="kpi"><b>${comps.size}</b><span>companii</span></div>
         <div class="kpi"><b>${leiShort(median(e.participanti.map((p) => p.cifra_afaceri)))}</b><span>cifră de afaceri mediană</span></div>
         <div class="kpi"><b>${median(e.participanti.map((p) => p.angajati)) ?? '—'}</b><span>angajați (median)</span></div></div>
       ${e.participanti_titlu ? `<p class="lead">„${esc(e.participanti_titlu)}”</p>` : ''}
       <div class="tbl"><table><thead><tr><th>Participant</th><th>Companie</th><th>Sector</th><th class="num">Cifră de afaceri</th><th class="num">Angajați</th></tr></thead><tbody>
-      ${e.participanti.slice().sort((a, b) => (b.cifra_afaceri || 0) - (a.cifra_afaceri || 0)).map((p) => { const c = IX.C[p.companie]; return `<tr>
+      ${e.participanti.slice().sort((a, b) => (b.cifra_afaceri || 0) - (a.cifra_afaceri || 0)).map((p) => { const c = IX.O[p.organizatie]; return `<tr>
         <td>${personChip(p.persoana)}</td>
-        <td>${c ? `<a href="/manage/entitati/companii/c/${c.id}">${esc(c.nume)}</a>${c.incert ? ' <span class="tag warn" title="numele nu apare explicit pe site">dedus</span>' : ''}` : '<span class="muted">—</span>'}</td>
+        <td>${c ? `${orgLink(c.id)}${c.incert ? ' <span class="tag warn" title="numele nu apare explicit pe site">dedus</span>' : ''}${c.tipuri.length > 1 ? ' <span class="tag" title="are și alte roluri în program">+ roluri</span>' : ''}` : '<span class="muted">—</span>'}</td>
         <td class="small">${esc(c?.sector || '')}</td><td class="num">${lei(p.cifra_afaceri)}</td><td class="num">${p.angajati ?? '—'}</td></tr>`; }).join('')}
       </tbody></table></div><p class="muted small">Suma cifrelor de afaceri declarate: ${lei(total)} (companiile cu mai mulți participanți sunt numărate o dată pentru fiecare).</p>`
       : '<div class="card empty"><b>Fără participanți pe pagină</b>Ediția nu are încă lista de participanți publicată.</div>';
@@ -201,10 +214,13 @@ function editionPage(D, e, sub) {
       <div class="small muted">${x.ateliere.map((a) => `#${a.nr} ${esc(a.titlu)}`).join('<br>')}</div>
       <div class="small">${plural(p.editii.length, 'ediție', 'ediții')} în total: ${p.editii.map(edLink).join(', ')}</div></div></div>`; }).join('')}</div>`;
   } else if (sub === 'parteneri') {
-    body = `<div class="tbl"><table><thead><tr><th>Partener</th><th>Rol în ediție</th><th>Ateliere</th><th>Alte ediții</th></tr></thead><tbody>
-      ${e.parteneri.map((x) => { const p = IX.PA[x.partener]; const at = p.roluri.filter((r) => r.editie === e.id && r.atelier).map((r) => r.atelier); const other = [...new Set(p.roluri.map((r) => r.editie))].filter((id) => id !== e.id); return `<tr>
-        <td>${partnerLogo(p.id)} <b>${esc(p.nume)}</b><div class="small muted">${esc(p.tip)}</div></td><td>${tags(x.rol, x.rol === 'sponsor atelier' ? 'grey' : '')}</td>
-        <td class="small">${at.map((n) => { const a = e.ateliere.find((w) => w.nr === n); return `#${n} ${esc(a?.titlu || '')}`; }).join('<br>')}</td><td class="small">${other.map(edLink).join(', ')}</td></tr>`; }).join('')}
+    const part = editionPartners(D, e);
+    body = `<div class="tbl"><table><thead><tr><th>Organizație</th><th>Rol în ediție</th><th>Ateliere</th><th>Alte roluri în program</th></tr></thead><tbody>
+      ${part.map(({ o, roluri }) => { const at = [...new Set(roluri.filter((r) => r.atelier && r.rol === 'sponsor atelier').map((r) => r.atelier))]; return `<tr>
+        <td>${partnerLogo(o.id)} <b>${orgLink(o.id)}</b><div class="small muted">${esc(o.tip)}</div></td>
+        <td>${[...new Set(roluri.map((r) => r.rol))].map((r) => tags(r, r === 'sponsor atelier' ? 'grey' : r === 'gazdă' ? 'warn' : '')).join('')}</td>
+        <td class="small">${at.map((n) => { const a = e.ateliere.find((w) => w.nr === n); return `#${n} ${esc(a?.titlu || '')}`; }).join('<br>')}</td>
+        <td class="small">${orgTags({ tipuri: o.tipuri.filter((t) => !roluri.some((r) => (ROL_TIP_UI[r.rol] || 'partener') === t)) })}</td></tr>`; }).join('')}
       </tbody></table></div>
       ${e.ateliere.some((a) => a.cauta_sponsor) ? `<p class="muted small" style="margin-top:10px">Ateliere care încă caută sponsor: ${e.ateliere.filter((a) => a.cauta_sponsor).map((a) => `#${a.nr} ${esc(a.titlu)}`).join(' · ')}</p>` : ''}`;
   }
@@ -224,11 +240,11 @@ function workshopHtml(a) {
     <div class="ws-nr">${a.nr}</div>
     <div>
       <h3>${esc(a.titlu)}</h3>
-      <div class="ws-meta"><span>${a.data ? fmtDay(a.data) : '<i>fără dată</i>'}</span><span>${esc(a.locatie || '—')}</span><span class="tag ${a.format === 'full-day' ? '' : 'grey'}">${esc(a.format)}</span>
+      <div class="ws-meta"><span>${a.data ? fmtDay(a.data) : '<i>fără dată</i>'}</span><span>${a.loc && IX.L[a.loc] ? `<a href="${orgHref(IX.L[a.loc].organizatie)}">${esc(a.locatie)}</a>` : esc(a.locatie || '—')}</span><span class="tag ${a.format === 'full-day' ? '' : 'grey'}">${esc(a.format)}</span>
         ${t ? `<a href="/manage/entitati/teme/${a.format === 'seară' ? 'seara' : a.format}">temă: ${esc(t.nume)}</a>` : '<span class="tag warn">fără temă</span>'}
-        ${a.sponsor ? `<span>sponsor: ${partnerLogo(a.sponsor) || esc(partnerName(a.sponsor))}</span>` : a.cauta_sponsor ? '<span class="tag grey">caută sponsor</span>' : ''}</div>
+        ${a.sponsor ? `<span>sponsor: <a href="${orgHref(a.sponsor)}">${partnerLogo(a.sponsor) || esc(partnerName(a.sponsor))}</a></span>` : a.cauta_sponsor ? '<span class="tag grey">caută sponsor</span>' : ''}</div>
       ${a.descriere ? `<p class="ws-desc">${esc(a.descriere)}</p>` : ''}
-      ${a.program.length ? `<div class="slots">${a.program.map((p) => `<div class="slot"><time>${esc(p.interval)}</time><div>${esc(p.activitate || '')} ${p.speakeri.map((s) => personChip(s.persoana, s.companie)).join('')}</div></div>`).join('')}</div>` : ''}
+      ${a.program.length ? `<div class="slots">${a.program.map((p) => `<div class="slot"><time>${esc(p.interval)}</time><div>${esc(p.activitate || '')} ${p.speakeri.map((s) => personChip(s.persoana, IX.O[s.organizatie]?.nume || s.companie)).join('')}</div></div>`).join('')}</div>` : ''}
     </div></div>`;
 }
 function editionTimeline(e) {
@@ -282,58 +298,107 @@ function personPage(D, id) {
     <div class="grid2"><div class="card"><dl class="kv">
       ${kvRow('Roluri', tags(p.tipuri.map((r) => ROLE_LABEL[r] || r), ''))}
       ${kvRow('Variante de nume pe site', p.variante.length ? tags(p.variante, 'warn') : '')}
-      ${kvRow('Afilieri', esc(p.companii.join(' / ')))}
+      ${kvRow('Organizații', p.organizatii.map(orgLink).join(' · '))}
+      ${kvRow('Funcții', esc(p.functii.join(' · ')))}
+      ${kvRow('Afilieri afișate pe site', p.companii.length > 1 ? tags(p.companii, 'grey') : '')}
       ${kvRow('Ediții', p.editii.map(edLink).join(', '))}
       ${kvRow('LinkedIn', p.linkedin ? link(p.linkedin, p.linkedin.replace(/^https?:\/\/(www\.)?/, '')) : '')}
       ${kvRow('În echipă', team ? `${esc(team.rol)}<div class="muted small">${esc(team.email || '')}${team.telefon ? ' · ' + esc(team.telefon) : ''}</div>` : '')}
     </dl></div>
-    ${part.length ? `<div class="card"><h3>Participări</h3>${part.map(({ e, x }) => `<p>${edLink(e.id)} · ${IX.C[x.companie] ? `<a href="/manage/entitati/companii/c/${x.companie}">${esc(IX.C[x.companie].nume)}</a>` : '—'} · ${lei(x.cifra_afaceri)} · ${x.angajati ?? '—'} angajați</p><p class="small">${esc(x.descriere || '')}</p>`).join('')}</div>` : ''}
+    ${part.length ? `<div class="card"><h3>Participări</h3>${part.map(({ e, x }) => `<p>${edLink(e.id)} · ${orgLink(x.organizatie)} ·${lei(x.cifra_afaceri)} · ${x.angajati ?? '—'} angajați</p><p class="small">${esc(x.descriere || '')}</p>`).join('')}</div>` : ''}
     </div>
     ${p.aparitii.length ? `<section style="margin-top:18px"><h2>Apariții în ateliere <span class="n">${p.aparitii.length}</span></h2><div class="tbl"><table><thead><tr><th>Ediție</th><th>#</th><th>Atelier</th><th>Temă</th><th>Rol</th><th>Afiliere afișată</th><th>Data</th></tr></thead><tbody>
-      ${p.aparitii.map((a) => `<tr><td>${edLink(a.editie)}</td><td>${a.atelier}</td><td>${esc(a.titlu)}</td><td class="small">${esc(IX.T[a.tema]?.nume || '—')}</td><td>${tags(ROLE_LABEL[a.rol] || a.rol, '')}</td><td class="small">${esc(a.companie || '')}</td><td class="small">${fmtDay(a.data)}</td></tr>`).join('')}
+      ${p.aparitii.map((a) => `<tr><td>${edLink(a.editie)}</td><td>${a.atelier}</td><td>${esc(a.titlu)}</td><td class="small">${esc(IX.T[a.tema]?.nume || '—')}</td><td>${tags(ROLE_LABEL[a.rol] || a.rol, '')}</td><td class="small">${a.organizatie ? orgLink(a.organizatie) : esc(a.companie || '')}</td><td class="small">${fmtDay(a.data)}</td></tr>`).join('')}
     </tbody></table></div></section>` : ''}`;
 }
 
-/* ---------- COMPANII ---------- */
-function companiesList(list) {
-  return `<div class="tbl"><table><thead><tr><th>Companie</th><th>Ediții</th><th>Participanți</th><th class="num">Cifră de afaceri (ultima)</th><th class="num">Angajați</th></tr></thead><tbody>
+/* ---------- ORGANIZAȚII ---------- */
+const last = (c) => c.participari[c.participari.length - 1];
+// rândul cu parcursul pe ediții: o bulină pe fiecare ediție, cu rolurile din ea
+function orgJourney(D, o) {
+  const eds = edOrder(D);
+  return `<div class="journey">${eds.map((e) => {
+    const p = o.parcurs.find((x) => x.editie === e.id);
+    const tip = p ? [...new Set(p.roluri.map((r) => ROL_TIP_UI[r] || 'partener'))] : [];
+    return `<span class="j-step ${p ? 'on' : ''}" title="${esc(edLabel(e))}${p ? ': ' + esc(p.roluri.join(', ')) : ''}">
+      <i class="${tip.map((t) => 'j-' + t.replace('ă', 'a')).join(' ')}"></i><small>${esc(edLabel(e))}</small></span>`;
+  }).join('')}</div>`;
+}
+const JOURNEY_LEGEND = `<div class="j-legend small muted">${ORG_TIP.map(([t, l]) => `<span><i class="j-${t.replace('ă', 'a')}"></i>${l}</span>`).join('')}</div>`;
+function orgCards(list) {
+  const D = store.entitati;
+  return `${JOURNEY_LEGEND}<div class="pgrid">${list.slice().sort((a, b) => b.tipuri.length - a.tipuri.length || b.editii.length - a.editii.length).map((o) => `<div class="card" data-s>
+    <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><h3><a href="${orgHref(o.id)}">${esc(o.nume)}</a></h3>${partnerLogo(o.id)}</div>
+    <div>${orgTags(o)}</div>
+    ${o.ciclu ? `<p><b>Alumni ${esc(edShort(o.ciclu.alumni_din))}</b>, apoi ${esc(o.ciclu.apoi.join(', '))}</p>` : ''}
+    ${orgJourney(D, o)}
+  </div>`).join('')}</div>`;
+}
+function alumniTable(D, list) {
+  return `<div class="tbl"><table><thead><tr><th>Companie</th><th>Sector</th><th>Ediții</th><th>Participanți</th><th class="num">Cifră de afaceri (ultima)</th><th class="num">Angajați</th></tr></thead><tbody>
     ${list.slice().sort((a, b) => (last(b)?.cifra_afaceri || 0) - (last(a)?.cifra_afaceri || 0)).map((c) => `<tr data-s>
-      <td><a href="/manage/entitati/companii/c/${c.id}"><b>${esc(c.nume)}</b></a>${c.incert ? ' <span class="tag warn">dedus</span>' : ''}</td>
-      <td class="small">${c.editii.map(edLink).join(', ')}</td>
+      <td><a href="${orgHref(c.id)}"><b>${esc(c.nume)}</b></a>${c.incert ? ' <span class="tag warn">dedus</span>' : ''}${c.tipuri.length > 1 ? ' <span class="tag">+ roluri</span>' : ''}</td>
+      <td class="small">${esc(c.sector || '')}</td>
+      <td class="small">${[...new Set(c.participari.map((p) => p.editie))].map(edLink).join(', ')}</td>
       <td>${[...new Set(c.participari.map((p) => p.persoana))].map((id) => personChip(id)).join('')}</td>
       <td class="num">${lei(last(c)?.cifra_afaceri)}</td><td class="num">${last(c)?.angajati ?? '—'}</td></tr>`).join('')}
   </tbody></table></div>`;
 }
-const last = (c) => c.participari[c.participari.length - 1];
-function companyPage(D, id) {
-  const c = IX.C[id];
-  if (!c) return '<div class="card empty"><b>Companie inexistentă</b></div>';
-  const asPartner = D.parteneri.find((p) => p.nume.toLowerCase() === c.nume.toLowerCase());
-  return `
-    <div class="head"><div><div class="crumb"><a href="/manage/entitati/companii/sec_${sectorSlug(c.sector)}">← ${esc(c.sector)}</a> · entități › companii › ${esc(c.nume)}</div>
-      <h1><span class="cat-ico">${icon('companii')}</span>${esc(c.nume)}</h1></div></div>
-    <div class="card"><dl class="kv">
-      ${kvRow('Sector', esc(c.sector))}
-      ${kvRow('Nume', c.incert ? `${esc(c.nume)} ${tags('dedus din descriere', 'warn')}` : esc(c.nume))}
-      ${kvRow('Notă', esc(c.nota))}
-      ${kvRow('Descriere (de pe site)', esc(c.descriere))}
-      ${kvRow('Și partener', asPartner ? `<a href="/manage/entitati/parteneri/${asPartner.roluri.some((r) => r.rol !== 'sponsor atelier') ? 'strategici' : 'sponsori'}">${esc(asPartner.nume)}</a> · ${asPartner.roluri.map((r) => `${edShort(r.editie)} ${r.rol}`).join(', ')}` : '')}
-    </dl></div>
-    <section style="margin-top:18px"><h2>Participări <span class="n">${c.participari.length}</span></h2><div class="tbl"><table><thead><tr><th>Ediție</th><th>Participant</th><th class="num">Cifră de afaceri</th><th class="num">Angajați</th></tr></thead><tbody>
-      ${c.participari.map((p) => `<tr><td>${edLink(p.editie)}</td><td>${personChip(p.persoana)}</td><td class="num">${lei(p.cifra_afaceri)}</td><td class="num">${p.angajati ?? '—'}</td></tr>`).join('')}
-    </tbody></table></div></section>`;
+function partnersList(list) {
+  const nonPart = (o) => o.roluri.filter((r) => r.rol !== 'participant' && r.rol !== 'speaker');
+  return `<div class="tbl"><table><thead><tr><th>Organizație</th><th>Roluri</th><th>Ediții ca partener</th><th class="num">Ateliere sponsorizate</th></tr></thead><tbody>
+    ${list.slice().sort((a, b) => nonPart(b).length - nonPart(a).length).map((o) => `<tr data-s>
+      <td>${partnerLogo(o.id)} <a href="${orgHref(o.id)}"><b>${esc(o.nume)}</b></a><div class="small muted">${esc(o.tip)}</div></td>
+      <td>${orgTags(o)}</td>
+      <td class="small">${[...new Set(nonPart(o).map((r) => r.editie))].map(edLink).join(', ')}</td>
+      <td class="num">${o.roluri.filter((r) => r.rol === 'sponsor atelier').length || '—'}</td></tr>`).join('')}
+  </tbody></table></div>`;
 }
-
-/* ---------- PARTENERI ---------- */
-function partnersList(list, filter) {
-  return list.slice().sort((a, b) => b.roluri.filter(filter).length - a.roluri.filter(filter).length).map((p) => {
-    const R = p.roluri.filter(filter);
-    return `<details class="item" data-s><summary><span class="name">${esc(p.nume)}</span><span>${partnerLogo(p.id)} ${tags(p.tip, 'grey')} <span class="tag">${plural(new Set(R.map((r) => r.editie)).size, 'ediție', 'ediții')}</span></span></summary>
-      <div class="item-body"><dl class="kv" style="margin-top:12px">
-        ${kvRow('Site', link(p.url, (p.url || '').replace(/^https?:\/\/(www\.)?/, '')))}
-        ${kvRow('Roluri', R.map((r) => { const a = r.atelier && IX.ED[r.editie]?.ateliere.find((w) => w.nr === r.atelier); return `<div>${edLink(r.editie)} · ${esc(r.rol)}${a ? ` · #${a.nr} ${esc(a.titlu)}` : ''}</div>`; }).join(''))}
-      </dl></div></details>`;
-  }).join('');
+function speakerOrgs(list) {
+  return `<div class="tbl"><table><thead><tr><th>Organizație</th><th>Speakeri</th><th>Ediții</th><th>Alte roluri</th></tr></thead><tbody>
+    ${list.slice().sort((a, b) => b.roluri.filter((r) => r.rol === 'speaker').length - a.roluri.filter((r) => r.rol === 'speaker').length).map((o) => {
+      const sp = o.roluri.filter((r) => r.rol === 'speaker');
+      return `<tr data-s><td><a href="${orgHref(o.id)}"><b>${esc(o.nume)}</b></a></td>
+        <td>${[...new Set(sp.map((r) => r.persoana))].map((id) => personChip(id)).join('')}</td>
+        <td class="small">${[...new Set(sp.map((r) => r.editie))].map(edLink).join(', ')}</td>
+        <td>${orgTags({ tipuri: o.tipuri.filter((t) => t !== 'speaker') })}</td></tr>`;
+    }).join('')}
+  </tbody></table></div>`;
+}
+function locationsList(D) {
+  return `<div class="pgrid">${D.locatii.map((l) => `<div class="card" data-s>
+    <h3>${esc(l.nume)}</h3><div class="small muted">${esc(l.oras)} · ${esc(l.tip)}</div>
+    <p>Gazdă: ${orgLink(l.organizatie)}</p>
+    <p>${plural(l.ateliere.length, 'atelier', 'ateliere')} · ${l.editii.map(edLink).join(', ')}</p>
+  </div>`).join('')}</div>`;
+}
+function orgPage(D, id) {
+  const o = IX.O[id];
+  if (!o) return '<div class="card empty"><b>Organizație inexistentă</b></div>';
+  const atTitle = (r) => { const a = r.atelier && IX.ED[r.editie]?.ateliere.find((w) => w.nr === r.atelier); return a ? `#${a.nr} ${a.titlu}` : ''; };
+  const loc = D.locatii.filter((l) => l.organizatie === id);
+  return `
+    <div class="head"><div><div class="crumb"><a href="/manage/entitati/organizatii">← Organizații</a> · entități › organizații › ${esc(o.nume)}</div>
+      <h1><span class="cat-ico">${icon('companii')}</span>${esc(o.nume)} ${partnerLogo(o.id)}</h1></div></div>
+    <div class="grid2"><div class="card"><dl class="kv">
+      ${kvRow('Roluri în program', orgTags(o))}
+      ${kvRow('Tip', esc(o.tip))}
+      ${kvRow('Sector', esc(o.sector))}
+      ${kvRow('Nume', o.incert ? `${esc(o.nume)} ${tags('dedus din descriere', 'warn')}` : '')}
+      ${kvRow('Notă', esc(o.nota))}
+      ${kvRow('Site', o.url ? link(o.url, o.url.replace(/^https?:\/\/(www\.)?/, '')) : '')}
+      ${kvRow('Locații găzduite', loc.map((l) => `${esc(l.nume)} · ${plural(l.ateliere.length, 'atelier', 'ateliere')}`).join('<br>'))}
+      ${kvRow('Oameni', o.oameni.map((pid) => personChip(pid)).join(''))}
+      ${kvRow('Descriere (de pe site)', esc(o.descriere))}
+    </dl></div>
+    <div class="card"><h3>Parcurs pe ediții</h3>${o.ciclu ? `<p><b>Alumni ${esc(edShort(o.ciclu.alumni_din))}</b>, apoi ${esc(o.ciclu.apoi.join(', '))}.</p>` : ''}
+      ${orgJourney(D, o)}${JOURNEY_LEGEND}</div></div>
+    <section style="margin-top:18px"><h2>Toate rolurile <span class="n">${o.roluri.length}</span></h2><div class="tbl"><table><thead><tr><th>Ediție</th><th>Rol</th><th>Atelier</th><th>Persoană</th><th class="num">Cifră de afaceri</th><th class="num">Angajați</th></tr></thead><tbody>
+      ${o.roluri.map((r) => { const p = r.rol === 'participant' && o.participari.find((x) => x.editie === r.editie && x.persoana === r.persoana); return `<tr>
+        <td>${edLink(r.editie)}</td><td>${tags(r.rol, r.rol === 'participant' ? 'ok' : r.rol === 'gazdă' ? 'warn' : r.rol === 'speaker' ? 'grey' : '')}</td>
+        <td class="small">${esc(atTitle(r))}</td><td>${r.persoana ? personChip(r.persoana) : ''}</td>
+        <td class="num">${p ? lei(p.cifra_afaceri) : ''}</td><td class="num">${p ? p.angajati ?? '—' : ''}</td></tr>`; }).join('')}
+    </tbody></table></div></section>`;
 }
 
 /* ---------- CURRICULUM ---------- */
@@ -389,8 +454,8 @@ function searchIndex(D) {
     ...D.editii.map((e) => ({ t: 'Ediție', n: `Antreprenoria ${edLabel(e)}`, d: e.perioada, u: `/manage/entitati/editii/${e.id}` })),
     ...D.editii.flatMap((e) => e.ateliere.map((a) => ({ t: 'Atelier', n: a.titlu, d: `${edLabel(e)} · #${a.nr} · ${a.data ? fmtDay(a.data) : ''}`, u: `/manage/entitati/editii/${e.id}/ateliere` }))),
     ...D.oameni.map((p) => ({ t: ROLE_LABEL[p.tipuri[0]] || 'Persoană', n: p.nume, d: `${p.companii.join(' / ')} · ${p.editii.map(edShort).join(', ')}`, x: p.variante.join(' '), u: `/manage/entitati/oameni/p/${p.id}` })),
-    ...D.companii.map((c) => ({ t: 'Companie', n: c.nume, d: `${c.sector} · ${c.editii.map(edShort).join(', ')}`, x: c.descriere, u: `/manage/entitati/companii/c/${c.id}` })),
-    ...D.parteneri.map((p) => ({ t: 'Partener', n: p.nume, d: p.tip, u: `/manage/entitati/parteneri/${p.roluri.some((r) => r.rol !== 'sponsor atelier') ? 'strategici' : 'sponsori'}` })),
+    ...D.organizatii.map((o) => ({ t: 'Organizație', n: o.nume, d: `${ORG_TIP.filter(([t]) => o.tipuri.includes(t)).map(([, l]) => l).join(', ')} · ${o.sector || o.tip} · ${o.editii.map(edShort).join(', ')}`, x: o.descriere, u: orgHref(o.id) })),
+    ...D.locatii.map((l) => ({ t: 'Locație', n: l.nume, d: `${l.oras} · ${l.editii.map(edShort).join(', ')}`, u: orgHref(l.organizatie) })),
     ...D.teme.map((t) => ({ t: 'Temă', n: t.nume, d: t.titluri.join(' · '), u: `/manage/entitati/teme/${t.format === 'seară' ? 'seara' : t.format}` })),
   ];
 }
@@ -418,18 +483,18 @@ routes.entitati = function renderEntitati() {
   const [catId, grpId, sub] = location.pathname.replace(/^\/manage\/entitati\/?/, '').split('/');
   const cat = CATS.find((c) => c.id === catId);
   const G = (c, g) => groupInfo(D, c.id, g);
-  const total = (c) => (c.audit ? 0 : c.id === 'editii' ? c.groups.length : c.id === 'oameni' ? D.oameni.length : c.id === 'parteneri' ? D.parteneri.length : c.groups.reduce((n, g) => n + (G(c, g)?.count || 0), 0));
+  const total = (c) => (c.audit ? 0 : c.id === 'editii' ? c.groups.length : c.id === 'oameni' ? D.oameni.length : c.id === 'organizatii' ? D.organizatii.length : c.groups.reduce((n, g) => n + (G(c, g)?.count || 0), 0));
 
   // pagini de detaliu
   if (cat?.id === 'oameni' && grpId === 'p') { $('#view').innerHTML = personPage(D, sub); return; }
-  if (cat?.id === 'companii' && grpId === 'c') { $('#view').innerHTML = companyPage(D, sub); return; }
+  if (cat?.id === 'organizatii' && grpId === 'o') { $('#view').innerHTML = orgPage(D, sub); return; }
   if (cat?.id === 'editii' && IX.ED[grpId]) { $('#view').innerHTML = editionPage(D, IX.ED[grpId], ED_SUBS.some(([s]) => s === sub) ? sub : 'program'); return; }
 
   if (!cat) {
     $('#view').innerHTML = `
       <div class="head">
         <div><div class="crumb">manage › entități · sursa: ${link(D.meta.sursa, 'antreprenoria.ro')} (${esc(D.meta.extras_la)}) · ${D.meta.pagini} pagini citite</div><h1>Entitățile Antreprenoria</h1></div>
-        <input type="search" id="q" placeholder="Caută oameni, companii, ateliere…" aria-label="Caută în entități">
+        <input type="search" id="q" placeholder="Caută oameni, organizații, ateliere…" aria-label="Caută în entități">
         <button id="exp">Export JSON</button>
       </div>
       <div class="cats" id="cats">${CATS.map((c) => `
@@ -473,7 +538,7 @@ routes.entitati = function renderEntitati() {
       <h1><span class="cat-ico">${icon(cat.icon)}</span>${esc(x.title)}${x.count != null ? ` <span class="muted" style="font-weight:400;font-size:16px">${x.count}</span>` : ''}</h1></div>
       <input type="search" id="qg" placeholder="Filtrează…" aria-label="Filtrează">
     </div>
-    ${cat.id !== 'companii' ? `<p class="lead">${esc(x.desc)}</p>` : ''}
+    <p class="lead">${esc(x.desc)}</p>
     ${multi ? `<div class="pills">${cat.groups.map((g) => { const y = G(cat, g); return `<a href="/manage/entitati/${cat.id}/${g}" class="${g === grp ? 'on' : ''}">${esc(y.title)}${y.count != null ? ` · ${y.count}` : ''}</a>`; }).join('')}</div>` : ''}
     <section id="grp">${x.html()}</section>`;
   $('#qg').addEventListener('input', (e) => filterIn($('#grp'), e.target.value.trim()));

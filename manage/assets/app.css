@@ -256,3 +256,21 @@ details.obs-done > summary { cursor: pointer; font-weight: 600; padding: 6px 0; 
   .slot, .tl-row { grid-template-columns: 1fr; }
 }
 @media (prefers-reduced-motion: reduce) { .cat, .toast { transition: none; } }
+
+/* organizații: parcursul pe ediții */
+.journey { display: flex; gap: 2px; margin-top: 10px; }
+.j-step { display: flex; flex-direction: column; align-items: center; gap: 2px; flex: 1; min-width: 0; }
+.j-step i { width: 18px; height: 18px; border-radius: 50%; border: 1.5px dashed var(--line); display: block; }
+.j-step.on i { border: 0; background: var(--muted); }
+.j-step small { font-size: 10px; color: var(--muted); white-space: nowrap; }
+.j-step.on small { color: var(--ink); font-weight: 600; }
+.j-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 8px 0 10px; }
+.j-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.j-legend i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+/* o bulină poate avea mai multe roluri: prima culoare câștigă, în ordinea importanței */
+.j-speaker { background: #9aa2b1 !important; }
+.j-gazda { background: var(--yellow) !important; }
+.j-sponsor { background: var(--accent) !important; }
+.j-partener, .j-organizator { background: var(--side) !important; }
+.j-alumni { background: var(--ok) !important; }
+.j-step i.j-alumni:is(.j-sponsor, .j-partener, .j-gazda, .j-speaker) { background: conic-gradient(var(--ok) 0 50%, var(--accent) 0) !important; }
