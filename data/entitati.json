@@ -2,7 +2,7 @@
   "meta": {
     "sursa": "https://antreprenoria.ro",
     "extras_la": "2026-10-08",
-    "generat": "2026-10-08T11:50:39.838Z",
+    "generat": "2026-10-08T15:07:08.232Z",
     "pagini": 11,
     "metoda": "paginile edițiilor (/antreprenoria-16 … /antreprenoria-22, /antreprenoria-cluj) + /despre-noi + /contact; companii, organizații, aliasuri, parteneri și teme curate manual în data/curare/"
   },
@@ -5382,8 +5382,8 @@
         {
           "id": "bucuresti-22-a5",
           "nr": 5,
-          "data": "2025-10-28",
-          "data_text": "28 OCTOMBRIE 2025",
+          "data": "2026-10-28",
+          "data_text": "28 OCTOMBRIE 2026",
           "locatie": "Sediul Zitec, București",
           "loc": "sediul-zitec",
           "titlu": "Atelier de Seară - Finanțare",
@@ -5415,7 +5415,8 @@
               "activitate": "Networking",
               "speakeri": []
             }
-          ]
+          ],
+          "corectat": "Pe antreprenoria.ro apare 28 octombrie 2025; anul corect e 2026 (confirmat 8 octombrie 2026)."
         },
         {
           "id": "bucuresti-22-a6",

@@ -1,0 +1,6 @@
+{
+  "_despre": "Corecturi confirmate pentru greșeli de pe site-ul actual. Se aplică la npm run build, după ce observațiile notează greșeala de pe sursă.",
+  "date_ateliere": [
+    { "editie": "bucuresti-22", "atelier": 5, "data": "2026-10-28", "data_text": "28 OCTOMBRIE 2026", "nota": "Pe antreprenoria.ro apare 28 octombrie 2025; anul corect e 2026 (confirmat 8 octombrie 2026)." }
+  ]
+}

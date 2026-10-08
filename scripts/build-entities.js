@@ -11,6 +11,7 @@ const curCompanii = readJson('curare/companii.json');
 const curParteneri = readJson('curare/parteneri.json');
 const curTeme = readJson('curare/teme.json');
 const curOrg = readJson('curare/organizatii.json');
+const curCorectii = readJson('curare/corectii.json') || { date_ateliere: [] };
 if (!brut) throw new Error('Rulează întâi: npm run extract');
 
 const plain = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
@@ -187,6 +188,11 @@ const editii = brut.editii.map((e) => {
   const an = per.an;
   ed.ateliere.filter((a) => a.data && an && Number(a.data.slice(0, 4)) !== an)
     .forEach((a) => obs('critic', 'Conținut', `${ed.id}, atelierul ${a.nr} („${a.titlu}”): data „${a.data_text}” nu e în anul ediției (${an}).`, { editie: ed.id, url: e.url }));
+  // corecturile confirmate (data/curare/corectii.json) se aplică după ce observația a notat greșeala de pe sursă
+  curCorectii.date_ateliere.filter((c) => c.editie === ed.id).forEach((c) => {
+    const a = ed.ateliere.find((x) => x.nr === c.atelier);
+    if (a) Object.assign(a, { data: c.data, data_text: c.data_text, corectat: c.nota });
+  });
   const nedatate = ed.ateliere.filter((a) => !a.data).length;
   if (nedatate) obs(nedatate === ed.ateliere.length ? 'mediu' : 'minor', 'Conținut', `${ed.id}: ${nedatate} din ${ed.ateliere.length} ateliere nu au dată pe pagină.`, { editie: ed.id, url: e.url });
   const numeric = (re) => Number((e.beneficii.find((b) => re.test(b)) || '').match(/\d+/)?.[0]) || null;
