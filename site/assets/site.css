@@ -740,7 +740,7 @@ html.rv .mz:nth-child(10) { animation-delay: 575ms; }
 [data-brand="a"] .hdr-cta .live { color: var(--h-muted); }
 [data-brand="a"] .menu-btn { background: #3E4149; border-color: var(--h-line); }
 [data-brand="a"] .menu-btn.mc-mono span { background: var(--h-ink); }
-[data-brand="a"] .menu-btn.mc-mono:is([aria-expanded="true"], .on) span { background: #A9C8F5; }
+[data-brand="a"] .menu-btn.mc-mono:is([aria-expanded="true"], .on) span { background: var(--h-ink); }
 @media (min-width: 1181px) {
   [data-brand="a"] .mm-trigger { color: var(--h-ink); }
   [data-brand="a"] .mm-trigger:hover, [data-brand="a"] .mm-item.open .mm-trigger { background: rgba(255, 255, 255, .1); color: #fff; }
