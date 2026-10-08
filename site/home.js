@@ -140,6 +140,38 @@ function agendaCard(F) {
   </div>`;
 }
 
+// mozaicul din hero: portrete în forme geometrice (aceleași cercuri ca iconul de meniu), care se schimbă pe rând.
+// Rezerva de portrete: antreprenorii invitați și trainerii, apoi alumni din edițiile recente, amestecați.
+function mosaic(ctx, F) {
+  const { D, O } = ctx;
+  const edNr = Object.fromEntries(D.editii.map((e) => [e.id, edLabel(e)]));
+  const org = (p) => O[p.organizatii[0]]?.nume || p.companii[0] || '';
+  const speakers = D.oameni.filter((p) => p.imagine && p.aparitii.length && !p.tipuri.includes('echipă'))
+    .sort((a, b) => b.editii.length - a.editii.length || b.aparitii.length - a.aparitii.length).slice(0, 24)
+    .map((p) => ({ n: p.nume, r: (p.tipuri.includes('trainer') ? 'Trainer' : 'Antreprenor invitat') + (org(p) ? ' · ' + org(p) : ''), i: p.imagine, s: 1 }));
+  const recent = (id) => Number(String(id).split('-').pop()) || 0;
+  const alumni = D.oameni.filter((p) => p.imagine && p.tipuri.includes('participant'))
+    .sort((a, b) => Math.max(...b.editii.map(recent)) - Math.max(...a.editii.map(recent))).slice(0, 36)
+    .map((p) => ({ n: p.nume, r: 'Alumni ' + (edNr[p.editii[p.editii.length - 1]] || '') + (org(p) ? ' · ' + org(p) : ''), i: p.imagine }));
+  const pool = [];
+  for (let i = 0; i < Math.max(speakers.length, alumni.length); i++) [speakers[i], alumni[i], alumni[i + 24]].forEach((x) => x && !pool.includes(x) && pool.push(x));
+  // forma și poziția fiecărei piese (grilă 4×4); cele două portrete mari se ating în centru cu colțurile drepte
+  const SLOTS = ['big-a', 'circle', 'stat', 'leaf', 'quarter', 'arch', 'dots', 'big-b', 'circle-sm', 'count'];
+  // portretele mari primesc doar traineri și invitați (pozele lor sunt la rezoluție mare; ale alumni au 200px)
+  const used = new Set();
+  const pick = (big) => { const k = pool.findIndex((p, i) => !used.has(i) && (!big || p.s)); used.add(k); return k; };
+  const tile = (shape) => {
+    if (shape === 'stat') return `<div class="mz mz-stat"><b>${F.maxNr}</b><span>ediții</span></div>`;
+    if (shape === 'count') return `<div class="mz mz-count"><b>${F.participanti}+</b><span>antreprenori</span></div>`;
+    if (shape === 'dots') return '<div class="mz mz-dots" aria-hidden="true"><i></i><i></i><i></i></div>';
+    const big = shape.startsWith('big'), k = pick(big), p = pool[k];
+    return `<figure class="mz mz-${shape}" data-k="${k}"${big ? ' data-big' : ''}><img class="on" src="${esc(p.i)}" alt="" decoding="async"><img alt="" decoding="async" aria-hidden="true"><figcaption><b>${esc(p.n)}</b><span>${esc(p.r)}</span></figcaption></figure>`;
+  };
+  return `<div class="mosaic" role="img" aria-label="Portrete ale antreprenorilor invitați, trainerilor și alumni Antreprenoria" data-pool="${esc(JSON.stringify(pool))}">
+    ${SLOTS.map(tile).join('')}
+  </div>`;
+}
+
 function homeBody(ctx, F) {
   const { D, T } = ctx;
   const maxSector = F.sectors[0][1];
@@ -149,10 +181,15 @@ function homeBody(ctx, F) {
   const nextIn = F.next ? days(today(), F.next.data) : null;
 
   return `<main>
-  <section class="hero hero-v2"><div class="wrap hero-c">
-    <p class="eyebrow">Acceleratorul Romanian Business Leaders · din ${D.program.de_cand}</p>
-    <h1>Crește-ți compania alături de antreprenorii care au făcut-o deja.</h1>
-    <p class="lead">Trei luni de ateliere cu lideri de business români, un grup selectat de colegi antreprenori și acces la comunitatea RBL.</p>
+  <section class="hero hero-v2"><div class="wrap">
+    <div class="hero-split">
+      <div class="hero-copy">
+        <p class="eyebrow">Acceleratorul Romanian Business Leaders · din ${D.program.de_cand}</p>
+        <h1>Crește-ți compania alături de antreprenorii care au făcut-o deja.</h1>
+        <p class="lead">Trei luni de ateliere cu lideri de business români, un grup selectat de colegi antreprenori și acces la comunitatea RBL.</p>
+      </div>
+      ${mosaic(ctx, F)}
+    </div>
     ${askHtml(ctx, F)}
   </div></section>
 

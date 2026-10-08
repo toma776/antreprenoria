@@ -135,6 +135,40 @@
     });
   }
 
+  // ---------- mozaicul din hero ----------
+  // Din câteva în câteva secunde, un portret ales la întâmplare lasă locul altui antreprenor din rezervă.
+  // Se oprește când mozaicul nu se vede, când tab-ul e în fundal și pentru „reduce motion”.
+  const mosaic = $('.mosaic');
+  if (mosaic && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const pool = JSON.parse(mosaic.dataset.pool || '[]');
+    const tiles = $$('figure.mz', mosaic);
+    let ptr = 0, last = null, visible = true;
+    function swap() {
+      if (!visible || document.hidden || pool.length <= tiles.length) return;
+      const free = tiles.filter((t) => t !== last && !t.matches(':hover'));
+      const t = free[Math.floor(Math.random() * free.length)];
+      if (!t) return;
+      const shown = new Set(tiles.map((x) => Number(x.dataset.k)));
+      // următorul portret nefolosit; piesele mari iau doar poze la rezoluție mare (traineri, invitați)
+      const big = t.hasAttribute('data-big');
+      for (let n = 0; n < pool.length && (shown.has(ptr % pool.length) || (big && !pool[ptr % pool.length].s)); n++) ptr++;
+      const k = ptr++ % pool.length, p = pool[k];
+      if (shown.has(k)) return;
+      const front = $('img.on', t), back = $$('img', t).find((i) => i !== front);
+      t.dataset.k = k;
+      const show = () => {
+        back.classList.add('on'); front.classList.remove('on');
+        $('figcaption b', t).textContent = p.n;
+        $('figcaption span', t).textContent = p.r;
+      };
+      // aceeași poză deja încărcată în stratul din spate nu mai declanșează „load”
+      if (back.src === p.i && back.complete) show(); else { back.onload = show; back.src = p.i; }
+      last = t;
+    }
+    new IntersectionObserver((e) => { visible = e[0].isIntersecting; }).observe(mosaic);
+    setInterval(swap, 2400);
+  }
+
   // „Ești potrivit?”: răspuns imediat, fără date trimise nicăieri
   const quiz = $('#quiz'), out = $('#quiz-out');
   quiz?.addEventListener('submit', (e) => {
