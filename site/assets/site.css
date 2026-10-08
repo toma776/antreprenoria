@@ -360,3 +360,18 @@ p { margin: 0; }
   .nav-foot .live { display: inline-flex; }
 }
 @media (prefers-reduced-motion: reduce) { .mm-panel, .nav { transition: none !important; } }
+
+/* ---------- apariția la scroll (varianta 2: titluri dezvăluite pe rânduri) ----------
+   Active doar cu html.rv (JS pornit, fără „reduce motion”). Fiecare element se animă o singură dată (.in). */
+.rv [data-rv] { opacity: 0; transform: translateY(10px); transition: opacity .6s cubic-bezier(.2, .7, .2, 1), transform .6s cubic-bezier(.2, .7, .2, 1); transition-delay: var(--rv-d, 0ms); }
+.rv [data-rv].in { opacity: 1; transform: none; }
+/* titlurile: fiecare rând urcă dintr-o mască */
+.rv-ln { display: block; overflow: hidden; padding-bottom: .2em; margin-bottom: -.2em; } /* loc pentru virgula de sub ș, ț și pentru g, p, ț */
+.rv-ln > span { display: block; transform: translateY(105%); transition: transform .8s cubic-bezier(.2, .7, .2, 1); transition-delay: var(--rv-d, 0ms); }
+.rv-title.in .rv-ln > span { transform: none; }
+/* barele sectoarelor cresc de la zero, cronologia se desenează de la stânga */
+.rv .sector i::after { width: 0; }
+.rv .sector.in i::after { width: var(--w); }
+.rv .timeline::before { transform: scaleX(0); transform-origin: left; transition: transform 1.2s cubic-bezier(.2, .7, .2, 1); }
+.rv .timeline.in::before { transform: none; }
+.rv .sector i::after { transition-delay: calc(var(--rv-d, 0ms) + 150ms); }

@@ -52,6 +52,67 @@
   const m = new URLSearchParams(location.search).get('meniu'), deschis = items.find((i) => i.dataset.mm === m);
   if (deschis) { if (!desktop.matches) toggleNav(true); openOnly(deschis); }
 
+  // ---------- apariția la scroll ----------
+  // Titlurile urcă rând cu rând dintr-o mască, restul elementelor apar discret, pe rând; cifrele numără până la valoare.
+  // Pornește doar cu html.rv (setat în <head> când „reduce motion” e oprit). Hero-ul nu se animă.
+  if (document.documentElement.classList.contains('rv') && 'IntersectionObserver' in window) {
+    const STEP = 60, MAX_STEPS = 8;
+    const TITLES = '.sec h2, .cycle h3, .cta-in h2';
+    const ITEMS = ['.sec .eyebrow', '.sec .lead', '.sec .link-arrow', '.proof .stat', '.step', '.theme', '.person', '.fig', '.fine', '.sector',
+      '.cycle-copy > p:not(.eyebrow)', '.cycle-item', '.tl', '.checks li', '.quiz', '.logo-cell', '.cta-in p', '.cta-in .hero-actions'].join(', ');
+
+    // întârzierea: poziția elementului printre frații lui animați, ca un grup să apară pe rând
+    const order = new Map();
+    const delay = (el) => { const p = el.parentElement, n = order.get(p) || 0; order.set(p, n + 1); return Math.min(n, MAX_STEPS) * STEP; };
+
+    // împarte un titlu în rânduri (după cum le așază browserul) și învelește fiecare rând într-o mască
+    function splitLines(el) {
+      const original = el.innerHTML;
+      const escH = (t) => t.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
+      el.innerHTML = el.textContent.trim().split(/\s+/).map((w) => `<span class="rv-w">${escH(w)}</span>`).join(' ');
+      const lines = [];
+      el.querySelectorAll('.rv-w').forEach((w) => {
+        const last = lines[lines.length - 1];
+        if (last && Math.abs(last.top - w.offsetTop) < 4) last.words.push(w.innerHTML); else lines.push({ top: w.offsetTop, words: [w.innerHTML] });
+      });
+      el.innerHTML = lines.map((l, i) => `<span class="rv-ln"><span style="--rv-d:${i * 90}ms">${l.words.join(' ')}</span></span>`).join('');
+      el.classList.add('rv-title');
+      // după animație, titlul revine la textul original, ca să se reașeze normal la redimensionare
+      el._restore = () => setTimeout(() => { el.innerHTML = original; el.classList.remove('rv-title'); }, 900 + lines.length * 90);
+    }
+
+    // cifrele numără de la 0 la valoare
+    const fmt = (v, dec) => v.toLocaleString('ro-RO', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+    function count(el) {
+      el.querySelectorAll('[data-count]').forEach((n) => {
+        const to = parseFloat(n.dataset.count), dec = Number(n.dataset.dec || 0), start = performance.now() + 150, dur = 1100;
+        n.textContent = fmt(0, dec);
+        const tick = (now) => {
+          const p = Math.min(1, Math.max(0, (now - start) / dur));
+          n.textContent = fmt(to * (1 - Math.pow(1 - p, 3)), dec);
+          if (p < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      });
+    }
+
+    const io = new IntersectionObserver((entries) => entries.forEach((e) => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      el.classList.add('in');
+      if (el.querySelector('[data-count]')) count(el);
+      el._restore?.();
+      io.unobserve(el);
+    }), { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+
+    // după încărcarea fonturilor, ca rândurile titlurilor să fie măsurate corect
+    (document.fonts?.ready || Promise.resolve()).then(() => {
+      $$(TITLES).forEach((el) => { splitLines(el); io.observe(el); });
+      $$(ITEMS).forEach((el) => { el.setAttribute('data-rv', ''); el.style.setProperty('--rv-d', delay(el) + 'ms'); io.observe(el); });
+      $$('.timeline').forEach((el) => io.observe(el));
+    });
+  }
+
   // „Ești potrivit?”: răspuns imediat, fără date trimise nicăieri
   const quiz = $('#quiz'), out = $('#quiz-out');
   quiz?.addEventListener('submit', (e) => {

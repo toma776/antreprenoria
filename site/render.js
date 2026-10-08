@@ -65,7 +65,8 @@ function head(title, desc, brandId) {
 <title>${esc(title)}</title><meta name="description" content="${esc(desc)}">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="${esc(brand.fontsHref(v))}" rel="stylesheet">
-<link rel="stylesheet" href="/assets/brand.css"><link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/menu-icon.css"><link rel="icon" href="/manage/assets/logo-letter.png">
+<link rel="stylesheet" href="/assets/brand.css"><link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/menu-icon.css">
+<script>/* animațiile de la scroll pornesc doar cu JS și fără „reduce motion” */if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('rv')</script><link rel="icon" href="/manage/assets/logo-letter.png">
 </head><body>`;
 }
 // butonul de meniu pe mobil: iconul (trei cercuri) și modul de culoare vin din data/brand.json › icon_meniu
@@ -133,11 +134,11 @@ ${header(F, ctx)}
   </div></section>
 
   <section class="proof"><div class="wrap proof-in">
-    <div class="stat"><b data-count="${F.ani}">${F.ani}</b><span>ani de program</span></div>
-    <div class="stat"><b data-count="${F.maxNr}">${F.maxNr}</b><span>ediții în București, plus Cluj</span></div>
-    <div class="stat"><b data-count="${F.speakers}">${F.speakers}</b><span>traineri și antreprenori invitați din 2023</span></div>
-    <div class="stat"><b data-count="${F.alumni}">${F.alumni}</b><span>companii în ultimele ${D.editii.filter((e) => e.participanti.length).length} ediții</span></div>
-    <div class="stat"><b>${milLei(F.medianCa)}<em> mil. lei</em></b><span>cifra de afaceri mediană a participanților</span></div>
+    <div class="stat"><b><span data-count="${F.ani}">${F.ani}</span></b><span>ani de program</span></div>
+    <div class="stat"><b><span data-count="${F.maxNr}">${F.maxNr}</span></b><span>ediții în București, plus Cluj</span></div>
+    <div class="stat"><b><span data-count="${F.speakers}">${F.speakers}</span></b><span>traineri și antreprenori invitați din 2023</span></div>
+    <div class="stat"><b><span data-count="${F.alumni}">${F.alumni}</span></b><span>companii în ultimele ${D.editii.filter((e) => e.participanti.length).length} ediții</span></div>
+    <div class="stat"><b><span data-count="${(F.medianCa / 1e6).toFixed(1)}" data-dec="1">${milLei(F.medianCa)}</span><em> mil. lei</em></b><span>cifra de afaceri mediană a participanților</span></div>
   </div></section>
 
   <section class="sec" id="cum"><div class="wrap">
@@ -173,8 +174,8 @@ ${header(F, ctx)}
     <div class="alumni-grid">
       <div class="figures">
         <div class="fig"><b>${milLei(F.q1)}–${milLei(F.q3)}<em> mil. lei</em></b><span>cifra de afaceri a jumătății „de mijloc” a participanților</span></div>
-        <div class="fig"><b>${F.medianAng}</b><span>angajați, la mediană</span></div>
-        <div class="fig"><b>${F.participanti}</b><span>antreprenori și manageri în edițiile #16–#${F.maxNr}</span></div>
+        <div class="fig"><b><span data-count="${F.medianAng}">${F.medianAng}</span></b><span>angajați, la mediană</span></div>
+        <div class="fig"><b><span data-count="${F.participanti}">${F.participanti}</span></b><span>antreprenori și manageri în edițiile #16–#${F.maxNr}</span></div>
         <p class="fine">Cifre agregate din datele declarate la înscriere, edițiile 2023–2026.</p>
       </div>
       <div class="sectors">${F.sectors.slice(0, 9).map(([s, n]) => `<div class="sector"><span>${esc(s)}</span><i style="--w:${(n / maxSector) * 100}%"></i><b>${n}</b></div>`).join('')}</div>
