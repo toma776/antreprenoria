@@ -274,15 +274,3 @@ details.obs-done > summary { cursor: pointer; font-weight: 600; padding: 6px 0; 
 .j-partener, .j-organizator { background: var(--side) !important; }
 .j-alumni { background: var(--ok) !important; }
 .j-step i.j-alumni:is(.j-sponsor, .j-partener, .j-gazda, .j-speaker) { background: conic-gradient(var(--ok) 0 50%, var(--accent) 0) !important; }
-
-/* presă */
-blockquote.quote { margin: 0; padding: 2px 0 2px 12px; border-left: 3px solid var(--accent); font-size: 14.5px; line-height: 1.55; }
-.timeline-y { display: grid; gap: 0; }
-.ty-row { display: grid; grid-template-columns: 70px minmax(0, 1fr); gap: 14px; }
-.ty-year { font-weight: 800; font-size: 18px; color: var(--accent); padding-top: 10px; text-align: right; }
-.ty-body { border-left: 2px solid var(--line); padding: 10px 0 14px 16px; display: grid; gap: 8px; }
-.ty-ed { background: var(--accent-soft); border-radius: 8px; padding: 6px 10px; }
-.ty-p { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; }
-.ty-p ul { margin-top: 6px; }
-.ty-p .tag, .item-body .tag { white-space: normal; }
-@media (max-width: 600px) { .ty-row { grid-template-columns: 44px minmax(0, 1fr); gap: 8px; } .ty-year { font-size: 15px; } .ty-body { padding-left: 10px; } }

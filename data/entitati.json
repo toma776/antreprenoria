@@ -2,7 +2,7 @@
   "meta": {
     "sursa": "https://antreprenoria.ro",
     "extras_la": "2026-10-08",
-    "generat": "2026-10-08T11:45:01.634Z",
+    "generat": "2026-10-08T11:50:39.838Z",
     "pagini": 11,
     "metoda": "paginile edițiilor (/antreprenoria-16 … /antreprenoria-22, /antreprenoria-cluj) + /despre-noi + /contact; companii, organizații, aliasuri, parteneri și teme curate manual în data/curare/"
   },
@@ -6608,10 +6608,6 @@
         "bucuresti-22",
         "cluj-1"
       ],
-      "presa": [
-        "hotnews-2013-03-29",
-        "ursan-2017-07-27"
-      ],
       "nr_aparitii": 8
     },
     {
@@ -6644,9 +6640,6 @@
       ],
       "editii": [
         "bucuresti-16"
-      ],
-      "presa": [
-        "revistabiz-2024-02-12"
       ],
       "nr_aparitii": 1
     },
@@ -6736,9 +6729,6 @@
         "bucuresti-20",
         "bucuresti-21",
         "bucuresti-22"
-      ],
-      "presa": [
-        "revistabiz-2024-02-12"
       ],
       "nr_aparitii": 6
     },
@@ -7021,9 +7011,6 @@
       "editii": [
         "bucuresti-16"
       ],
-      "presa": [
-        "revistabiz-2024-02-12"
-      ],
       "nr_aparitii": 1
     },
     {
@@ -7234,13 +7221,6 @@
         "bucuresti-21",
         "bucuresti-22",
         "cluj-1"
-      ],
-      "presa": [
-        "hotnews-2013-03-29",
-        "wallstreet-2013-06-19",
-        "autonom-2015-06-12",
-        "ursan-2017-07-27",
-        "startupcafe-2017-09-01"
       ],
       "nr_aparitii": 9
     },
@@ -7478,10 +7458,6 @@
         "bucuresti-21",
         "bucuresti-22"
       ],
-      "presa": [
-        "autonom-2015-06-12",
-        "ursan-2017-07-27"
-      ],
       "nr_aparitii": 7
     },
     {
@@ -7549,9 +7525,6 @@
         "bucuresti-17",
         "bucuresti-18",
         "bucuresti-21"
-      ],
-      "presa": [
-        "ursan-2017-07-27"
       ],
       "nr_aparitii": 4
     },
@@ -8618,9 +8591,6 @@
         "bucuresti-21",
         "bucuresti-22"
       ],
-      "presa": [
-        "startupcafe-2017-09-01"
-      ],
       "nr_aparitii": 6
     },
     {
@@ -8745,9 +8715,6 @@
       "editii": [
         "bucuresti-17"
       ],
-      "presa": [
-        "hotnews-2013-03-29"
-      ],
       "nr_aparitii": 1
     },
     {
@@ -8870,9 +8837,6 @@
       "editii": [
         "bucuresti-17",
         "bucuresti-18"
-      ],
-      "presa": [
-        "ursan-2017-07-27"
       ],
       "nr_aparitii": 2
     },
@@ -13231,10 +13195,6 @@
       "aparitii": [],
       "editii": [],
       "rol_echipa": "Project Leader Antreprenoria",
-      "presa": [
-        "revistabiz-2024-02-12",
-        "rbls-proiect-antreprenoria"
-      ],
       "nr_aparitii": 0
     },
     {
@@ -13319,11 +13279,6 @@
       ],
       "participari": [],
       "oameni": [],
-      "presa": [
-        "rbls-2019-02-22",
-        "revistabiz-2024-02-12",
-        "rbls-proiect-antreprenoria"
-      ],
       "tipuri": [
         "organizator"
       ],
@@ -13611,9 +13566,6 @@
       ],
       "oameni": [
         "eugen-alexandru-predescu"
-      ],
-      "presa": [
-        "revistabiz-2024-02-12"
       ],
       "tipuri": [
         "gazdă",
@@ -14022,9 +13974,6 @@
       ],
       "participari": [],
       "oameni": [],
-      "presa": [
-        "rbls-proiect-antreprenoria"
-      ],
       "tipuri": [
         "sponsor"
       ],
@@ -14353,9 +14302,6 @@
         "florin-marin",
         "ana-maria-marin"
       ],
-      "presa": [
-        "rbls-proiect-antreprenoria"
-      ],
       "tipuri": [
         "alumni",
         "sponsor",
@@ -14630,9 +14576,6 @@
       "participari": [],
       "oameni": [
         "angela-rosca"
-      ],
-      "presa": [
-        "hotnews-2013-03-29"
       ],
       "tipuri": [
         "sponsor",
@@ -15042,9 +14985,6 @@
         "calin-emanuel-lucaciu",
         "adelina-felicia-pop",
         "adriana-sicon"
-      ],
-      "presa": [
-        "rbls-proiect-antreprenoria"
       ],
       "tipuri": [
         "alumni",
@@ -22699,9 +22639,6 @@
       "oameni": [
         "dan-stefan"
       ],
-      "presa": [
-        "autonom-2015-06-12"
-      ],
       "tipuri": [
         "speaker"
       ],
@@ -23529,9 +23466,6 @@
       "participari": [],
       "oameni": [
         "alina-donici"
-      ],
-      "presa": [
-        "rbls-proiect-antreprenoria"
       ],
       "tipuri": [
         "speaker"
@@ -24516,455 +24450,6 @@
       "ateliere": 7
     }
   ],
-  "presa": {
-    "cules_la": "2026-10-08",
-    "tipuri": {
-      "interviu": "interviu redacțional cu un om din program",
-      "articol": "articol redacțional",
-      "comunicat-preluat": "anunț RBL publicat aproape neschimbat",
-      "blog-participant": "scris de cineva care a participat",
-      "blog-partener": "blogul unei companii implicate în program",
-      "blog": "blog personal",
-      "canal-propriu": "site-urile RBL; nu e presă, dar e sursă de istoric",
-      "advertorial": "conținut plătit"
-    },
-    "aparitii": [
-      {
-        "id": "hotnews-2013-03-29",
-        "publicatie": "HotNews.ro",
-        "url": "https://hotnews.ro/stiri-cariere-14517722-testeaza-ideea-business-atelierele-antreprenoriat-rbl.htm",
-        "titlu": "Testeaza-ti ideea de business la Atelierele de Antreprenoriat RBL!",
-        "data": "2013-03-29",
-        "autor": "Redacția HotNews",
-        "tip": "comunicat-preluat",
-        "greutate": "medie",
-        "relevanta": "program",
-        "editii_istorice": [
-          "Ediția I · primăvara 2013"
-        ],
-        "oameni": [
-          "silviu-hotaran",
-          "sergiu-negut",
-          "angela-rosca"
-        ],
-        "alti_oameni": [
-          "Veronica Savanciuc (Lowe&Partners)",
-          "Cristian Nacu (Enterprise Investors)",
-          "Radu Georgescu (Gecad)",
-          "Dan Humelnicu",
-          "Daniela Crețu",
-          "Cătălin Grigorescu",
-          "Adela Jansen (BRD)",
-          "Sorin Trâncă (Friends Advertising)",
-          "Lucian Butnaru (Zebra Pay)",
-          "Mariuca Talpeș (Intuitext)",
-          "Radu Manolescu (K.M.Trust)",
-          "Daniel Timofei (Rosegur)"
-        ],
-        "organizatii": [
-          "taxhouse"
-        ],
-        "fapte": [
-          "Prima sesiune a programului „Ateliere de Antreprenoriat”: 7 ateliere de o zi, sâmbăta, o dată la două săptămâni, între 13 aprilie și 6 iulie 2013.",
-          "Fiecare zi: 4 ore de training practic și 3 ore de discuții cu antreprenori.",
-          "220 RON pe modul, 7% reducere pentru tot pachetul; 25 de locuri; selecție după ideea de business.",
-          "20 de traineri și aproape 50 de lideri de business implicați voluntar.",
-          "Primul atelier i-a avut invitați pe Silviu Hotăran, Radu Manolescu și Radu Georgescu."
-        ],
-        "citate": [
-          {
-            "id": "c01",
-            "text": "Programul este conceput de antreprenori pentru antreprenori si isi propune ca, prin practica si discutii directe cu antreprenori, cei implicati in program sa obtina incredere, curaj si ingredientele necesare ca sa dezvolte o afacere solida.",
-            "autor": "Fundația RBL (anunțul programului)",
-            "persoana": null,
-            "despre": "program"
-          }
-        ],
-        "editii": [],
-        "an": 2013
-      },
-      {
-        "id": "wallstreet-2013-06-19",
-        "publicatie": "Wall-Street.ro",
-        "url": "https://www.wall-street.ro/articol/Start-Up/150263/membrii-romanian-business-leaders-antreprenori-de-la-stres-la-succes.html",
-        "titlu": "Membrii Romanian Business Leaders vor antrena 33 de antreprenori de la stres la succes",
-        "data": "2013-06-19",
-        "autor": "Wall-Street.ro",
-        "tip": "articol",
-        "greutate": "ridicată",
-        "relevanta": "precursor",
-        "nota": "Despre „101 companii de la stres la succes”, programul de antrenori de business RBL din care a crescut componenta de mentorat (Mentoria), unită în 2017 cu atelierele sub numele Antreprenoria.",
-        "editii_istorice": [],
-        "oameni": [
-          "sergiu-negut"
-        ],
-        "alti_oameni": [
-          "Felix Pătrășcanu (FAN Courier)",
-          "Eugen Voicu (Certinvest)",
-          "Costin Tărăcilă (Allen & Overy)"
-        ],
-        "organizatii": [],
-        "fapte": [
-          "Prima fază: 33 de antreprenori (din 101 planificați), îndrumați de peste 40 de antrenori de business din RBL; minimum 3 angajați și 100.000 euro cifră de afaceri."
-        ],
-        "citate": [
-          {
-            "id": "c02",
-            "text": "Business-ul autohton are resurse neexploatate de incredere si intrajutorare.",
-            "autor": "Sergiu Neguț, liderul proiectului „101 companii de la stres la succes”",
-            "persoana": "sergiu-negut",
-            "despre": "comunitate"
-          }
-        ],
-        "editii": [],
-        "an": 2013
-      },
-      {
-        "id": "pascu-2014-03-06",
-        "publicatie": "razvanpascu.ro",
-        "url": "https://razvanpascu.ro/2014/03/06/am-un-loc-de-dat-pentru-un-blogger-la-atelierele-romanian-business-leaders/",
-        "titlu": "Am un loc de dat, pentru un blogger, la atelierele Romanian Business Leaders",
-        "data": "2014-03-06",
-        "autor": "Răzvan Pascu",
-        "tip": "blog",
-        "greutate": "scăzută",
-        "relevanta": "program",
-        "editii_istorice": [
-          "Ediția III · primăvara 2014"
-        ],
-        "oameni": [],
-        "alti_oameni": [],
-        "organizatii": [],
-        "fapte": [
-          "2014: 7 ateliere, o dată la două săptămâni, din martie; 220 RON pe atelier."
-        ],
-        "citate": [],
-        "editii": [],
-        "an": 2014
-      },
-      {
-        "id": "cariere-2015-01-26",
-        "publicatie": "Revista Cariere",
-        "url": "https://www.revistacariere.ro/leadership/management/si-antreprenorii-au-de-invatat",
-        "titlu": "Și antreprenorii au de învațat!",
-        "data": "2015-01-26",
-        "autor": "Revista Cariere",
-        "tip": "comunicat-preluat",
-        "greutate": "medie",
-        "relevanta": "program",
-        "editii_istorice": [
-          "Ediția V · primăvara 2015"
-        ],
-        "oameni": [],
-        "alti_oameni": [],
-        "organizatii": [],
-        "fapte": [
-          "Ediția din primăvara 2015: 14 martie – 20 iunie, sâmbăta din două în două săptămâni; 24 de antreprenori; ateliere de seară marțea, 18:00–21:00; acces la programele de mentorat RBL."
-        ],
-        "citate": [],
-        "editii": [],
-        "an": 2015
-      },
-      {
-        "id": "autonom-2015-06-12",
-        "publicatie": "Blog Autonom",
-        "url": "https://www.autonom.ro/blog/ateliere-de-antreprenoriat/",
-        "titlu": "Ateliere de Antreprenoriat",
-        "data": "2015-06-12",
-        "autor": "Autonom",
-        "tip": "blog-partener",
-        "greutate": "scăzută",
-        "relevanta": "program",
-        "editii_istorice": [
-          "Ediția V · primăvara 2015"
-        ],
-        "oameni": [
-          "bogdan-tudor",
-          "sergiu-negut"
-        ],
-        "alti_oameni": [
-          "Marius Ștefan (fondator și CEO Autonom)"
-        ],
-        "organizatii": [
-          "autonom"
-        ],
-        "fapte": [
-          "6 iunie 2015: sesiunea „Planul de afacere” din ediția a cincea, cu Bogdan Tudor, Sergiu Neguț și Marius Ștefan (Autonom).",
-          "Următoarea ediție anunțată: 12 septembrie – 5 decembrie 2015."
-        ],
-        "citate": [],
-        "editii": [],
-        "an": 2015
-      },
-      {
-        "id": "ursan-2017-07-27",
-        "publicatie": "gabrielursan.ro",
-        "url": "https://www.gabrielursan.ro/hai-sa-ti-ocupi-sambetele-cu-ceva-super-util-daca-esti-antreprenor/",
-        "titlu": "Hai să-ți ocupi sâmbetele cu ceva super util dacă ești antreprenor",
-        "data": "2017-07-27",
-        "autor": "Gabriel Ursan",
-        "tip": "blog-participant",
-        "greutate": "medie",
-        "relevanta": "program",
-        "nota": "Autorul a participat la ateliere în 2017 și precizează că nu e afiliat programului.",
-        "editii_istorice": [
-          "Ediția 10 · toamna 2017"
-        ],
-        "oameni": [
-          "silviu-hotaran",
-          "sergiu-negut",
-          "dragos-petrescu",
-          "ovidiu-toader",
-          "bogdan-tudor"
-        ],
-        "alti_oameni": [
-          "Gabriel Ursan (participant)",
-          "Radu Georgescu",
-          "Dragoș Anastasiu (Eurolines)",
-          "George Agafiței",
-          "Dragoș Dinu (Țiriac Holdings)"
-        ],
-        "organizatii": [],
-        "fapte": [
-          "2017: două grupe, Start-up și Scale-up; 7 sâmbete, 09:30–18:00; 21 de lideri de business și cel puțin 20 de colegi pe grupă.",
-          "Alumnii de la Ateliere și Mentoria aveau o platformă B2B comună, cu 600 de afaceri.",
-          "Prețurile early bird din 2017, așa cum le dă autorul: 1.300 lei (start-up) și 1.900 lei (scale-up), cu masa de prânz inclusă."
-        ],
-        "citate": [
-          {
-            "id": "c03",
-            "text": "a fost o experiență pe care nu merită să o rateze nici un antreprenor din România, indiferent dacă se află la început de drum sau dacă are deja un business solid și vrea să crească.",
-            "autor": "Gabriel Ursan, participant 2017",
-            "persoana": null,
-            "despre": "program"
-          },
-          {
-            "id": "c04",
-            "text": "În cadrul atelierelor de antreprenoriat ai acces la oameni de afaceri pe care în mod normal nu ai cum să-i abordezi așa ușor, să le pui întrebări și să înveți din succesele sau eșecurile lor.",
-            "autor": "Gabriel Ursan, participant 2017",
-            "persoana": null,
-            "despre": "speakeri"
-          }
-        ],
-        "editii": [],
-        "an": 2017
-      },
-      {
-        "id": "startupcafe-2017-09-01",
-        "publicatie": "StartupCafe",
-        "url": "https://startupcafe.ro/idei-si-antreprenori/cursuri-afaceri-antreprenori-romania.htm",
-        "titlu": "3 programe românești de training pentru antreprenori start-up. Cât costă",
-        "data": "2017-09-01",
-        "autor": "Claudiu Zamfir",
-        "tip": "articol",
-        "greutate": "ridicată",
-        "relevanta": "program",
-        "editii_istorice": [
-          "Toamna 2017 · București, Cluj-Napoca, Timișoara, Iași"
-        ],
-        "oameni": [
-          "sergiu-negut",
-          "alexandru-lapusan"
-        ],
-        "alti_oameni": [
-          "Dragoș Anastasiu",
-          "Radu Georgescu",
-          "Octavian Bădescu",
-          "Cristian Ignat",
-          "Daniel Isai",
-          "Horia Cordoș"
-        ],
-        "organizatii": [],
-        "fapte": [
-          "Septembrie – decembrie 2017: atelierele rulează în patru orașe: București, Cluj-Napoca, Timișoara și Iași.",
-          "București: scale-up 2.300 lei (până la 10 septembrie) / 2.800 lei; start-up 1.600 / 1.900 lei. Celelalte orașe: 500–800 lei."
-        ],
-        "citate": [],
-        "editii": [],
-        "an": 2017
-      },
-      {
-        "id": "rbls-2019-02-22",
-        "publicatie": "rbls.ro",
-        "url": "https://www.rbls.ro/ce-se-intampla-de-fapt-la-ateliere-de-antreprenoriat-scale-up/",
-        "titlu": "Ce se întâmplă de fapt la Ateliere de Antreprenoriat Scale-Up",
-        "data": "2019-02-22",
-        "autor": "Fundația RBL",
-        "tip": "canal-propriu",
-        "greutate": "scăzută",
-        "relevanta": "program",
-        "editii_istorice": [
-          "2019 · Scale-Up"
-        ],
-        "oameni": [],
-        "alti_oameni": [],
-        "organizatii": [
-          "rbl"
-        ],
-        "fapte": [
-          "2019: aproximativ 20 de întâlniri pe parcursul a 4 luni; „sute de Alumni Antreprenoria”."
-        ],
-        "citate": [],
-        "editii": [],
-        "an": 2019
-      },
-      {
-        "id": "gpec-2020-02-18",
-        "publicatie": "Blog GPeC",
-        "url": "https://www.gpec.ro/blog/antreprenoria-sesiune-de-ateliere-business",
-        "titlu": "Antreprenoria: o nouă sesiune de ateliere destinate antreprenorilor care doresc să își scaleze business-ul",
-        "data": "2020-02-18",
-        "autor": "Alexandra Păunescu",
-        "tip": "comunicat-preluat",
-        "greutate": "medie",
-        "relevanta": "program",
-        "editii_istorice": [
-          "Primăvara 2020"
-        ],
-        "oameni": [],
-        "alti_oameni": [],
-        "organizatii": [],
-        "fapte": [
-          "Martie – iunie 2020: 7 ateliere de antreprenoriat și 6 ateliere tehnice de seară; 25 de companii selectate.",
-          "Teme 2020: atitudine și viziune antreprenorială, modele de business, marketing și comunicare, vânzări și negociere, trenduri și inovare, plan strategic, people management."
-        ],
-        "citate": [],
-        "editii": [],
-        "an": 2020
-      },
-      {
-        "id": "revistabiz-2024-02-12",
-        "publicatie": "Revista Biz",
-        "url": "https://www.revistabiz.ro/sorin-draghici-atelierele-antreprenoria-urmatoarea-generatie-de-antreprenori-creste-cu-ajutorul-celei-de-azi/",
-        "titlu": "Sorin Drăghici, Atelierele Antreprenoria: Următoarea generație de antreprenori crește cu ajutorul celei de azi",
-        "data": "2024-02-12",
-        "autor": "Gabriel Barliga",
-        "tip": "interviu",
-        "greutate": "ridicată",
-        "relevanta": "program",
-        "editii_istorice": [
-          "Ediția XVI · 2023",
-          "Ediția XVII · primăvara 2024"
-        ],
-        "oameni": [
-          "sorin-draghici",
-          "florin-talpes",
-          "wargha-enayati",
-          "lucia-costea"
-        ],
-        "alti_oameni": [],
-        "organizatii": [
-          "rbl",
-          "dwf"
-        ],
-        "fapte": [
-          "Istoric: Atelierele de Antreprenoriat lansate în 2012, Mentoria în 2015, unite în 2017 sub numele Antreprenoria.",
-          "Sorin Drăghici, cofondator DWF, e liderul proiectului din 2023 și e el însuși alumnus al atelierelor.",
-          "Ediția XVI (2023): peste 75 de aplicanți pentru 25 de locuri; 15 mentori.",
-          "Atelierele au avut o pauză din cauza pandemiei și au fost relansate.",
-          "Din 2024: două ediții pe an, plus un atelier tehnic de fiscalitate și un mastermind; relansarea Intraprenoria și seria Antreprenoria Talks.",
-          "Criterii de selecție: modelul de business, cifra de afaceri, numărul de angajați, provocările actuale, viteza de creștere."
-        ],
-        "citate": [
-          {
-            "id": "c05",
-            "text": "dacă ar fi să fac un rezumat, m-aș axa pe trei piloni – calitatea vorbitorilor, networking de calitate și proiectele de schimbare.",
-            "autor": "Sorin Drăghici, lider de proiect Antreprenoria",
-            "persoana": "sorin-draghici",
-            "despre": "program"
-          },
-          {
-            "id": "c06",
-            "text": "experiența de învățare din cadrul atelierelor are loc prin două canale: de la mentori și de la „colegii de bancă”.",
-            "autor": "Sorin Drăghici, lider de proiect Antreprenoria",
-            "persoana": "sorin-draghici",
-            "despre": "comunitate"
-          },
-          {
-            "id": "c07",
-            "text": "deși am înregistrat peste 75 de antreprenori care au aplicat, formatul a fost gândit să selecteze doar 25 dintre ei.",
-            "autor": "Sorin Drăghici, lider de proiect Antreprenoria",
-            "persoana": "sorin-draghici",
-            "despre": "selecție"
-          },
-          {
-            "id": "c08",
-            "text": "antreprenorii au însă nevoie de inspirație și modele pentru a-și construi propria lor poveste antreprenorială. Și mai au nevoie de grupul de sprijin potrivit, astfel încât, în momentele de (s)cădere, să se poată ridica mai rapid și mai sus.",
-            "autor": "Sorin Drăghici, lider de proiect Antreprenoria",
-            "persoana": "sorin-draghici",
-            "despre": "comunitate"
-          }
-        ],
-        "editii": [
-          "bucuresti-16",
-          "bucuresti-17"
-        ],
-        "an": 2024
-      },
-      {
-        "id": "rbls-proiect-antreprenoria",
-        "publicatie": "rbls.ro",
-        "url": "https://www.rbls.ro/proiecte/antreprenoria-one-stop-shop-pentru-antreprenori-scale-up/",
-        "titlu": "Antreprenoria – pagina proiectului",
-        "data": null,
-        "autor": "Fundația RBL",
-        "tip": "canal-propriu",
-        "greutate": "scăzută",
-        "relevanta": "program",
-        "editii_istorice": [
-          "2025 · două ediții"
-        ],
-        "oameni": [
-          "sorin-draghici"
-        ],
-        "alti_oameni": [],
-        "organizatii": [
-          "rbl",
-          "artesana",
-          "cargotrack",
-          "domeniile-saftica",
-          "wlc"
-        ],
-        "alumni_mentionati": [
-          "Artesana",
-          "Lensa",
-          "Clinicile Dr. Leahu",
-          "CargoTrack",
-          "Keez",
-          "Domeniile Săftica",
-          "WLC"
-        ],
-        "fapte": [
-          "2025: 50 de antreprenori în două ediții, 16 ateliere.",
-          "Aproximativ 10% dintre participanți devin ulterior susținători sau membri activi RBL.",
-          "1.000 de ore de mentorat pro-bono prin aplicația dedicată."
-        ],
-        "citate": [],
-        "editii": [],
-        "an": null
-      }
-    ],
-    "respinse": [
-      {
-        "url": "https://www.zf.ro/info/vrei-sa-ti-cresti-businessul-peste-20-de-antreprenori-de-top-te-22562013",
-        "publicatie": "Ziarul Financiar",
-        "data": "2024-11-18",
-        "motiv": "Advertorial pentru evenimentul „Capitalul Românesc”; nu e despre Antreprenoria."
-      },
-      {
-        "url": "https://laurentiumihai.ro/interviu-andrei-constantinescu-cariera-de-antreprenor/",
-        "publicatie": "laurentiumihai.ro",
-        "data": null,
-        "motiv": "Apare în căutare, dar nu menționează programul."
-      },
-      {
-        "url": "https://www.wall-street.ro/articol/Start-Up/149804/antreprenori-si-manageri-vor-invata-tinerii-rbl.html",
-        "publicatie": "Wall-Street.ro",
-        "data": "2013-06-10",
-        "motiv": "Despre programul SRL-D (stat + RBL), nu despre ateliere."
-      }
-    ]
-  },
   "sectoare": [
     "Tech & software",
     "Marketing & comunicare",
@@ -25141,53 +24626,47 @@
     {
       "id": "o21",
       "nivel": "minor",
-      "zona": "Date",
-      "text": "Ediții fără nicio apariție în presă găsită: bucuresti-18, bucuresti-19, bucuresti-20, bucuresti-21."
-    },
-    {
-      "id": "o22",
-      "nivel": "minor",
       "zona": "Conținut",
       "text": "Ovidiu Toader apare cu afilieri diferite: Business Coach / Antrenor de Antreprenori.",
       "persoana": "ovidiu-toader"
     },
     {
-      "id": "o23",
+      "id": "o22",
       "nivel": "minor",
       "zona": "Conținut",
       "text": "Andreea Strugaru apare cu afilieri diferite: EMI Group / KADRA.",
       "persoana": "andreea-strugaru"
     },
     {
-      "id": "o24",
+      "id": "o23",
       "nivel": "minor",
       "zona": "Conținut",
       "text": "Numele „Eusebiu Mărgăsoiu” e scris diferit pe site: „Eusediu Margasoiu”.",
       "persoana": "eusebiu-margasoiu"
     },
     {
-      "id": "o25",
+      "id": "o24",
       "nivel": "minor",
       "zona": "Conținut",
       "text": "Numele „Anca Rarău” e scris diferit pe site: „Anca Rarau”.",
       "persoana": "anca-rarau"
     },
     {
-      "id": "o26",
+      "id": "o25",
       "nivel": "minor",
       "zona": "Conținut",
       "text": "Numele „Alexandru Lăpușan” e scris diferit pe site: „Alex Lăpușan”, „Alex Lapusan”.",
       "persoana": "alexandru-lapusan"
     },
     {
-      "id": "o27",
+      "id": "o26",
       "nivel": "minor",
       "zona": "Conținut",
       "text": "Numele „Dan Ștefan” e scris diferit pe site: „Dan Ştefan”.",
       "persoana": "dan-stefan"
     },
     {
-      "id": "o28",
+      "id": "o27",
       "nivel": "minor",
       "zona": "Conținut",
       "text": "Numele „Cristian Logofătu” e scris diferit pe site: „Cristian Logofatu”.",

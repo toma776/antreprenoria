@@ -55,8 +55,6 @@ function entityCategories(D) {
       groups: ['traineri', 'invitati', 'facilitatori', 'participanti', 'echipa'] },
     { id: 'organizatii', icon: 'companii', title: 'Organizații', desc: 'Registru unic: aceeași firmă poate fi alumni, partener, sponsor, gazdă sau angajatorul unui speaker. Fiecare are parcursul ei pe ediții.',
       groups: ['ciclu', 'multirol', 'alumni', 'parteneri', 'speakeri', 'locatii'] },
-    { id: 'presa', icon: 'presa', title: 'Presă', desc: 'Aparițiile programului în presă și pe alte canale, cu citatele exacte și ce aflăm din ele despre istoricul programului. Se validează înainte de folosire.',
-      groups: ['aparitii', 'citate', 'istoric', 'publicatii'] },
     { id: 'teme', icon: 'teme', title: 'Curriculum', desc: 'Temele atelierelor care se repetă de la o ediție la alta, cu titlurile folosite și trainerii fiecărei teme.',
       groups: ['matrice', 'full-day', 'seara', 'networking'] },
     { id: 'seo', icon: 'seo', title: 'Audit', audit: true, desc: 'Nu sunt entități: inconsecvențele găsite la extragere (date, conținut, conversie).',
@@ -110,7 +108,6 @@ function groupInfo(D, catId, g) {
       const list = D.teme.filter((t) => t.format === f);
       return { title: { 'full-day': 'Ateliere full-day', seara: 'Ateliere de seară', networking: 'Networking' }[g], count: list.length, desc: list.map((t) => t.nume).join(', '), html: () => themesList(D, list) };
     }
-    case 'presa': return presaGroups(D)[g];
     case 'seo': return g === 'observatii' && { title: 'Observații', count: D.observatii.length, desc: 'Inconsecvențele găsite la extragere.', html: () => obsHtml(D) };
   }
   return null;
@@ -312,8 +309,7 @@ function personPage(D, id) {
     </div>
     ${p.aparitii.length ? `<section style="margin-top:18px"><h2>Apariții în ateliere <span class="n">${p.aparitii.length}</span></h2><div class="tbl"><table><thead><tr><th>Ediție</th><th>#</th><th>Atelier</th><th>Temă</th><th>Rol</th><th>Afiliere afișată</th><th>Data</th></tr></thead><tbody>
       ${p.aparitii.map((a) => `<tr><td>${edLink(a.editie)}</td><td>${a.atelier}</td><td>${esc(a.titlu)}</td><td class="small">${esc(IX.T[a.tema]?.nume || '—')}</td><td>${tags(ROLE_LABEL[a.rol] || a.rol, '')}</td><td class="small">${a.organizatie ? orgLink(a.organizatie) : esc(a.companie || '')}</td><td class="small">${fmtDay(a.data)}</td></tr>`).join('')}
-    </tbody></table></div></section>` : ''}
-    ${presaSection(D, p.presa)}`;
+    </tbody></table></div></section>` : ''}`;
 }
 
 /* ---------- ORGANIZAȚII ---------- */
@@ -402,8 +398,7 @@ function orgPage(D, id) {
         <td>${edLink(r.editie)}</td><td>${tags(r.rol, r.rol === 'participant' ? 'ok' : r.rol === 'gazdă' ? 'warn' : r.rol === 'speaker' ? 'grey' : '')}</td>
         <td class="small">${esc(atTitle(r))}</td><td>${r.persoana ? personChip(r.persoana) : ''}</td>
         <td class="num">${p ? lei(p.cifra_afaceri) : ''}</td><td class="num">${p ? p.angajati ?? '—' : ''}</td></tr>`; }).join('')}
-    </tbody></table></div></section>
-    ${presaSection(D, o.presa)}`;
+    </tbody></table></div></section>`;
 }
 
 /* ---------- CURRICULUM ---------- */
@@ -460,7 +455,6 @@ function searchIndex(D) {
     ...D.editii.flatMap((e) => e.ateliere.map((a) => ({ t: 'Atelier', n: a.titlu, d: `${edLabel(e)} · #${a.nr} · ${a.data ? fmtDay(a.data) : ''}`, u: `/manage/entitati/editii/${e.id}/ateliere` }))),
     ...D.oameni.map((p) => ({ t: ROLE_LABEL[p.tipuri[0]] || 'Persoană', n: p.nume, d: `${p.companii.join(' / ')} · ${p.editii.map(edShort).join(', ')}`, x: p.variante.join(' '), u: `/manage/entitati/oameni/p/${p.id}` })),
     ...D.organizatii.map((o) => ({ t: 'Organizație', n: o.nume, d: `${ORG_TIP.filter(([t]) => o.tipuri.includes(t)).map(([, l]) => l).join(', ')} · ${o.sector || o.tip} · ${o.editii.map(edShort).join(', ')}`, x: o.descriere, u: orgHref(o.id) })),
-    ...D.presa.aparitii.map((a) => ({ t: 'Presă', n: a.titlu, d: `${a.publicatie} · ${a.data ? fmtDay(a.data) : ''} · ${PRESA_TIP[a.tip]?.[0] || a.tip}`, x: `${a.fapte.join(' ')} ${a.citate.map((c) => c.text).join(' ')} ${a.alti_oameni.join(' ')}`, u: '/manage/entitati/presa/aparitii' })),
     ...D.locatii.map((l) => ({ t: 'Locație', n: l.nume, d: `${l.oras} · ${l.editii.map(edShort).join(', ')}`, u: orgHref(l.organizatie) })),
     ...D.teme.map((t) => ({ t: 'Temă', n: t.nume, d: t.titluri.join(' · '), u: `/manage/entitati/teme/${t.format === 'seară' ? 'seara' : t.format}` })),
   ];

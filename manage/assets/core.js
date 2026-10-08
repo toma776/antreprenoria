@@ -20,12 +20,8 @@ const src = (list) => {
   return `<details class="src"><summary>${plural(L.length, 'pagină', 'pagini')}</summary>${L.map((u) => `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(shortUrl(u))}</a>`).join('')}</details>`;
 };
 
-const api = {
-  get: (u) => fetch(u, { cache: 'no-store' }).then((r) => (r.ok ? r.json() : null)).catch(() => null),
-  send: (u, method, body) => fetch(u, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
-    .then(async (r) => { const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || 'HTTP ' + r.status); return j; }),
-};
-const store = { entitati: null, presaStatus: {} };
+const api = { get: (u) => fetch(u, { cache: 'no-store' }).then((r) => (r.ok ? r.json() : null)).catch(() => null) };
+const store = { entitati: null };
 
 /* ---------- iconițe (stroke 24×24) ---------- */
 const ICON = {
@@ -34,7 +30,6 @@ const ICON = {
   oameni: '<path d="M16 19v-1a4 4 0 00-4-4H7a4 4 0 00-4 4v1M9.5 10a3 3 0 100-6 3 3 0 000 6zM21 19v-1a4 4 0 00-3-3.9M15.5 4.1a3 3 0 010 5.8"/>',
   companii: '<path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-5h6v5M9 10h.01M15 10h.01M9 13h.01M15 13h.01"/>',
   parteneri: '<path d="M8 12l3 3 5-6M12 22c5.5 0 10-4.5 10-10S17.5 2 12 2 2 6.5 2 12s4.5 10 10 10z"/>',
-  presa: '<path d="M4 4h13v16H6a2 2 0 01-2-2zM17 8h3v10a2 2 0 01-2 2M8 8h5M8 12h5M8 16h3"/>',
   teme: '<path d="M4 19.5A2.5 2.5 0 016.5 17H20V3H6.5A2.5 2.5 0 004 5.5zM4 19.5A2.5 2.5 0 006.5 22H20v-5M9 7h7M9 11h5"/>',
   seo: '<path d="M11 18a7 7 0 100-14 7 7 0 000 14zM21 21l-5-5M8 11h6M11 8v6"/>',
 };
@@ -110,15 +105,6 @@ routes.dashboard = function renderDashboard() {
       <div class="card">
         <h3><a href="/manage/entitati/organizatii/ciclu">Din alumni, parteneri →</a></h3>
         ${ciclu.map((o) => `<p><a href="/manage/entitati/organizatii/o/${o.id}"><b>${esc(o.nume)}</b></a> <span class="muted">· alumni ${esc(edShort(o.ciclu.alumni_din))}, apoi ${esc(o.ciclu.apoi.join(', '))}</span></p>`).join('')}
-      </div>
-      <div class="card">
-        <h3><a href="/manage/entitati/presa">Presă →</a></h3>
-        ${(() => { const A = E.presa.aparitii, C = A.flatMap((a) => a.citate), st = (id) => store.presaStatus[id]?.status || 'propus'; return `
-        <div class="kpis" style="margin:10px 0 0">
-          <div class="kpi"><b>${A.length}</b><span>apariții (${A.filter((a) => st(a.id) === 'validat').length} validate)</span></div>
-          <div class="kpi"><b>${C.length}</b><span>citate (${C.filter((c) => st(c.id) === 'validat').length} validate)</span></div>
-          <div class="kpi"><b>${Math.min(...A.map((a) => a.an).filter(Boolean))}</b><span>prima apariție</span></div>
-        </div>`; })()}
       </div>
       <div class="card">
         <h3><a href="/manage/entitati/oameni/traineri">Cei mai constanți traineri →</a></h3>

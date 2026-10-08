@@ -1,7 +1,6 @@
-/* Pornire: încarcă entitățile și validările, apoi deschide ruta din URL. */
-Promise.all([api.get('/api/entitati'), api.get('/api/presa/status')]).then(([e, ps]) => {
+/* Pornire: încarcă entitățile și deschide ruta din URL. */
+api.get('/api/entitati').then((e) => {
   store.entitati = e;
-  store.presaStatus = ps || {};
   if (e) indexEntities(e);
   updateCounts();
   go(routeFromPath());
