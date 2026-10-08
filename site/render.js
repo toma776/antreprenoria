@@ -2,6 +2,7 @@
 // Pe site, cifrele de afaceri ale participanților apar doar agregat (mediane, intervale), niciodată per companie.
 const fs = require('fs');
 const path = require('path');
+const brand = require('./brand');
 
 const DATA = path.join(__dirname, '..', 'data', 'entitati.json');
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -55,16 +56,15 @@ function facts({ D, P }) {
 
 // ---------- bucăți comune ----------
 const NAV = [['Program', '/program'], ['Ediții', '/editii'], ['Teme', '/teme'], ['Traineri', '/traineri'], ['Alumni', '/alumni'], ['Parteneri', '/parteneri'], ['Despre', '/despre']];
-const BRANDS = [['a', 'A · Albastru RBL'], ['b', 'B · Signal'], ['c', 'C · Editorial']];
-
-function head(title, desc) {
-  return `<!doctype html><html lang="ro" data-brand="a"><head><meta charset="utf-8">
+// varianta de brand vine din data/brand.json (activă sau cerută pentru previzualizare cu ?brand=)
+function head(title, desc, brandId) {
+  const v = brand.pick(brand.load(), brandId);
+  return `<!doctype html><html lang="ro" data-brand="${esc(v.id)}"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}</title><meta name="description" content="${esc(desc)}">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Fraunces:opsz,wght@9..144,400..800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/site.css"><link rel="icon" href="/manage/assets/logo-letter.png">
-<script>try{var q=new URLSearchParams(location.search).get('brand');var b=/^[abc]$/.test(q)?q:localStorage.getItem('brand');if(b){document.documentElement.dataset.brand=b;localStorage.setItem('brand',b)}}catch(e){}</script>
+<link href="${esc(brand.fontsHref(v))}" rel="stylesheet">
+<link rel="stylesheet" href="/assets/brand.css"><link rel="stylesheet" href="/assets/site.css"><link rel="icon" href="/manage/assets/logo-letter.png">
 </head><body>`;
 }
 function header(F) {
@@ -88,15 +88,10 @@ function footer() {
       <p><a href="https://www.facebook.com/antreprenoria/" rel="noopener">Facebook</a> · <a href="https://www.linkedin.com/company/antreprenoria" rel="noopener">LinkedIn</a></p></div>
   </div><div class="wrap ftr-legal muted"><span>© ${new Date().getFullYear()} Fundația Romanian Business Leaders</span><span><a href="/confidentialitate">Confidențialitate</a> · <a href="/termeni-si-conditii">Termeni</a> · <a href="/politica-cookies">Cookies</a></span></div></footer>`;
 }
-// comutatorul de direcții de brand – doar pentru prezentarea conceptului
-function brandSwitch() {
-  return `<div class="brand-switch" role="group" aria-label="Direcție de brand (prezentare)">
-    <span>Direcție de brand</span>${BRANDS.map(([k, l]) => `<button data-brand-set="${k}">${l}</button>`).join('')}<a href="/brand">Vezi identitățile →</a></div>`;
-}
 const avatar = (p, cls = '') => (p.imagine ? `<img class="${cls}" src="${esc(p.imagine)}" alt="${esc(p.nume)}" loading="lazy">` : `<span class="${cls} ph">${esc(initials(p.nume))}</span>`);
 
 // ---------- HOMEPAGE ----------
-function renderHome() {
+function renderHome(opt = {}) {
   const ctx = load(), { D, P, O, T } = ctx, F = facts(ctx);
   const nextSpeakers = F.next ? F.next.program.flatMap((x) => x.speakeri).map((s) => P[s.persoana]).filter(Boolean) : [];
   const fullDay = D.teme.filter((t) => t.format === 'full-day');
@@ -105,7 +100,7 @@ function renderHome() {
   const maxSector = F.sectors[0][1];
   const heroFaces = F.topTrainers.slice(0, 6);
 
-  return `${head('Antreprenoria – acceleratorul antreprenorilor Romanian Business Leaders', 'Program de accelerare pentru companii în creștere: ateliere cu antreprenori de top, un grup selectat de colegi și comunitatea Romanian Business Leaders. Din 2013.')}
+  return `${head('Antreprenoria – acceleratorul antreprenorilor Romanian Business Leaders', 'Program de accelerare pentru companii în creștere: ateliere cu antreprenori de top, un grup selectat de colegi și comunitatea Romanian Business Leaders. Din 2013.', opt.brand)}
 ${header(F)}
 <main>
   <section class="hero"><div class="wrap hero-in">
@@ -223,51 +218,8 @@ ${header(F)}
   </div></section>
 </main>
 ${footer()}
-${brandSwitch()}
 <script src="/assets/site.js"></script>
 </body></html>`;
 }
 
-// ---------- PAGINA DE IDENTITĂȚI ----------
-const IDENTITIES = [
-  { k: 'a', name: 'A · Albastru RBL', idea: 'Evoluția brandului actual. Păstrează albastrul și roșul pe care oamenii le recunosc, dar le dă mai mult aer și o tipografie lată, sigură pe ea.',
-    pentru: 'Continuitate cu RBL și cu cele 22 de ediții. Riscul cel mai mic.',
-    colors: [['Albastru Antreprenoria', '#1057A4', 'principală: butoane, linkuri, accente'], ['Bleumarin', '#0B2545', 'titluri, fundaluri închise'], ['Roșu RBL', '#E32419', 'accent rar: „live”, urgență'], ['Galben', '#FADC3A', 'evidențieri, cifre'], ['Hârtie', '#F5F7FB', 'fundal'], ['Cerneală', '#121826', 'text']],
-    display: 'Archivo (lățime extinsă, 800)', body: 'Inter', mono: '—' },
-  { k: 'b', name: 'B · Signal', idea: 'Tech-driven, pe fundal închis. Programul arătat ca un sistem: cifre mari în font monospace, grilă vizibilă, un singur accent electric.',
-    pentru: 'Cel mai „tech” și cel mai diferit de alte programe de antreprenoriat. Cere fotografii bune pe fundal închis.',
-    colors: [['Noapte', '#0A0E17', 'fundal'], ['Panou', '#121826', 'carduri'], ['Albastru electric', '#3D7BFF', 'principală'], ['Lime', '#C8F560', 'accent: date, „live”'], ['Alb', '#EEF2F8', 'text'], ['Gri', '#8A94A7', 'text secundar']],
-    display: 'Space Grotesk (700)', body: 'Inter', mono: 'JetBrains Mono (cifre, etichete)' },
-  { k: 'c', name: 'C · Editorial', idea: 'Premium și cald, ca o revistă de business. Serif expresiv pentru titluri, hârtie caldă, cobalt și un roșu-cărămiziu ca semnătură.',
-    pentru: 'Pune accentul pe oameni și pe povești. Se potrivește cu publicul de fondatori seniori.',
-    colors: [['Hârtie caldă', '#F4F1EA', 'fundal'], ['Cerneală', '#15171C', 'text, fundaluri închise'], ['Cobalt', '#1F3FA8', 'principală'], ['Cărămiziu', '#D9472B', 'accent'], ['Nisip', '#E6DFD0', 'linii, carduri'], ['Gri cald', '#6B665C', 'text secundar']],
-    display: 'Fraunces (600–800)', body: 'IBM Plex Sans', mono: '—' },
-];
-function renderBrand() {
-  const ctx = load(), F = facts(ctx);
-  return `${head('Direcții de identitate · Antreprenoria', 'Trei propuneri de identitate vizuală pentru noul site Antreprenoria: culori și tipografie.')}
-${header(F)}
-<main class="brand-page">
-  <section class="sec"><div class="wrap">
-    <p class="eyebrow">Concept · noul antreprenoria.ro</p><h1 class="brand-h1">Trei direcții de identitate</h1>
-    <p class="lead">Aceeași structură de site, trei personalități. Apasă „Aplică pe site” ca să vezi homepage-ul în direcția respectivă.</p>
-  </div></section>
-  ${IDENTITIES.map((b) => `<section class="sec ident" data-brand="${b.k}"><div class="wrap">
-    <div class="ident-head"><div><h2>${esc(b.name)}</h2><p class="lead">${esc(b.idea)}</p><p class="ident-why"><b>De ce:</b> ${esc(b.pentru)}</p></div>
-      <a class="btn btn-primary" href="/" data-brand-go="${b.k}">Aplică pe site →</a></div>
-    <div class="swatches">${b.colors.map(([n, hex, use]) => `<div class="sw"><span style="background:${hex}"></span><b>${esc(n)}</b><code>${hex}</code><small>${esc(use)}</small></div>`).join('')}</div>
-    <div class="type">
-      <div class="type-display"><small>Titluri · ${esc(b.display)}</small><p>Crește-ți compania alături de antreprenorii care au făcut-o deja.</p></div>
-      <div class="type-body"><small>Text · ${esc(b.body)}${b.mono !== '—' ? ` · Cifre · ${esc(b.mono)}` : ''}</small>
-        <p>Trei luni, ateliere full-day și de seară cu lideri de business români, un grup selectat de colegi antreprenori și acces la comunitatea RBL. Diacritice: ă â î ș ț Ă Â Î Ș Ț.</p>
-        <div class="type-row"><span class="stat-demo">${milLei(F.medianCa)}<em> mil. lei</em></span><a class="btn btn-primary" href="#">Aplică</a><a class="btn btn-ghost" href="#">Cum funcționează</a><span class="tag-live"><i></i>Ediția #${F.maxNr} în desfășurare</span></div>
-      </div>
-    </div>
-  </div></section>`).join('')}
-</main>
-${footer()}
-<script src="/assets/site.js"></script>
-</body></html>`;
-}
-
-module.exports = { renderHome, renderBrand };
+module.exports = { renderHome };

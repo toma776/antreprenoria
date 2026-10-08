@@ -20,8 +20,10 @@ Portul se schimbă cu variabila `PORT`.
 Paginile se generează în Node.js, fără framework, din `data/entitati.json`. Generatorul e `site/render.js`, iar stilurile și scripturile sunt în `site/assets/`.
 
 - `http://localhost:3200/` – homepage
-- `http://localhost:3200/brand` – cele trei direcții de identitate: A · Albastru RBL, B · Signal, C · Editorial
-- `?brand=a|b|c` deschide o pagină direct într-o direcție. Comutatorul de jos e doar pentru prezentarea conceptului.
+- `http://localhost:3200/manage/branding` – variantele de identitate (A · Albastru RBL, B · Signal). Fiecare are culori, tipografie, forme și previzualizare. Butonul „Activează pe site” schimbă varianta folosită pe tot site-ul.
+- `?brand=a|b` afișează temporar o pagină în altă variantă, fără să schimbe varianta activă.
+
+Variantele stau în `data/brand.json`: câmpul `activ`, plus setul complet de token-uri pentru fiecare variantă. Din el se generează `/assets/brand.css` (variabile CSS) și linkul spre Google Fonts. Componentele din `site/assets/site.css` folosesc doar variabile, deci o variantă nouă se adaugă ca date, fără să atingi CSS-ul.
 
 Cifrele de afaceri ale participanților apar pe site doar agregat (mediană, intervalul 25–75%), niciodată per companie.
 

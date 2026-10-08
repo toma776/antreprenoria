@@ -1,0 +1,270 @@
+{
+  "_despre": "Identitatea vizuală a site-ului. „activ” e varianta folosită pe site; se schimbă din panou (/manage/branding). Fiecare variantă are setul complet de token-uri (culori, fonturi, forme) din care se generează /assets/brand.css.",
+  "activ": "a",
+  "variante": [
+    {
+      "id": "a",
+      "nume": "Albastru RBL",
+      "descriere": "Evoluția brandului actual. Păstrează albastrul și roșul pe care oamenii le recunosc, dar le dă mai mult aer și o tipografie lată, sigură pe ea.",
+      "de_ce": "Continuitate cu RBL și cu cele 22 de ediții. Riscul cel mai mic.",
+      "schema": "light",
+      "culori": [
+        {
+          "token": "primary",
+          "nume": "Albastru Antreprenoria",
+          "hex": "#1057A4",
+          "rol": "principală: butoane, linkuri, accente",
+          "principala": true
+        },
+        {
+          "token": "dark",
+          "nume": "Bleumarin",
+          "hex": "#0B2545",
+          "rol": "secțiuni închise, footer",
+          "principala": true
+        },
+        {
+          "token": "accent",
+          "nume": "Roșu RBL",
+          "hex": "#E32419",
+          "rol": "accent rar: „live”, urgență",
+          "principala": true
+        },
+        {
+          "token": "highlight",
+          "nume": "Galben",
+          "hex": "#FADC3A",
+          "rol": "evidențieri, cifre pe fundal închis",
+          "principala": true
+        },
+        {
+          "token": "bg",
+          "nume": "Hârtie",
+          "hex": "#F5F7FB",
+          "rol": "fundalul paginii",
+          "principala": true
+        },
+        {
+          "token": "ink",
+          "nume": "Cerneală",
+          "hex": "#121826",
+          "rol": "text",
+          "principala": true
+        },
+        {
+          "token": "surface",
+          "nume": "Suprafață",
+          "hex": "#FFFFFF",
+          "rol": "carduri"
+        },
+        {
+          "token": "surface-2",
+          "nume": "Suprafață 2",
+          "hex": "#EAF0F8",
+          "rol": "secțiuni alternative"
+        },
+        {
+          "token": "muted",
+          "nume": "Text secundar",
+          "hex": "#586174",
+          "rol": "texte secundare"
+        },
+        {
+          "token": "line",
+          "nume": "Linii",
+          "hex": "#DCE3EE",
+          "rol": "borduri, separatoare"
+        },
+        {
+          "token": "primary-ink",
+          "nume": "Text pe principală",
+          "hex": "#FFFFFF",
+          "rol": "text pe butoane"
+        },
+        {
+          "token": "primary-soft",
+          "nume": "Principală deschisă",
+          "hex": "#E3ECF7",
+          "rol": "fundaluri discrete"
+        },
+        {
+          "token": "dark-2",
+          "nume": "Bleumarin 2",
+          "hex": "#12325C",
+          "rol": "carduri pe fundal închis"
+        },
+        {
+          "token": "dark-ink",
+          "nume": "Text pe închis",
+          "hex": "#F2F6FC",
+          "rol": "text pe fundal închis"
+        },
+        {
+          "token": "dark-muted",
+          "nume": "Text secundar pe închis",
+          "hex": "#A9B8D0",
+          "rol": "texte secundare pe fundal închis"
+        }
+      ],
+      "tipografie": {
+        "titluri": {
+          "font": "Archivo",
+          "greutate": 800,
+          "latime": "112%",
+          "spatiere": "-0.02em",
+          "rezerva": "system-ui, sans-serif"
+        },
+        "text": {
+          "font": "Inter",
+          "rezerva": "system-ui, sans-serif"
+        },
+        "cifre": {
+          "font": "Archivo",
+          "rezerva": "system-ui, sans-serif"
+        },
+        "etichete": {
+          "font": "Inter",
+          "rezerva": "system-ui, sans-serif"
+        }
+      },
+      "forme": {
+        "raza": "14px",
+        "raza_buton": "999px",
+        "umbra": "0 1px 2px rgba(11, 37, 69, .06), 0 12px 32px -16px rgba(11, 37, 69, .25)"
+      },
+      "google_fonts": "family=Archivo:wdth,wght@62..125,400..900&family=Inter:wght@400;500;600;700"
+    },
+    {
+      "id": "b",
+      "nume": "Signal",
+      "descriere": "Tech-driven, pe fundal închis. Programul arătat ca un sistem: cifre mari în font monospace, grilă vizibilă, un singur accent electric.",
+      "de_ce": "Cel mai „tech” și cel mai diferit de alte programe de antreprenoriat. Cere fotografii bune pe fundal închis.",
+      "schema": "dark",
+      "culori": [
+        {
+          "token": "bg",
+          "nume": "Noapte",
+          "hex": "#0A0E17",
+          "rol": "fundalul paginii",
+          "principala": true
+        },
+        {
+          "token": "surface",
+          "nume": "Panou",
+          "hex": "#121826",
+          "rol": "carduri",
+          "principala": true
+        },
+        {
+          "token": "primary",
+          "nume": "Albastru electric",
+          "hex": "#3D7BFF",
+          "rol": "principală: butoane, linkuri",
+          "principala": true
+        },
+        {
+          "token": "accent",
+          "nume": "Lime",
+          "hex": "#C8F560",
+          "rol": "accent: cifre, „live”, etichete",
+          "principala": true
+        },
+        {
+          "token": "ink",
+          "nume": "Alb",
+          "hex": "#EEF2F8",
+          "rol": "text",
+          "principala": true
+        },
+        {
+          "token": "muted",
+          "nume": "Gri",
+          "hex": "#8A94A7",
+          "rol": "text secundar",
+          "principala": true
+        },
+        {
+          "token": "surface-2",
+          "nume": "Panou 2",
+          "hex": "#171F30",
+          "rol": "secțiuni alternative"
+        },
+        {
+          "token": "line",
+          "nume": "Linii",
+          "hex": "#232C3E",
+          "rol": "borduri, grilă"
+        },
+        {
+          "token": "primary-ink",
+          "nume": "Text pe principală",
+          "hex": "#FFFFFF",
+          "rol": "text pe butoane"
+        },
+        {
+          "token": "primary-soft",
+          "nume": "Principală închisă",
+          "hex": "#16223D",
+          "rol": "fundaluri discrete"
+        },
+        {
+          "token": "highlight",
+          "nume": "Evidențiere",
+          "hex": "#C8F560",
+          "rol": "cifre pe fundal închis"
+        },
+        {
+          "token": "dark",
+          "nume": "Negru",
+          "hex": "#05070C",
+          "rol": "secțiuni închise, footer"
+        },
+        {
+          "token": "dark-2",
+          "nume": "Negru 2",
+          "hex": "#0F1522",
+          "rol": "carduri pe fundal închis"
+        },
+        {
+          "token": "dark-ink",
+          "nume": "Text pe închis",
+          "hex": "#EEF2F8",
+          "rol": "text pe fundal închis"
+        },
+        {
+          "token": "dark-muted",
+          "nume": "Text secundar pe închis",
+          "hex": "#8A94A7",
+          "rol": "texte secundare pe fundal închis"
+        }
+      ],
+      "tipografie": {
+        "titluri": {
+          "font": "Space Grotesk",
+          "greutate": 700,
+          "latime": "100%",
+          "spatiere": "-0.03em",
+          "rezerva": "system-ui, sans-serif"
+        },
+        "text": {
+          "font": "Inter",
+          "rezerva": "system-ui, sans-serif"
+        },
+        "cifre": {
+          "font": "JetBrains Mono",
+          "rezerva": "ui-monospace, monospace"
+        },
+        "etichete": {
+          "font": "JetBrains Mono",
+          "rezerva": "ui-monospace, monospace"
+        }
+      },
+      "forme": {
+        "raza": "6px",
+        "raza_buton": "6px",
+        "umbra": "0 0 0 1px #232C3E"
+      },
+      "google_fonts": "family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600"
+    }
+  ]
+}

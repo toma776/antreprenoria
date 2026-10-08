@@ -274,3 +274,32 @@ details.obs-done > summary { cursor: pointer; font-weight: 600; padding: 6px 0; 
 .j-partener, .j-organizator { background: var(--side) !important; }
 .j-alumni { background: var(--ok) !important; }
 .j-step i.j-alumni:is(.j-sponsor, .j-partener, .j-gazda, .j-speaker) { background: conic-gradient(var(--ok) 0 50%, var(--accent) 0) !important; }
+
+/* branding */
+.brand-var { margin-bottom: 22px; padding: 22px; }
+.brand-var.is-on { border-color: var(--ok); box-shadow: inset 0 0 0 1px var(--ok); }
+.bv-head { display: flex; justify-content: space-between; gap: 16px; align-items: start; flex-wrap: wrap; }
+.bv-head h2 { font-size: 19px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.bv-act { display: flex; gap: 8px; flex-wrap: wrap; }
+.bh { font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin: 22px 0 10px; }
+.bsw-grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+.bsw-grid.small-grid { margin-top: 10px; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+.bsw-c { display: grid; gap: 1px; font-size: 12.5px; }
+.bsw-c span { height: 44px; border-radius: 8px; border: 1px solid var(--line); margin-bottom: 6px; }
+.bsw-c.big span { height: 76px; }
+.bsw-c code { font-size: 11.5px; background: none; border: 0; padding: 0; color: var(--muted); }
+.bsw-c small { color: var(--muted); line-height: 1.3; }
+.type-spec { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; padding: 22px; border: 1px solid var(--line); }
+.type-spec small { font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; }
+.type-spec .ts-display { font-size: clamp(24px, 2.6vw, 34px); line-height: 1.1; margin: 8px 0 0; color: inherit; }
+.all-colors { margin-top: 10px; font-size: 13px; }
+.all-colors summary { cursor: pointer; color: var(--accent); font-weight: 600; }
+.ts-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.ts-num { font-size: 30px; line-height: 1; }
+.ts-num em { font-style: normal; font-size: .45em; opacity: .7; }
+.ts-btn { padding: 8px 14px; font-size: 13.5px; font-weight: 600; }
+.ts-btn.ghost { border: 1.5px solid; }
+.ts-eyebrow { font-size: 11.5px; font-weight: 600; letter-spacing: .06em; }
+.bv-preview { height: 560px; overflow: hidden; border: 1px solid var(--line); border-radius: 10px; position: relative; background: var(--panel-2); }
+.bv-preview iframe { width: 1440px; height: 900px; border: 0; transform-origin: 0 0; pointer-events: none; }
+@media (max-width: 860px) { .type-spec { grid-template-columns: 1fr; } }

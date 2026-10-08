@@ -1,7 +1,6 @@
-/* Interacțiunile site-ului: meniul pe mobil, testul „Ești potrivit?” și comutatorul de direcții de brand (doar pentru concept). */
+/* Interacțiunile site-ului: meniul pe mobil și testul „Ești potrivit?”. */
 (() => {
   const $ = (s, el = document) => el.querySelector(s);
-  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 
   // meniul pe mobil
   const btn = $('.menu-btn'), nav = $('#nav');
@@ -9,16 +8,6 @@
     const open = nav.classList.toggle('open');
     btn.setAttribute('aria-expanded', String(open));
   });
-
-  // direcția de brand: salvată local, ca să rămână la navigare
-  const setBrand = (k) => {
-    document.documentElement.dataset.brand = k;
-    try { localStorage.setItem('brand', k); } catch (e) { /* fără stocare: rămâne doar pe pagina curentă */ }
-    $$('[data-brand-set]').forEach((b) => b.classList.toggle('on', b.dataset.brandSet === k));
-  };
-  setBrand(document.documentElement.dataset.brand || 'a');
-  $$('[data-brand-set]').forEach((b) => b.addEventListener('click', () => setBrand(b.dataset.brandSet)));
-  $$('[data-brand-go]').forEach((a) => a.addEventListener('click', () => { try { localStorage.setItem('brand', a.dataset.brandGo); } catch (e) { /* idem */ } }));
 
   // „Ești potrivit?”: răspuns imediat, fără date trimise nicăieri
   const quiz = $('#quiz'), out = $('#quiz-out');

@@ -20,7 +20,11 @@ const src = (list) => {
   return `<details class="src"><summary>${plural(L.length, 'pagină', 'pagini')}</summary>${L.map((u) => `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(shortUrl(u))}</a>`).join('')}</details>`;
 };
 
-const api = { get: (u) => fetch(u, { cache: 'no-store' }).then((r) => (r.ok ? r.json() : null)).catch(() => null) };
+const api = {
+  get: (u) => fetch(u, { cache: 'no-store' }).then((r) => (r.ok ? r.json() : null)).catch(() => null),
+  send: (u, method, body) => fetch(u, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+    .then(async (r) => { const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || 'HTTP ' + r.status); return j; }),
+};
 const store = { entitati: null };
 
 /* ---------- iconițe (stroke 24×24) ---------- */
