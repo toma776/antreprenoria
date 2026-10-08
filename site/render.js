@@ -82,15 +82,52 @@ function header(F, ctx) {
     </div>
   </div><div class="mm-scrim" hidden></div></header>`;
 }
-function footer() {
-  return `<footer class="ftr"><div class="wrap ftr-in">
-    <div><a class="logo" href="/"><span class="logo-mark">A</span><span class="logo-txt">Antreprenoria<small>by Romanian Business Leaders</small></span></a>
-      <p class="muted">Cresc antreprenorii, crește România! Program al Fundației Romanian Business Leaders, din 2013.</p></div>
-    <div><h4>Program</h4>${NAV.slice(0, 4).map(([t, u]) => `<a href="${u}">${t}</a>`).join('')}</div>
-    <div><h4>Comunitate</h4>${NAV.slice(4).map(([t, u]) => `<a href="${u}">${t}</a>`).join('')}<a href="/contact">Contact</a></div>
-    <div><h4>Contact</h4><p class="muted">Calea Dorobanți 42, et. 3, ap. 5<br>Sector 1, București</p>
-      <p><a href="https://www.facebook.com/antreprenoria/" rel="noopener">Facebook</a> · <a href="https://www.linkedin.com/company/antreprenoria" rel="noopener">LinkedIn</a></p></div>
-  </div><div class="wrap ftr-legal muted"><span>© ${new Date().getFullYear()} Fundația Romanian Business Leaders</span><span><a href="/confidentialitate">Confidențialitate</a> · <a href="/termeni-si-conditii">Termeni</a> · <a href="/politica-cookies">Cookies</a></span></div></footer>`;
+// footer: închis la culoare (diferit de banda finală), cu starea programului din creier, contactele echipei
+// și numele programului desenat mare la bază
+const ICON = {
+  linkedin: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.5h4V21H3zM9.5 9.5h3.8v1.6h.06c.53-1 1.83-2.06 3.77-2.06 4.03 0 4.77 2.65 4.77 6.1V21h-4v-5.1c0-1.22-.02-2.79-1.7-2.79-1.7 0-1.96 1.33-1.96 2.7V21h-4z"/></svg>',
+  facebook: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 21v-7.5h2.5l.4-3h-2.9V8.6c0-.87.25-1.46 1.5-1.46h1.55V4.47A20 20 0 0 0 14.3 4.3c-2.2 0-3.7 1.34-3.7 3.8v2.4H8.1v3h2.5V21z"/></svg>',
+  arrow: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+};
+function footer(F, ctx) {
+  const { D } = ctx;
+  const edUrl = (e) => (e.serie === 'Cluj' ? `/editii/cluj-${e.numar}` : `/editii/${e.numar}`);
+  const team = Object.fromEntries(D.program.contact.echipa.map((p) => [p.id, p]));
+  const ong = F.ongoing, nx = F.next;
+  const contact = (p, label) => p ? `<div class="ftr-person"><span>${label}</span><b>${esc(p.nume)}</b><a href="mailto:${esc(p.email)}">${esc(p.email)}</a>${p.telefon ? `<a href="tel:${esc(p.telefon.replace(/D/g, ''))}">${esc(p.telefon)}</a>` : ''}</div>` : '';
+  const recent = D.editii.filter((e) => e.serie === 'București').sort((a, b) => b.numar - a.numar).slice(0, 4);
+  return `<footer class="ftr">
+  <div class="wrap">
+    <div class="ftr-top">
+      <div class="ftr-brand">
+        <a class="logo" href="/"><span class="logo-mark">A</span><span class="logo-txt">Antreprenoria<small>by Romanian Business Leaders</small></span></a>
+        <p class="ftr-claim">Cresc antreprenorii,<br>crește România.</p>
+        <p class="ftr-sub">Program al Fundației Romanian Business Leaders, din ${D.program.de_cand}. ${F.maxNr} ediții în București, plus Cluj.</p>
+        <div class="ftr-social">
+          <a href="https://www.linkedin.com/company/antreprenoria" rel="noopener" aria-label="LinkedIn">${ICON.linkedin}</a>
+          <a href="https://www.facebook.com/antreprenoria/" rel="noopener" aria-label="Facebook">${ICON.facebook}</a>
+        </div>
+      </div>
+      ${ong ? `<a class="ftr-status" href="${edUrl(ong)}">
+        <span class="ftr-status-top"><i class="dot-live"></i>Acum: ediția #${ong.numar}</span>
+        ${nx ? `<b>Următorul atelier: ${esc(nx.titlu)}</b><span>${fmtDay(nx.data)}${nx.locatie ? ' · ' + esc(nx.locatie) : ''}</span>` : `<b>${esc(ong.perioada)}</b>`}
+        <em>Vezi agenda ${ICON.arrow}</em>
+      </a>` : ''}
+    </div>
+    <div class="ftr-cols">
+      <nav aria-label="Program"><h4>Program</h4>${NAV.slice(0, 4).map(([t, u]) => `<a href="${u}">${t}</a>`).join('')}<a href="/aplica">Aplică</a></nav>
+      <nav aria-label="Comunitate"><h4>Comunitate</h4>${NAV.slice(4).map(([t, u]) => `<a href="${u}">${t}</a>`).join('')}<a href="/contact">Contact</a></nav>
+      <nav aria-label="Ediții recente"><h4>Ediții recente</h4>${recent.map((e) => `<a href="${edUrl(e)}">#${e.numar} <small>${esc(e.sezon)} ${e.an}</small></a>`).join('')}${F.cluj ? `<a href="${edUrl(F.cluj)}">Cluj #${F.cluj.numar} <small>înscrieri deschise</small></a>` : ''}</nav>
+      <div class="ftr-contact"><h4>Contact</h4>
+        ${contact(team['raluca-bedereag'], 'Pentru participanți')}
+        ${contact(team['larisa-slavenie'], 'Parteneriate')}
+        <p class="ftr-addr">Calea Dorobanți 42, et. 3, ap. 5<br>Sector 1, București</p>
+      </div>
+    </div>
+  </div>
+  <div class="ftr-word" aria-hidden="true"><svg viewBox="0 0 1000 124" preserveAspectRatio="xMidYMax meet"><defs><linearGradient id="ftr-fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="currentColor" stop-opacity=".2"/><stop offset="1" stop-color="currentColor" stop-opacity=".03"/></linearGradient></defs><text x="2" y="124" textLength="996" lengthAdjust="spacingAndGlyphs" fill="url(#ftr-fade)">Antreprenoria</text></svg></div>
+  <div class="wrap ftr-legal"><span>© ${new Date().getFullYear()} Fundația Romanian Business Leaders</span><span><a href="/confidentialitate">Confidențialitate</a><a href="/termeni-si-conditii">Termeni</a><a href="/politica-cookies">Cookies</a></span></div>
+</footer>`;
 }
 
 // ---------- HOMEPAGE ----------
@@ -100,7 +137,7 @@ function renderHome(opt = {}) {
 ${header(F, ctx)}
 <div class="gridlines" aria-hidden="true"></div>
 ${homeBody(ctx, F)}
-${footer()}
+${footer(F, ctx)}
 <script src="/assets/site.js"></script>
 </body></html>`;
 }
