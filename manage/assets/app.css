@@ -315,8 +315,3 @@ details.obs-done > summary { cursor: pointer; font-weight: 600; padding: 6px 0; 
 .mi-demos { display: grid; gap: 8px; margin-bottom: 12px; }
 .mi-demo { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); }
 .mi-logo { width: 26px; height: 26px; border-radius: 7px; display: grid; place-items: center; font-weight: 800; font-size: 14px; }
-.mi-now { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: center; margin-top: 18px; padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; }
-.mi-now p { margin: 0 0 6px; }
-.mi-demos.row { grid-template-columns: 1fr 1fr; }
-.mi-card .seg button:disabled { opacity: 1; cursor: default; }
-@media (max-width: 860px) { .mi-now { grid-template-columns: 1fr; } }

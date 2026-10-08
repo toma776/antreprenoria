@@ -268,9 +268,8 @@
     }
   ],
   "icon_meniu": {
-    "_despre": "Iconul butonului de meniu pe mobil și tabletă: trei cercuri pline înscrise într-un pătrat imaginar. La deschidere, cercurile se rearanjează în altă așezare („deschis”). Se schimbă din panou (Branding).",
+    "_despre": "Iconul butonului de meniu pe mobil și tabletă: trei cercuri pline înscrise într-un pătrat imaginar. Fiecare variantă are o așezare cu meniul închis și o mișcare la deschidere. Se schimbă din panou (Branding).",
     "activ": "mare-si-doua-mici",
-    "deschis": "triunghi",
     "culori": "mono",
     "moduri_culoare": [
       {
@@ -286,24 +285,16 @@
     ],
     "variante": [
       {
-        "id": "colt-liber",
-        "nume": "Colț liber",
-        "descriere": "Trei colțuri ale pătratului, al patrulea liber, ca o piesă de puzzle care așteaptă să fie completată."
-      },
-      {
-        "id": "triunghi",
-        "nume": "Triunghi",
-        "descriere": "Un cerc sus, două jos, ca litera A din Antreprenoria."
-      },
-      {
-        "id": "diagonala",
-        "nume": "Diagonală",
-        "descriere": "Trei cercuri pe diagonala pătratului, ca o traiectorie ascendentă."
-      },
-      {
         "id": "mare-si-doua-mici",
         "nume": "Mare și două mici",
-        "descriere": "Un cerc mare și doi „colegi” mai mici; aceeași idee a pătratului, cu mai mult ritm."
+        "descriere": "Un cerc mare în stânga sus și doi „colegi” mai mici.",
+        "la_deschidere": "Cercul mare se mută în colțul din dreapta jos."
+      },
+      {
+        "id": "colt-liber",
+        "nume": "Colț liber",
+        "descriere": "Trei colțuri ale pătratului, al patrulea liber.",
+        "la_deschidere": "Cercul din stânga jos se mută în dreapta sus."
       }
     ]
   }

@@ -70,8 +70,8 @@ function head(title, desc, brandId) {
 }
 // butonul de meniu pe mobil: iconul (trei cercuri) și modul de culoare vin din data/brand.json › icon_meniu
 function menuButton() {
-  const I = brand.load().icon_meniu || { activ: 'mare-si-doua-mici', deschis: 'triunghi', culori: 'mono' };
-  return `<button class="menu-btn mi-${esc(I.activ)} mo-${esc(I.deschis)} mc-${esc(I.culori)}" aria-label="Deschide meniul" aria-expanded="false" aria-controls="nav"><span></span><span></span><span></span></button>`;
+  const I = brand.load().icon_meniu || { activ: 'mare-si-doua-mici', culori: 'mono' };
+  return `<button class="menu-btn mi-${esc(I.activ)} mc-${esc(I.culori)}" aria-label="Deschide meniul" aria-expanded="false" aria-controls="nav"><span></span><span></span><span></span></button>`;
 }
 function header(F, ctx) {
   return `<header class="hdr"><div class="wrap hdr-in">
