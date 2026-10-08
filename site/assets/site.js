@@ -79,7 +79,8 @@
     const STEP = 60, MAX_STEPS = 8;
     const TITLES = '.sec h2, .cycle h3, .cta-band h2';
     const ITEMS = ['.sec .eyebrow', '.sec .lead', '.sec .link-arrow', '.proof .stat', '.step', '.cur', '.pulse-stat', '.feed-item', '.person', '.fig', '.fine', '.sector',
-      '.cycle-copy > p:not(.eyebrow)', '.cycle-item', '.tl', '.checks li', '.quiz', '.logo-cell', '.cta-band-copy > p:not(.eyebrow)', '.cta-band .hero-actions', '.agenda-card'].join(', ');
+      '.cycle-copy > p:not(.eyebrow)', '.cycle-item', '.tl', '.checks li', '.quiz', '.logo-cell', '.cta-band-copy > p:not(.eyebrow)', '.cta-band .hero-actions', '.agenda-card',
+      '.ag-item', '.ed-person', '.ed-part', '.benefit', '.ed-strategic', '.ed-sponsor', '.ed-nav a'].join(', ');
 
     // întârzierea: poziția elementului printre frații lui animați, ca un grup să apară pe rând
     const order = new Map();

@@ -48,7 +48,7 @@ function safe(base, rel) {
 }
 // modulele site-ului se reîncarcă la fiecare cerere, ca schimbările din data/ și site/ să apară fără repornire
 function fresh(mod) {
-  ['./site/render', './site/brand', './site/menu', './site/home', './site/util'].forEach((m) => delete require.cache[require.resolve(m)]);
+  ['./site/render', './site/brand', './site/menu', './site/home', './site/util', './site/edition'].forEach((m) => delete require.cache[require.resolve(m)]);
   return require(mod);
 }
 
@@ -96,6 +96,12 @@ async function handler(req, res) {
       const brand = new URLSearchParams(query).get('brand') || undefined;
       res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' });
       return res.end(fresh('./site/render')[PAGES[url]]({ brand }));
+    }
+    // /editii/22, /editii/cluj-1
+    const ed = /^\/editii\/((?:cluj-)?\d+)\/?$/.exec(url);
+    if (ed) {
+      const html = fresh('./site/render').renderEdition({ key: ed[1], brand: new URLSearchParams(query).get('brand') || undefined });
+      if (html) { res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' }); return res.end(html); }
     }
     sendJson(res, 404, { error: 'pagină inexistentă' });
   } catch (e) {

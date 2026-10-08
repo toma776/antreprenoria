@@ -8,6 +8,7 @@ const { megaMenu } = require('./menu');
 const DATA = path.join(__dirname, '..', 'data', 'entitati.json');
 const { esc, today, fmtDay, median, quantile, milLei, initials } = require('./util');
 const { homeBody } = require('./home');
+const { editionBody, findEdition, edLabel } = require('./edition');
 
 // logo-uri mai bune decât cele din creier (acolo e logo-ul folosit la sponsorizare, uneori foarte mic)
 const LOGO = { zitec: 'https://antreprenoria.ro/images/zitec-logo_blue-orange-no-motto.svg' };
@@ -142,4 +143,19 @@ ${footer(F, ctx)}
 </body></html>`;
 }
 
-module.exports = { renderHome };
+// ---------- PAGINA UNEI EDIȚII ----------
+// întoarce null dacă ediția nu există (serverul răspunde 404)
+function renderEdition(opt = {}) {
+  const ctx = load(), F = facts(ctx), e = findEdition(ctx.D, opt.key);
+  if (!e) return null;
+  const name = `Antreprenoria ${e.serie === 'Cluj' ? 'Cluj ' : ''}#${e.numar}`;
+  return `${head(`${name} · ${e.perioada} – Antreprenoria`, `${name}, ${e.perioada}: agenda atelierelor, traineri și antreprenori invitați, colegii de ediție și partenerii.`, opt.brand)}
+${header(F, ctx)}
+<div class="gridlines" aria-hidden="true"></div>
+${editionBody(ctx, F, e)}
+${footer(F, ctx)}
+<script src="/assets/site.js"></script>
+</body></html>`;
+}
+
+module.exports = { renderHome, renderEdition };
