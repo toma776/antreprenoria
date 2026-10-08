@@ -18,7 +18,6 @@ const edLink = (id) => `<a href="/manage/entitati/editii/${id}">${esc(edShort(id
 const edOrder = (D) => D.editii.slice().sort((a, b) => (a.an - b.an) || (a.sezon === b.sezon ? 0 : a.sezon === 'primăvară' ? -1 : 1) || (a.serie === 'Cluj') - (b.serie === 'Cluj'));
 const fmtClass = (f) => (f === 'seară' ? 'seara' : f === 'networking' ? 'networking' : '');
 const ROLE_LABEL = { trainer: 'Trainer', 'antreprenor invitat': 'Antreprenor invitat', facilitator: 'Facilitator', invitat: 'Invitat', participant: 'Participant', 'echipă': 'Echipă' };
-const LVL = ['critic', 'mediu', 'minor'];
 
 function personChip(id, extra) {
   const p = IX.P[id];
@@ -57,8 +56,6 @@ function entityCategories(D) {
       groups: ['ciclu', 'multirol', 'alumni', 'parteneri', 'speakeri', 'locatii'] },
     { id: 'teme', icon: 'teme', title: 'Curriculum', desc: 'Temele atelierelor care se repetă de la o ediție la alta, cu titlurile folosite și trainerii fiecărei teme.',
       groups: ['matrice', 'full-day', 'seara', 'networking'] },
-    { id: 'seo', icon: 'seo', title: 'Audit', audit: true, desc: 'Nu sunt entități: inconsecvențele găsite la extragere (date, conținut, conversie).',
-      groups: ['observatii'] },
   ];
 }
 
@@ -108,7 +105,6 @@ function groupInfo(D, catId, g) {
       const list = D.teme.filter((t) => t.format === f);
       return { title: { 'full-day': 'Ateliere full-day', seara: 'Ateliere de seară', networking: 'Networking' }[g], count: list.length, desc: list.map((t) => t.nume).join(', '), html: () => themesList(D, list) };
     }
-    case 'seo': return g === 'observatii' && { title: 'Observații', count: D.observatii.length, desc: 'Inconsecvențele găsite la extragere.', html: () => obsHtml(D) };
   }
   return null;
 }
@@ -168,7 +164,6 @@ function editionSpeakers(e) {
 function editionPage(D, e, sub) {
   const sp = editionSpeakers(e);
   const counts = { program: null, ateliere: e.ateliere.length, participanti: e.participanti.length, speakeri: sp.length, parteneri: editionPartners(D, e).length };
-  const obs = D.observatii.filter((o) => o.editie === e.id);
   const order = edOrder(D), i = order.findIndex((x) => x.id === e.id);
   const prev = order[i - 1], next = order[i + 1];
   let body = '';
@@ -188,7 +183,6 @@ function editionPage(D, e, sub) {
       </dl>${src([e.url])}</div>
       <div class="card"><h3>Ce primește participantul</h3>${e.beneficii.length ? `<ul class="clean">${e.beneficii.map((b) => `<li>${esc(b)}</li>`).join('')}</ul>` : '<p>Pagina nu are secțiunea „Ai acces la”.</p>'}
         <h3 style="margin-top:14px">Calendar</h3>${editionTimeline(e)}
-        ${obs.length ? `<h3 style="margin-top:14px">Observații pe această ediție</h3>${obs.map((o) => `<div class="small" style="margin-top:6px"><span class="lvl ${o.nivel}">${o.nivel}</span> ${esc(o.text)}</div>`).join('')}` : ''}
       </div></div>`;
   } else if (sub === 'ateliere') {
     body = e.ateliere.map(workshopHtml).join('');
@@ -424,30 +418,6 @@ function themesList(D, list) {
   }).join('');
 }
 
-/* ---------- AUDIT ---------- */
-const obsUI = { nivel: '', zona: '' };
-function obsHtml(D) {
-  const zone = [...new Set(D.observatii.map((o) => o.zona))];
-  const list = D.observatii.filter((o) => (!obsUI.nivel || o.nivel === obsUI.nivel) && (!obsUI.zona || o.zona === obsUI.zona))
-    .sort((a, b) => LVL.indexOf(a.nivel) - LVL.indexOf(b.nivel));
-  return `<div class="obs-bar">
-      <button class="sm ${!obsUI.nivel ? 'on' : ''}" data-obs-nivel="">Toate · ${D.observatii.length}</button>
-      ${LVL.map((n) => `<button class="sm ${obsUI.nivel === n ? 'on' : ''}" data-obs-nivel="${n}">${n} · ${D.observatii.filter((o) => o.nivel === n).length}</button>`).join('')}
-      <span class="grow"></span>
-      <button class="sm ${!obsUI.zona ? 'on' : ''}" data-obs-zona="">Toate zonele</button>
-      ${zone.map((z) => `<button class="sm ${obsUI.zona === z ? 'on' : ''}" data-obs-zona="${esc(z)}">${esc(z)}</button>`).join('')}
-    </div>
-    <div class="card" style="padding:0">${list.map((o) => `<div class="obs" data-s><span class="lvl ${o.nivel}">${o.nivel}</span><div class="obs-main">${esc(o.text)}
-      <div class="obs-check">${esc(o.zona)}${o.editie ? ` · ${edLink(o.editie)}` : ''}${o.persoana ? ` · <a href="/manage/entitati/oameni/p/${o.persoana}">persoana</a>` : ''}${o.url ? ` · ${link(o.url)}` : ''}</div></div></div>`).join('') || '<div class="empty">Nicio observație pentru filtrul ales.</div>'}</div>`;
-}
-document.addEventListener('click', (e) => {
-  const b = e.target.closest('[data-obs-nivel], [data-obs-zona]');
-  if (!b) return;
-  if (b.dataset.obsNivel !== undefined) obsUI.nivel = b.dataset.obsNivel;
-  if (b.dataset.obsZona !== undefined) obsUI.zona = b.dataset.obsZona;
-  routes.entitati();
-});
-
 /* ---------- căutare ---------- */
 function searchIndex(D) {
   return [
@@ -483,7 +453,7 @@ routes.entitati = function renderEntitati() {
   const [catId, grpId, sub] = location.pathname.replace(/^\/manage\/entitati\/?/, '').split('/');
   const cat = CATS.find((c) => c.id === catId);
   const G = (c, g) => groupInfo(D, c.id, g);
-  const total = (c) => (c.audit ? 0 : c.id === 'editii' ? c.groups.length : c.id === 'oameni' ? D.oameni.length : c.id === 'organizatii' ? D.organizatii.length : c.groups.reduce((n, g) => n + (G(c, g)?.count || 0), 0));
+  const total = (c) => (c.id === 'editii' ? c.groups.length : c.id === 'oameni' ? D.oameni.length : c.id === 'organizatii' ? D.organizatii.length : c.groups.reduce((n, g) => n + (G(c, g)?.count || 0), 0));
 
   // pagini de detaliu
   if (cat?.id === 'oameni' && grpId === 'p') { $('#view').innerHTML = personPage(D, sub); return; }
@@ -498,8 +468,8 @@ routes.entitati = function renderEntitati() {
         <button id="exp">Export JSON</button>
       </div>
       <div class="cats" id="cats">${CATS.map((c) => `
-        <a class="cat ${c.audit ? 'audit' : ''}" href="/manage/entitati/${c.id}">
-          <div class="cat-top"><span class="cat-ico">${icon(c.icon)}</span>${c.audit ? `<span class="tag bad">${D.observatii.filter((o) => o.nivel === 'critic').length} critice</span>` : `<span class="cat-total">${total(c)}</span>`}</div>
+        <a class="cat" href="/manage/entitati/${c.id}">
+          <div class="cat-top"><span class="cat-ico">${icon(c.icon)}</span><span class="cat-total">${total(c)}</span></div>
           <h3>${esc(c.title)}</h3>
           <p>${esc(c.desc)}</p>
           <div class="cat-subs">${c.groups.map((g) => { const x = G(c, g); return `<span>${esc(c.id === 'editii' ? edLabel(IX.ED[g]) : x.title)}${x.count != null && c.id !== 'editii' ? ` <b>${x.count}</b>` : ''}</span>`; }).join('')}</div>

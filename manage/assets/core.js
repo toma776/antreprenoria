@@ -35,7 +35,6 @@ const ICON = {
   companii: '<path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-5h6v5M9 10h.01M15 10h.01M9 13h.01M15 13h.01"/>',
   parteneri: '<path d="M8 12l3 3 5-6M12 22c5.5 0 10-4.5 10-10S17.5 2 12 2 2 6.5 2 12s4.5 10 10 10z"/>',
   teme: '<path d="M4 19.5A2.5 2.5 0 016.5 17H20V3H6.5A2.5 2.5 0 004 5.5zM4 19.5A2.5 2.5 0 006.5 22H20v-5M9 7h7M9 11h5"/>',
-  seo: '<path d="M11 18a7 7 0 100-14 7 7 0 000 14zM21 21l-5-5M8 11h6M11 8v6"/>',
 };
 const icon = (id, size = 20) => `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[id] || ICON.program}</svg>`;
 
@@ -65,7 +64,7 @@ window.addEventListener('popstate', () => go(routeFromPath()));
 
 function updateCounts() {
   const E = store.entitati;
-  $('#n-entitati').textContent = E ? entityCategories(E).filter((c) => !c.audit).length : '';
+  $('#n-entitati').textContent = E ? entityCategories(E).length : '';
 }
 
 /* ---------- DASHBOARD ---------- */
@@ -73,7 +72,6 @@ routes.dashboard = function renderDashboard() {
   const E = store.entitati;
   if (!E) { $('#view').innerHTML = '<div class="card empty"><b>Lipsește data/entitati.json</b>Rulează <code>npm run sync</code>.</div>'; return; }
   const curr = E.editii.filter((e) => e.deschisa);
-  const obsN = (n) => E.observatii.filter((o) => o.nivel === n).length;
   const topPeople = E.oameni.filter((p) => p.aparitii.length).sort((a, b) => b.editii.length - a.editii.length).slice(0, 6);
   const alumni = E.organizatii.filter((o) => o.tipuri.includes('alumni'));
   const ciclu = E.organizatii.filter((o) => o.ciclu);
@@ -96,15 +94,6 @@ routes.dashboard = function renderDashboard() {
       <div class="card">
         <h3><a href="/manage/entitati/editii">Ediții în curs →</a></h3>
         ${curr.map((e) => `<p><a href="/manage/entitati/editii/${e.id}"><b>${esc(edLabel(e))}</b></a> · ${esc(e.perioada)} · ${tags(e.status, 'ok')}<br>${plural(e.ateliere.length, 'atelier', 'ateliere')}, ${plural(e.participanti.length, 'participant', 'participanți')}${e.preturi.filter((p) => !p.ascuns).map((p) => ` · ${esc(p.pret_text)}`).join('')}</p>`).join('')}
-      </div>
-      <div class="card">
-        <h3><a href="/manage/entitati/seo">Observații →</a></h3>
-        <div class="kpis" style="margin:10px 0 0">
-          <div class="kpi"><b>${obsN('critic')}</b><span>critice</span></div>
-          <div class="kpi"><b>${obsN('mediu')}</b><span>medii</span></div>
-          <div class="kpi"><b>${obsN('minor')}</b><span>minore</span></div>
-        </div>
-        <p>${E.observatii.filter((o) => o.nivel === 'critic').map((o) => '• ' + esc(cut(o.text, 120))).join('<br>')}</p>
       </div>
       <div class="card">
         <h3><a href="/manage/entitati/organizatii/ciclu">Din alumni, parteneri →</a></h3>
