@@ -52,14 +52,34 @@
   const m = new URLSearchParams(location.search).get('meniu'), deschis = items.find((i) => i.dataset.mm === m);
   if (deschis) { if (!desktop.matches) toggleNav(true); openOnly(deschis); }
 
+  // ---------- tab-uri (întrebarea din hero, curriculum) ----------
+  // fiecare [data-tabs] are butoane [role=tab][data-tab] și panouri [data-panel]; săgețile stânga/dreapta mută selecția
+  $$('[data-tabs]').forEach((box) => {
+    const tabs = $$('[role="tab"]', box);
+    const select = (t, focus) => {
+      tabs.forEach((x) => x.setAttribute('aria-selected', String(x === t)));
+      $$('[data-panel]', box).forEach((p) => (p.hidden = p.dataset.panel !== t.dataset.tab));
+      if (focus) t.focus();
+    };
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => select(t));
+      t.addEventListener('keydown', (e) => {
+        const d = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+        if (!d) return;
+        e.preventDefault();
+        select(tabs[(i + d + tabs.length) % tabs.length], true);
+      });
+    });
+  });
+
   // ---------- apariția la scroll ----------
   // Titlurile urcă rând cu rând dintr-o mască, restul elementelor apar discret, pe rând; cifrele numără până la valoare.
   // Pornește doar cu html.rv (setat în <head> când „reduce motion” e oprit). Hero-ul nu se animă.
   if (document.documentElement.classList.contains('rv') && 'IntersectionObserver' in window) {
     const STEP = 60, MAX_STEPS = 8;
-    const TITLES = '.sec h2, .cycle h3, .cta-in h2';
-    const ITEMS = ['.sec .eyebrow', '.sec .lead', '.sec .link-arrow', '.proof .stat', '.step', '.theme', '.person', '.fig', '.fine', '.sector',
-      '.cycle-copy > p:not(.eyebrow)', '.cycle-item', '.tl', '.checks li', '.quiz', '.logo-cell', '.cta-in p', '.cta-in .hero-actions'].join(', ');
+    const TITLES = '.sec h2, .cycle h3, .cta-band h2';
+    const ITEMS = ['.sec .eyebrow', '.sec .lead', '.sec .link-arrow', '.proof .stat', '.step', '.cur', '.pulse-stat', '.feed-item', '.person', '.fig', '.fine', '.sector',
+      '.cycle-copy > p:not(.eyebrow)', '.cycle-item', '.tl', '.checks li', '.quiz', '.logo-cell', '.cta-band-copy > p:not(.eyebrow)', '.cta-band .hero-actions', '.agenda-card'].join(', ');
 
     // întârzierea: poziția elementului printre frații lui animați, ca un grup să apară pe rând
     const order = new Map();

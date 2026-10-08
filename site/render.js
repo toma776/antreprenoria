@@ -6,14 +6,8 @@ const brand = require('./brand');
 const { megaMenu } = require('./menu');
 
 const DATA = path.join(__dirname, '..', 'data', 'entitati.json');
-const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-const today = () => new Date().toISOString().slice(0, 10);
-const MONTHS = ['ianuarie', 'februarie', 'martie', 'aprilie', 'mai', 'iunie', 'iulie', 'august', 'septembrie', 'octombrie', 'noiembrie', 'decembrie'];
-const fmtDay = (d) => { const [y, m, z] = d.split('-').map(Number); return `${z} ${MONTHS[m - 1]}`; };
-const median = (arr) => { const a = arr.filter((x) => x != null).sort((x, y) => x - y); return a.length ? (a.length % 2 ? a[(a.length - 1) / 2] : (a[a.length / 2 - 1] + a[a.length / 2]) / 2) : null; };
-const quantile = (arr, q) => { const a = arr.filter((x) => x != null).sort((x, y) => x - y); return a.length ? a[Math.floor((a.length - 1) * q)] : null; };
-const milLei = (n) => `${(n / 1e6).toLocaleString('ro-RO', { maximumFractionDigits: 1 })}`;
-const initials = (n) => n.split(/[\s-]+/).map((x) => x[0]).slice(0, 2).join('');
+const { esc, today, fmtDay, median, quantile, milLei, initials } = require('./util');
+const { homeBody } = require('./home');
 
 // logo-uri mai bune decât cele din creier (acolo e logo-ul folosit la sponsorizare, uneori foarte mic)
 const LOGO = { zitec: 'https://antreprenoria.ro/images/zitec-logo_blue-orange-no-motto.svg' };
@@ -98,135 +92,14 @@ function footer() {
       <p><a href="https://www.facebook.com/antreprenoria/" rel="noopener">Facebook</a> · <a href="https://www.linkedin.com/company/antreprenoria" rel="noopener">LinkedIn</a></p></div>
   </div><div class="wrap ftr-legal muted"><span>© ${new Date().getFullYear()} Fundația Romanian Business Leaders</span><span><a href="/confidentialitate">Confidențialitate</a> · <a href="/termeni-si-conditii">Termeni</a> · <a href="/politica-cookies">Cookies</a></span></div></footer>`;
 }
-const avatar = (p, cls = '') => (p.imagine ? `<img class="${cls}" src="${esc(p.imagine)}" alt="${esc(p.nume)}" loading="lazy">` : `<span class="${cls} ph">${esc(initials(p.nume))}</span>`);
 
 // ---------- HOMEPAGE ----------
 function renderHome(opt = {}) {
-  const ctx = load(), { D, P, O, T } = ctx, F = facts(ctx);
-  const nextSpeakers = F.next ? F.next.program.flatMap((x) => x.speakeri).map((s) => P[s.persoana]).filter(Boolean) : [];
-  const fullDay = D.teme.filter((t) => t.format === 'full-day');
-  const evening = D.teme.filter((t) => t.format === 'seară' && t.ateliere >= 5);
-  const themePeople = (t) => new Set(D.editii.flatMap((e) => e.ateliere.filter((a) => a.tema === t.id).flatMap((a) => a.program.flatMap((x) => x.speakeri.map((s) => s.persoana))))).size;
-  const maxSector = F.sectors[0][1];
-  const heroFaces = F.topTrainers.slice(0, 6);
-
+  const ctx = load(), F = facts(ctx);
   return `${head('Antreprenoria – acceleratorul antreprenorilor Romanian Business Leaders', 'Program de accelerare pentru companii în creștere: ateliere cu antreprenori de top, un grup selectat de colegi și comunitatea Romanian Business Leaders. Din 2013.', opt.brand)}
 ${header(F, ctx)}
-<main>
-  <section class="hero"><div class="wrap hero-in">
-    <div class="hero-copy">
-      <p class="eyebrow">Acceleratorul Romanian Business Leaders · din ${D.program.de_cand}</p>
-      <h1>Crește-ți compania alături de antreprenorii care au făcut-o deja.</h1>
-      <p class="lead">Trei luni, ateliere full-day și de seară cu lideri de business români, un grup selectat de colegi antreprenori și acces la comunitatea RBL.</p>
-      <div class="hero-actions"><a class="btn btn-primary btn-lg" href="#potrivit">Verifică dacă ești potrivit</a><a class="btn btn-ghost btn-lg" href="/program">Cum funcționează</a></div>
-      <ul class="hero-meta">
-        ${F.ongoing ? `<li><b>Ediția #${F.ongoing.numar}</b> e în desfășurare · ${esc(F.ongoing.perioada)}</li>` : ''}
-        ${F.cluj ? `<li><b>Antreprenoria Cluj #${F.cluj.numar}</b> · înscrieri deschise</li>` : ''}
-        <li><b>Ediția #${F.maxNr + 1}</b> · intră pe lista de așteptare</li>
-      </ul>
-    </div>
-    <div class="hero-visual" aria-hidden="true">
-      <div class="faces">${heroFaces.map((p, i) => `<figure class="face f${i}">${avatar(p)}<figcaption>${esc(p.nume.split(' ')[0])}<small>${p.editii.length} ediții</small></figcaption></figure>`).join('')}</div>
-      ${F.next ? `<div class="next-card"><span class="tag-live"><i></i>Următorul atelier</span>
-        <b>${esc(F.next.titlu)}</b><span>${fmtDay(F.next.data)} · ${esc(F.next.locatie || '')}</span>
-        <div class="next-people">${nextSpeakers.map((p) => avatar(p, 'mini')).join('')}<span>${nextSpeakers.map((p) => esc(p.nume)).join(', ')}</span></div></div>` : ''}
-    </div>
-  </div></section>
-
-  <section class="proof"><div class="wrap proof-in">
-    <div class="stat"><b><span data-count="${F.ani}">${F.ani}</span></b><span>ani de program</span></div>
-    <div class="stat"><b><span data-count="${F.maxNr}">${F.maxNr}</span></b><span>ediții în București, plus Cluj</span></div>
-    <div class="stat"><b><span data-count="${F.speakers}">${F.speakers}</span></b><span>traineri și antreprenori invitați din 2023</span></div>
-    <div class="stat"><b><span data-count="${F.alumni}">${F.alumni}</span></b><span>companii în ultimele ${D.editii.filter((e) => e.participanti.length).length} ediții</span></div>
-    <div class="stat"><b><span data-count="${(F.medianCa / 1e6).toFixed(1)}" data-dec="1">${milLei(F.medianCa)}</span><em> mil. lei</em></b><span>cifra de afaceri mediană a participanților</span></div>
-  </div></section>
-
-  <section class="sec" id="cum"><div class="wrap">
-    <div class="sec-head"><p class="eyebrow">Cum funcționează</p><h2>Un trimestru în care te uiți strategic la compania ta.</h2>
-      <p class="lead">La fiecare atelier: dimineața training aplicat, după-amiaza antreprenori care povestesc cum au rezolvat exact problema despre care vorbiți. Seara, networking cu colegii.</p></div>
-    <ol class="steps">
-      ${D.program.metodologie.map((m, i) => `<li class="step"><span class="step-n">0${i + 1}</span><h3>${esc(m.titlu.charAt(0) + m.titlu.slice(1).toLowerCase())}</h3><p>${esc(m.puncte[0].replace(/;$/, '.').replace(/\bANTREPRENORI\b/g, 'antreprenori'))}</p></li>`).join('')}
-    </ol>
-  </div></section>
-
-  <section class="sec sec-alt" id="teme"><div class="wrap">
-    <div class="sec-head row"><div><p class="eyebrow">Curriculum</p><h2>Cinci teme full-day, aceleași de ${D.teme.find((t) => t.id === 'viziune').editii.length} ediții încoace.</h2></div>
-      <a class="link-arrow" href="/teme">Toate temele →</a></div>
-    <div class="themes">
-      ${fullDay.map((t, i) => `<a class="theme" href="/teme/${t.id}"><span class="theme-n">${String(i + 1).padStart(2, '0')}</span><h3>${esc(t.nume)}</h3>
-        <p>${themePeople(t)} traineri și antreprenori au susținut tema în ${t.editii.length} ediții.</p><span class="theme-go">→</span></a>`).join('')}
-      <div class="theme theme-evening"><span class="theme-n">+</span><h3>Ateliere de seară</h3><p>${evening.map((t) => esc(t.nume)).join(' · ')}</p></div>
-    </div>
-  </div></section>
-
-  <section class="sec" id="traineri"><div class="wrap">
-    <div class="sec-head row"><div><p class="eyebrow">Traineri și antreprenori invitați</p><h2>Oameni care vorbesc din ce trăiesc.</h2>
-      <p class="lead">${F.constanti} dintre ei revin în cel puțin cinci ediții. Nu sunt invitați o dată, sunt parte din program.</p></div>
-      <a class="link-arrow" href="/traineri">Toți cei ${F.speakers} →</a></div>
-    <div class="people">
-      ${F.topTrainers.map((p) => `<a class="person" href="/traineri/${p.id}">${avatar(p)}<b>${esc(p.nume)}</b><span>${esc(ctx.O[p.organizatii[0]]?.nume || p.functii[0] || '')}</span>
-        <span class="person-ed">${p.editii.length} ediții · ${esc([...new Set(p.aparitii.map((a) => T[a.tema]?.nume).filter(Boolean))][0] || '')}</span></a>`).join('')}
-    </div>
-  </div></section>
-
-  <section class="sec sec-dark" id="alumni"><div class="wrap">
-    <div class="sec-head"><p class="eyebrow">Cine participă</p><h2>Companii reale, în creștere, din ${F.sectors.length} sectoare.</h2></div>
-    <div class="alumni-grid">
-      <div class="figures">
-        <div class="fig"><b>${milLei(F.q1)}–${milLei(F.q3)}<em> mil. lei</em></b><span>cifra de afaceri a jumătății „de mijloc” a participanților</span></div>
-        <div class="fig"><b><span data-count="${F.medianAng}">${F.medianAng}</span></b><span>angajați, la mediană</span></div>
-        <div class="fig"><b><span data-count="${F.participanti}">${F.participanti}</span></b><span>antreprenori și manageri în edițiile #16–#${F.maxNr}</span></div>
-        <p class="fine">Cifre agregate din datele declarate la înscriere, edițiile 2023–2026.</p>
-      </div>
-      <div class="sectors">${F.sectors.slice(0, 9).map(([s, n]) => `<div class="sector"><span>${esc(s)}</span><i style="--w:${(n / maxSector) * 100}%"></i><b>${n}</b></div>`).join('')}</div>
-    </div>
-    <div class="cycle">
-      <div class="cycle-copy"><p class="eyebrow">Din alumni, parteneri</p><h3>Vii ca participant. Revii ca partener.</h3>
-        <p>${F.ciclu.length} companii care au trecut prin program s-au întors să sponsorizeze ateliere, să le găzduiască sau să trimită speakeri.</p></div>
-      <div class="cycle-list">${F.ciclu.map((o) => `<div class="cycle-item">${o.logo ? `<img src="${esc(o.logo)}" alt="${esc(o.nume)}" loading="lazy">` : `<b>${esc(o.nume)}</b>`}
-        <span>alumni #${esc(o.ciclu.alumni_din.split('-')[1])} → ${esc(o.ciclu.apoi.map((r) => r.replace(' atelier', '')).join(', '))}</span></div>`).join('')}</div>
-    </div>
-  </div></section>
-
-  <section class="sec" id="editii"><div class="wrap">
-    <div class="sec-head row"><div><p class="eyebrow">Ediții</p><h2>Două ediții pe an. Toate rămân aici.</h2></div><a class="link-arrow" href="/editii">Arhiva edițiilor →</a></div>
-    <div class="timeline">${F.editiiArhiva.map((e) => {
-      const live = F.ongoing && e.id === F.ongoing.id, open = e.deschisa && !live;
-      return `<a class="tl ${live ? 'is-live' : ''} ${open ? 'is-open' : ''}" href="/editii/${e.serie === 'Cluj' ? 'cluj-' + e.numar : e.numar}">
-        <span class="tl-dot"></span><b>${e.serie === 'Cluj' ? `Cluj #${e.numar}` : `#${e.numar}`}</b><span>${esc(e.perioada.replace(' - ', '–'))}</span>
-        <small>${live ? 'în desfășurare' : open ? 'înscrieri deschise' : `${e.participanti.length} participanți`}</small></a>`;
-    }).join('')}
-      <a class="tl is-next" href="/aplica"><span class="tl-dot"></span><b>#${F.maxNr + 1}</b><span>Următoarea ediție</span><small>listă de așteptare</small></a>
-    </div>
-  </div></section>
-
-  <section class="sec sec-alt" id="potrivit"><div class="wrap fit">
-    <div><p class="eyebrow">Pentru cine e</p><h2>Ești potrivit pentru Antreprenoria?</h2>
-      <p class="lead">Selectăm în jur de 25 de antreprenori pe ediție, ca discuțiile să fie între oameni cu provocări asemănătoare. Trei întrebări îți spun dacă merită să aplici.</p>
-      <ul class="checks"><li>Companie cu cifră de afaceri de peste 1 milion de euro</li><li>Sau peste 500.000 de euro, cu un avantaj competitiv inovativ</li><li>Un fondator sau manager care vrea să scaleze, nu doar să crească</li></ul></div>
-    <form class="quiz" id="quiz" novalidate>
-      <fieldset><legend>Cifra de afaceri anuală</legend>
-        ${[['sub', 'Sub 500.000 €'], ['mid', '500.000 – 1 mil. €'], ['peste', 'Peste 1 mil. €']].map(([v, l]) => `<label><input type="radio" name="ca" value="${v}" required><span>${l}</span></label>`).join('')}</fieldset>
-      <fieldset><legend>Rolul tău în companie</legend>
-        ${[['fondator', 'Fondator / acționar'], ['manager', 'Manager de top'], ['altul', 'Alt rol']].map(([v, l]) => `<label><input type="radio" name="rol" value="${v}" required><span>${l}</span></label>`).join('')}</fieldset>
-      <fieldset><legend>Ce vrei să rezolvi acum?</legend>
-        ${[['vanzari', 'Vânzările'], ['echipa', 'Echipa și cultura'], ['strategie', 'Strategia și modelul de business'], ['finantare', 'Finanțarea']].map(([v, l]) => `<label><input type="radio" name="nevoie" value="${v}" required><span>${l}</span></label>`).join('')}</fieldset>
-      <button class="btn btn-primary btn-lg" type="submit">Vezi rezultatul</button>
-      <div class="quiz-out" id="quiz-out" role="status" aria-live="polite"></div>
-    </form>
-  </div></section>
-
-  <section class="sec" id="parteneri"><div class="wrap">
-    <div class="sec-head row"><div><p class="eyebrow">Parteneri</p><h2>Companiile care fac posibil programul.</h2></div><a class="link-arrow" href="/parteneri">Sponsorizează un atelier →</a></div>
-    <div class="logos">${F.partners.slice(0, 14).map((o) => `<div class="logo-cell"><img src="${esc(o.logo)}" alt="${esc(o.nume)}" loading="lazy"></div>`).join('')}</div>
-  </div></section>
-
-  <section class="cta-final"><div class="wrap cta-in">
-    <h2>Cresc antreprenorii, crește România.</h2>
-    <p>Ediția #${F.maxNr + 1} se formează acum. Lasă-ne datele și te anunțăm primul când se deschid înscrierile.</p>
-    <div class="hero-actions"><a class="btn btn-light btn-lg" href="/aplica">Intră pe lista de așteptare</a>${F.cluj ? `<a class="btn btn-outline-light btn-lg" href="/editii/cluj-${F.cluj.numar}">Aplică la Cluj #${F.cluj.numar}</a>` : ''}</div>
-  </div></section>
-</main>
+<div class="gridlines" aria-hidden="true"></div>
+${homeBody(ctx, F)}
 ${footer()}
 <script src="/assets/site.js"></script>
 </body></html>`;

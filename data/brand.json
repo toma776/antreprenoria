@@ -128,8 +128,8 @@
         }
       },
       "forme": {
-        "raza": "14px",
-        "raza_buton": "999px",
+        "raza": "6px",
+        "raza_buton": "6px",
         "umbra": "0 1px 2px rgba(11, 37, 69, .06), 0 12px 32px -16px rgba(11, 37, 69, .25)"
       },
       "google_fonts": "family=Archivo:wdth,wght@62..125,400..900&family=Inter:wght@400;500;600;700"
