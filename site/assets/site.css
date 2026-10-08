@@ -734,3 +734,20 @@ html.rv .mz:nth-child(10) { animation-delay: 575ms; }
   .ag-program li { grid-template-columns: 1fr; gap: 2px; }
   .ed-people { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+/* varianta A: bara meniului are același gri ca footerul (#34373E); panourile care se deschid rămân deschise la culoare */
+[data-brand="a"] .hdr { --h-bg: #34373E; --h-ink: #F3F4F6; --h-muted: #B3B7BF; --h-line: rgba(255, 255, 255, .13); border-bottom-color: var(--h-line); }
+[data-brand="a"] .hdr::before { background: color-mix(in srgb, var(--h-bg) 94%, transparent); }
+[data-brand="a"] .hdr > .hdr-in > .logo { color: var(--h-ink); }
+[data-brand="a"] .hdr > .hdr-in > .logo .logo-txt small { color: var(--h-muted); }
+[data-brand="a"] .hdr-cta .live { color: var(--h-muted); }
+[data-brand="a"] .menu-btn { background: #3E4149; border-color: var(--h-line); }
+[data-brand="a"] .menu-btn.mc-mono span { background: var(--h-ink); }
+[data-brand="a"] .menu-btn.mc-mono:is([aria-expanded="true"], .on) span { background: #A9C8F5; }
+@media (min-width: 1181px) {
+  [data-brand="a"] .mm-trigger { color: var(--h-ink); }
+  [data-brand="a"] .mm-trigger:hover, [data-brand="a"] .mm-item.open .mm-trigger { background: rgba(255, 255, 255, .1); color: #fff; }
+}
+/* cardurile din mega-meniu: același gri, în loc de bleumarin */
+[data-brand="a"] .mm-feature { --dark: #34373E; --dark-ink: #F3F4F6; --dark-muted: #B3B7BF; }
+[data-brand="a"] .mm-feature::after { background: radial-gradient(circle, rgba(255, 255, 255, .1), transparent 70%); }
