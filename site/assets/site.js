@@ -158,8 +158,6 @@
       t.dataset.k = k;
       const show = () => {
         back.classList.add('on'); front.classList.remove('on');
-        $('figcaption b', t).textContent = p.n;
-        $('figcaption span', t).textContent = p.r;
       };
       // aceeași poză deja încărcată în stratul din spate nu mai declanșează „load”
       if (back.src === p.i && back.complete) show(); else { back.onload = show; back.src = p.i; }
