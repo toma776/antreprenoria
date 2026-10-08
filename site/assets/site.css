@@ -507,6 +507,18 @@ html.rv .mz:nth-child(10) { animation-delay: 575ms; }
 [data-brand="a"] .cta-band .btn-light { background: #fff; color: var(--primary); }
 [data-brand="b"] .cta-band .btn-light { background: var(--accent); color: #0A0E17; }
 
+/* varianta A: secțiunile închise (alumni, banda finală, footer) au fundal gri deschis în loc de bleumarin.
+   Variabilele „dark” se redefinesc local, ca toate elementele dinăuntru să treacă pe text închis. */
+[data-brand="a"] :is(.sec-dark, .cta-band, .ftr) { --dark: #ECEEF1; --dark-2: #FFFFFF; --dark-ink: var(--ink); --dark-muted: var(--muted); --highlight: var(--primary); }
+[data-brand="a"] .ftr { border-top: 1px solid var(--line); }
+[data-brand="a"] .cycle-item { border: 1px solid var(--line); }
+[data-brand="a"] .cycle-item img { padding: 4px 0; }
+[data-brand="a"] .cta-band::before { background: radial-gradient(closest-side, color-mix(in srgb, var(--primary) 9%, transparent), transparent); }
+[data-brand="a"] .cta-band .btn-light { background: var(--primary); color: var(--primary-ink); }
+[data-brand="a"] .cta-band .btn-outline-light { border-color: color-mix(in srgb, var(--ink) 25%, transparent); }
+[data-brand="a"] .cta-band .btn-outline-light:hover { border-color: var(--primary); color: var(--primary); }
+[data-brand="a"] .agenda-card { box-shadow: 0 24px 50px -30px rgba(16, 30, 60, .35); }
+
 @media (max-width: 1080px) {
   .ask-out { grid-template-columns: 1fr 1fr; }
   .ask-next { grid-column: 1 / -1; border-left: 0 !important; border-top: 1px solid var(--line); border-radius: 0 0 var(--radius) var(--radius); }
