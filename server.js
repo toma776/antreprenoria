@@ -52,7 +52,10 @@ function fresh(mod) {
   return require(mod);
 }
 
-http.createServer(async (req, res) => {
+// pe Vercel fișierele sunt doar pentru citire: modificările din panou se fac local și ajung pe site prin git push
+const READ_ONLY = !!process.env.VERCEL;
+
+async function handler(req, res) {
   const [rawPath, query = ''] = req.url.split('#')[0].split('?');
   const url = decodeURIComponent(rawPath);
   try {
@@ -60,6 +63,7 @@ http.createServer(async (req, res) => {
       const f = path.join(DATA, JSON_FILES[url]);
       return fs.existsSync(f) ? sendJson(res, 200, fs.readFileSync(f, 'utf8')) : sendJson(res, 404, { error: 'lipsește ' + JSON_FILES[url] });
     }
+    if (READ_ONLY && req.method !== 'GET') return sendJson(res, 403, { error: 'Pe versiunea publicată panoul e doar pentru vizualizare. Modificările se fac local, apoi git push.' });
     if (url === '/api/brand/activ' && req.method === 'PUT') {
       const { id } = await body(req);
       const brand = fresh('./site/brand'), B = brand.load();
@@ -97,7 +101,14 @@ http.createServer(async (req, res) => {
   } catch (e) {
     sendJson(res, 500, { error: e.message });
   }
-}).listen(PORT, () => {
-  console.log(`Antreprenoria – site:   http://localhost:${PORT}/`);
-  console.log(`Antreprenoria – panou:  http://localhost:${PORT}/manage`);
-});
+}
+
+module.exports = handler;
+
+// local: node server.js; pe Vercel, handler-ul e folosit de api/index.js
+if (require.main === module) {
+  http.createServer(handler).listen(PORT, () => {
+    console.log(`Antreprenoria – site:   http://localhost:${PORT}/`);
+    console.log(`Antreprenoria – panou:  http://localhost:${PORT}/manage`);
+  });
+}

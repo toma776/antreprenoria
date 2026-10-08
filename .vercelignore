@@ -1,0 +1,6 @@
+# doar pentru lucrul local: paginile copiate de pe site-ul actual, scripturile de extracție, capturi
+source/
+scripts/
+docs/
+.claude/
+README.md
