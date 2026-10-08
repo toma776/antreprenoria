@@ -149,7 +149,7 @@ p { margin: 0; }
 [data-brand="b"] .ftr { --f-bg: #0F1522; --f-card: #151D2E; --f-muted: #8A94A7; --f-line: #232C3E; --f-hi: var(--accent); }
 .ftr a { color: inherit; text-decoration: none; }
 .ftr h4 { margin: 0 0 16px; font: 600 11.5px/1 var(--eyebrow-font); letter-spacing: .1em; text-transform: uppercase; color: var(--f-muted); }
-.ftr-top { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 380px); gap: 40px; align-items: end; padding-bottom: 48px; border-bottom: 1px solid var(--f-line); }
+.ftr-top { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 380px); gap: 40px; align-items: start; padding-bottom: 48px; border-bottom: 1px solid var(--f-line); }
 .ftr .logo-txt small { color: var(--f-muted); }
 .ftr-claim { margin: 28px 0 0; font: var(--d-weight) clamp(30px, 3.6vw, 48px)/1.05 var(--f-display); font-stretch: var(--d-stretch); letter-spacing: var(--d-track); }
 .ftr-sub { margin: 14px 0 0; color: var(--f-muted); font-size: 15px; max-width: 46ch; }
