@@ -36,6 +36,7 @@ Din roluri se calculează `parcurs` (rolurile pe fiecare ediție) și `ciclu` (a
 | Ediții | câte un grup pe ediție (`bucuresti-16` … `bucuresti-22`, `cluj-1`), fiecare cu: **program**, **ateliere**, **participanți**, **traineri & speakeri**, **parteneri** |
 | Oameni | traineri, antreprenori invitați, facilitatori, participanți, echipă |
 | Organizații | din alumni parteneri, cu mai multe roluri, companii alumni, parteneri & sponsori, companiile speakerilor, locații |
+| Presă | apariții (cu tip și greutate ca dovadă), citate exacte, istoricul programului pe ani (2013 → azi), publicații; fiecare apariție și citat se validează în panou |
 | Curriculum | matricea temelor pe ediții; teme full-day, de seară, networking |
 | Audit | inconsecvențele găsite la extragere (date, conținut, conversie) |
 
@@ -67,6 +68,14 @@ Site-ul e scris de mână, așa că unele lucruri nu se pot deduce automat:
   - `locatii`: locațiile atelierelor și organizația-gazdă.
 
   O afiliere nouă care nu e în listă apare în Audit.
+- `presa.json` – aparițiile în presă și pe alte canale. Origine: extern, culese manual. Fiecare apariție are:
+  - publicația, data, tipul și greutatea ca dovadă;
+  - edițiile menționate (inclusiv cele de dinainte de #16);
+  - oamenii și organizațiile din creier;
+  - faptele aflate;
+  - citatele copiate literal.
+
+  Starea de validare (propus / validat / respins) se salvează din panou în `data/presa-status.json`.
 - `teme.json` – curriculum-ul: fiecare titlu de atelier se potrivește cu o temă prin regex.
 
 O ediție nouă: `npm run sync`, apoi completează în `companii.json` participanții noi. Scriptul de build îi listează în Audit drept „Participant fără companie în curare”.

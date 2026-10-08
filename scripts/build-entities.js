@@ -11,6 +11,7 @@ const curCompanii = readJson('curare/companii.json');
 const curParteneri = readJson('curare/parteneri.json');
 const curTeme = readJson('curare/teme.json');
 const curOrg = readJson('curare/organizatii.json');
+const curPresa = readJson('curare/presa.json', { aparitii: [], respinse: [] });
 if (!brut) throw new Error('Rulează întâi: npm run extract');
 
 const plain = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
@@ -258,6 +259,30 @@ obs('mediu', 'Date', 'Edițiile #1–#15 (2013–2023) nu au pagini pe site; ist
 const tbdLoc = editii.flatMap((e) => e.ateliere.filter((a) => a.locatie === 'TBD').map((a) => `${e.id} #${a.nr}`));
 if (tbdLoc.length) obs('minor', 'Conținut', `Locație „TBD” la: ${tbdLoc.join(', ')}.`);
 
+// ---------- presă (origine externă) ----------
+// aparițiile se leagă de oameni și organizații; oamenii/organizațiile primesc lista aparițiilor în care apar
+const aparitii = curPresa.aparitii.map((a) => {
+  a.oameni.forEach((id) => {
+    const p = oameni.get(id);
+    if (!p) return obs('minor', 'Date', `Presă: persoana „${id}” din ${a.id} nu există în creier.`);
+    (p.presa ||= []).push(a.id);
+  });
+  a.organizatii.forEach((id) => {
+    const o = orgs.get(id);
+    if (!o) return obs('minor', 'Date', `Presă: organizația „${id}” din ${a.id} nu există în creier.`);
+    (o.presa ||= []).push(a.id);
+  });
+  a.citate.forEach((c) => { if (c.persoana && !oameni.has(c.persoana)) obs('minor', 'Date', `Presă: autorul citatului ${c.id} („${c.persoana}”) nu există în creier.`); });
+  // edițiile #16+ menționate în presă se leagă de edițiile din creier
+  const editiiLegate = editii.filter((e) => a.editii_istorice.some((t) => new RegExp(`\\b(${e.numar}|${roman(e.numar)})\\b`).test(t) && e.serie === 'București')).map((e) => e.id);
+  return { ...a, editii: editiiLegate, an: a.data ? Number(a.data.slice(0, 4)) : null };
+}).sort((a, b) => (a.data || '9999').localeCompare(b.data || '9999'));
+function roman(n) {
+  return [[10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']].reduce((s, [v, r]) => { while (n >= v) { s += r; n -= v; } return s; }, '');
+}
+const fara_presa = editii.filter((e) => !aparitii.some((a) => a.editii.includes(e.id)) && !e.deschisa).map((e) => e.id);
+if (aparitii.length) obs('minor', 'Date', `Ediții fără nicio apariție în presă găsită: ${fara_presa.join(', ')}.`);
+
 // ---------- finalizare registre ----------
 // ordinea cronologică a edițiilor (Cluj #1 rulează în paralel cu #22)
 const edRank = Object.fromEntries(editii.map((e) => [e.id, e.an * 10 + (e.sezon === 'primăvară' ? 0 : 5) + (e.serie === 'Cluj' ? 1 : 0)]));
@@ -302,6 +327,7 @@ const out = {
   organizatii: orgsUsed,
   locatii: locatii.filter((l) => l.ateliere.length),
   teme: teme.filter((t) => t.ateliere),
+  presa: { cules_la: curPresa.cules_la, tipuri: curPresa._tipuri, aparitii, respinse: curPresa.respinse },
   sectoare: curCompanii.sectoare,
   observatii,
 };
@@ -310,4 +336,4 @@ const nTip = (t) => orgsUsed.filter((o) => o.tipuri.includes(t)).length;
 console.log(`ediții ${editii.length} · ateliere ${editii.reduce((n, e) => n + e.ateliere.length, 0)} · participări ${editii.reduce((n, e) => n + e.participanti.length, 0)}`);
 console.log(`oameni ${oameniList.length} (speakeri ${oameniList.filter((p) => p.aparitii.length).length}) · organizații ${orgsUsed.length} (alumni ${nTip('alumni')}, parteneri ${nTip('partener')}, sponsori ${nTip('sponsor')}, gazde ${nTip('gazdă')}, ale speakerilor ${nTip('speaker')}) · locații ${out.locatii.length}`);
 console.log(`ciclu alumni → alt rol: ${orgsUsed.filter((o) => o.ciclu).map((o) => `${o.nume} (${o.ciclu.apoi.join(', ')})`).join('; ')}`);
-console.log(`teme ${out.teme.length} · observații ${observatii.length}`);
+console.log(`teme ${out.teme.length} · presă ${aparitii.length} apariții, ${aparitii.reduce((n, a) => n + a.citate.length, 0)} citate · observații ${observatii.length}`);
