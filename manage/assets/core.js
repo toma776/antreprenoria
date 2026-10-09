@@ -62,9 +62,11 @@ document.addEventListener('click', (e) => {
 });
 window.addEventListener('popstate', () => go(routeFromPath()));
 
+// numărul total de entități din creier: ediții, ateliere, oameni, organizații, locații, teme (aceleași noduri ca în Sinapse)
+const entityTotal = (D) => D.editii.length + D.editii.reduce((n, e) => n + e.ateliere.length, 0) + D.oameni.length + D.organizatii.length + D.locatii.length + D.teme.length;
 function updateCounts() {
   const E = store.entitati;
-  $('#n-entitati').textContent = E ? entityCategories(E).length : '';
+  $('#n-entitati').textContent = E ? entityTotal(E) : '';
 }
 
 /* ---------- DASHBOARD ---------- */
