@@ -68,7 +68,8 @@ function editionBody(ctx, F, e) {
   // vecinii din arhivă
   const serie = D.editii.filter((x) => x.serie === e.serie).sort((a, b) => a.numar - b.numar);
   const i = serie.indexOf(e), prev = serie[i - 1], nextEd = serie[i + 1];
-  const price = e.deschisa && state !== 'live' && state !== 'past' ? e.preturi.find((p) => !p.ascuns) : null;
+  const price0 = e.deschisa && state !== 'live' && state !== 'past' ? e.preturi.find((p) => !p.ascuns) : null;
+  const price = price0 && { ...price0, pret_text: price0.pret_text.replace(/(\d)(\d{3})\b/, '$1.$2') };
   const fullDay = ws.filter((a) => a.format === 'full-day').length;
 
   const cols = (n) => (n <= 7 ? Math.max(n, 4) : [6, 5, 7, 4].find((c) => n % c === 0) || 6);
@@ -124,7 +125,7 @@ function editionBody(ctx, F, e) {
       : `<div class="stat"><b>~<span data-count="25">25</span></b><span>locuri, pentru antreprenori selectați</span></div>`}
     ${ca.filter(Boolean).length >= 5 ? `<div class="stat"><b><span data-count="${(median(ca) / 1e6).toFixed(1)}" data-dec="1">${milLei(median(ca))}</span><em> mil. lei</em></b><span>cifra de afaceri mediană a companiilor participante</span></div>` : ''}
     ${sectorList.length ? `<div class="stat"><b><span data-count="${sectorList.length}">${sectorList.length}</span></b><span>sectoare de activitate</span></div>` : ''}
-    ${!part.length && price ? `<div class="stat"><b><span data-count="${price.pret}">${price.pret}</span><em> lei</em></b><span>+ TVA, taxa de participare${price.nota ? ' · ' + esc(price.nota.toLowerCase().replace(/\.$/, '')) : ''}</span></div>` : ''}
+    ${!part.length && price ? `<div class="stat"><b><span data-count="${price.pret}">${price.pret.toLocaleString('ro-RO')}</span><em> lei</em></b><span>+ TVA, taxa de participare${price.nota ? ' · ' + esc(price.nota.toLowerCase().replace(/\.$/, '')) : ''}</span></div>` : ''}
   </div></section>`;
 
   // ---------- agenda ----------

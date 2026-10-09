@@ -221,7 +221,7 @@ function homeBody(ctx, F) {
       <h2>Programul se întâmplă acum.</h2>
       <p class="lead">Ateliere, parteneri, ediții noi. Totul vine direct din agenda programului și se actualizează singur.</p>
       <div class="pulse-stats">
-        ${nextIn != null ? `<div class="pulse-stat"><b><span data-count="${nextIn}">${nextIn}</span></b><span>${nextIn === 1 ? 'zi' : 'zile'} până la următorul atelier</span></div>` : ''}
+        ${nextIn === 0 ? `<div class="pulse-stat"><b>Azi</b><span>e atelier: ${esc(F.next.titlu.replace(/^(Atelier de Seară|COCKTAIL NETWORKING)\s*[-:]\s*/i, ''))}</span></div>` : nextIn != null ? `<div class="pulse-stat"><b><span data-count="${nextIn}">${nextIn}</span></b><span>${nextIn === 1 ? 'zi' : 'zile'} până la următorul atelier</span></div>` : ''}
         <div class="pulse-stat"><b><span data-count="${heldYear}">${heldYear}</span></b><span>ateliere ținute în ${today().slice(0, 4)}</span></div>
         ${ong ? `<div class="pulse-stat"><b><span data-count="${ong.participanti.length}">${ong.participanti.length}</span></b><span>antreprenori în ediția #${ong.numar}</span></div>` : ''}
       </div>

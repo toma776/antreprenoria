@@ -1154,14 +1154,8 @@ section[id] { scroll-margin-top: 88px; }
 .ftr-quick { display: none; }
 
 @media (max-width: 720px) {
-  /* 6. header-ul se ascunde la derulare în jos; meniul de secțiuni urcă în locul lui */
-  .hdr { transition: transform .28s cubic-bezier(.2, .7, .2, 1); }
-  .hdr.hdr-hide { transform: translateY(-100%); }
-  .pg-nav { transition: top .28s cubic-bezier(.2, .7, .2, 1); }
-  body.hdr-hidden .pg-nav { top: 0; }
-
   /* 7. zone de atins de cel puțin 44px */
-  .link-arrow, .crumbs a, .tm-ev-eds a, .ed-nav a, .ag-sponsor-free { min-height: 44px; display: inline-flex; align-items: center; }
+  .link-arrow, .crumbs a, .tm-ev-eds a, .ag-sponsor-free { min-height: 44px; display: inline-flex; align-items: center; }
   .sec-head .link-arrow { margin-top: 4px; }
   .hdr-cta .btn { min-height: 44px; }
   .ftr-cols nav a { padding: 11px 0; }
@@ -1195,7 +1189,7 @@ section[id] { scroll-margin-top: 88px; }
   /* 11. pe ecranele tactile nu există hover: în varianta B pozele sunt direct color */
   /* 14. banda finală: fără agenda repetată */
   .cta-band .agenda-card { display: none; }
-  .cta-band-in { gap: 0; }
+  .cta-band-in { gap: 32px; }
 }
 @media (hover: none) {
   [data-brand="b"] :is(.person, .ed-person, .mz, .cur-people, .ed-part, .ed-chip, .mm-people-grid) img { filter: none !important; }
@@ -1207,4 +1201,34 @@ section[id] { scroll-margin-top: 88px; }
   .ftr-status { display: none; }
   .ftr-word { margin-top: 12px; }
   .quiz label span { padding: 11px 15px; }
+}
+
+/* ---------- mobil: reparații după verificarea pagină cu pagină ---------- */
+@media (max-width: 720px) {
+  /* benzile cu derulare pornesc de la margine (fără estompare falsă în stânga) */
+  .ask-chips, .people, .logos, .ed-people { scroll-padding-inline: 16px; }
+  .people, .logos, .ed-people { scroll-padding-inline: 0; }
+  /* cifrele: rânduri mai strânse */
+  .stat { padding: 16px 14px 16px 0; }
+  .proof-in { row-gap: 4px; }
+  /* agenda: numărul atelierului fără dată încape în casetă */
+  .ag-item summary { grid-template-columns: 58px minmax(0, 1fr) 16px; }
+  .ag-compact .ag-row { grid-template-columns: 58px minmax(0, 1fr); }
+  .ag-date span { letter-spacing: .02em; }
+  /* sponsori și logo-uri: două pe rând */
+  .ed-logos, .ed-sponsors { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .ed-sponsor .logo-cell, .ed-logo .logo-cell { height: 70px; }
+  /* cardul de contact din banda finală: email și telefon apropiate */
+  .ask-card a { margin-top: 0; min-height: 40px; }
+  /* Despre: cifrele RBL pe rânduri; echipa compactă, cu poza în stânga; fără cardurile de contact repetate */
+  .ab-rbl-side dl { grid-template-columns: 1fr; gap: 8px; }
+  .ab-rbl-side dl div { display: grid; grid-template-columns: 84px minmax(0, 1fr); align-items: baseline; gap: 10px; padding: 12px 14px; }
+  .ab-rbl-side dd { margin: 0; }
+  .team { gap: 10px; }
+  .team-card { grid-template-columns: 56px minmax(0, 1fr); column-gap: 14px; padding: 14px; }
+  .team-card img, .team-card .ph { width: 56px; height: 56px; margin: 0; grid-row: 1 / span 4; font-size: 18px; }
+  .team-card span { margin-bottom: 2px; }
+  .team-card a { min-height: 36px; }
+  .ab-contacts { display: none; }
+  .cta-band#contact .cta-band-in { gap: 0; }
 }

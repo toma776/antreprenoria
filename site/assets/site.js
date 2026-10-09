@@ -218,20 +218,6 @@
     upd();
   });
 
-  // ---------- header: pe mobil se ascunde la derulare în jos și reapare la derulare în sus ----------
-  const hdr = $('.hdr');
-  if (hdr) {
-    let lastY = scrollY;
-    addEventListener('scroll', () => {
-      const y = scrollY, down = y > lastY + 4, up = y < lastY - 4;
-      if (!isMobile() || nav.classList.contains('open')) hdr.classList.remove('hdr-hide');
-      else if (down && y > 160) hdr.classList.add('hdr-hide');
-      else if (up || y < 80) hdr.classList.remove('hdr-hide');
-      document.body.classList.toggle('hdr-hidden', hdr.classList.contains('hdr-hide'));
-      if (down || up) lastY = y;
-    }, { passive: true });
-  }
-
   // ---------- meniul de secțiuni (Program, Despre, Teme): marchează secțiunea în care ești ----------
   const pgnav = $('.pg-nav');
   if (pgnav && 'IntersectionObserver' in window) {
