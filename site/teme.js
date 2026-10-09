@@ -1,9 +1,9 @@
 // Curriculum-ul: /teme (matricea, temele principale, atelierele de seară) și /teme/<id> pentru cele 5 teme full-day.
 // Totul vine din atelierele edițiilor din creier: cine a predat tema, când, sub ce titlu, cu ce sponsor.
-const { esc, initials, fmtDay, today } = require('./util');
+const { esc, initials, fmtDay, today, img } = require('./util');
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : (n % 100 === 0 || n % 100 >= 20 ? 'de ' : '') + many}`;
-const avatar = (p) => (p?.imagine ? `<img src="${esc(p.imagine)}" alt="" loading="lazy">` : `<span class="ph">${esc(initials(p?.nume || '?'))}</span>`);
+const avatar = (p) => (p?.imagine ? `<img src="${esc(img(p.imagine))}" alt="" loading="lazy">` : `<span class="ph">${esc(initials(p?.nume || '?'))}</span>`);
 const edUrl = (e) => (e.serie === 'Cluj' ? `/editii/cluj-${e.numar}` : `/editii/${e.numar}`);
 const edLabel = (e) => (e.serie === 'Cluj' ? `Cluj #${e.numar}` : `#${e.numar}`);
 const cleanTitle = (t) => String(t || '').replace(/^(Atelier de Seară|COCKTAIL NETWORKING)\s*[-:]\s*/i, '');
@@ -76,8 +76,8 @@ function temaBody(ctx, F, id) {
       </aside>
     </div>
   </div>
-  <nav class="pg-nav" aria-label="Secțiunile paginii"><div class="wrap">${NAV.map(([k, t], i) => `<a href="#${k}"><i>0${i + 1}</i>${t}</a>`).join('')}</div></nav>
   </section>
+  <nav class="pg-nav" aria-label="Secțiunile paginii"><div class="wrap">${NAV.map(([k, t], i) => `<a href="#${k}"><i>0${i + 1}</i>${t}</a>`).join('')}</div></nav>
 
   <section class="sec" id="cine"><div class="wrap">
     <div class="sec-head"><p class="eyebrow">Cine a predat-o</p><h2>Ediție cu ediție.</h2></div>
@@ -145,8 +145,8 @@ function temeBody(ctx, F) {
       </aside>
     </div>
   </div>
-  <nav class="pg-nav" aria-label="Secțiunile paginii"><div class="wrap">${NAV.map(([k, t], i) => `<a href="#${k}"><i>0${i + 1}</i>${t}</a>`).join('')}</div></nav>
   </section>
+  <nav class="pg-nav" aria-label="Secțiunile paginii"><div class="wrap">${NAV.map(([k, t], i) => `<a href="#${k}"><i>0${i + 1}</i>${t}</a>`).join('')}</div></nav>
 
   <section class="sec" id="principale"><div class="wrap">
     <div class="sec-head"><p class="eyebrow">Temele full-day</p><h2>Coloana vertebrală a fiecărei ediții.</h2></div>

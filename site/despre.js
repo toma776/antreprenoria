@@ -1,6 +1,6 @@
 // Pagina /despre: programul, istoricul, organizatorul (RBL), echipa și contactul, într-o singură pagină cu secțiuni.
 // Cifrele mari sunt cele declarate pe site-ul vechi (/despre-noi); arhiva detaliată începe cu ediția #16.
-const { esc, initials } = require('./util');
+const { esc, initials, img } = require('./util');
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : (n % 100 === 0 || n % 100 >= 20 ? 'de ' : '') + many}`;
 const edUrl = (e) => (e.serie === 'Cluj' ? `/editii/cluj-${e.numar}` : `/editii/${e.numar}`);
@@ -41,8 +41,8 @@ function despreBody(ctx, F) {
       </aside>
     </div>
   </div>
-  <nav class="pg-nav" aria-label="Secțiunile paginii"><div class="wrap">${NAV.map(([id, t], i) => `<a href="#${id}"><i>0${i + 1}</i>${t}</a>`).join('')}</div></nav>
   </section>
+  <nav class="pg-nav" aria-label="Secțiunile paginii"><div class="wrap">${NAV.map(([id, t], i) => `<a href="#${id}"><i>0${i + 1}</i>${t}</a>`).join('')}</div></nav>
 
   <section class="sec" id="program"><div class="wrap">
     <div class="sec-head row"><div><p class="eyebrow">Programul</p><h2>Cel mai longeviv program educațional al RBL.</h2>
@@ -90,7 +90,7 @@ function despreBody(ctx, F) {
   <section class="sec" id="echipa"><div class="wrap">
     <div class="sec-head"><p class="eyebrow">Echipa</p><h2>Oamenii din spatele programului.</h2></div>
     <div class="team">${prog.contact.echipa.map((m) => { const p = P[m.id];
-      return `<div class="team-card" id="${esc(m.id)}">${p?.imagine ? `<img src="${esc(p.imagine)}" alt="" loading="lazy">` : `<span class="ph">${esc(initials(m.nume))}</span>`}
+      return `<div class="team-card" id="${esc(m.id)}">${p?.imagine ? `<img src="${esc(img(p.imagine, 256))}" alt="" loading="lazy">` : `<span class="ph">${esc(initials(m.nume))}</span>`}
         <b>${esc(m.nume)}</b><span>${esc(roleShort(m.rol))}</span>
         ${m.email ? `<a href="mailto:${esc(m.email)}">${esc(m.email)}</a>` : ''}${m.telefon ? `<a href="tel:${esc(m.telefon.replace(/\D/g, ''))}">${esc(m.telefon)}</a>` : ''}</div>`; }).join('')}</div>
   </div></section>

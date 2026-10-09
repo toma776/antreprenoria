@@ -15,5 +15,27 @@
         }
       ]
     }
-  ]
+  ],
+  "images": {
+    "sizes": [
+      128,
+      256,
+      384,
+      640
+    ],
+    "remotePatterns": [
+      {
+        "protocol": "https",
+        "hostname": "antreprenoria.ro",
+        "pathname": "^/images/.*$"
+      }
+    ],
+    "minimumCacheTTL": 2678400,
+    "formats": [
+      "image/webp"
+    ],
+    "qualities": [
+      75
+    ]
+  }
 }

@@ -1,5 +1,6 @@
 // Meniul principal (mega-meniu): fiecare secțiune a site-ului deschide un panou cu tot ce conține,
 // generat din creier. Pe desktop panourile se deschid la hover sau click; pe mobil devin acordeon într-un meniu lateral.
+const { img } = require('./util');
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const slug = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/&/g, 'si').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const today = () => new Date().toISOString().slice(0, 10);
@@ -7,7 +8,7 @@ const MONTHS = ['ian.', 'feb.', 'mar.', 'apr.', 'mai', 'iun.', 'iul.', 'aug.', '
 const shortDay = (d) => { const [, m, z] = d.split('-').map(Number); return `${z} ${MONTHS[m - 1]}`; };
 const edUrl = (e) => (e.serie === 'Cluj' ? `/editii/cluj-${e.numar}` : `/editii/${e.numar}`);
 const edLabel = (e) => (e.serie === 'Cluj' ? `Cluj #${e.numar}` : `#${e.numar}`);
-const pic = (p) => (p.imagine ? `<img src="${esc(p.imagine)}" alt="" loading="lazy">` : `<span class="ph">${esc(p.nume.split(' ').map((x) => x[0]).join('').slice(0, 2))}</span>`);
+const pic = (p) => (p.imagine ? `<img src="${esc(img(p.imagine, 256))}" alt="" loading="lazy">` : `<span class="ph">${esc(p.nume.split(' ').map((x) => x[0]).join('').slice(0, 2))}</span>`);
 
 // o legătură din panou: titlu + descriere scurtă
 const link = (href, title, desc, extra = '') => `<a class="mm-link" href="${esc(href)}"><b>${title}</b>${desc ? `<span>${desc}</span>` : ''}${extra}</a>`;

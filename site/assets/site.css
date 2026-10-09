@@ -1139,3 +1139,72 @@ a.hist-ed:hover { border-color: var(--primary); transform: translateY(-2px); }
   .ask-next { border-radius: 0 0 var(--radius) var(--radius); }
   .ask-actions .btn { flex: 1; padding: 12px; }
 }
+
+/* ---------- experiența pe mobil (punctele 5–14) ---------- */
+/* 5. conținut care se derulează orizontal: estompare pe marginea unde mai e ceva (desktop și mobil) */
+.sx-r { -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 56px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 56px), transparent); }
+.sx-l { -webkit-mask-image: linear-gradient(90deg, transparent, #000 56px); mask-image: linear-gradient(90deg, transparent, #000 56px); }
+.sx-l.sx-r { -webkit-mask-image: linear-gradient(90deg, transparent, #000 56px, #000 calc(100% - 56px), transparent); mask-image: linear-gradient(90deg, transparent, #000 56px, #000 calc(100% - 56px), transparent); }
+.ask-chips:not(.sx-r):not(.sx-l) { -webkit-mask-image: none; mask-image: none; }
+/* 6. meniul de secțiuni: secțiunea curentă */
+.pg-nav a.on { color: var(--ink); border-bottom-color: var(--primary); }
+[data-brand="b"] .pg-nav a.on { border-bottom-color: var(--accent); }
+/* 12. la salt la o secțiune, titlul nu mai ajunge sub header */
+section[id] { scroll-margin-top: 88px; }
+.ftr-quick { display: none; }
+
+@media (max-width: 720px) {
+  /* 6. header-ul se ascunde la derulare în jos; meniul de secțiuni urcă în locul lui */
+  .hdr { transition: transform .28s cubic-bezier(.2, .7, .2, 1); }
+  .hdr.hdr-hide { transform: translateY(-100%); }
+  .pg-nav { transition: top .28s cubic-bezier(.2, .7, .2, 1); }
+  body.hdr-hidden .pg-nav { top: 0; }
+
+  /* 7. zone de atins de cel puțin 44px */
+  .link-arrow, .crumbs a, .tm-ev-eds a, .ed-nav a, .ag-sponsor-free { min-height: 44px; display: inline-flex; align-items: center; }
+  .sec-head .link-arrow { margin-top: 4px; }
+  .hdr-cta .btn { min-height: 44px; }
+  .ftr-cols nav a { padding: 11px 0; }
+  .ftr-person a, .ftr-legal a, .team-card a, .ask-card a { display: inline-flex; align-items: center; min-height: 44px; }
+  .ftr-legal span:last-child { gap: 18px; }
+  .ftr-social a { width: 44px; height: 44px; }
+
+  /* 8. text de cel puțin 12px */
+  .ask-kicker, .feed-tag, .ag-tag, .ed-role, .ftr-status-top, .ed-chip small, .tm-p small, .tm-titles small, .pg-nav a i, .ed-sum-note,
+  .agenda-card em, .ed-person small, .cur-people small, .mm-badge, .fine, .fine-muted, .ed-figs small, .hist small, .tl small, .stat > span, .ed-part small, .day-person small { font-size: 12px !important; }
+  .ed-role { padding: 4px 7px; }
+
+  /* 9. footer: contactul primul, cu butoane; listele de linkuri se deschid la atingere */
+  .ftr-cols { grid-template-columns: 1fr !important; gap: 0; padding-top: 12px; }
+  .ftr-contact { order: -1; grid-column: auto !important; padding-bottom: 22px; margin-bottom: 6px; border-bottom: 1px solid var(--f-line); }
+  .ftr-quick { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .ftr-quick .btn { padding: 13px; }
+  .ftr-quick .btn-light { background: var(--f-ink); color: var(--f-bg); }
+  .ftr-quick .btn-outline-light { border-color: var(--f-line); color: var(--f-ink); }
+  .ftr-quick small { grid-column: 1 / -1; font-size: 12.5px; color: var(--f-muted); }
+  .ftr-quick + .ftr-person { display: none; }
+  .ftr-cols nav { border-bottom: 1px solid var(--f-line); }
+  .ftr-cols nav h4 { display: flex; justify-content: space-between; align-items: center; margin: 0; min-height: 52px; cursor: pointer; }
+  .ftr-cols nav h4::after { content: ""; width: 8px; height: 8px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg) translate(-2px, -2px); transition: transform .2s; }
+  .ftr-cols nav.open h4::after { transform: rotate(-135deg) translate(-2px, -2px); }
+  .ftr-cols nav:not(.open) a { display: none; }
+  .ftr-cols nav.open { padding-bottom: 10px; }
+  .ftr-top { padding-bottom: 32px; }
+  .ftr-claim { font-size: 30px; }
+
+  /* 11. pe ecranele tactile nu există hover: în varianta B pozele sunt direct color */
+  /* 14. banda finală: fără agenda repetată */
+  .cta-band .agenda-card { display: none; }
+  .cta-band-in { gap: 0; }
+}
+@media (hover: none) {
+  [data-brand="b"] :is(.person, .ed-person, .mz, .cur-people, .ed-part, .ed-chip, .mm-people-grid) img { filter: none !important; }
+}
+@media (max-width: 720px) {
+  .btn { min-height: 44px; }
+  .ask-chips button { min-height: 44px; }
+  .ftr h4 { font-size: 12px; }
+  .ftr-status { display: none; }
+  .ftr-word { margin-top: 12px; }
+  .quiz label span { padding: 11px 15px; }
+}

@@ -120,6 +120,7 @@ function footer(F, ctx) {
       <nav aria-label="Comunitate"><h4>Comunitate</h4>${NAV.slice(4).map(([t, u]) => `<a href="${u}">${t}</a>`).join('')}<a href="/despre#contact">Contact</a></nav>
       <nav aria-label="Ediții recente"><h4>Ediții recente</h4>${recent.map((e) => `<a href="${edUrl(e)}">#${e.numar} <small>${esc(e.sezon)} ${e.an}</small></a>`).join('')}${F.cluj ? `<a href="${edUrl(F.cluj)}">Cluj #${F.cluj.numar} <small>înscrieri deschise</small></a>` : ''}</nav>
       <div class="ftr-contact"><h4>Contact</h4>
+        ${team['raluca-bedereag'] ? `<div class="ftr-quick">${team['raluca-bedereag'].telefon ? `<a class="btn btn-light" href="tel:${esc(team['raluca-bedereag'].telefon.replace(/\D/g, ''))}">Sună</a>` : ''}<a class="btn btn-outline-light" href="mailto:${esc(team['raluca-bedereag'].email)}">Scrie-ne</a><small>${esc(team['raluca-bedereag'].nume)}, pentru participanți</small></div>` : ''}
         ${contact(team['raluca-bedereag'], 'Pentru participanți')}
         ${contact(team['larisa-slavenie'], 'Parteneriate')}
         <p class="ftr-addr">Calea Dorobanți 42, et. 3, ap. 5<br>Sector 1, București</p>

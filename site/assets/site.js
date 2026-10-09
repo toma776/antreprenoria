@@ -203,6 +203,65 @@
     update();
   }
 
+  const isMobile = () => matchMedia('(max-width: 720px)').matches;
+
+  // ---------- conținut care se derulează orizontal: estompare pe marginea unde mai e ceva ----------
+  // (tab-uri, istoricul, meniul de secțiuni, matricea, benzile de oameni și logo-uri)
+  $$('.cur-tabs, .hist, .pg-nav .wrap, .tm-matrix-wrap, .ed-tablist, .ask-chips, .people, .logos, .ed-people').forEach((el) => {
+    const upd = () => {
+      const more = el.scrollWidth - el.clientWidth > 4;
+      el.classList.toggle('sx-l', more && el.scrollLeft > 4);
+      el.classList.toggle('sx-r', more && el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
+    };
+    el.addEventListener('scroll', upd, { passive: true });
+    addEventListener('resize', upd);
+    upd();
+  });
+
+  // ---------- header: pe mobil se ascunde la derulare în jos și reapare la derulare în sus ----------
+  const hdr = $('.hdr');
+  if (hdr) {
+    let lastY = scrollY;
+    addEventListener('scroll', () => {
+      const y = scrollY, down = y > lastY + 4, up = y < lastY - 4;
+      if (!isMobile() || nav.classList.contains('open')) hdr.classList.remove('hdr-hide');
+      else if (down && y > 160) hdr.classList.add('hdr-hide');
+      else if (up || y < 80) hdr.classList.remove('hdr-hide');
+      document.body.classList.toggle('hdr-hidden', hdr.classList.contains('hdr-hide'));
+      if (down || up) lastY = y;
+    }, { passive: true });
+  }
+
+  // ---------- meniul de secțiuni (Program, Despre, Teme): marchează secțiunea în care ești ----------
+  const pgnav = $('.pg-nav');
+  if (pgnav && 'IntersectionObserver' in window) {
+    const links = $$('a[href^="#"]', pgnav), row = $('.wrap', pgnav);
+    const targets = links.map((a) => document.getElementById(a.getAttribute('href').slice(1))).filter(Boolean);
+    const seen = new Map();
+    const mark = () => {
+      const cur = targets.filter((t) => seen.get(t)).sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top)[0];
+      links.forEach((a) => {
+        const on = cur && a.getAttribute('href') === '#' + cur.id;
+        if (on && !a.classList.contains('on') && row.scrollWidth > row.clientWidth) row.scrollTo({ left: Math.max(0, a.offsetLeft - row.offsetLeft - 16), behavior: 'smooth' });
+        a.classList.toggle('on', !!on);
+      });
+    };
+    const io = new IntersectionObserver((es) => { es.forEach((e) => seen.set(e.target, e.isIntersecting)); mark(); }, { rootMargin: '-140px 0px -55% 0px' });
+    targets.forEach((t) => io.observe(t));
+  }
+
+  // ---------- footer pe mobil: listele de linkuri se deschid la atingere ----------
+  $$('.ftr-cols nav h4').forEach((h) => {
+    h.setAttribute('role', 'button'); h.tabIndex = 0;
+    const toggle = () => { if (!isMobile()) return; const open = h.parentElement.classList.toggle('open'); h.setAttribute('aria-expanded', String(open)); };
+    h.setAttribute('aria-expanded', 'false');
+    h.addEventListener('click', toggle);
+    h.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
+  });
+
+  // ---------- agenda ediției pe mobil: atelierul următor rămâne închis (pe desktop e deschis) ----------
+  if (isMobile()) $$('details.ag-item[open]').forEach((d) => d.removeAttribute('open'));
+
   // „Ești potrivit?”: răspuns imediat, fără date trimise nicăieri
   const quiz = $('#quiz'), out = $('#quiz-out');
   quiz?.addEventListener('submit', (e) => {

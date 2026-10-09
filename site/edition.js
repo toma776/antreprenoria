@@ -1,14 +1,14 @@
 // Pagina unei ediții (/editii/22, /editii/cluj-1): același limbaj vizual ca homepage-ul.
 // Hero cu progresul ediției, cifre, agenda pe ateliere (cu programul zilei), oamenii, colegii de ediție, ce include, parteneri.
 // Cifrele de afaceri ale participanților apar doar agregat (interval, mediană), niciodată per companie.
-const { esc, initials, milLei, fmtDay, today, median, quantile } = require('./util');
+const { esc, initials, milLei, fmtDay, today, median, quantile, img } = require('./util');
 
 const DAY = 864e5;
 const days = (a, b) => Math.round((new Date(b + 'T12:00') - new Date(a + 'T12:00')) / DAY);
 const cap = (s) => String(s || '').replace(/(^|[.!?]\s+)(\p{Ll})/gu, (m, a, b) => a + b.toUpperCase());
 const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
 const pluralDe = (n, one, many) => `${n} ${n === 1 ? one : (n % 100 === 0 || n % 100 >= 20 ? 'de ' : '') + many}`;
-const avatar = (p, cls = '') => (p?.imagine ? `<img class="${cls}" src="${esc(p.imagine)}" alt="" loading="lazy">` : `<span class="${cls} ph">${esc(initials(p?.nume || '?'))}</span>`);
+const avatar = (p, cls = '') => (p?.imagine ? `<img class="${cls}" src="${esc(img(p.imagine))}" alt="" loading="lazy">` : `<span class="${cls} ph">${esc(initials(p?.nume || '?'))}</span>`);
 const edUrl = (e) => (e.serie === 'Cluj' ? `/editii/cluj-${e.numar}` : `/editii/${e.numar}`);
 const edLabel = (e) => (e.serie === 'Cluj' ? `Cluj #${e.numar}` : `#${e.numar}`);
 const MON = ['ian', 'feb', 'mar', 'apr', 'mai', 'iun', 'iul', 'aug', 'sep', 'oct', 'noi', 'dec'];

@@ -1,7 +1,7 @@
 // Homepage-ul: produs de date mai mult decât broșură. Hero cu întrebare interactivă (sugestii fixe -> răspuns din creier),
 // cifre în grilă, curriculum pe tab-uri, „Pulsul programului” (flux generat din date), agenda ediției în banda finală.
 // Cifrele de afaceri apar doar agregat.
-const { esc, initials, milLei, fmtDay, today } = require('./util');
+const { esc, initials, milLei, fmtDay, today, img } = require('./util');
 
 // sugestiile din hero: problema antreprenorului -> tema din curriculum
 const NEEDS = [
@@ -25,7 +25,7 @@ function relative(date) {
 // descrierile de pe site sunt scrise cu litere mici (le face CSS-ul mari); aici le refacem majusculele de început de frază
 const cap = (s) => String(s || '').replace(/(^|[.!?]\s+)(\p{Ll})/gu, (m, a, b) => a + b.toUpperCase());
 const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
-const avatar = (p, cls = '') => (p.imagine ? `<img class="${cls}" src="${esc(p.imagine)}" alt="${esc(p.nume)}" loading="lazy">` : `<span class="${cls} ph">${esc(initials(p.nume))}</span>`);
+const avatar = (p, cls = '') => (p.imagine ? `<img class="${cls}" src="${esc(img(p.imagine))}" alt="${esc(p.nume)}" loading="lazy">` : `<span class="${cls} ph">${esc(initials(p.nume))}</span>`);
 const edUrl = (e) => (e.serie === 'Cluj' ? `/editii/cluj-${e.numar}` : `/editii/${e.numar}`);
 const edLabel = (e) => (e.serie === 'Cluj' ? `Cluj #${e.numar}` : `#${e.numar}`);
 
@@ -147,11 +147,11 @@ function mosaic(ctx, F) {
   const { D } = ctx;
   const speakers = D.oameni.filter((p) => p.imagine && p.aparitii.length && !p.tipuri.includes('echipă'))
     .sort((a, b) => b.editii.length - a.editii.length || b.aparitii.length - a.aparitii.length).slice(0, 24)
-    .map((p) => ({ i: p.imagine, s: 1 }));
+    .map((p) => ({ i: img(p.imagine, 640), s: 1 }));
   const recent = (id) => Number(String(id).split('-').pop()) || 0;
   const alumni = D.oameni.filter((p) => p.imagine && p.tipuri.includes('participant'))
     .sort((a, b) => Math.max(...b.editii.map(recent)) - Math.max(...a.editii.map(recent))).slice(0, 36)
-    .map((p) => ({ i: p.imagine }));
+    .map((p) => ({ i: img(p.imagine, 384) }));
   const pool = [];
   for (let i = 0; i < Math.max(speakers.length, alumni.length); i++) [speakers[i], alumni[i], alumni[i + 24]].forEach((x) => x && !pool.includes(x) && pool.push(x));
   // forma și poziția fiecărei piese (grilă 4×4); cele două portrete mari se ating în centru cu colțurile drepte

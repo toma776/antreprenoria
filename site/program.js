@@ -1,10 +1,10 @@
 // Pagina /program: tot ce trebuie să știi înainte să aplici, într-o singură pagină cu secțiuni (ancorele din meniu duc aici).
 // Conținutul vine din creier: descrierea și audiența de pe /despre-noi, metodologia, agenda ediției curente, prețurile.
 // Profilul participanților apare doar agregat.
-const { esc, initials, milLei } = require('./util');
+const { esc, initials, milLei, img } = require('./util');
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : (n % 100 === 0 || n % 100 >= 20 ? 'de ' : '') + many}`;
-const avatar = (p) => (p?.imagine ? `<img src="${esc(p.imagine)}" alt="" loading="lazy">` : `<span class="ph">${esc(initials(p?.nume || '?'))}</span>`);
+const avatar = (p) => (p?.imagine ? `<img src="${esc(img(p.imagine, 128))}" alt="" loading="lazy">` : `<span class="ph">${esc(initials(p?.nume || '?'))}</span>`);
 const edUrl = (e) => (e.serie === 'Cluj' ? `/editii/cluj-${e.numar}` : `/editii/${e.numar}`);
 const cleanTitle = (t) => String(t || '').replace(/^(Atelier de Seară|COCKTAIL NETWORKING)\s*[-:]\s*/i, '');
 const sentence = (s) => { s = String(s || '').trim(); return s.charAt(0).toUpperCase() + s.slice(1); };
@@ -67,8 +67,8 @@ function programBody(ctx, F) {
       </aside>
     </div>
   </div>
-  <nav class="pg-nav" aria-label="Secțiunile paginii"><div class="wrap">${NAV.map(([id, t], i) => `<a href="#${id}"><i>0${i + 1}</i>${t}</a>`).join('')}</div></nav>
   </section>
+  <nav class="pg-nav" aria-label="Secțiunile paginii"><div class="wrap">${NAV.map(([id, t], i) => `<a href="#${id}"><i>0${i + 1}</i>${t}</a>`).join('')}</div></nav>
 
   ${day ? `<section class="sec" id="cum"><div class="wrap">
     <div class="sec-head row"><div><p class="eyebrow">Cum funcționează</p><h2>O zi de atelier, de la cafea la networking.</h2>
