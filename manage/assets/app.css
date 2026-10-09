@@ -375,3 +375,9 @@ details.obs-done > summary { cursor: pointer; font-weight: 600; padding: 6px 0; 
 .brain-ctrl { position: absolute; left: 12px; bottom: 12px; display: grid; gap: 4px; }
 .brain .brain-ctrl button { width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, .08); border: 1px solid rgba(255, 255, 255, .15); color: #fff; padding: 0; font-size: 15px; }
 @media (max-width: 760px) { .brain-info { left: 12px; width: auto; top: auto; max-height: 55%; } .brain-stage { height: 440px; } }
+
+/* LEADS */
+.seg-chips { display: flex; flex-wrap: wrap; gap: 6px; flex: 1; }
+.seg-chips button { padding: 6px 12px; border-radius: 20px; font-size: 13px; }
+#ap-q { min-width: 260px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--ink); font: inherit; }
+tr.warn-row td { background: var(--warn-soft); }

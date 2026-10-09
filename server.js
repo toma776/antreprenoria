@@ -6,6 +6,7 @@
 //   GET /api/entitati   -> data/entitati.json (generat de npm run sync)
 //   GET /api/brand      -> data/brand.json        PUT /api/brand/activ {id} -> schimbă varianta folosită pe site
 //   PUT /api/brand/icon {activ?, culori?}         -> iconul de meniu pe mobil și modul lui de culoare
+//   POST /api/aplica    -> formularul /aplica, salvat în Supabase     GET /api/aplicari -> lista pentru panou (doar local)
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
@@ -18,6 +19,13 @@ const TYPES = {
   '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.ico': 'image/x-icon',
 };
 const JSON_FILES = { '/api/entitati': 'entitati.json', '/api/brand': 'brand.json' };
+
+// .env.local (doar local, exclus din git): APLICARI_CHEIE = cheia cu care panoul citește aplicările
+try {
+  fs.readFileSync(path.join(ROOT, '.env.local'), 'utf8').split('\n').forEach((l) => { const m = /^\s*([A-Z_]+)\s*=\s*(.*)\s*$/.exec(l); if (m && !process.env[m[1]]) process.env[m[1]] = m[2]; });
+} catch (e) {}
+// Supabase (proiectul „antreprenoria”, UE): adresa și cheia publică sunt publice prin natura lor; tabelul permite doar adăugare
+const SUPABASE = { url: 'https://gqhjaagqwizauzxhnbwi.supabase.co', key: 'sb_publishable_p5kxwfJFm4zC94TQ0dFTmg_UKV2WMOO' };
 
 function sendJson(res, code, obj) {
   res.writeHead(code, { 'Content-Type': TYPES['.json'], 'Cache-Control': 'no-store' });
@@ -72,11 +80,21 @@ async function handler(req, res) {
       const ids = render.applyOptions().map((o) => o.id);
       const v = ap.validate(input, ids);
       if (!v.ok) return sendJson(res, 422, { error: 'Verifică câmpurile marcate.', errors: v.errors });
-      const rec = { ...v.data, primit: new Date().toISOString(), sursa_pagina: req.headers.referer || null };
-      // local: fișier în data/ (exclus din git, conține date personale); pe Vercel nu există încă o destinație
-      if (READ_ONLY) return sendJson(res, 503, { error: 'nedisponibil' });
-      fs.appendFileSync(path.join(DATA, 'aplicari.jsonl'), JSON.stringify(rec) + '\n');
+      const d = v.data;
+      const rec = { editie: d.editie, nume: d.nume, email: d.email, telefon: d.telefon, companie: d.companie, cui: d.cui, cifra_afaceri: d.cifra_afaceri,
+        sursa: d.sursa || null, sursa_alta: d.sursa === 'Altceva' ? d.sursa_alta || null : null, acord: true, sursa_pagina: String(req.headers.referer || '').slice(0, 300) || null };
+      // aplicările merg în Supabase (tabelul aplicari; cheia publică poate doar adăuga, nu și citi)
+      const r = await fetch(`${SUPABASE.url}/rest/v1/aplicari`, { method: 'POST', headers: { apikey: SUPABASE.key, 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify(rec) }).catch(() => null);
+      if (!r || !r.ok) { console.error('aplicare nesalvată', r && r.status, r && await r.text()); return sendJson(res, 503, { error: 'nedisponibil' }); }
       return sendJson(res, 200, { ok: true });
+    }
+    // lista aplicărilor pentru panou: doar local, cu cheia din .env.local (pe Vercel panoul e public, deci nu le arată)
+    if (url === '/api/aplicari' && req.method === 'GET') {
+      if (READ_ONLY) return sendJson(res, 403, { error: 'Aplicările se văd doar în panoul local.' });
+      if (!process.env.APLICARI_CHEIE) return sendJson(res, 503, { error: 'Lipsește APLICARI_CHEIE în .env.local.' });
+      const r = await fetch(`${SUPABASE.url}/rest/v1/rpc/aplicari_lista`, { method: 'POST', headers: { apikey: SUPABASE.key, 'Content-Type': 'application/json' }, body: JSON.stringify({ cheie: process.env.APLICARI_CHEIE }) }).catch(() => null);
+      if (!r || !r.ok) return sendJson(res, 502, { error: 'Nu am putut citi aplicările din Supabase.' });
+      return sendJson(res, 200, await r.text());
     }
     if (READ_ONLY && req.method !== 'GET') return sendJson(res, 403, { error: 'Pe versiunea publicată panoul e doar pentru vizualizare. Modificările se fac local, apoi git push.' });
     if (url === '/api/brand/activ' && req.method === 'PUT') {
