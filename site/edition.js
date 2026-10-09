@@ -263,35 +263,23 @@ function editionBody(ctx, F, e) {
     </div></section>`;
 
     const agendaPast = `<section class="sec ed-past-sec" id="agenda"><div class="wrap">
-      <div class="sec-head row"><div><p class="eyebrow">Agenda</p><h2>Ce s-a discutat.</h2></div><span class="ed-hint">Deschide un atelier pentru descriere și programul zilei.</span></div>
+      <div class="sec-head"><p class="eyebrow">Agenda</p><h2>Ce s-a discutat.</h2></div>
       <div class="agenda ag-compact">${ws.map((a) => {
-        const ppl = facesOf(a), sp = a.sponsor && O[a.sponsor];
+        const ppl = facesOf(a);
         const [, m, d] = (a.data || '--').split('-');
-        return `<details class="ag-item">
-          <summary>
+        return `<div class="ag-item ag-row">
             <span class="ag-date">${a.data ? `<b>${Number(d)}</b><span>${MON[Number(m) - 1]}</span>` : `<b>${a.nr}</b><span>atelier</span>`}</span>
             <span class="ag-main"><b>${esc(cleanTitle(a.titlu))}</b><span>${ppl.length ? esc(ppl.map((p) => p.nume).join(', ')) : esc(FORMAT[a.format] || a.format)}</span></span>
             <span class="ag-people">${ppl.length ? faces(ppl, 3) : ''}</span>
-            <span class="ag-tag">${esc({ 'full-day': 'full-day', 'seară': 'seară', networking: 'networking' }[a.format] || a.format)}</span>
-            <span class="ag-chev" aria-hidden="true"></span>
-          </summary>
-          <div class="ag-body">
-            <div class="ag-desc">
-              ${a.descriere ? `<p>${esc(cap(a.descriere))}</p>` : ''}
-              ${a.tema && T[a.tema] ? `<a class="link-arrow" href="/teme/${esc(a.tema)}">Despre tema „${esc(T[a.tema].nume)}” →</a>` : ''}
-              ${sp ? `<div class="ag-sponsor"><span>Atelier susținut de</span>${sp.logo ? `<img src="${esc(sp.logo)}" alt="${esc(sp.nume)}" loading="lazy">` : `<b>${esc(sp.nume)}</b>`}</div>` : ''}
-            </div>
-            ${a.program.length ? `<ol class="ag-program">${a.program.map((x) => `<li class="${x.speakeri.length ? 'has-people' : ''}"><time>${esc(x.interval)}</time>
-              <div><b>${esc(x.activitate)}</b>${x.speakeri.map((s) => { const p = P[s.persoana]; return p ? `<a class="ag-speaker" href="/traineri/${esc(p.id)}">${avatar(p)}<span><b>${esc(p.nume)}</b><small>${esc(s.rol === 'trainer' ? 'Trainer' : 'Antreprenor invitat')}${s.companie && s.companie !== 'Trainer' ? ' · ' + esc(O[s.organizatie]?.nume || s.companie) : ''}</small></span></a>` : ''; }).join('')}</div></li>`).join('')}</ol>` : ''}
-          </div>
-        </details>`;
+            <span class="ag-tag">${esc(a.format)}</span>
+        </div>`;
       }).join('')}</div>
     </div></section>`;
 
     const allPartners = [...strategic, ...sponsors.filter((o) => !strategic.includes(o))];
     const TABS = [
       ['vorbitori', 'Traineri și invitați', people.length, `<div class="ed-chips">${people.map((x) => `<a class="ed-chip" href="/traineri/${esc(x.p.id)}">${avatar(x.p)}<span><b>${esc(x.p.nume)}</b><span>${esc(x.org)}</span><small>${x.rol === 'trainer' ? '<i>Trainer</i> ' : ''}${x.ateliere.map((a) => esc(cleanTitle(a.titlu))).join(' · ')}</small></span></a>`).join('')}</div>`],
-      ['colegi', 'Colegii de ediție', part.length, `${ca.filter(Boolean).length >= 5 ? `<p class="ed-agg">Jumătatea „de mijloc” a companiilor: <b>${milLei(quantile(ca, 0.25))}–${milLei(quantile(ca, 0.75))} mil. lei</b> cifră de afaceri${median(ang) ? `, <b>${median(ang)}</b> angajați la mediană` : ''}. ${sectorList.length ? `Sectoare: ${sectorList.slice(0, 5).map(([s, n]) => `${esc(s)} (${n})`).join(', ')}${sectorList.length > 5 ? ` și încă ${sectorList.length - 5}` : ''}.` : ''}</p>` : ''}
+      ['colegi', 'Colegii de ediție', part.length, `
         <div class="ed-chips">${part.map((p) => { const o = O[p.organizatie]; return `<div class="ed-chip">${avatar({ nume: p.nume, imagine: p.imagine })}<span><b>${esc(p.nume)}</b><span>${esc(o?.nume || '')}</span>${o?.sector ? `<small>${esc(o.sector)}</small>` : ''}</span></div>`; }).join('')}</div>`],
       ['parteneri', 'Parteneri', allPartners.length, `<div class="ed-logos">${allPartners.map((o) => `<div class="ed-logo"><div class="logo-cell">${o.logo ? `<img src="${esc(o.logo)}" alt="${esc(o.nume)}" loading="lazy">` : `<b>${esc(o.nume)}</b>`}</div><span>${strategic.includes(o) ? 'Partener strategic' : sponsorOf(o.id).map((a) => esc(cleanTitle(a.titlu))).join(' · ') || 'Partener'}</span></div>`).join('')}</div>`],
     ].filter((t) => t[2]);
