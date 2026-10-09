@@ -59,8 +59,16 @@
     const select = (t, focus) => {
       tabs.forEach((x) => x.setAttribute('aria-selected', String(x === t)));
       $$('[data-panel]', box).forEach((p) => (p.hidden = p.dataset.panel !== t.dataset.tab));
+      // rândurile de tab-uri care se derulează orizontal (pe mobil) aduc tab-ul ales în vizor
+      const row = t.parentElement;
+      if (row.scrollWidth > row.clientWidth) row.scrollTo({ left: Math.max(0, t.offsetLeft - row.offsetLeft - 16), behavior: 'smooth' });
       // elementele din panourile ascunse n-au apucat animația de apariție la scroll: le arătăm direct
       $$('[data-rv]', box).forEach((el) => el.classList.add('in'));
+      // pe mobil, răspunsul poate fi sub ecran: îl aducem în vizor
+      if (!focus && matchMedia('(max-width: 720px)').matches && box.classList.contains('ask')) {
+        const p = $(`[data-panel="${t.dataset.tab}"]`, box), r = p.getBoundingClientRect();
+        if (r.top > innerHeight * 0.75) p.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
       if (focus) t.focus();
     };
     tabs.forEach((t, i) => {
@@ -168,6 +176,31 @@
     }
     new IntersectionObserver((e) => { visible = e[0].isIntersecting; }).observe(mosaic);
     setInterval(swap, 2400);
+  }
+
+  // ---------- „Vezi toate” (pe mobil, listele lungi arată doar primele elemente) ----------
+  $$('[data-more]').forEach((b) => b.addEventListener('click', () => { b.previousElementSibling?.classList.add('all'); b.remove(); }));
+
+  // ---------- bara de acțiune de jos (doar pe mobil) ----------
+  // Apare după primul ecran; dispare când se vede banda finală sau footerul (au deja acțiunile) și când e deschis meniul.
+  const mcta = $('.mcta');
+  if (mcta) {
+    const mobile = matchMedia('(max-width: 720px)');
+    const ends = $$('.cta-band, .ftr');
+    const atEnd = new Set();
+    const update = () => {
+      const on = mobile.matches && scrollY > innerHeight * 0.8 && !atEnd.size && !nav?.classList.contains('open');
+      mcta.classList.toggle('on', on);
+      document.body.classList.toggle('has-mcta', mobile.matches);
+    };
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((es) => { es.forEach((e) => (e.isIntersecting ? atEnd.add(e.target) : atEnd.delete(e.target))); update(); });
+      ends.forEach((el) => io.observe(el));
+    }
+    addEventListener('scroll', update, { passive: true });
+    mobile.addEventListener('change', update);
+    btn?.addEventListener('click', () => setTimeout(update, 0));
+    update();
   }
 
   // „Ești potrivit?”: răspuns imediat, fără date trimise nicăieri

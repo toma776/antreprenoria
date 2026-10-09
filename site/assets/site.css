@@ -1064,3 +1064,78 @@ a.hist-ed:hover { border-color: var(--primary); transform: translateY(-2px); }
 @media (max-width: 860px) { .tm-cards { grid-template-columns: 1fr 1fr; } .tm-row { grid-template-columns: 90px minmax(0, 1fr); } .tm-sp { grid-column: 2; justify-items: start; } }
 @media (max-width: 560px) { .tm-cards { grid-template-columns: 1fr; } .tm-row { grid-template-columns: 1fr; gap: 10px; } .tm-ed { grid-auto-flow: column; justify-content: start; align-items: baseline; gap: 10px; } .tm-sp { grid-column: auto; } .tm-evening { grid-template-columns: 1fr; } }
 .tm-matrix thead th:first-child { text-align: left; }
+
+/* ---------- experiența pe mobil (punctele 1–4 din analiza mobile-first) ---------- */
+/* 1. hero: butoanele de acțiune */
+.hero-v2 .hero-actions { margin-top: 26px; }
+.hero-actions .btn .dot-live { margin-right: 2px; }
+.more-btn { display: none; }
+.mcta { display: none; }
+
+@media (max-width: 720px) {
+  /* 1. hero mai scurt: titlul, textul și butoanele încap pe primul ecran, mozaicul vine după */
+  .hero-v2 { padding-top: 28px; }
+  .hero-v2 h1 { font-size: clamp(30px, 8.4vw, 38px); }
+  .hero-v2 .lead { font-size: 16.5px; margin-top: 14px; }
+  .hero-v2 .hero-actions { margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .hero-v2 .hero-actions .btn { padding: 14px 12px; font-size: 15px; }
+  .hero-split { gap: 28px; }
+  .mosaic { max-width: 340px; }
+
+  /* 2. bara de acțiune de jos */
+  .mcta { display: flex; align-items: center; gap: 10px; position: fixed; left: 10px; right: 10px; bottom: calc(10px + env(safe-area-inset-bottom)); z-index: 15; padding: 8px 8px 8px 14px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); box-shadow: 0 18px 40px -12px rgba(16, 30, 60, .35);
+    transform: translateY(140%); opacity: 0; transition: transform .3s cubic-bezier(.2, .7, .2, 1), opacity .2s; pointer-events: none; }
+  .mcta.on { transform: none; opacity: 1; pointer-events: auto; }
+  .mcta-ed { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); }
+  .mcta-ed span { display: grid; font-weight: 700; font-size: 14.5px; line-height: 1.2; }
+  .mcta-ed small { font-weight: 500; font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mcta-go { flex: none; padding: 13px 22px; font-size: 15.5px; margin-left: auto; }
+  body.has-mcta .ftr-legal { padding-bottom: 96px; }
+  [data-brand="b"] .mcta { box-shadow: 0 0 0 1px var(--line), 0 18px 40px -12px rgba(0, 0, 0, .6); }
+
+  /* 3. pagini mai scurte */
+  .more-btn { display: block; width: 100%; margin-top: 12px; padding: 14px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: 600 15px/1.2 var(--f-body); cursor: pointer; }
+  .more-btn.more-dark { background: var(--dark-2); color: var(--dark-ink); }
+  /* fluxul „Pulsul programului”: primele 3 evenimente */
+  .feed:not(.all) .feed-item:nth-of-type(n+4) { display: none; }
+  .pulse { gap: 28px; }
+  .pulse-stats { grid-template-columns: repeat(3, 1fr); }
+  .pulse-stat + .pulse-stat { border-top: 0; border-left: 1px solid var(--line); }
+  .pulse-stat { padding: 12px; }
+  .pulse-stat b { font-size: 26px; }
+  .pulse-stat > span { font-size: 12px; }
+  /* curriculum: 3 oameni pe temă */
+  .cur-people a:nth-child(n+4) { display: none; }
+  /* traineri și logo-uri: benzi care se derulează orizontal, cu următorul element vizibil pe margine */
+  .people { display: grid; grid-auto-flow: column; grid-auto-columns: 42%; grid-template-columns: none; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; margin-right: -16px; padding-right: 16px; scrollbar-width: none; }
+  .people > * { scroll-snap-align: start; }
+  .logos { display: grid; grid-auto-flow: column; grid-template-rows: repeat(2, auto); grid-template-columns: none; grid-auto-columns: 40%; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; margin-right: -16px; padding-right: 16px; scrollbar-width: none; }
+  .logos > * { scroll-snap-align: start; }
+  .people::-webkit-scrollbar, .logos::-webkit-scrollbar { display: none; }
+  /* cine participă: primele 4 sectoare */
+  #alumni .sector:nth-child(n+5) { display: none; }
+  .alumni-grid { gap: 28px; }
+  /* pagina ediției: oamenii în benzi orizontale, colegii primii 6, metodologia doar cu primul punct */
+  .ed-people { display: grid; grid-auto-flow: column; grid-auto-columns: 44%; grid-template-columns: none !important; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; margin-right: -16px; padding-right: 16px; scrollbar-width: none; }
+  .ed-people > * { scroll-snap-align: start; }
+  .ed-people::-webkit-scrollbar { display: none; }
+  .ed-people + .ed-people-h { margin-top: 28px; }
+  .ed-parts { margin-top: 28px; grid-template-columns: 1fr; gap: 8px; }
+  .ed-parts:not(.all) .ed-part:nth-child(n+7) { display: none; }
+  #participanti .sector:nth-child(n+5) { display: none; }
+  .ed-steps ul li:nth-child(n+2) { display: none; }
+  .ed-steps ul { padding-left: 0; list-style: none; }
+
+  /* 4. „Ce vrei să rezolvi?”: variantele pe un rând care se derulează, răspuns scurt */
+  .ask { margin-top: 28px; }
+  .ask-q { padding: 14px 16px; font-size: 16px; }
+  .ask-chips { flex-wrap: nowrap; overflow-x: auto; scroll-snap-type: x proximity; padding: 12px 16px; scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent); mask-image: linear-gradient(90deg, #000 85%, transparent); }
+  .ask-chips::-webkit-scrollbar { display: none; }
+  .ask-chips button { flex: none; scroll-snap-align: start; padding: 10px 14px; }
+  .ask-out > div { padding: 16px; }
+  .ask-main p { -webkit-line-clamp: 3; }
+  .ask-people { display: none; }
+  .ask-next { border-radius: 0 0 var(--radius) var(--radius); }
+  .ask-actions .btn { flex: 1; padding: 12px; }
+}

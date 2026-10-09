@@ -186,6 +186,7 @@ function homeBody(ctx, F) {
         <p class="eyebrow">Acceleratorul Romanian Business Leaders · din ${D.program.de_cand}</p>
         <h1>Crește-ți compania alături de antreprenorii care au făcut-o deja.</h1>
         <p class="lead">Trei luni de ateliere cu lideri de business români, un grup selectat de colegi antreprenori și acces la comunitatea RBL.</p>
+        <div class="hero-actions"><a class="btn btn-primary btn-lg" href="/aplica">Aplică</a>${ong ? `<a class="btn btn-ghost btn-lg" href="${edUrl(ong)}"><i class="dot-live"></i>Ediția #${ong.numar}, acum</a>` : `<a class="btn btn-ghost btn-lg" href="/program">Cum funcționează</a>`}</div>
       </div>
       ${mosaic(ctx, F)}
     </div>
@@ -232,6 +233,7 @@ function homeBody(ctx, F) {
         <span class="feed-body"><b>${esc(f.title)}</b><span>${esc(f.text)}</span></span>
         <time>${f.date ? relative(f.date) : ''}</time></a>`).join('')}
     </div>
+    ${feed.length > 3 ? `<button class="more-btn" type="button" data-more>Toate cele ${feed.length} evenimente</button>` : ''}
   </div></section>
 
   <section class="sec" id="traineri"><div class="wrap">

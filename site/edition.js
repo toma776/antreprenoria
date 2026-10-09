@@ -188,6 +188,7 @@ function editionBody(ctx, F, e) {
       <div class="sectors">${sectorList.slice(0, 9).map(([s, n]) => `<div class="sector"><span>${esc(s)}</span><i style="--w:${(n / maxSector) * 100}%"></i><b>${n}</b></div>`).join('')}</div>
     </div>
     <div class="ed-parts">${part.map((p) => { const o = O[p.organizatie]; return `<div class="ed-part">${avatar({ nume: p.nume, imagine: p.imagine })}<span><b>${esc(p.nume)}</b><span>${esc(o?.nume || '')}</span>${o?.sector ? `<small>${esc(o.sector)}</small>` : ''}</span></div>`; }).join('')}</div>
+    ${part.length > 6 ? `<button class="more-btn more-dark" type="button" data-more>Toți cei ${part.length}${part.length % 100 >= 20 || part.length % 100 === 0 ? ' de' : ''} colegi de ediție</button>` : ''}
   </div></section>` : '';
 
   // ---------- ce include ----------
