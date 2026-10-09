@@ -114,6 +114,8 @@ async function handler(req, res) {
     }
     sendJson(res, 404, { error: 'pagină inexistentă' });
   } catch (e) {
+    // dacă răspunsul a apucat să înceapă, nu mai putem trimite antetele unei erori: doar îl închidem
+    if (res.headersSent) { console.error(e); return res.end(); }
     sendJson(res, 500, { error: e.message });
   }
 }
