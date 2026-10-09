@@ -1,5 +1,10 @@
 {
   "_despre": "Variantele de logo folosite pe site-ul vechi (antreprenoria.ro). Copiile stau în site/assets/identitate/, ca să rămână disponibile și după ce site-ul vechi e înlocuit.",
+  "_despre_parteneri": "Logo-uri mai bune decât cele de pe site-ul vechi pentru organizațiile partenere (acolo sunt uneori foarte mici sau cu mult spațiu alb). Se aplică la npm run build și ajung peste tot: site, panou, Sinapse.",
+  "parteneri": {
+    "zitec": { "logo": "https://antreprenoria.ro/images/zitec-logo_blue-orange-no-motto.svg", "nota": "varianta fără motto, de pe site-ul vechi; cea din creier era foarte mică" },
+    "domeniile-saftica": { "logo": "/assets/logos/domeniile-saftica.svg", "nota": "logo-ul oficial de pe domeniilesaftica.ro (wp-content/uploads/2023/04/Logo.svg), cu textul alb înlocuit cu bleumarin, pentru fundal deschis" }
+  },
   "logouri": [
     {
       "id": "antreprenoria-logo",

@@ -284,6 +284,8 @@ const orgList = [...orgs.values()].map((o) => {
 });
 orgList.filter((o) => !o.roluri.length).forEach((o) => obs('minor', 'Date', `Organizația „${o.nume}” din curare nu apare în nicio ediție (verifică numele).`));
 const orgsUsed = orgList.filter((o) => o.roluri.length);
+// logo-uri mai bune pentru unii parteneri (data/curare/logouri.json › parteneri)
+for (const o of orgsUsed) if (curLogouri.parteneri?.[o.id]) o.logo = curLogouri.parteneri[o.id].logo;
 locatii.filter((l) => !l.ateliere.length).forEach((l) => obs('minor', 'Date', `Locația „${l.nume}” din curare nu apare la niciun atelier.`));
 
 const oameniList = [...oameni.values()].map((p) => ({ ...p, nr_aparitii: p.aparitii.length }));

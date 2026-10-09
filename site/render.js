@@ -13,13 +13,10 @@ const { programBody } = require('./program');
 const { despreBody } = require('./despre');
 const { temeBody, temaBody } = require('./teme');
 
-// logo-uri mai bune decât cele din creier (acolo e logo-ul folosit la sponsorizare, uneori foarte mic)
-const LOGO = { zitec: 'https://antreprenoria.ro/images/zitec-logo_blue-orange-no-motto.svg' };
 
 // ---------- date din creier ----------
 function load() {
   const D = JSON.parse(fs.readFileSync(DATA, 'utf8'));
-  D.organizatii.forEach((o) => { if (LOGO[o.id]) o.logo = LOGO[o.id]; });
   const P = Object.fromEntries(D.oameni.map((p) => [p.id, p]));
   const O = Object.fromEntries(D.organizatii.map((o) => [o.id, o]));
   const T = Object.fromEntries(D.teme.map((t) => [t.id, t]));

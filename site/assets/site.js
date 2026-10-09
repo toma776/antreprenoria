@@ -59,6 +59,8 @@
     const select = (t, focus) => {
       tabs.forEach((x) => x.setAttribute('aria-selected', String(x === t)));
       $$('[data-panel]', box).forEach((p) => (p.hidden = p.dataset.panel !== t.dataset.tab));
+      // elementele din panourile ascunse n-au apucat animația de apariție la scroll: le arătăm direct
+      $$('[data-rv]', box).forEach((el) => el.classList.add('in'));
       if (focus) t.focus();
     };
     tabs.forEach((t, i) => {
