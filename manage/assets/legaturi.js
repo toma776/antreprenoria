@@ -1,4 +1,4 @@
-/* LEGĂTURI: graful creierului Antreprenoria. Noduri = entitățile din data/entitati.json; legături = relațiile dintre ele
+/* SINAPSE (fostele „Legături”): graful creierului Antreprenoria. Noduri = entitățile din data/entitati.json; legături = relațiile dintre ele
    (atelier -> ediție, temă, locație, sponsor, speakeri; participant -> ediție, companie; speaker -> companie;
    partener -> ediție; locație -> organizația gazdă). Fiecare tip e un „lob” legat de Antreprenoria, în centru. */
 const GRAPH_CATS = {
@@ -68,11 +68,11 @@ function graphData(D) {
   return { nodes: [...nodes.values()], links };
 }
 
-routes.legaturi = function renderLegaturi() {
+routes.sinapse = function renderSinapse() {
   const D = store.entitati;
   if (!D) { $('#view').innerHTML = '<div class="card empty"><b>Lipsește data/entitati.json</b></div>'; return; }
   $('#view').innerHTML = `
-    <div class="head"><div><div class="crumb">manage › legături · din data/entitati.json</div><h1>Legături</h1></div></div>
+    <div class="head"><div><div class="crumb">manage › sinapse · din data/entitati.json</div><h1>Sinapse</h1></div></div>
     <div class="brain" id="brain"></div>`;
   renderGraph(D, $('#brain'), (path) => navigate('/manage/entitati/' + path));
 };
@@ -86,7 +86,7 @@ async function renderGraph(D, el, openCat) {
   const hidden = new Set();
   el.innerHTML = `
     <div class="brain-head">
-      <div><b>Harta creierului Antreprenoria</b><div class="brain-sub">${nodes.filter((n) => !n.lob && !n.centru).length} entități · ${real.length} legături între ele. Treci cu mouse-ul peste un nod ca să vezi cu ce se leagă; click pentru detalii, click pe un lob ca să deschizi categoria.</div></div>
+      <div><b>Harta creierului Antreprenoria</b><div class="brain-sub">${nodes.filter((n) => !n.lob && !n.centru).length} entități · ${real.length} sinapse între ele. Treci cu mouse-ul peste un nod ca să vezi cu ce se leagă; click pentru detalii, click pe un lob ca să deschizi categoria.</div></div>
       <div class="brain-tools"><button type="button" class="brain-iso" aria-pressed="false">Arată ce e izolat</button><input type="search" class="brain-q" placeholder="Caută o entitate…" aria-label="Caută în graf"></div>
     </div>
     <div class="brain-legend">${Object.entries(GRAPH_CATS).map(([c, [t, col]]) => `<button type="button" data-gc="${c}" style="--c:${col}"><i></i>${esc(t)}</button>`).join('')}</div>
@@ -138,7 +138,7 @@ async function renderGraph(D, el, openCat) {
   nodeSel.on('mouseenter', (e, n) => {
     focus(n);
     const k = [...nb.get(n.id)].filter((id) => !id.startsWith('lob:') && id !== 'brand').length;
-    tip.innerHTML = `<b>${esc(n.nume)}</b><span>${esc(GRAPH_CATS[n.cat][0])}${n.sub ? ' · ' + esc(n.sub) : ''}${n.lob || n.centru ? '' : ` · ${plural(k, 'legătură', 'legături')}`}</span>`;
+    tip.innerHTML = `<b>${esc(n.nume)}</b><span>${esc(GRAPH_CATS[n.cat][0])}${n.sub ? ' · ' + esc(n.sub) : ''}${n.lob || n.centru ? '' : ` · ${plural(k, 'sinapsă', 'sinapse')}`}</span>`;
     tip.hidden = false;
   }).on('mousemove', (e) => { const r = stage.getBoundingClientRect(); tip.style.left = e.clientX - r.left + 14 + 'px'; tip.style.top = e.clientY - r.top + 10 + 'px'; })
     .on('mouseleave', () => { tip.hidden = true; if (!info.dataset.id) focus(null); })
@@ -151,7 +151,7 @@ async function renderGraph(D, el, openCat) {
       for (const id of nb.get(n.id)) { const m = nodes.find((x) => x.id === id); if (!m.lob && !m.centru) (grp[m.cat] ||= []).push(m); }
       info.innerHTML = `<button type="button" class="b-x" aria-label="Închide">×</button>
         <div class="b-cat" style="--c:${col(n)}">${esc(GRAPH_CATS[n.cat][0])}</div><h4>${esc(n.nume)}</h4>${n.sub ? `<p class="small" style="margin:-6px 0 10px">${esc(n.sub)}</p>` : ''}
-        ${Object.keys(grp).length ? Object.entries(grp).map(([c, a]) => `<div class="b-g"><span style="--c:${GRAPH_CATS[c][1]}">${esc(GRAPH_CATS[c][0])} · ${a.length}</span>${a.slice(0, 8).map((m) => `<a href="#" data-gn="${esc(m.id)}">${esc(cut(m.nume, 70))}</a>`).join('')}${a.length > 8 ? `<em>și încă ${a.length - 8}</em>` : ''}</div>`).join('') : '<p class="small">Nicio legătură directă: e legată doar de categoria ei.</p>'}
+        ${Object.keys(grp).length ? Object.entries(grp).map(([c, a]) => `<div class="b-g"><span style="--c:${GRAPH_CATS[c][1]}">${esc(GRAPH_CATS[c][0])} · ${a.length}</span>${a.slice(0, 8).map((m) => `<a href="#" data-gn="${esc(m.id)}">${esc(cut(m.nume, 70))}</a>`).join('')}${a.length > 8 ? `<em>și încă ${a.length - 8}</em>` : ''}</div>`).join('') : '<p class="small">Nicio sinapsă directă: e legată doar de categoria ei.</p>'}
         <button type="button" class="sm" data-open="${GRAPH_CATS[n.cat][2]}">Deschide ${esc(GRAPH_CATS[n.cat][0])} →</button>`;
       info.hidden = false;
     });
@@ -219,3 +219,5 @@ async function renderGraph(D, el, openCat) {
   sim.on('end', fit);
   setTimeout(fit, 2500);
 }
+// adresa veche /manage/legaturi duce tot aici
+routes.legaturi = () => { history.replaceState({}, '', '/manage/sinapse'); go('sinapse'); };
