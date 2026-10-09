@@ -115,6 +115,13 @@ function programIdentity(D) {
   return `<div class="card"><dl class="kv">
     ${kvRow('Nume', `<b>${esc(P.nume)}</b>`)}
     ${kvRow('Slogan', esc(P.slogan))}
+    ${P.logouri?.length ? kvRow('Logo', `<div class="logo-variants">${P.logouri.map((l) => `<figure class="logo-variant">
+      <a class="logo-variant-img" href="${esc(l.fisier)}" target="_blank" rel="noopener" title="Deschide fișierul"><img src="${esc(l.fisier)}" alt="${esc(l.nume)}" loading="lazy"></a>
+      <figcaption><b>${esc(l.nume)}</b> <span class="muted small">· ${esc(l.marca)}</span>
+        <div class="small">${esc(l.descriere)}</div>
+        <div class="muted small">${esc(l.format)} · ${esc(l.dimensiuni)} · folosit în ${esc(l.folosit_pe)}</div>
+        <div class="small"><a href="${esc(l.fisier)}" download>Descarcă</a> · ${link(l.sursa, 'pe site-ul vechi')}</div></figcaption>
+    </figure>`).join('')}</div>`) : ''}
     ${kvRow('Site', link(P.url, 'antreprenoria.ro'))}
     ${kvRow('Organizator', `${link(P.organizator.url, P.organizator.nume)}<div class="muted small">${esc(P.organizator.descriere)}</div>`)}
     ${kvRow('Din', String(P.de_cand))}

@@ -2,7 +2,7 @@
   "meta": {
     "sursa": "https://antreprenoria.ro",
     "extras_la": "2026-10-08",
-    "generat": "2026-10-08T15:07:08.232Z",
+    "generat": "2026-10-09T08:34:04.401Z",
     "pagini": 11,
     "metoda": "paginile edițiilor (/antreprenoria-16 … /antreprenoria-22, /antreprenoria-cluj) + /despre-noi + /contact; companii, organizații, aliasuri, parteneri și teme curate manual în data/curare/"
   },
@@ -17,6 +17,52 @@
     },
     "descriere": "Atelierele de Antreprenoriat reprezintă, în RBL, cel mai longeviv program educațional dedicat antreprenorilor și funcționează ca un accelerator pentru companii Scale-up – un mix unic de soluții de sprijin standard și personalizat, timp de 3 luni, prin care antreprenorii își construiesc propria rețetă de scalare.",
     "de_cand": 2013,
+    "logouri": [
+      {
+        "id": "antreprenoria-logo",
+        "nume": "Logo complet",
+        "marca": "Antreprenoria",
+        "descriere": "Simbolul „A” cu cele trei flamuri RBL, numele Antreprenoria și sloganul „Cresc antreprenorii, crește România”. Pe fundal transparent, text gri.",
+        "fisier": "/assets/identitate/antreprenoria-logo.png",
+        "format": "PNG transparent",
+        "dimensiuni": "1800×600",
+        "folosit_pe": "header-ul paginilor principale (acasă, despre, contact)",
+        "sursa": "https://antreprenoria.ro/images/antreprenoriat-logo.png"
+      },
+      {
+        "id": "antreprenoria-simbol",
+        "nume": "Simbol",
+        "marca": "Antreprenoria",
+        "descriere": "Doar simbolul „A”: trapez în degradeu albastru cu flamurile RBL în alb.",
+        "fisier": "/assets/identitate/antreprenoria-simbol.png",
+        "format": "PNG transparent",
+        "dimensiuni": "200×210",
+        "folosit_pe": "header-ul și cardurile paginilor de ediție",
+        "sursa": "https://antreprenoria.ro/images/antreprenoriat-logo-letter.png"
+      },
+      {
+        "id": "rbl-logo-oficial",
+        "nume": "Logo oficial RBL",
+        "marca": "Romanian Business Leaders (organizator)",
+        "descriere": "Cele trei flamuri în albastru, galben și roșu și numele Romanian Business Leaders, pe fundal alb.",
+        "fisier": "/assets/identitate/rbl-logo-oficial.png",
+        "format": "PNG",
+        "dimensiuni": "1123×794",
+        "folosit_pe": "footer-ul tuturor paginilor, cu link spre rbls.ro",
+        "sursa": "https://antreprenoria.ro/images/brands/rbl-logo-oficial.png"
+      },
+      {
+        "id": "rbl-logo-social",
+        "nume": "Imagine de distribuire RBL",
+        "marca": "Romanian Business Leaders (organizator)",
+        "descriere": "Logo-ul RBL în format 1200×630, folosit ca imagine la distribuirea paginilor pe rețele sociale.",
+        "fisier": "/assets/identitate/rbl-logo-social.jpg",
+        "format": "JPG",
+        "dimensiuni": "1200×630",
+        "folosit_pe": "og:image pe toate paginile",
+        "sursa": "https://antreprenoria.ro/images/rbl-big-logo.jpg"
+      }
+    ],
     "audienta": "companii cu cifră de afaceri de peste 1 mil. euro și/sau CA peste 500 de mii euro dar au un avantaj competitiv inovativ și/sau sub 500 de mii euro dar sunt înființate de antreprenori seniori cu investiție semnificativă.",
     "ce_obtii": [
       "Acces direct la cei mai relevanți lideri de business din România, alături de care vei putea discuta de la egal la egal despre strategii, provocări și oportunități de scalare a afacerii tale.",

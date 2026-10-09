@@ -12,6 +12,7 @@ const curParteneri = readJson('curare/parteneri.json');
 const curTeme = readJson('curare/teme.json');
 const curOrg = readJson('curare/organizatii.json');
 const curCorectii = readJson('curare/corectii.json') || { date_ateliere: [] };
+const curLogouri = readJson('curare/logouri.json') || { logouri: [] };
 if (!brut) throw new Error('Rulează întâi: npm run extract');
 
 const plain = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
@@ -232,6 +233,7 @@ const program = {
   organizator: { nume: 'Fundația Romanian Business Leaders', url: 'https://www.rbls.ro/', descriere: grab(/(Fundația Romanian Business Leaders este o organizație[^]*?Uniunii Europene\.)/) },
   descriere: grab(/(Atelierele de Antreprenoriat reprezintă[^]*?propria rețetă de scalare\.)/),
   de_cand: 2013,
+  logouri: curLogouri.logouri,
   audienta: grab(/Audiența noastră (companii cu cifră[^]*?semnificativă\.)/),
   ce_obtii: [grab(/Ce obții\? (Acces direct[^]*?afacerii tale\.)/), grab(/(Înțelegerea aprofundată[^]*?constante\.)/)].filter(Boolean),
   format_declarat: grab(/Ce mai primești\? ([^]*?lectori\.)/),

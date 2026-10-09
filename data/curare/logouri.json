@@ -1,0 +1,49 @@
+{
+  "_despre": "Variantele de logo folosite pe site-ul vechi (antreprenoria.ro). Copiile stau în site/assets/identitate/, ca să rămână disponibile și după ce site-ul vechi e înlocuit.",
+  "logouri": [
+    {
+      "id": "antreprenoria-logo",
+      "nume": "Logo complet",
+      "marca": "Antreprenoria",
+      "descriere": "Simbolul „A” cu cele trei flamuri RBL, numele Antreprenoria și sloganul „Cresc antreprenorii, crește România”. Pe fundal transparent, text gri.",
+      "fisier": "/assets/identitate/antreprenoria-logo.png",
+      "format": "PNG transparent",
+      "dimensiuni": "1800×600",
+      "folosit_pe": "header-ul paginilor principale (acasă, despre, contact)",
+      "sursa": "https://antreprenoria.ro/images/antreprenoriat-logo.png"
+    },
+    {
+      "id": "antreprenoria-simbol",
+      "nume": "Simbol",
+      "marca": "Antreprenoria",
+      "descriere": "Doar simbolul „A”: trapez în degradeu albastru cu flamurile RBL în alb.",
+      "fisier": "/assets/identitate/antreprenoria-simbol.png",
+      "format": "PNG transparent",
+      "dimensiuni": "200×210",
+      "folosit_pe": "header-ul și cardurile paginilor de ediție",
+      "sursa": "https://antreprenoria.ro/images/antreprenoriat-logo-letter.png"
+    },
+    {
+      "id": "rbl-logo-oficial",
+      "nume": "Logo oficial RBL",
+      "marca": "Romanian Business Leaders (organizator)",
+      "descriere": "Cele trei flamuri în albastru, galben și roșu și numele Romanian Business Leaders, pe fundal alb.",
+      "fisier": "/assets/identitate/rbl-logo-oficial.png",
+      "format": "PNG",
+      "dimensiuni": "1123×794",
+      "folosit_pe": "footer-ul tuturor paginilor, cu link spre rbls.ro",
+      "sursa": "https://antreprenoria.ro/images/brands/rbl-logo-oficial.png"
+    },
+    {
+      "id": "rbl-logo-social",
+      "nume": "Imagine de distribuire RBL",
+      "marca": "Romanian Business Leaders (organizator)",
+      "descriere": "Logo-ul RBL în format 1200×630, folosit ca imagine la distribuirea paginilor pe rețele sociale.",
+      "fisier": "/assets/identitate/rbl-logo-social.jpg",
+      "format": "JPG",
+      "dimensiuni": "1200×630",
+      "folosit_pe": "og:image pe toate paginile",
+      "sursa": "https://antreprenoria.ro/images/rbl-big-logo.jpg"
+    }
+  ]
+}
