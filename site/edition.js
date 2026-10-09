@@ -7,6 +7,7 @@ const DAY = 864e5;
 const days = (a, b) => Math.round((new Date(b + 'T12:00') - new Date(a + 'T12:00')) / DAY);
 const cap = (s) => String(s || '').replace(/(^|[.!?]\s+)(\p{Ll})/gu, (m, a, b) => a + b.toUpperCase());
 const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+const pluralDe = (n, one, many) => `${n} ${n === 1 ? one : (n % 100 === 0 || n % 100 >= 20 ? 'de ' : '') + many}`;
 const avatar = (p, cls = '') => (p?.imagine ? `<img class="${cls}" src="${esc(p.imagine)}" alt="" loading="lazy">` : `<span class="${cls} ph">${esc(initials(p?.nume || '?'))}</span>`);
 const edUrl = (e) => (e.serie === 'Cluj' ? `/editii/cluj-${e.numar}` : `/editii/${e.numar}`);
 const edLabel = (e) => (e.serie === 'Cluj' ? `Cluj #${e.numar}` : `#${e.numar}`);
@@ -41,7 +42,8 @@ function editionBody(ctx, F, e) {
   ws.forEach((a) => a.program.forEach((x) => x.speakeri.forEach((s) => {
     const p = P[s.persoana];
     if (!p) return;
-    const cur = speakers.get(p.id) || { p, rol: s.rol, org: O[s.organizatie]?.nume || s.companie || '', ateliere: [] };
+    const org = O[s.organizatie]?.nume || (s.companie && s.companie !== 'Trainer' ? s.companie : '') || O[p.organizatii[0]]?.nume || '';
+    const cur = speakers.get(p.id) || { p, rol: s.rol, org, ateliere: [] };
     if (!cur.ateliere.includes(a)) cur.ateliere.push(a);
     speakers.set(p.id, cur);
   })));
@@ -95,14 +97,20 @@ function editionBody(ctx, F, e) {
         </div>
       </div>
       <aside class="ed-live" aria-label="Progresul ediției">
-        <div class="ed-live-top"><span>${STATE[1] === 'live' ? '<i class="dot-live"></i>' : ''}Progresul ediției</span><span>${held.length} din ${ws.length} întâlniri</span></div>
-        <div class="ed-progress" role="img" aria-label="${held.length} din ${ws.length} întâlniri ținute">${ws.map((a) => `<i class="${a.data && a.data < t0 ? 'done' : next && a.id === next.id ? 'next' : ''}" title="${esc(cleanTitle(a.titlu))}"></i>`).join('')}</div>
+        <div class="ed-live-top"><span>${STATE[1] === 'live' ? '<i class="dot-live"></i>' : ''}${dated.length ? 'Progresul ediției' : 'Ediția pe scurt'}</span><span>${dated.length ? `${held.length} din ${ws.length} întâlniri` : esc(e.perioada)}</span></div>
+        ${dated.length ? '' : '<!--'}<div class="ed-progress" role="img" aria-label="${held.length} din ${ws.length} întâlniri ținute">${ws.map((a) => `<i class="${a.data && a.data < t0 ? 'done' : next && a.id === next.id ? 'next' : ''}" title="${esc(cleanTitle(a.titlu))}"></i>`).join('')}</div>${dated.length ? '' : '-->'}
         ${next ? `<div class="ed-next">
           <span class="ask-kicker">Următoarea întâlnire · ${when}</span>
           <b>${esc(cleanTitle(next.titlu))}</b>
           <span>${fmtDay(next.data)} · ${esc(FORMAT[next.format] || next.format)}${next.locatie ? ' · ' + esc(next.locatie) : ''}</span>
           ${facesOf(next).length ? `<div class="ed-next-people">${faces(facesOf(next))}<small>${esc(facesOf(next).map((p) => p.nume).join(', '))}</small></div>` : ''}
-        </div>` : `<div class="ed-next"><span class="ask-kicker">Ediția s-a încheiat</span><b>${plural(ws.length, 'întâlnire', 'întâlniri')}, ${plural(part.length, 'participant', 'participanți')}</b><span>Toată agenda rămâne mai jos.</span></div>`}
+        </div>` : state === 'past' ? `<div class="ed-next"><span class="ask-kicker">Ediția s-a încheiat</span><b>${plural(ws.length, 'întâlnire', 'întâlniri')}, ${plural(part.length, 'participant', 'participanți')}</b><span>Toată agenda rămâne mai jos.</span></div>`
+        : `<div class="ed-next">
+          <span class="ask-kicker">Înscrieri deschise</span>
+          <b>${price ? esc(price.pret_text) : esc(e.perioada)}</b>
+          <span>${esc(e.perioada)} · ${plural(ws.length, 'întâlnire', 'întâlniri')}${price?.nota ? ' · ' + esc(price.nota) : ''}</span>
+          ${people.length ? `<div class="ed-next-people">${faces(people.map((x) => x.p), 5)}<small>${plural(people.length, 'trainer și invitat', 'traineri și invitați')} confirmați</small></div>` : ''}
+        </div>`}
         <a class="ed-live-link" href="#agenda">Agenda completă ${ICON_ARROW}</a>
       </aside>
     </div>
@@ -112,9 +120,11 @@ function editionBody(ctx, F, e) {
   const stats = `<section class="proof"><div class="wrap proof-in">
     <div class="stat"><b><span data-count="${ws.length}">${ws.length}</span></b><span>întâlniri, din care ${fullDay} ateliere full-day</span></div>
     <div class="stat"><b><span data-count="${people.length}">${people.length}</span></b><span>traineri și antreprenori invitați</span></div>
-    <div class="stat"><b><span data-count="${part.length}">${part.length}</span></b><span>participanți din ${plural(companies.size, 'companie', 'companii')}</span></div>
+    ${part.length ? `<div class="stat"><b><span data-count="${part.length}">${part.length}</span></b><span>participanți din ${plural(companies.size, 'companie', 'companii')}</span></div>`
+      : `<div class="stat"><b>~<span data-count="25">25</span></b><span>locuri, pentru antreprenori selectați</span></div>`}
     ${ca.filter(Boolean).length >= 5 ? `<div class="stat"><b><span data-count="${(median(ca) / 1e6).toFixed(1)}" data-dec="1">${milLei(median(ca))}</span><em> mil. lei</em></b><span>cifra de afaceri mediană a companiilor participante</span></div>` : ''}
-    <div class="stat"><b><span data-count="${sectorList.length}">${sectorList.length}</span></b><span>sectoare de activitate</span></div>
+    ${sectorList.length ? `<div class="stat"><b><span data-count="${sectorList.length}">${sectorList.length}</span></b><span>sectoare de activitate</span></div>` : ''}
+    ${!part.length && price ? `<div class="stat"><b><span data-count="${price.pret}">${price.pret}</span><em> lei</em></b><span>+ TVA, taxa de participare${price.nota ? ' · ' + esc(price.nota.toLowerCase().replace(/\.$/, '')) : ''}</span></div>` : ''}
   </div></section>`;
 
   // ---------- agenda ----------
@@ -128,7 +138,7 @@ function editionBody(ctx, F, e) {
       return `<details class="ag-item ${st}" ${st === 'next' ? 'open' : ''}>
         <summary>
           <span class="ag-n">${String(a.nr).padStart(2, '0')}</span>
-          <span class="ag-date">${a.data ? `<b>${Number(d)}</b><span>${MON[Number(m) - 1]}</span>` : '<b>—</b>'}</span>
+          <span class="ag-date">${a.data ? `<b>${Number(d)}</b><span>${MON[Number(m) - 1]}</span>` : `<b>${a.nr}</b><span>atelier</span>`}</span>
           <span class="ag-main"><b>${esc(cleanTitle(a.titlu))}</b><span>${esc(FORMAT[a.format] || a.format)}${a.locatie && a.locatie !== 'TBD' ? ' · ' + esc(a.locatie) : ''}${sp ? ' · susținut de ' + esc(sp.nume) : ''}</span></span>
           <span class="ag-people">${ppl.length ? faces(ppl, 3) : ''}</span>
           <span class="ag-tag ${st}">${st === 'done' ? 'ținut' : st === 'next' ? (when || 'următorul') : 'programat'}</span>
@@ -184,7 +194,7 @@ function editionBody(ctx, F, e) {
   const benefits = e.beneficii.map((b) => { const m = /^(\d+)\s+(.*)$/.exec(b.trim()); return m ? [m[1], m[2]] : ['1', b]; });
   const includes = e.beneficii.length || e.metodologie.length ? `<section class="sec" id="include"><div class="wrap">
     <div class="sec-head row"><div><p class="eyebrow">Ce include ediția</p><h2>Un trimestru întreg, nu o conferință.</h2>
-      ${e.valoare_estimata ? `<p class="lead">${esc(e.valoare_estimata)}.${price ? ` Taxa de participare: <b>${esc(price.pret_text)}</b>${price.nota ? ` (${esc(price.nota)})` : ''}.` : ''}</p>` : ''}</div></div>
+      ${e.valoare_estimata || price ? `<p class="lead">${e.valoare_estimata ? esc(e.valoare_estimata) + '. ' : ''}${price ? `Taxa de participare: <b>${esc(price.pret_text)}</b>${price.nota ? ` (${esc(price.nota.replace(/\.$/, '').toLowerCase())})` : ''}.` : ''}</p>` : ''}</div></div>
     ${benefits.length ? `<div class="benefits">${benefits.map(([n, t]) => `<div class="benefit"><b>${esc(n)}</b><span>${esc(t.replace(/success/i, 'succes'))}</span></div>`).join('')}</div>` : ''}
     ${e.metodologie.length ? `<ol class="steps ed-steps">${e.metodologie.map((m, k) => `<li class="step"><span class="step-n">0${k + 1}</span><h3>${esc(m.titlu.charAt(0) + m.titlu.slice(1).toLowerCase())}</h3>
       <ul>${m.puncte.map((x) => `<li>${esc(x.replace(/;$/, '.').replace(/\bANTREPRENORI\b/g, 'antreprenori').replace(/provocarile/g, 'provocările'))}</li>`).join('')}</ul></li>`).join('')}</ol>` : ''}
@@ -219,7 +229,82 @@ function editionBody(ctx, F, e) {
     </nav>
   </div></section>`;
 
+  if (state === 'past') return pastBody();
   return `<main>${hero}${stats}${agenda}${peopleSec}${partSec}${includes}${partners}${cta}</main>`;
+
+  // ---------- ediție încheiată: aceeași informație, compactată ----------
+  // hero cu „ediția în cifre” (fără bandă de cifre separată), agenda ca rânduri închise cu vorbitorii în clar,
+  // oamenii, colegii și partenerii într-un singur bloc cu tab-uri; fără textele de vânzare (ce include, metodologie)
+  function pastBody() {
+    const loc = e.locatii.filter((l) => l !== 'TBD')[0];
+    const topSectors = sectorList.slice(0, 4);
+    const heroPast = `<section class="hero ed-hero ed-past"><div class="wrap">
+      <nav class="crumbs" aria-label="Unde ești"><a href="/">Acasă</a><span>/</span><a href="/editii">Ediții</a><span>/</span><b>${esc(edLabel(e))}</b></nav>
+      <div class="hero-split">
+        <div class="hero-copy">
+          <p class="eyebrow">Arhivă · ${esc(e.serie)} · ${esc(e.sezon)} ${e.an}</p>
+          <h1>Antreprenoria ${e.serie === 'Cluj' ? 'Cluj ' : ''}<span class="ed-num">#${e.numar}</span></h1>
+          <p class="lead">${pluralDe(ws.length, 'întâlnire', 'întâlniri')}, ${pluralDe(people.length, 'trainer și invitat', 'traineri și invitați')}, ${pluralDe(part.length, 'antreprenor', 'antreprenori')} din ${pluralDe(companies.size, 'companie', 'companii')}.</p>
+          <div class="ed-meta"><span class="ed-badge done">Încheiată</span><span>${esc(e.perioada)}</span>${loc ? `<span>${esc(loc)}</span>` : ''}</div>
+          <div class="hero-actions"><a class="btn btn-ghost btn-lg" href="#agenda">Agenda</a><a class="btn btn-ghost btn-lg" href="#oameni">Oamenii ediției</a></div>
+        </div>
+        <aside class="ed-live ed-sum" aria-label="Ediția în cifre">
+          <div class="ed-live-top"><span>Ediția în cifre</span><span>${esc(e.perioada)}</span></div>
+          <dl class="ed-figs">
+            <div><dt>Întâlniri</dt><dd>${ws.length}</dd><small>${fullDay} full-day</small></div>
+            <div><dt>Traineri și invitați</dt><dd>${people.length}</dd><small>${trainers} traineri</small></div>
+            <div><dt>Participanți</dt><dd>${part.length}</dd><small>${plural(companies.size, 'companie', 'companii')}</small></div>
+            ${ca.filter(Boolean).length >= 5 ? `<div><dt>CA mediană</dt><dd>${milLei(median(ca))}<em> mil. lei</em></dd><small>${median(ang) ? `${median(ang)} angajați, la mediană` : ''}</small></div>` : ''}
+          </dl>
+          ${topSectors.length ? `<div class="ed-sum-sec"><span>Sectoare</span>${topSectors.map(([s, n]) => `<em>${esc(s)} · ${n}</em>`).join('')}${sectorList.length > 4 ? `<em>+${sectorList.length - 4}</em>` : ''}</div>` : ''}
+          <p class="ed-sum-note">Cifre agregate din datele declarate la înscriere.</p>
+        </aside>
+      </div>
+    </div></section>`;
+
+    const agendaPast = `<section class="sec ed-past-sec" id="agenda"><div class="wrap">
+      <div class="sec-head row"><div><p class="eyebrow">Agenda</p><h2>Ce s-a discutat.</h2></div><span class="ed-hint">Deschide un atelier pentru descriere și programul zilei.</span></div>
+      <div class="agenda ag-compact">${ws.map((a) => {
+        const ppl = facesOf(a), sp = a.sponsor && O[a.sponsor];
+        const [, m, d] = (a.data || '--').split('-');
+        return `<details class="ag-item">
+          <summary>
+            <span class="ag-date">${a.data ? `<b>${Number(d)}</b><span>${MON[Number(m) - 1]}</span>` : `<b>${a.nr}</b><span>atelier</span>`}</span>
+            <span class="ag-main"><b>${esc(cleanTitle(a.titlu))}</b><span>${ppl.length ? esc(ppl.map((p) => p.nume).join(', ')) : esc(FORMAT[a.format] || a.format)}</span></span>
+            <span class="ag-people">${ppl.length ? faces(ppl, 3) : ''}</span>
+            <span class="ag-tag">${esc({ 'full-day': 'full-day', 'seară': 'seară', networking: 'networking' }[a.format] || a.format)}</span>
+            <span class="ag-chev" aria-hidden="true"></span>
+          </summary>
+          <div class="ag-body">
+            <div class="ag-desc">
+              ${a.descriere ? `<p>${esc(cap(a.descriere))}</p>` : ''}
+              ${a.tema && T[a.tema] ? `<a class="link-arrow" href="/teme/${esc(a.tema)}">Despre tema „${esc(T[a.tema].nume)}” →</a>` : ''}
+              ${sp ? `<div class="ag-sponsor"><span>Atelier susținut de</span>${sp.logo ? `<img src="${esc(sp.logo)}" alt="${esc(sp.nume)}" loading="lazy">` : `<b>${esc(sp.nume)}</b>`}</div>` : ''}
+            </div>
+            ${a.program.length ? `<ol class="ag-program">${a.program.map((x) => `<li class="${x.speakeri.length ? 'has-people' : ''}"><time>${esc(x.interval)}</time>
+              <div><b>${esc(x.activitate)}</b>${x.speakeri.map((s) => { const p = P[s.persoana]; return p ? `<a class="ag-speaker" href="/traineri/${esc(p.id)}">${avatar(p)}<span><b>${esc(p.nume)}</b><small>${esc(s.rol === 'trainer' ? 'Trainer' : 'Antreprenor invitat')}${s.companie && s.companie !== 'Trainer' ? ' · ' + esc(O[s.organizatie]?.nume || s.companie) : ''}</small></span></a>` : ''; }).join('')}</div></li>`).join('')}</ol>` : ''}
+          </div>
+        </details>`;
+      }).join('')}</div>
+    </div></section>`;
+
+    const allPartners = [...strategic, ...sponsors.filter((o) => !strategic.includes(o))];
+    const TABS = [
+      ['vorbitori', 'Traineri și invitați', people.length, `<div class="ed-chips">${people.map((x) => `<a class="ed-chip" href="/traineri/${esc(x.p.id)}">${avatar(x.p)}<span><b>${esc(x.p.nume)}</b><span>${esc(x.org)}</span><small>${x.rol === 'trainer' ? '<i>Trainer</i> ' : ''}${x.ateliere.map((a) => esc(cleanTitle(a.titlu))).join(' · ')}</small></span></a>`).join('')}</div>`],
+      ['colegi', 'Colegii de ediție', part.length, `${ca.filter(Boolean).length >= 5 ? `<p class="ed-agg">Jumătatea „de mijloc” a companiilor: <b>${milLei(quantile(ca, 0.25))}–${milLei(quantile(ca, 0.75))} mil. lei</b> cifră de afaceri${median(ang) ? `, <b>${median(ang)}</b> angajați la mediană` : ''}. ${sectorList.length ? `Sectoare: ${sectorList.slice(0, 5).map(([s, n]) => `${esc(s)} (${n})`).join(', ')}${sectorList.length > 5 ? ` și încă ${sectorList.length - 5}` : ''}.` : ''}</p>` : ''}
+        <div class="ed-chips">${part.map((p) => { const o = O[p.organizatie]; return `<div class="ed-chip">${avatar({ nume: p.nume, imagine: p.imagine })}<span><b>${esc(p.nume)}</b><span>${esc(o?.nume || '')}</span>${o?.sector ? `<small>${esc(o.sector)}</small>` : ''}</span></div>`; }).join('')}</div>`],
+      ['parteneri', 'Parteneri', allPartners.length, `<div class="ed-logos">${allPartners.map((o) => `<div class="ed-logo"><div class="logo-cell">${o.logo ? `<img src="${esc(o.logo)}" alt="${esc(o.nume)}" loading="lazy">` : `<b>${esc(o.nume)}</b>`}</div><span>${strategic.includes(o) ? 'Partener strategic' : sponsorOf(o.id).map((a) => esc(cleanTitle(a.titlu))).join(' · ') || 'Partener'}</span></div>`).join('')}</div>`],
+    ].filter((t) => t[2]);
+    const peoplePast = TABS.length ? `<section class="sec sec-alt ed-past-sec" id="oameni"><div class="wrap">
+      <div class="sec-head"><p class="eyebrow">Oamenii ediției</p><h2>Cine a fost în sală.</h2></div>
+      <div class="ed-tabs" data-tabs>
+        <div class="ed-tablist" role="tablist" aria-label="Oamenii ediției">${TABS.map(([k, l, n], j) => `<button role="tab" data-tab="${k}" aria-selected="${j === 0}" aria-controls="tab-${k}">${l}<em>${n}</em></button>`).join('')}</div>
+        ${TABS.map(([k, , , html], j) => `<div class="ed-tabpanel" role="tabpanel" id="tab-${k}" data-panel="${k}" ${j ? 'hidden' : ''}>${html}</div>`).join('')}
+      </div>
+    </div></section>` : '';
+
+    return `<main>${heroPast}${agendaPast}${peoplePast}${cta}</main>`;
+  }
 }
 
 module.exports = { editionBody, findEdition, edLabel };
