@@ -1232,3 +1232,10 @@ section[id] { scroll-margin-top: 88px; }
   .ab-contacts { display: none; }
   .cta-band#contact .cta-band-in { gap: 0; }
 }
+/* benzile care se derulează orizontal nu se derulează și pe verticală */
+.people, .logos, .ed-people, .ask-chips, .cur-tabs, .hist, .pg-nav .wrap, .ed-tablist, .cal, .eds { overflow-y: hidden; }
+@media (max-width: 720px) { .ed-person:hover img, .person:hover img { transform: none; } }
+@media (max-width: 720px) {
+  /* în benzile orizontale, cardurile apar direct (animația de apariție le lăsa goale și deplasate până erau aduse în vizor) */
+  .rv :is(.people, .logos, .ed-people) > [data-rv] { opacity: 1; transform: none; transition: none; }
+}
