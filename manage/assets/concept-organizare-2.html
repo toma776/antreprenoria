@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panou vizual · concept</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Al doilea concept de organizare: panoul ca o arhivă vizuală, în stilul site-ului.
+   Patru priviri asupra aceluiași creier: prin timp (ediții), prin oameni, prin companii, prin paginile site-ului.
+   Folosește datele reale din /api/entitati; nu salvează nimic. */
+:root {
+  --bg: #F5F7FB; --surface: #fff; --surface-2: #EEF1F5; --ink: #121826; --muted: #5E6574; --line: #DFE3EA;
+  --grey: #34373E; --grey-2: #3E4149; --grey-ink: #F3F4F6; --grey-muted: #B3B7BF;
+  --primary: #1057A4; --primary-soft: #E3ECF7; --accent: #E32419; --radius: 6px;
+  --f-display: "Archivo", system-ui, sans-serif; --f-body: "Inter", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 var(--f-body); -webkit-font-smoothing: antialiased; }
+a { color: inherit; }
+button { font: inherit; color: inherit; }
+.disp { font-family: var(--f-display); font-weight: 800; font-stretch: 112%; letter-spacing: -.02em; }
+.wrap { width: min(1320px, 100% - 48px); margin: 0 auto; }
+
+/* bara de sus, ca header-ul site-ului */
+.top { position: sticky; top: 0; z-index: 10; background: var(--grey); color: var(--grey-ink); }
+.top-in { display: flex; align-items: center; gap: 28px; height: 68px; }
+.logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.logo img { width: 28px; height: 30px; object-fit: contain; }
+.logo b { font: 800 17px/1 var(--f-display); font-stretch: 112%; } .logo small { display: block; font: 500 11px/1.4 var(--f-body); color: var(--grey-muted); }
+.lens { display: flex; gap: 2px; margin-left: 12px; padding: 4px; border-radius: 999px; background: rgba(0, 0, 0, .22); }
+.lens button { padding: 8px 16px; border: 0; border-radius: 999px; background: transparent; color: var(--grey-muted); font-weight: 600; font-size: 14px; cursor: pointer; }
+.lens button:hover { color: #fff; }
+.lens button.on { background: #fff; color: var(--ink); }
+.top .site-link { margin-left: auto; font-size: 13.5px; color: var(--grey-muted); text-decoration: none; }
+.top .site-link:hover { color: #fff; }
+
+/* titlul fiecărei priviri */
+.intro { padding: 44px 0 26px; display: flex; justify-content: space-between; align-items: end; gap: 24px; }
+.eyebrow { margin: 0 0 10px; font: 600 12.5px/1 var(--f-body); letter-spacing: .1em; text-transform: uppercase; color: var(--primary); }
+.intro h1 { margin: 0; font-size: clamp(30px, 3.4vw, 46px); line-height: 1.05; max-width: 18ch; }
+.intro p { margin: 10px 0 0; color: var(--muted); max-width: 56ch; }
+.how { flex: none; max-width: 340px; padding: 14px 16px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+.how b { color: var(--ink); }
+
+/* ---------- 1. prin timp: rândul edițiilor + tabla ediției alese ---------- */
+.eds { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(150px, 1fr); gap: 10px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: thin; }
+.ed { position: relative; display: grid; align-content: end; min-height: 168px; padding: 14px; border: 0; border-radius: var(--radius); overflow: hidden; cursor: pointer; text-align: left; color: #fff; background: var(--grey); isolation: isolate; }
+.ed .faces { position: absolute; inset: 0; z-index: -2; display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 1fr; }
+.ed .faces img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1); opacity: .55; }
+.ed::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(20, 22, 28, .15), rgba(20, 22, 28, .85)); }
+.ed b { font: 800 30px/1 var(--f-display); font-stretch: 112%; letter-spacing: -.02em; }
+.ed span { font-size: 12.5px; opacity: .85; margin-top: 4px; }
+.ed .st { position: absolute; top: 10px; left: 10px; padding: 3px 8px; border-radius: 999px; font: 600 11px/1.4 var(--f-body); background: rgba(255, 255, 255, .9); color: var(--ink); }
+.ed .st.live { background: var(--accent); color: #fff; }
+.ed.on { outline: 3px solid var(--primary); outline-offset: 3px; }
+.ed.on .faces img { filter: none; opacity: .75; }
+.ed:hover .faces img { opacity: .75; }
+
+.board { margin-top: 26px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+.board > *, .board-2 > *, .lane, .lane-b { min-width: 0; }
+.lane { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.lane-h { display: flex; align-items: baseline; gap: 10px; padding: 14px 18px 0; }
+.lane-h h2 { margin: 0; font-size: 18px; }
+.lane-h span { font-size: 13px; color: var(--muted); }
+.lane-h .act { margin-left: auto; font-size: 13px; font-weight: 600; color: var(--primary); background: none; border: 0; cursor: pointer; }
+.lane-b { padding: 14px 18px 18px; }
+/* atelierele ca un calendar orizontal */
+.cal { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(150px, 1fr); gap: 8px; overflow-x: auto; scrollbar-width: thin; }
+.ws { display: grid; gap: 8px; align-content: start; padding: 12px; border-radius: var(--radius); background: var(--surface-2); border: 1px solid transparent; cursor: pointer; text-align: left; min-height: 150px; }
+.ws:hover { border-color: var(--primary); }
+.ws .d { display: flex; align-items: baseline; gap: 6px; } .ws .d b { font: 800 26px/1 var(--f-display); font-stretch: 112%; } .ws .d span { font-size: 12px; text-transform: uppercase; color: var(--muted); }
+.ws strong { font-size: 13.5px; line-height: 1.3; }
+.ws .tiny { display: flex; margin-top: auto; } .ws .tiny img { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; border: 2px solid var(--surface-2); margin-right: -7px; }
+.ws.done { opacity: .62; } .ws.next { background: var(--primary-soft); border-color: var(--primary); }
+.ws .flag { justify-self: start; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 4px; background: #FCE8E6; color: var(--accent); }
+/* fețele: o bandă de portrete */
+.strip { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
+.face { position: relative; display: block; padding: 0; border: 0; border-radius: var(--radius); overflow: hidden; aspect-ratio: 1; cursor: pointer; background: var(--surface-2); }
+.face img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s; }
+.face:hover img { transform: scale(1.06); }
+.face .ph, .ph { display: grid; place-items: center; width: 100%; height: 100%; font: 800 20px/1 var(--f-display); color: var(--primary); background: var(--primary-soft); }
+.face .nm { position: absolute; inset: auto 0 0; padding: 18px 6px 5px; font-size: 11px; font-weight: 600; line-height: 1.2; color: #fff; background: linear-gradient(transparent, rgba(10, 14, 22, .8)); text-align: left; }
+.face .tag { position: absolute; top: 5px; left: 5px; width: 9px; height: 9px; border-radius: 50%; box-shadow: 0 0 0 2px #fff; }
+.strip.small { grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 6px; }
+.strip.small .nm { display: none; }
+.missing { outline: 2px dashed #D99A1E; outline-offset: -2px; }
+/* logo-uri */
+.logos { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+.lg { display: grid; place-items: center; height: 76px; padding: 12px; border-radius: var(--radius); background: #fff; border: 1px solid var(--line); cursor: pointer; position: relative; }
+.lg img { max-width: 100%; max-height: 44px; object-fit: contain; }
+.lg b { font: 700 13px/1.2 var(--f-body); text-align: center; color: var(--muted); }
+.lg em { position: absolute; bottom: 4px; right: 6px; font: 600 10px/1 var(--f-body); font-style: normal; color: var(--muted); }
+.lg:hover { border-color: var(--primary); }
+.board-2 { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 14px; }
+
+/* ---------- 2. prin oameni: un perete de portrete, pe roluri ---------- */
+.legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.legend button { display: inline-flex; align-items: center; gap: 8px; padding: 7px 13px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; font-size: 13.5px; font-weight: 600; }
+.legend button i { width: 10px; height: 10px; border-radius: 50%; }
+.legend button.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+.group { margin-bottom: 30px; }
+.group h2 { display: flex; align-items: baseline; gap: 10px; margin: 0 0 12px; font-size: 22px; }
+.group h2 span { font: 500 14px/1 var(--f-body); color: var(--muted); }
+
+/* ---------- 3. prin companii: relațiile ca un flux ---------- */
+.flow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; margin-bottom: 26px; }
+.flow > div { padding: 18px; position: relative; }
+.flow > div + div { border-left: 1px solid var(--line); }
+.flow > div + div::before { content: "→"; position: absolute; left: -13px; top: 50%; transform: translateY(-50%); width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: var(--primary); color: #fff; font-size: 13px; }
+.flow h3 { margin: 0 0 2px; font-size: 18px; } .flow p { margin: 0 0 12px; font-size: 13px; color: var(--muted); }
+.flow b.big { display: block; font: 800 40px/1 var(--f-display); font-stretch: 112%; color: var(--primary); margin-bottom: 8px; }
+.flow .logos { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); } .flow .lg { height: 56px; } .flow .lg img { max-height: 30px; }
+
+/* ---------- 4. prin site: paginile și de unde își iau conținutul ---------- */
+.pages { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 18px; align-items: start; }
+.pagelist { display: grid; gap: 4px; position: sticky; top: 88px; }
+.pagelist button { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border: 1px solid transparent; border-radius: var(--radius); background: transparent; cursor: pointer; text-align: left; font-weight: 600; }
+.pagelist button span { font: 500 12px/1 var(--f-body); color: var(--muted); }
+.pagelist button:hover { background: var(--surface); }
+.pagelist button.on { background: var(--surface); border-color: var(--line); box-shadow: inset 3px 0 0 var(--primary); }
+.page { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.page-bar { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: var(--surface-2); border-bottom: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
+.page-bar i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); }
+.page-bar a { margin-left: auto; color: var(--primary); text-decoration: none; font-weight: 600; }
+.block { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 18px; padding: 16px 18px; border-top: 1px solid var(--line); align-items: start; }
+.block:first-of-type { border-top: 0; }
+.block h4 { margin: 0; font-size: 14px; } .block small { display: block; margin-top: 3px; font-size: 12px; color: var(--muted); }
+.src { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; padding: 3px 8px; border-radius: 4px; font-size: 11.5px; font-weight: 600; background: var(--primary-soft); color: var(--primary); }
+.block .strip.small { grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); }
+.txt { padding: 10px 12px; border-radius: var(--radius); background: var(--surface-2); font-size: 14px; color: var(--ink); }
+
+/* fișa (o carte de vizită, centrată) */
+.modal { position: fixed; inset: 0; z-index: 30; display: none; place-items: center; padding: 20px; background: rgba(20, 22, 28, .55); backdrop-filter: blur(4px); }
+.modal.on { display: grid; }
+.card { width: min(760px, 100%); max-height: calc(100vh - 40px); overflow: auto; display: grid; grid-template-columns: 260px minmax(0, 1fr); background: var(--surface); border-radius: 10px; box-shadow: 0 40px 80px -30px rgba(0, 0, 0, .5); }
+.card .pic { background: var(--surface-2); min-height: 300px; }
+.card .pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.card .pic.logo-pic { display: grid; place-items: center; padding: 30px; background: #fff; border-right: 1px solid var(--line); } .card .pic.logo-pic img { height: auto; max-height: 110px; object-fit: contain; }
+.card .body { padding: 24px 26px; display: grid; gap: 14px; align-content: start; position: relative; }
+.card h3 { margin: 0; font-size: 28px; line-height: 1.05; }
+.card .sub { color: var(--muted); font-size: 14px; }
+.card .x { position: absolute; top: 14px; right: 14px; width: 32px; height: 32px; border: 0; border-radius: 50%; background: var(--surface-2); cursor: pointer; font-size: 18px; }
+.roles { display: flex; flex-wrap: wrap; gap: 6px; }
+.role { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; background: var(--surface-2); }
+.role i { width: 8px; height: 8px; border-radius: 50%; }
+.timeline { display: flex; gap: 4px; }
+.timeline div { flex: 1; display: grid; gap: 5px; font-size: 11px; color: var(--muted); text-align: center; }
+.timeline div::before { content: ""; height: 8px; border-radius: 4px; background: var(--surface-2); }
+.timeline div.on::before { background: var(--primary); } .timeline div.on { color: var(--ink); font-weight: 600; }
+.card h5 { margin: 0 0 6px; font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.card .edit { display: flex; gap: 8px; margin-top: 4px; }
+.btn { padding: 9px 14px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface); font-weight: 600; font-size: 13.5px; cursor: pointer; }
+.btn.primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+.note { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 20; padding: 10px 16px; border-radius: 999px; background: var(--ink); color: #fff; font-size: 13px; box-shadow: 0 10px 30px -10px rgba(0, 0, 0, .5); }
+.note b { color: #FADC3A; }
+@media (max-width: 900px) { .board-2, .pages, .flow { grid-template-columns: 1fr; } .flow > div + div { border-left: 0; border-top: 1px solid var(--line); } .flow > div + div::before { display: none; } .pagelist { position: static; } .block { grid-template-columns: 1fr; } .card { grid-template-columns: 1fr; } .card .pic { min-height: 200px; max-height: 260px; } .intro { flex-direction: column; align-items: start; } .lens button { padding: 7px 10px; font-size: 13px; } .top .site-link { display: none; } }
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap top-in">
+  <a class="logo" href="#"><img src="/assets/identitate/antreprenoria-simbol.png" alt=""><span><b>Antreprenoria</b><small>Panou</small></span></a>
+  <nav class="lens" aria-label="Privește creierul">
+    <button data-lens="timp" class="on">Ediții</button><button data-lens="oameni">Oameni</button><button data-lens="companii">Companii</button><button data-lens="site">Site</button>
+  </nav>
+  <a class="site-link" href="/" target="_blank">Vezi site-ul ↗</a>
+</div></header>
+<main class="wrap" id="view"><p style="padding:60px 0;color:var(--muted)">Se încarcă datele din creier…</p></main>
+<div class="modal" id="modal"><div class="card" id="card"></div></div>
+<div class="note" id="note">Concept · <b>datele sunt reale</b>, nimic nu se salvează</div>
+
+<script>
+(async () => {
+  const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  const MON = ['ian', 'feb', 'mar', 'apr', 'mai', 'iun', 'iul', 'aug', 'sep', 'oct', 'noi', 'dec'];
+  const today = new Date().toISOString().slice(0, 10);
+  const ini = (n) => n.split(/[\s-]+/).map((x) => x[0]).slice(0, 2).join('');
+  const clean = (t) => t.replace(/^(Atelier de Seară|COCKTAIL NETWORKING)\s*[-:]\s*/i, '');
+
+  const D = await fetch('/api/entitati').then((r) => r.json());
+  const P = Object.fromEntries(D.oameni.map((p) => [p.id, p]));
+  const O = Object.fromEntries(D.organizatii.map((o) => [o.id, o]));
+  if (O.zitec) O.zitec.logo = 'https://antreprenoria.ro/images/zitec-logo_blue-orange-no-motto.svg'; // același logo mai bun ca pe site
+  const ED = Object.fromEntries(D.editii.map((e) => [e.id, e]));
+  const label = (e) => (e.serie === 'Cluj' ? `Cluj #${e.numar}` : `#${e.numar}`);
+  const order = D.editii.slice().sort((a, b) => a.an - b.an || (a.sezon === 'primăvară' ? -1 : 1) || a.numar - b.numar);
+
+  // culoarea fiecărui rol, aceeași peste tot
+  const ROLE = { trainer: ['Trainer', '#1057A4'], 'antreprenor invitat': ['Antreprenor invitat', '#7A3FC4'], facilitator: ['Facilitator', '#7A3FC4'], invitat: ['Invitat', '#7A3FC4'], participant: ['Participant', '#0F8A62'], 'echipă': ['Echipă', '#4B5563'],
+    alumni: ['Alumni', '#0F8A62'], sponsor: ['Sponsor', '#C2410C'], 'sponsor atelier': ['Sponsor', '#C2410C'], partener: ['Partener', '#B45309'], 'partener strategic': ['Partener strategic', '#B45309'], 'partener ediție': ['Partener', '#B45309'], 'gazdă': ['Gazdă', '#0E7490'], speaker: ['Speaker', '#6D28D9'], organizator: ['Organizator', '#4B5563'] };
+  const roleChip = (r) => { const [l, c] = ROLE[r] || [r, '#888']; return `<span class="role"><i style="background:${c}"></i>${esc(l)}</span>`; };
+  const mainRole = (p) => p.tipuri.find((t) => ROLE[t]) || 'participant';
+  const face = (p, extra = '') => `<button class="face ${p.imagine ? '' : 'missing'}" data-person="${esc(p.id || p.persoana)}" title="${esc(p.nume)}">${p.imagine ? `<img src="${esc(p.imagine)}" alt="" loading="lazy">` : `<span class="ph">${esc(ini(p.nume))}</span>`}${extra}<span class="nm">${esc(p.nume)}</span></button>`;
+  const logo = (o, extra = '') => `<button class="lg" data-org="${esc(o.id)}" title="${esc(o.nume)}">${o.logo ? `<img src="${esc(o.logo)}" alt="${esc(o.nume)}" loading="lazy">` : `<b>${esc(o.nume)}</b>`}${extra}</button>`;
+  const speakersOf = (list) => { const m = new Map(); list.forEach((a) => a.program.forEach((x) => x.speakeri.forEach((s) => { const p = P[s.persoana]; if (p && !m.has(p.id)) m.set(p.id, { p, rol: s.rol, a }); }))); return [...m.values()]; };
+  const fixDate = (e, a) => (a.data && !a.data.startsWith(String(e.an)) ? null : a.data);
+
+  let current = order.filter((e) => e.serie === 'București' && e.ateliere.some((a) => a.data && a.data >= today)).pop() || order[order.length - 1];
+  const V = {};
+
+  // ---------- 1. ediții ----------
+  V.timp = () => {
+    const e = current, spk = speakersOf(e.ateliere);
+    const ws = e.ateliere.slice().sort((a, b) => a.nr - b.nr);
+    const nextId = ws.filter((a) => fixDate(e, a) && a.data >= today).sort((a, b) => a.data.localeCompare(b.data))[0]?.id;
+    const partners = [...new Map(e.parteneri.map((x) => [x.organizatie, x])).values()].map((x) => O[x.organizatie]).filter(Boolean);
+    const live = (x) => x.ateliere.some((a) => a.data && a.data < today) && x.ateliere.some((a) => a.data && a.data >= today && a.data.startsWith(String(x.an)));
+    return `<section class="intro"><div><p class="eyebrow">Prin timp</p><h1 class="disp">Fiecare ediție, ca o tablă.</h1>
+      <p>Alegi ediția din rândul de sus; dedesubt vezi tot ce ține de ea: întâlnirile, cine a vorbit, cine a participat și cine a susținut-o. Click pe orice față sau logo deschide fișa.</p></div>
+      <div class="how"><b>De ce așa:</b> clientul gândește în ediții („ce urmează în #22?”), nu în tabele. Coperta fiecărei ediții e făcută din fețele participanților.</div></section>
+    <div class="eds">${order.map((x) => `<button class="ed ${x.id === e.id ? 'on' : ''}" data-ed="${x.id}"><span class="faces">${x.participanti.filter((p) => p.imagine).slice(0, 8).map((p) => `<img src="${esc(p.imagine)}" alt="" loading="lazy">`).join('')}</span>
+      <span class="st ${live(x) ? 'live' : ''}">${live(x) ? 'acum' : x.deschisa ? 'înscrieri' : x.an}</span><b>${esc(label(x))}</b><span>${esc(x.sezon)} ${x.an} · ${x.participanti.length} participanți</span></button>`).join('')}
+      <button class="ed" style="background:var(--surface);color:var(--muted);border:2px dashed var(--line);place-content:center;text-align:center"><b style="font-size:34px">+</b><span>Ediție nouă</span></button></div>
+    <div class="board">
+      <div class="lane"><div class="lane-h"><h2 class="disp">Întâlnirile</h2><span>${ws.length} · ${esc(e.perioada)}</span><button class="act">+ Adaugă</button></div>
+        <div class="lane-b"><div class="cal">${ws.map((a) => { const d = fixDate(e, a) || a.data; const [, m, z] = (d || '--').split('-'); const st = d && d < today ? 'done' : a.id === nextId ? 'next' : '';
+          return `<button class="ws ${st}" data-ws="${a.id}"><span class="d">${d ? `<b>${Number(z)}</b><span>${MON[Number(m) - 1]}</span>` : '<b>—</b>'}</span><strong>${esc(clean(a.titlu))}</strong>
+          ${a.cauta_sponsor ? '<span class="flag">fără sponsor</span>' : a.sponsor && O[a.sponsor] ? `<span style="font-size:12px;color:var(--muted)">cu ${esc(O[a.sponsor].nume)}</span>` : ''}
+          <span class="tiny">${a.program.flatMap((x) => x.speakeri).map((s) => P[s.persoana]).filter(Boolean).slice(0, 4).map((p) => `<img src="${esc(p.imagine || '')}" alt="">`).join('')}</span></button>`; }).join('')}</div></div></div>
+      <div class="board-2">
+        <div class="lane"><div class="lane-h"><h2 class="disp">Cine vorbește</h2><span>${spk.length} traineri și invitați</span></div>
+          <div class="lane-b"><div class="strip">${spk.map(({ p, rol }) => face(p, `<span class="tag" style="background:${(ROLE[rol] || ['', '#888'])[1]}"></span>`)).join('')}</div></div></div>
+        <div class="lane"><div class="lane-h"><h2 class="disp">Cine susține</h2><span>${partners.length} companii</span><button class="act">+ Sponsor</button></div>
+          <div class="lane-b"><div class="logos">${partners.map((o) => logo(o)).join('')}</div></div></div>
+      </div>
+      <div class="lane"><div class="lane-h"><h2 class="disp">Colegii de ediție</h2><span>${e.participanti.length} participanți${e.participanti.some((p) => !p.imagine) ? ' · conturul punctat = fără poză' : ''}</span><button class="act">+ Participant</button></div>
+        <div class="lane-b"><div class="strip">${e.participanti.map((p) => face({ ...p, id: p.persoana })).join('')}</div></div></div>
+    </div>`;
+  };
+
+  // ---------- 2. oameni ----------
+  let roleFilter = 'toti';
+  V.oameni = () => {
+    const G = [['trainer', 'Traineri', (p) => p.tipuri.includes('trainer')], ['invitat', 'Antreprenori invitați', (p) => p.tipuri.includes('antreprenor invitat') || p.tipuri.includes('facilitator') || p.tipuri.includes('invitat')],
+      ['participant', 'Participanți (alumni)', (p) => p.tipuri.includes('participant') && !p.aparitii.length], ['echipa', 'Echipa', (p) => p.tipuri.includes('echipă')]];
+    const COL = { trainer: '#1057A4', invitat: '#7A3FC4', participant: '#0F8A62', echipa: '#4B5563' };
+    const shown = roleFilter === 'toti' ? G : G.filter((g) => g[0] === roleFilter);
+    return `<section class="intro"><div><p class="eyebrow">Prin oameni</p><h1 class="disp">${D.oameni.length} de fețe, un singur registru.</h1>
+      <p>Toți oamenii din toate edițiile, pe roluri. Cine revine des e primul. Fără tabele: recunoști oamenii după chip.</p></div>
+      <div class="how"><b>De ce așa:</b> un om apare o singură dată, chiar dacă a fost participant și apoi speaker. Fișa lui arată tot parcursul.</div></section>
+    <div class="legend"><button class="${roleFilter === 'toti' ? 'on' : ''}" data-role="toti">Toți</button>${G.map(([k, l, fn]) => `<button class="${roleFilter === k ? 'on' : ''}" data-role="${k}"><i style="background:${COL[k]}"></i>${l} · ${D.oameni.filter(fn).length}</button>`).join('')}</div>
+    ${shown.map(([k, l, fn]) => { const list = D.oameni.filter(fn).sort((a, b) => b.editii.length - a.editii.length || b.aparitii.length - a.aparitii.length);
+      return `<div class="group"><h2 class="disp">${l} <span>${list.length}</span></h2><div class="strip ${k === 'participant' ? 'small' : ''}">${list.map((p) => face(p)).join('')}</div></div>`; }).join('')}`;
+  };
+
+  // ---------- 3. companii ----------
+  V.companii = () => {
+    const ciclu = D.organizatii.filter((o) => o.ciclu);
+    const sponsors = D.organizatii.filter((o) => o.tipuri.some((t) => ['sponsor', 'partener', 'gazdă'].includes(t)));
+    const alumni = D.organizatii.filter((o) => o.tipuri.includes('alumni'));
+    const spk = D.organizatii.filter((o) => o.tipuri.includes('speaker') && !o.tipuri.includes('alumni') && !o.tipuri.includes('sponsor'));
+    return `<section class="intro"><div><p class="eyebrow">Prin companii</p><h1 class="disp">Vii ca participant. Revii ca partener.</h1>
+      <p>Companiile organizate după relația cu programul, nu alfabetic. Fluxul de sus e povestea pe care o spune și site-ul.</p></div>
+      <div class="how"><b>De ce așa:</b> clientul vede imediat cine poate fi abordat pentru sponsorizare: alumni care au crescut și nu au revenit încă.</div></section>
+    <div class="flow">
+      <div><h3 class="disp">Participă</h3><p>companii alumni</p><b class="big">${alumni.length}</b><div class="logos">${alumni.filter((o) => o.logo).slice(0, 6).map((o) => logo(o)).join('')}</div></div>
+      <div><h3 class="disp">Revin</h3><p>alumni care au revenit ca sponsor, gazdă sau speaker</p><b class="big">${ciclu.length}</b><div class="logos">${ciclu.map((o) => logo(o)).join('')}</div></div>
+      <div><h3 class="disp">Susțin</h3><p>parteneri, sponsori și gazde</p><b class="big">${sponsors.length}</b><div class="logos">${sponsors.filter((o) => o.logo).slice(0, 6).map((o) => logo(o)).join('')}</div></div>
+    </div>
+    <div class="group"><h2 class="disp">Parteneri, sponsori, gazde <span>${sponsors.length}</span></h2><div class="logos">${sponsors.map((o) => logo(o, `<em>${o.editii.length} ed.</em>`)).join('')}</div></div>
+    <div class="group"><h2 class="disp">Companiile speakerilor <span>${spk.length}</span></h2><div class="logos">${spk.map((o) => logo(o)).join('')}</div></div>
+    <div class="group"><h2 class="disp">Companii alumni <span>${alumni.length}</span></h2><div class="logos" style="grid-template-columns:repeat(auto-fill,minmax(120px,1fr))">${alumni.slice(0, 48).map((o) => logo(o)).join('')}</div>
+      <p style="color:var(--muted);font-size:13px">Primele 48 din ${alumni.length}. Cele fără logo apar cu numele.</p></div>`;
+  };
+
+  // ---------- 4. site ----------
+  let pageSel = 'acasa';
+  V.site = () => {
+    const ong = current, spk = speakersOf(ong.ateliere);
+    const top = D.oameni.filter((p) => p.aparitii.length).sort((a, b) => b.editii.length - a.editii.length).slice(0, 8);
+    const partners = D.organizatii.filter((o) => o.logo && o.tipuri.some((t) => ['partener', 'sponsor'].includes(t))).slice(0, 14);
+    const pool = D.oameni.filter((p) => p.imagine && (p.aparitii.length || p.tipuri.includes('participant'))).slice(0, 30);
+    const PAGES = {
+      acasa: ['Acasă', '/', [
+        ['Hero', 'titlu, text, mozaicul de portrete', `<div class="txt">Crește-ți compania alături de antreprenorii care au făcut-o deja.</div><div class="strip small" style="margin-top:8px">${pool.slice(0, 16).map((p) => face(p)).join('')}</div>`, 'Oameni cu poză · se schimbă singur'],
+        ['Cifrele', 'ani, ediții, speakeri, alumni', `<div class="txt">${D.editii.length} ediții în creier · ${D.oameni.filter((p) => p.aparitii.length).length} speakeri · ${D.organizatii.filter((o) => o.tipuri.includes('alumni')).length} companii alumni</div>`, 'Calculate automat'],
+        ['Traineri', 'cei care revin cel mai des', `<div class="strip small">${top.map((p) => face(p)).join('')}</div>`, 'Oameni · ordonați după ediții'],
+        ['Parteneri', 'logo-urile de pe homepage', `<div class="logos" style="grid-template-columns:repeat(auto-fill,minmax(90px,1fr))">${partners.map((o) => logo(o)).join('')}</div>`, 'Companii · parteneri și sponsori'],
+        ['Banda finală', 'agenda ediției curente', `<div class="txt">Ediția ${esc(label(ong))} · ${ong.ateliere.length} întâlniri</div>`, `Ediția ${esc(label(ong))}`]]],
+      editie: [`Ediția ${label(ong)}`, `/editii/${ong.numar}`, [
+        ['Hero + progres', 'titlu, stare, următoarea întâlnire', `<div class="txt">Antreprenoria ${esc(label(ong))} · ${esc(ong.perioada)}</div>`, `Ediția ${esc(label(ong))}`],
+        ['Agenda', 'atelierele, cu programul zilei', `<div class="txt">${ong.ateliere.map((a) => esc(clean(a.titlu))).join(' · ')}</div>`, 'Ateliere'],
+        ['Traineri și invitați', 'cine vorbește la fiecare atelier', `<div class="strip small">${spk.map(({ p }) => face(p)).join('')}</div>`, 'Oameni · din programul atelierelor'],
+        ['Colegii de ediție', 'participanții', `<div class="strip small">${ong.participanti.map((p) => face({ ...p, id: p.persoana })).join('')}</div>`, 'Participanți'],
+        ['Parteneri', 'cine susține ediția', `<div class="logos" style="grid-template-columns:repeat(auto-fill,minmax(90px,1fr))">${[...new Set(ong.parteneri.map((x) => x.organizatie))].map((id) => O[id]).filter(Boolean).map((o) => logo(o)).join('')}</div>`, 'Companii']]],
+      despre: ['Despre', '/despre', [
+        ['Povestea', 'descrierea programului', `<div class="txt">${esc((D.program.descriere || '').slice(0, 260))}…</div>`, 'Program · identitate'],
+        ['Metodologia', `${D.program.metodologie.length} pași`, `<div class="txt">${D.program.metodologie.map((m) => esc(m.titlu.charAt(0) + m.titlu.slice(1).toLowerCase())).join(' · ')}</div>`, 'Program · metodologie'],
+        ['Echipa', 'oamenii programului', `<div class="txt">${D.program.contact.echipa.map((m) => esc(m.nume)).join(' · ')}</div>`, 'Oameni · echipă']]],
+      footer: ['Footer (pe toate paginile)', '/', [
+        ['Slogan și logo', '', `<div class="txt">${esc(D.program.slogan)}</div>`, 'Identitate'],
+        ['Contacte', 'pentru participanți și parteneriate', `<div class="txt">${D.program.contact.echipa.slice(1, 3).map((m) => esc(m.nume + ' · ' + m.email)).join('<br>')}</div>`, 'Program · contact']]],
+    };
+    const [title, url, blocks] = PAGES[pageSel];
+    return `<section class="intro"><div><p class="eyebrow">Prin site</p><h1 class="disp">Pagina, bucată cu bucată.</h1>
+      <p>Alegi o pagină și vezi blocurile ei în ordinea de pe site. Fiecare bloc spune din ce parte a creierului își ia conținutul; click pe o față sau un logo deschide fișa.</p></div>
+      <div class="how"><b>De ce așa:</b> răspunde la întrebarea clientului „ce schimb ca să se vadă altfel pe site?”, fără să știe cum sunt organizate datele.</div></section>
+    <div class="pages"><div class="pagelist">${Object.entries(PAGES).map(([k, [t, , b]]) => `<button class="${k === pageSel ? 'on' : ''}" data-page="${k}">${esc(t)}<span>${b.length} blocuri</span></button>`).join('')}</div>
+      <div class="page"><div class="page-bar"><i></i><i></i><i></i><span>antreprenoria.ro${esc(url)}</span><a href="${esc(url)}" target="_blank">Deschide ↗</a></div>
+        ${blocks.map(([h, s, html, src]) => `<div class="block"><div><h4>${esc(h)}</h4>${s ? `<small>${esc(s)}</small>` : ''}<span class="src">↳ ${src}</span></div><div>${html}</div></div>`).join('')}</div></div>`;
+  };
+
+  // ---------- fișa ----------
+  const modal = $('#modal'), card = $('#card');
+  const close = () => modal.classList.remove('on');
+  modal.addEventListener('click', (e) => { if (e.target === modal || e.target.closest('.x')) close(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+  const edBar = (ids) => `<div class="timeline">${order.map((x) => `<div class="${ids.includes(x.id) ? 'on' : ''}">${esc(label(x))}</div>`).join('')}</div>`;
+  function personCard(id) {
+    const p = P[id]; if (!p) return;
+    const org = O[p.organizatii[0]];
+    const talks = p.aparitii.map((a) => `<li><b>${esc(clean(a.titlu))}</b> · ${esc(label(ED[a.editie] || { numar: '?', serie: '' }))}</li>`);
+    card.innerHTML = `<div class="pic">${p.imagine ? `<img src="${esc(p.imagine)}" alt="">` : `<span class="ph" style="height:100%;font-size:60px">${esc(ini(p.nume))}</span>`}</div>
+      <div class="body"><button class="x" aria-label="Închide">×</button><div><h3 class="disp">${esc(p.nume)}</h3><div class="sub">${esc(org?.nume || p.companii[0] || '')}${p.functii[0] && p.functii[0] !== 'Trainer' ? ' · ' + esc(p.functii[0]) : ''}</div></div>
+        <div class="roles">${p.tipuri.map(roleChip).join('')}</div>
+        <div><h5>Edițiile în care apare</h5>${edBar(p.editii)}</div>
+        ${talks.length ? `<div><h5>A vorbit despre</h5><ul style="margin:0;padding-left:18px;font-size:14px">${[...new Set(talks)].join('')}</ul></div>` : ''}
+        ${!p.imagine || !p.linkedin ? `<div style="font-size:13px;color:#A35A00">De completat: ${[!p.imagine && 'poză', !p.linkedin && 'LinkedIn'].filter(Boolean).join(', ')}</div>` : ''}
+        <div class="edit"><button class="btn primary">Editează</button>${org ? `<button class="btn" data-org="${esc(org.id)}">Vezi ${esc(org.nume)}</button>` : ''}</div></div>`;
+    modal.classList.add('on');
+  }
+  function orgCard(id) {
+    const o = O[id]; if (!o) return;
+    const people = (o.oameni || []).map((x) => P[x]).filter(Boolean);
+    card.innerHTML = `<div class="pic logo-pic">${o.logo ? `<img src="${esc(o.logo)}" alt="">` : `<b class="disp" style="font-size:26px;text-align:center">${esc(o.nume)}</b>`}</div>
+      <div class="body"><button class="x" aria-label="Închide">×</button><div><h3 class="disp">${esc(o.nume)}</h3><div class="sub">${esc(o.sector || o.tip || '')}</div></div>
+        <div class="roles">${o.tipuri.filter((t) => t !== 'organizator').map(roleChip).join('')}</div>
+        ${o.ciclu ? `<div style="padding:10px 12px;border-radius:6px;background:var(--primary-soft);font-size:14px">A venit ca participant la ${esc(label(ED[o.ciclu.alumni_din]))} și a revenit ca ${esc(o.ciclu.apoi.join(', '))}.</div>` : ''}
+        <div><h5>Edițiile în care apare</h5>${edBar(o.editii)}</div>
+        ${people.length ? `<div><h5>Oamenii companiei</h5><div class="strip small">${people.map((p) => face(p)).join('')}</div></div>` : ''}
+        ${o.descriere ? `<div style="font-size:14px;color:var(--muted)">${esc(o.descriere.slice(0, 240))}${o.descriere.length > 240 ? '…' : ''}</div>` : '<div style="font-size:13px;color:#A35A00">De completat: descriere</div>'}
+        <div class="edit"><button class="btn primary">Editează</button>${o.url ? `<a class="btn" href="${esc(o.url)}" target="_blank" rel="noopener" style="text-decoration:none">Site ↗</a>` : ''}</div></div>`;
+    modal.classList.add('on');
+  }
+  function wsCard(id) {
+    const e = D.editii.find((x) => x.ateliere.some((a) => a.id === id)), a = e.ateliere.find((x) => x.id === id);
+    const sp = a.sponsor && O[a.sponsor];
+    card.innerHTML = `<div class="pic" style="display:grid;place-items:center;background:var(--grey);color:#fff;text-align:center;padding:30px">${a.data ? `<div><b class="disp" style="font-size:80px;line-height:1">${Number(a.data.slice(8))}</b><div style="font-size:18px;text-transform:uppercase;letter-spacing:.1em">${MON[Number(a.data.slice(5, 7)) - 1]}</div></div>` : ''}</div>
+      <div class="body"><button class="x" aria-label="Închide">×</button><div><h3 class="disp">${esc(clean(a.titlu))}</h3><div class="sub">Ediția ${esc(label(e))} · ${esc(a.format)}${a.locatie ? ' · ' + esc(a.locatie) : ''}</div></div>
+        ${a.program.length ? `<div><h5>Programul zilei</h5>${a.program.map((x) => `<div style="display:grid;grid-template-columns:96px 1fr;gap:10px;font-size:13.5px;padding:4px 0"><span style="color:var(--muted)">${esc(x.interval)}</span><span>${esc(x.activitate)}${x.speakeri.map((s) => P[s.persoana]).filter(Boolean).map((p) => ` · <a href="#" data-person="${esc(p.id)}" style="color:var(--primary);font-weight:600;text-decoration:none">${esc(p.nume)}</a>`).join('')}</span></div>`).join('')}</div>` : ''}
+        <div><h5>Sponsor</h5>${sp ? logo(sp) : '<div style="font-size:14px;color:var(--accent);font-weight:600">Caută sponsor</div>'}</div>
+        <div class="edit"><button class="btn primary">Editează</button></div></div>`;
+    modal.classList.add('on');
+  }
+
+  // ---------- navigare ----------
+  let lens = 'timp';
+  const show = () => { $('#view').innerHTML = V[lens](); $$('.lens button').forEach((b) => b.classList.toggle('on', b.dataset.lens === lens)); };
+  document.addEventListener('click', (ev) => {
+    const t = ev.target.closest('[data-lens],[data-ed],[data-person],[data-org],[data-ws],[data-role],[data-page]');
+    if (!t) return;
+    if (t.dataset.lens) { lens = t.dataset.lens; show(); window.scrollTo(0, 0); return; }
+    if (t.dataset.ed) { current = ED[t.dataset.ed]; return show(); }
+    if (t.dataset.person) { ev.preventDefault(); return personCard(t.dataset.person); }
+    if (t.dataset.org) return orgCard(t.dataset.org);
+    if (t.dataset.ws) return wsCard(t.dataset.ws);
+    if (t.dataset.role) { roleFilter = t.dataset.role; return show(); }
+    if (t.dataset.page) { pageSel = t.dataset.page; return show(); }
+  });
+
+  // linkuri directe spre un ecran: ?v=timp|oameni|companii|site, &ed=…, &fisa=om:id|org:id|atelier:id, &pagina=…
+  const U = new URLSearchParams(location.search);
+  if (V[U.get('v')]) lens = U.get('v');
+  if (ED[U.get('ed')]) current = ED[U.get('ed')];
+  if (U.get('pagina')) pageSel = U.get('pagina');
+  show();
+  const [fk, fid] = (U.get('fisa') || '').split(':');
+  if (fk === 'om') personCard(fid); if (fk === 'org') orgCard(fid); if (fk === 'atelier') wsCard(fid);
+})();
+</script>
+</body>
+</html>
