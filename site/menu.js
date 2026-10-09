@@ -31,15 +31,14 @@ function panels(ctx, F) {
     { id: 'program', title: 'Program', href: '/program', intro: 'Ce primești, pentru cine e și cum intri.',
       cols: [
         col('Programul', [
-          link('/program', 'Cum funcționează', 'Training dimineața, antreprenori după-amiaza, networking seara'),
-          link('/program#format', 'Formatul unei ediții', '5 ateliere full-day, ateliere de seară, mastermind, petrecere RBL'),
+          link('/program#cum', 'Cum funcționează', 'O zi de atelier: training dimineața, antreprenori după-amiaza, networking seara'),
+          link('/program#format', 'Formatul unei ediții', 'Ateliere full-day, ateliere de seară, mastermind, petrecerea de final'),
           link('/program#metodologie', 'Metodologia', D.program.metodologie.map((m) => m.titlu.charAt(0) + m.titlu.slice(1).toLowerCase()).slice(0, 3).join(' · ') + ' …'),
         ].join('')),
         col('Înscrierea', [
-          link('/program/pentru-cine', 'Pentru cine e', 'Companii de peste 1 mil. € sau 500.000 € cu avantaj inovativ'),
-          link('/program/selectie', 'Cum se face selecția', 'În jur de 25 de antreprenori pe ediție'),
-          link('/program/investitie', 'Investiția', ong ? `Prețul ediției curente și ce include` : 'Prețuri și ce includ'),
-          link('/program/intrebari', 'Întrebări frecvente', 'Ce afli înainte să aplici'),
+          link('/program#pentru-cine', 'Pentru cine e', 'Companii de peste 1 mil. € sau 500.000 € cu avantaj inovativ'),
+          link('/program#investitie', 'Investiția', 'Taxa de participare și ce include'),
+          link('/aplica', 'Aplică', `Lista pentru ediția #${F.maxNr + 1}${F.cluj ? ` sau înscriere la Cluj #${F.cluj.numar}` : ''}`),
         ].join('')),
       ],
       feature: F.next ? `<a class="mm-feature" href="${esc(edUrl(ong))}#agenda">

@@ -9,6 +9,7 @@ const DATA = path.join(__dirname, '..', 'data', 'entitati.json');
 const { esc, today, fmtDay, median, quantile, milLei, initials } = require('./util');
 const { homeBody } = require('./home');
 const { editionBody, findEdition, edLabel } = require('./edition');
+const { programBody } = require('./program');
 
 // logo-uri mai bune decât cele din creier (acolo e logo-ul folosit la sponsorizare, uneori foarte mic)
 const LOGO = { zitec: 'https://antreprenoria.ro/images/zitec-logo_blue-orange-no-motto.svg' };
@@ -158,4 +159,16 @@ ${footer(F, ctx)}
 </body></html>`;
 }
 
-module.exports = { renderHome, renderEdition };
+// ---------- PROGRAM ----------
+function renderProgram(opt = {}) {
+  const ctx = load(), F = facts(ctx);
+  return `${head('Programul Antreprenoria – cum funcționează, pentru cine e, investiția', 'Cum arată o zi de atelier, formatul unei ediții, metodologia, cui se adresează programul și cât costă. Acceleratorul Romanian Business Leaders, din 2013.', opt.brand)}
+${header(F, ctx)}
+<div class="gridlines" aria-hidden="true"></div>
+${programBody(ctx, F)}
+${footer(F, ctx)}
+<script src="/assets/site.js"></script>
+</body></html>`;
+}
+
+module.exports = { renderHome, renderEdition, renderProgram };
