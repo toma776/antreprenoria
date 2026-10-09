@@ -48,7 +48,7 @@ function safe(base, rel) {
 }
 // modulele site-ului se reîncarcă la fiecare cerere, ca schimbările din data/ și site/ să apară fără repornire
 function fresh(mod) {
-  ['./site/render', './site/brand', './site/menu', './site/home', './site/util', './site/edition', './site/program', './site/despre', './site/teme'].forEach((m) => delete require.cache[require.resolve(m)]);
+  ['./site/render', './site/brand', './site/menu', './site/home', './site/util', './site/edition', './site/program', './site/despre', './site/teme', './site/aplica'].forEach((m) => delete require.cache[require.resolve(m)]);
   return require(mod);
 }
 
@@ -62,6 +62,21 @@ async function handler(req, res) {
     if (req.method === 'GET' && JSON_FILES[url]) {
       const f = path.join(DATA, JSON_FILES[url]);
       return fs.existsSync(f) ? sendJson(res, 200, fs.readFileSync(f, 'utf8')) : sendJson(res, 404, { error: 'lipsește ' + JSON_FILES[url] });
+    }
+    // formularul de aplicare: validare pe server (aceleași reguli ca în pagină), apoi salvare
+    if (url === '/api/aplica' && req.method === 'POST') {
+      const input = await body(req).catch(() => null);
+      if (!input) return sendJson(res, 400, { error: 'Cerere invalidă.' });
+      if (input.website) return sendJson(res, 200, { ok: true }); // câmpul-capcană pentru roboți
+      const ap = fresh('./site/aplica'), render = fresh('./site/render');
+      const ids = render.applyOptions().map((o) => o.id);
+      const v = ap.validate(input, ids);
+      if (!v.ok) return sendJson(res, 422, { error: 'Verifică câmpurile marcate.', errors: v.errors });
+      const rec = { ...v.data, primit: new Date().toISOString(), sursa_pagina: req.headers.referer || null };
+      // local: fișier în data/ (exclus din git, conține date personale); pe Vercel nu există încă o destinație
+      if (READ_ONLY) return sendJson(res, 503, { error: 'nedisponibil' });
+      fs.appendFileSync(path.join(DATA, 'aplicari.jsonl'), JSON.stringify(rec) + '\n');
+      return sendJson(res, 200, { ok: true });
     }
     if (READ_ONLY && req.method !== 'GET') return sendJson(res, 403, { error: 'Pe versiunea publicată panoul e doar pentru vizualizare. Modificările se fac local, apoi git push.' });
     if (url === '/api/brand/activ' && req.method === 'PUT') {
@@ -98,6 +113,12 @@ async function handler(req, res) {
       const brand = new URLSearchParams(query).get('brand') || undefined;
       res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' });
       return res.end(fresh('./site/render')[PAGES[url]]({ brand }));
+    }
+    // /aplica (opțional ?editie=cluj-1)
+    if (url === '/aplica' || url === '/aplica/') {
+      const q = new URLSearchParams(query);
+      res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' });
+      return res.end(fresh('./site/render').renderAplica({ brand: q.get('brand') || undefined, editie: q.get('editie') || undefined }));
     }
     // /editii/22, /editii/cluj-1
     const ed = /^\/editii\/((?:cluj-)?\d+)\/?$/.exec(url);

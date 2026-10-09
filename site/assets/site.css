@@ -1239,3 +1239,96 @@ section[id] { scroll-margin-top: 88px; }
   /* în benzile orizontale, cardurile apar direct (animația de apariție le lăsa goale și deplasate până erau aduse în vizor) */
   .rv :is(.people, .logos, .ed-people) > [data-rv] { opacity: 1; transform: none; transition: none; }
 }
+
+/* ---------- /aplica: formularul de înscriere (întâi pentru mobil) ---------- */
+.ap-hero { padding: clamp(24px, 4vw, 44px) 0 clamp(20px, 3vw, 32px); }
+.ap-hero h1 { font-size: clamp(32px, 4.4vw, 56px); max-width: 16ch; }
+.ap-hero .lead { max-width: 52ch; margin-top: 12px; }
+.ap-sec { padding: 0 0 clamp(56px, 7vw, 96px); }
+.ap-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (min-width: 900px) { .ap-grid { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 40px; } .ap-side { position: sticky; top: 96px; } }
+
+.af { display: grid; gap: 14px; }
+.af-group { margin: 0; padding: 18px 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); display: grid; gap: 16px; min-width: 0; }
+.af-group legend { float: left; width: 100%; display: flex; align-items: center; gap: 10px; padding: 0; margin: 0 0 2px; font: var(--d-weight) 19px/1.2 var(--f-display); font-stretch: var(--d-stretch); letter-spacing: var(--d-track); }
+.af-group legend + * { clear: both; }
+.af-group legend i { display: grid; place-items: center; flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--primary); color: var(--primary-ink); font: 700 13px/1 var(--f-body); font-style: normal; }
+.af-opt { margin-left: auto; font: 500 12.5px/1 var(--f-body); color: var(--muted); }
+.af-field { display: grid; gap: 6px; }
+.af-field > label, .af-label { font-weight: 600; font-size: 14.5px; }
+.af-field input { width: 100%; min-height: 52px; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--ink); font: 400 16px/1.3 var(--f-body); transition: border-color .15s, box-shadow .15s, background .15s; -webkit-appearance: none; appearance: none; }
+.af-field input::placeholder { color: color-mix(in srgb, var(--muted) 70%, transparent); }
+.af-field input:focus { outline: none; border-color: var(--primary); background: var(--surface); box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 18%, transparent); }
+.af-hint { font-size: 13px; color: var(--muted); line-height: 1.4; }
+.af-err { font-size: 13px; font-weight: 600; color: var(--accent); }
+.af-err:empty { display: none; }
+.bad input:not([type="radio"]):not([type="checkbox"]) { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 4%, var(--surface)); }
+.af-note { display: block; padding: 10px 12px; border-radius: 8px; background: color-mix(in srgb, #D99A1E 12%, var(--surface)); color: var(--ink); font-size: 13.5px; line-height: 1.45; }
+.af-note[hidden] { display: none; }
+
+/* ediția: carduri mari, ușor de atins */
+.af-eds { display: grid; gap: 10px; }
+.af-ed { position: relative; display: block; cursor: pointer; }
+.af-ed input, .af-seg input, .af-chips input, .af-consent input { position: absolute; opacity: 0; pointer-events: none; }
+.af-ed > span { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; column-gap: 12px; row-gap: 2px; align-items: center; padding: 14px 16px; min-height: 64px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--bg); transition: border-color .15s, background .15s, box-shadow .15s; }
+.af-ed > span::before { content: ""; grid-row: 1 / span 2; width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--line); background: var(--surface); box-sizing: border-box; transition: border .15s; }
+.af-ed b { font-size: 16px; }
+.af-ed em { font-style: normal; justify-self: end; font: 600 11.5px/1 var(--f-body); padding: 5px 8px; border-radius: 999px; background: var(--surface-2); color: var(--muted); white-space: nowrap; }
+.af-ed em.open { background: var(--primary-soft); color: var(--primary); }
+.af-ed small { grid-column: 2 / -1; font-size: 13px; color: var(--muted); line-height: 1.4; }
+.af-ed input:checked + span { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 5%, var(--surface)); box-shadow: 0 0 0 1px var(--primary); }
+.af-ed input:checked + span::before { border: 6px solid var(--primary); }
+.af-ed input:focus-visible + span { outline: 3px solid var(--highlight); outline-offset: 2px; }
+
+/* cifra de afaceri: patru variante, două pe rând pe mobil */
+.af-seg { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.af-seg label, .af-chips label { position: relative; display: block; cursor: pointer; }
+.af-seg span { display: grid; place-items: center; min-height: 52px; padding: 8px 10px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--bg); text-align: center; font-size: 14.5px; font-weight: 600; line-height: 1.25; transition: all .15s; }
+.af-seg input:checked + span, .af-chips input:checked + span { border-color: var(--primary); background: var(--primary); color: var(--primary-ink); }
+.af-seg input:focus-visible + span, .af-chips input:focus-visible + span, .af-consent input:focus-visible + span::before { outline: 3px solid var(--highlight); outline-offset: 2px; }
+@media (min-width: 640px) { .af-seg { grid-template-columns: repeat(4, 1fr); } }
+
+/* sursa: butoane-etichetă */
+.af-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.af-chips span { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 14px; border: 1.5px solid var(--line); border-radius: 999px; background: var(--bg); font-size: 14.5px; font-weight: 500; transition: all .15s; }
+.af-other[hidden] { display: none; }
+
+/* acordul */
+.af-consent { padding: 4px 2px; }
+.af-consent label { position: relative; display: block; cursor: pointer; }
+.af-consent span { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 12px; font-size: 14px; line-height: 1.5; color: var(--muted); }
+.af-consent span::before { content: ""; width: 24px; height: 24px; margin-top: 1px; border: 2px solid var(--line); border-radius: 6px; background: var(--surface) center / 14px no-repeat; box-sizing: border-box; transition: all .15s; }
+.af-consent input:checked + span::before { border-color: var(--primary); background-color: var(--primary); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7'/%3E%3C/svg%3E"); }
+.af-consent.bad span::before { border-color: var(--accent); }
+.af-consent .af-err { display: block; margin: 6px 0 0 38px; }
+.af-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+
+.af-submit { display: grid; gap: 10px; }
+.af-submit .btn { width: 100%; min-height: 56px; font-size: 17px; }
+.af-submit .btn:disabled { opacity: .7; cursor: progress; }
+.af-submit small { text-align: center; font-size: 13px; color: var(--muted); }
+.af-status { font-size: 14.5px; font-weight: 600; text-align: center; }
+.af-status:empty { display: none; }
+.af-status.err { padding: 12px 14px; border-radius: 10px; background: color-mix(in srgb, var(--accent) 9%, var(--surface)); color: var(--accent); font-weight: 600; }
+@media (min-width: 900px) { .af-group { padding: 22px 24px; } .af-submit { grid-template-columns: auto 1fr; align-items: center; gap: 18px; } .af-submit .btn { width: auto; padding-inline: 34px; } .af-submit small { text-align: left; } }
+
+/* confirmarea */
+.af-done { display: grid; justify-items: start; gap: 12px; padding: 28px 22px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); outline: none; }
+.af-done-ic { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: var(--primary); color: var(--primary-ink); font-size: 24px; font-weight: 700; }
+.af-done h2 { font-size: clamp(26px, 3vw, 34px); }
+.af-done p { margin: 0; color: var(--muted); font-size: 16px; }
+
+/* coloana laterală */
+.ap-side { display: grid; gap: 12px; }
+.ap-card { display: grid; gap: 10px; padding: 18px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.ap-card .checks { margin: 0; gap: 10px; }
+.ap-card .checks li { font-size: 14.5px; }
+.ap-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; counter-reset: s; }
+.ap-steps li { counter-increment: s; display: grid; grid-template-columns: 28px minmax(0, 1fr); column-gap: 10px; }
+.ap-steps li::before { content: counter(s); grid-row: span 2; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--line); font: 700 12.5px/1 var(--f-num); color: var(--primary); }
+.ap-steps b { font-size: 15px; } .ap-steps span { font-size: 13.5px; color: var(--muted); }
+.ap-contact b { font: var(--d-weight) 20px/1.2 var(--f-display); font-stretch: var(--d-stretch); }
+.ap-contact > span:not(.ask-kicker) { font-size: 14px; color: var(--muted); margin-top: -6px; }
+.ap-contact-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+[data-brand="b"] .af-group legend i { color: #fff; }
+.af-done { scroll-margin-top: 96px; }

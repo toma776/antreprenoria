@@ -94,7 +94,7 @@ function editionBody(ctx, F, e) {
         <div class="hero-actions">
           ${state === 'live' || state === 'past'
             ? `<a class="btn btn-primary btn-lg" href="/aplica">Intră pe lista pentru #${F.maxNr + 1}</a><a class="btn btn-ghost btn-lg" href="#agenda">Vezi agenda</a>`
-            : `<a class="btn btn-primary btn-lg" href="${esc(e.link_inscriere || '/aplica')}">Aplică la ${esc(edLabel(e))}</a><a class="btn btn-ghost btn-lg" href="#agenda">Vezi agenda</a>`}
+            : `<a class="btn btn-primary btn-lg" href="/aplica?editie=${esc(e.id)}">Aplică la ${esc(edLabel(e))}</a><a class="btn btn-ghost btn-lg" href="#agenda">Vezi agenda</a>`}
         </div>
       </div>
       <aside class="ed-live" aria-label="Progresul ediției">
@@ -221,7 +221,7 @@ function editionBody(ctx, F, e) {
       <p class="eyebrow">${state === 'live' || state === 'past' ? `Ediția #${F.maxNr + 1}` : `Ediția ${esc(edLabel(e))}`}</p>
       <h2>${state === 'live' || state === 'past' ? 'Vrei în următoarea grupă?' : 'Locurile sunt limitate.'}</h2>
       <p>${state === 'live' || state === 'past' ? 'Următoarea ediție din București se formează acum. Lasă-ne datele și te anunțăm primul când se deschid înscrierile.' : `În jur de 25 de antreprenori pe ediție, selectați ca discuțiile să fie între oameni cu provocări asemănătoare.`}</p>
-      <div class="hero-actions">${state === 'live' || state === 'past' ? `<a class="btn btn-light btn-lg" href="/aplica">Intră pe lista de așteptare</a>` : `<a class="btn btn-light btn-lg" href="${esc(e.link_inscriere || '/aplica')}">Aplică acum</a>`}${F.cluj && F.cluj.id !== e.id ? `<a class="btn btn-outline-light btn-lg" href="${edUrl(F.cluj)}">Aplică la Cluj #${F.cluj.numar}</a>` : ''}</div>
+      <div class="hero-actions">${state === 'live' || state === 'past' ? `<a class="btn btn-light btn-lg" href="/aplica">Intră pe lista de așteptare</a>` : `<a class="btn btn-light btn-lg" href="/aplica?editie=${esc(e.id)}">Aplică acum</a>`}${F.cluj && F.cluj.id !== e.id ? `<a class="btn btn-outline-light btn-lg" href="${edUrl(F.cluj)}">Aplică la Cluj #${F.cluj.numar}</a>` : ''}</div>
     </div>
     <nav class="ed-nav" aria-label="Alte ediții">
       ${prev ? `<a href="${edUrl(prev)}"><span>← Ediția anterioară</span><b>${esc(edLabel(prev))}</b><small>${esc(prev.perioada)} · ${plural(prev.participanti.length, 'participant', 'participanți')}</small></a>` : ''}

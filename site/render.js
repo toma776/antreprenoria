@@ -12,6 +12,7 @@ const { editionBody, findEdition, edLabel } = require('./edition');
 const { programBody } = require('./program');
 const { despreBody } = require('./despre');
 const { temeBody, temaBody } = require('./teme');
+const { aplicaBody, options: aplicaOptions } = require('./aplica');
 
 
 // ---------- date din creier ----------
@@ -90,7 +91,7 @@ const ICON = {
   facebook: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 21v-7.5h2.5l.4-3h-2.9V8.6c0-.87.25-1.46 1.5-1.46h1.55V4.47A20 20 0 0 0 14.3 4.3c-2.2 0-3.7 1.34-3.7 3.8v2.4H8.1v3h2.5V21z"/></svg>',
   arrow: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
 };
-function footer(F, ctx) {
+function footer(F, ctx, opt = {}) {
   const { D } = ctx;
   const edUrl = (e) => (e.serie === 'Cluj' ? `/editii/cluj-${e.numar}` : `/editii/${e.numar}`);
   const team = Object.fromEntries(D.program.contact.echipa.map((p) => [p.id, p]));
@@ -130,11 +131,11 @@ function footer(F, ctx) {
   <div class="ftr-word" aria-hidden="true"><svg viewBox="0 0 1000 124" preserveAspectRatio="xMidYMax meet"><defs><linearGradient id="ftr-fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="currentColor" stop-opacity=".2"/><stop offset="1" stop-color="currentColor" stop-opacity=".03"/></linearGradient></defs><text x="2" y="124" textLength="996" lengthAdjust="spacingAndGlyphs" fill="url(#ftr-fade)">Antreprenoria</text></svg></div>
   <div class="wrap ftr-legal"><span>© ${new Date().getFullYear()} Fundația Romanian Business Leaders</span><span><a href="/confidentialitate">Confidențialitate</a><a href="/termeni-si-conditii">Termeni</a><a href="/politica-cookies">Cookies</a></span></div>
 </footer>
-<!-- doar pe mobil: acțiunea principală, la îndemâna degetului mare; apare după primul ecran (site.js) -->
+${opt.mcta === false ? '' : `<!-- doar pe mobil: acțiunea principală, la îndemâna degetului mare; apare după primul ecran (site.js) -->
 <div class="mcta" aria-hidden="true">
   ${ong ? `<a class="mcta-ed" href="${edUrl(ong)}" tabindex="-1"><i class="dot-live"></i><span>Ediția #${ong.numar}<small>${nx ? (nx.data === today() ? 'atelier azi' : `următorul: ${fmtDay(nx.data)}`) : 'în desfășurare'}</small></span></a>` : ''}
   <a class="btn btn-primary mcta-go" href="/aplica" tabindex="-1">Aplică</a>
-</div>`;
+</div>`}`;
 }
 
 // ---------- HOMEPAGE ----------
@@ -214,4 +215,20 @@ ${footer(F, ctx)}
 </body></html>` };
 }
 
-module.exports = { renderHome, renderEdition, renderProgram, renderDespre, renderTeme, renderTema };
+// ---------- APLICĂ ----------
+function renderAplica(opt = {}) {
+  const ctx = load(), F = facts(ctx);
+  return `${head('Aplică la Antreprenoria', 'Formularul de înscriere la Atelierele Antreprenoria: ediția, datele tale și ale companiei. Durează două minute.', opt.brand)}
+${header(F, ctx)}
+<div class="gridlines" aria-hidden="true"></div>
+${aplicaBody(ctx, F, opt)}
+${footer(F, ctx, { mcta: false })}
+<script src="/assets/site.js"></script>
+<script src="/assets/aplica.js"></script>
+</body></html>`;
+}
+
+// edițiile la care se poate aplica acum (pentru validarea de pe server)
+const applyOptions = () => { const ctx = load(); return aplicaOptions(ctx, facts(ctx)); };
+
+module.exports = { renderHome, renderEdition, renderProgram, renderDespre, renderTeme, renderTema, renderAplica, applyOptions };
