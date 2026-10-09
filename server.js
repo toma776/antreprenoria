@@ -48,7 +48,7 @@ function safe(base, rel) {
 }
 // modulele site-ului se reîncarcă la fiecare cerere, ca schimbările din data/ și site/ să apară fără repornire
 function fresh(mod) {
-  ['./site/render', './site/brand', './site/menu', './site/home', './site/util', './site/edition', './site/program', './site/despre'].forEach((m) => delete require.cache[require.resolve(m)]);
+  ['./site/render', './site/brand', './site/menu', './site/home', './site/util', './site/edition', './site/program', './site/despre', './site/teme'].forEach((m) => delete require.cache[require.resolve(m)]);
   return require(mod);
 }
 
@@ -91,7 +91,7 @@ async function handler(req, res) {
     }
     if (url.startsWith('/assets/')) return sendFile(res, safe(path.join(ROOT, 'site', 'assets'), url.slice('/assets/'.length)) || '');
     // paginile site-ului se generează la fiecare cerere din data/entitati.json și data/brand.json
-    const PAGES = { '/': 'renderHome', '/program': 'renderProgram', '/despre': 'renderDespre' };
+    const PAGES = { '/': 'renderHome', '/program': 'renderProgram', '/despre': 'renderDespre', '/teme': 'renderTeme' };
     // adresa veche de contact duce la secțiunea de contact din /despre
     if (url === '/contact') { res.writeHead(301, { Location: '/despre#contact' }); return res.end(); }
     if (PAGES[url]) {
@@ -104,6 +104,13 @@ async function handler(req, res) {
     if (ed) {
       const html = fresh('./site/render').renderEdition({ key: ed[1], brand: new URLSearchParams(query).get('brand') || undefined });
       if (html) { res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' }); return res.end(html); }
+    }
+    // /teme/vanzari: pagină pentru temele full-day; cele de seară duc la secțiunea lor din /teme
+    const tm = /^\/teme\/([a-z0-9-]+)\/?$/.exec(url);
+    if (tm) {
+      const r = fresh('./site/render').renderTema({ id: tm[1], brand: new URLSearchParams(query).get('brand') || undefined });
+      if (r?.redirect) { res.writeHead(301, { Location: r.redirect }); return res.end(); }
+      if (r?.html) { res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' }); return res.end(r.html); }
     }
     sendJson(res, 404, { error: 'pagină inexistentă' });
   } catch (e) {

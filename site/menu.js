@@ -68,7 +68,7 @@ function panels(ctx, F) {
     { id: 'teme', title: 'Teme', href: '/teme', intro: 'Curriculum-ul: teme care se repetă și se îmbunătățesc de la o ediție la alta.',
       cols: [
         col('Ateliere full-day', fullDay.map((t, i) => link(`/teme/${t.id}`, `<i class="mm-n">${String(i + 1).padStart(2, '0')}</i>${esc(t.nume)}`, `${themePeople(t)} traineri și antreprenori · ${t.editii.length} ediții`)).join(''), 'wide'),
-        col('Ateliere de seară', `<div class="mm-compact">${evening.map((t) => `<a href="/teme/${t.id}"><span>${esc(t.nume)}</span><b>${t.editii.length}</b></a>`).join('')}</div><p class="mm-note">număr de ediții în care a existat atelierul</p>`),
+        col('Ateliere de seară', `<div class="mm-compact">${evening.map((t) => `<a href="/teme#${t.id}"><span>${esc(t.nume)}</span><b>${t.editii.length}</b></a>`).join('')}</div><p class="mm-note">număr de ediții în care a existat atelierul</p>`),
       ],
       feature: `<a class="mm-feature" href="/teme#matrice">
           <span class="mm-kicker">Curriculum pe ediții</span>

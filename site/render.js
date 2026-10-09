@@ -11,6 +11,7 @@ const { homeBody } = require('./home');
 const { editionBody, findEdition, edLabel } = require('./edition');
 const { programBody } = require('./program');
 const { despreBody } = require('./despre');
+const { temeBody, temaBody } = require('./teme');
 
 // logo-uri mai bune decât cele din creier (acolo e logo-ul folosit la sponsorizare, uneori foarte mic)
 const LOGO = { zitec: 'https://antreprenoria.ro/images/zitec-logo_blue-orange-no-motto.svg' };
@@ -184,4 +185,30 @@ ${footer(F, ctx)}
 </body></html>`;
 }
 
-module.exports = { renderHome, renderEdition, renderProgram, renderDespre };
+// ---------- TEME ----------
+// /teme: curriculum-ul; /teme/<id>: doar temele full-day au pagină (cele de seară sunt secțiuni pe /teme)
+function renderTeme(opt = {}) {
+  const ctx = load(), F = facts(ctx);
+  return `${head('Curriculum-ul Antreprenoria – temele atelierelor', 'Cele cinci teme full-day ale programului (viziune, model de business, marketing, vânzări, cultură organizațională) și atelierele de seară, ediție cu ediție.', opt.brand)}
+${header(F, ctx)}
+<div class="gridlines" aria-hidden="true"></div>
+${temeBody(ctx, F)}
+${footer(F, ctx)}
+<script src="/assets/site.js"></script>
+</body></html>`;
+}
+// întoarce { html } pentru o temă full-day, { redirect } pentru una de seară, null dacă tema nu există
+function renderTema(opt = {}) {
+  const ctx = load(), F = facts(ctx), t = ctx.T[opt.id];
+  if (!t) return null;
+  if (t.format !== 'full-day') return { redirect: `/teme#${t.id}` };
+  return { html: `${head(`${t.nume} – temă Antreprenoria`, `Atelierul full-day „${t.nume}”: cine l-a predat la fiecare ediție, antreprenorii invitați, sponsorii și următoarea dată.`, opt.brand)}
+${header(F, ctx)}
+<div class="gridlines" aria-hidden="true"></div>
+${temaBody(ctx, F, t.id)}
+${footer(F, ctx)}
+<script src="/assets/site.js"></script>
+</body></html>` };
+}
+
+module.exports = { renderHome, renderEdition, renderProgram, renderDespre, renderTeme, renderTema };
