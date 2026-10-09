@@ -122,13 +122,13 @@ function panels(ctx, F) {
       cols: [
         col('Despre noi', [
           link('/despre', 'Despre Antreprenoria', 'Cresc antreprenorii, crește România!'),
-          link('/despre/rbl', 'Fundația Romanian Business Leaders', 'Organizatorul, cu o comunitate de peste 600 de membri'),
-          link('/despre/istoric', 'Istoricul programului', `Din ${D.program.de_cand} până la ediția #${F.maxNr}`),
+          link('/despre#rbl', 'Fundația Romanian Business Leaders', 'Organizatorul, cu o comunitate de peste 600 de membri'),
+          link('/despre#istoric', 'Istoricul programului', `Din ${D.program.de_cand} până la ediția #${F.maxNr}`),
         ].join('')),
-        col('Echipa', `<div class="mm-team">${team.map((m) => `<a href="/despre/echipa#${esc(m.id)}">${P[m.id] ? pic(P[m.id]) : ''}<b>${esc(m.nume)}</b><span>${esc(m.rol.split(' · ')[0].replace(/\s*\(.*\)$/, ''))}</span></a>`).join('')}</div>`),
+        col('Echipa', `<div class="mm-team">${team.map((m) => `<a href="/despre#${esc(m.id)}">${P[m.id] ? pic(P[m.id]) : ''}<b>${esc(m.nume)}</b><span>${esc(m.rol.split(' · ')[0].replace(/\s*\(.*\)$/, ''))}</span></a>`).join('')}</div>`),
         col('Contact', [
-          link('/contact', 'Scrie-ne', 'Întrebări despre program sau parteneriate'),
-          link('/contact#adresa', 'Calea Dorobanți 42', 'Sector 1, București'),
+          link('/despre#contact', 'Scrie-ne', 'Întrebări despre program sau parteneriate'),
+          link('/despre#contact', 'Calea Dorobanți 42', 'Sector 1, București'),
         ].join('')),
       ] },
   ];

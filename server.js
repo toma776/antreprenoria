@@ -48,7 +48,7 @@ function safe(base, rel) {
 }
 // modulele site-ului se reîncarcă la fiecare cerere, ca schimbările din data/ și site/ să apară fără repornire
 function fresh(mod) {
-  ['./site/render', './site/brand', './site/menu', './site/home', './site/util', './site/edition', './site/program'].forEach((m) => delete require.cache[require.resolve(m)]);
+  ['./site/render', './site/brand', './site/menu', './site/home', './site/util', './site/edition', './site/program', './site/despre'].forEach((m) => delete require.cache[require.resolve(m)]);
   return require(mod);
 }
 
@@ -91,7 +91,9 @@ async function handler(req, res) {
     }
     if (url.startsWith('/assets/')) return sendFile(res, safe(path.join(ROOT, 'site', 'assets'), url.slice('/assets/'.length)) || '');
     // paginile site-ului se generează la fiecare cerere din data/entitati.json și data/brand.json
-    const PAGES = { '/': 'renderHome', '/program': 'renderProgram' };
+    const PAGES = { '/': 'renderHome', '/program': 'renderProgram', '/despre': 'renderDespre' };
+    // adresa veche de contact duce la secțiunea de contact din /despre
+    if (url === '/contact') { res.writeHead(301, { Location: '/despre#contact' }); return res.end(); }
     if (PAGES[url]) {
       const brand = new URLSearchParams(query).get('brand') || undefined;
       res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' });

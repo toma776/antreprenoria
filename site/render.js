@@ -10,6 +10,7 @@ const { esc, today, fmtDay, median, quantile, milLei, initials } = require('./ut
 const { homeBody } = require('./home');
 const { editionBody, findEdition, edLabel } = require('./edition');
 const { programBody } = require('./program');
+const { despreBody } = require('./despre');
 
 // logo-uri mai bune decât cele din creier (acolo e logo-ul folosit la sponsorizare, uneori foarte mic)
 const LOGO = { zitec: 'https://antreprenoria.ro/images/zitec-logo_blue-orange-no-motto.svg' };
@@ -96,7 +97,7 @@ function footer(F, ctx) {
   const edUrl = (e) => (e.serie === 'Cluj' ? `/editii/cluj-${e.numar}` : `/editii/${e.numar}`);
   const team = Object.fromEntries(D.program.contact.echipa.map((p) => [p.id, p]));
   const ong = F.ongoing, nx = F.next;
-  const contact = (p, label) => p ? `<div class="ftr-person"><span>${label}</span><b>${esc(p.nume)}</b><a href="mailto:${esc(p.email)}">${esc(p.email)}</a>${p.telefon ? `<a href="tel:${esc(p.telefon.replace(/D/g, ''))}">${esc(p.telefon)}</a>` : ''}</div>` : '';
+  const contact = (p, label) => p ? `<div class="ftr-person"><span>${label}</span><b>${esc(p.nume)}</b><a href="mailto:${esc(p.email)}">${esc(p.email)}</a>${p.telefon ? `<a href="tel:${esc(p.telefon.replace(/\D/g, ''))}">${esc(p.telefon)}</a>` : ''}</div>` : '';
   const recent = D.editii.filter((e) => e.serie === 'București').sort((a, b) => b.numar - a.numar).slice(0, 4);
   return `<footer class="ftr">
   <div class="wrap">
@@ -118,7 +119,7 @@ function footer(F, ctx) {
     </div>
     <div class="ftr-cols">
       <nav aria-label="Program"><h4>Program</h4>${NAV.slice(0, 4).map(([t, u]) => `<a href="${u}">${t}</a>`).join('')}<a href="/aplica">Aplică</a></nav>
-      <nav aria-label="Comunitate"><h4>Comunitate</h4>${NAV.slice(4).map(([t, u]) => `<a href="${u}">${t}</a>`).join('')}<a href="/contact">Contact</a></nav>
+      <nav aria-label="Comunitate"><h4>Comunitate</h4>${NAV.slice(4).map(([t, u]) => `<a href="${u}">${t}</a>`).join('')}<a href="/despre#contact">Contact</a></nav>
       <nav aria-label="Ediții recente"><h4>Ediții recente</h4>${recent.map((e) => `<a href="${edUrl(e)}">#${e.numar} <small>${esc(e.sezon)} ${e.an}</small></a>`).join('')}${F.cluj ? `<a href="${edUrl(F.cluj)}">Cluj #${F.cluj.numar} <small>înscrieri deschise</small></a>` : ''}</nav>
       <div class="ftr-contact"><h4>Contact</h4>
         ${contact(team['raluca-bedereag'], 'Pentru participanți')}
@@ -171,4 +172,16 @@ ${footer(F, ctx)}
 </body></html>`;
 }
 
-module.exports = { renderHome, renderEdition, renderProgram };
+// ---------- DESPRE ----------
+function renderDespre(opt = {}) {
+  const ctx = load(), F = facts(ctx);
+  return `${head('Despre Antreprenoria – programul, istoricul, Romanian Business Leaders, echipa', 'Antreprenoria este programul de accelerare al Fundației Romanian Business Leaders, din 2013: istoricul edițiilor, organizatorul, echipa și contactul.', opt.brand)}
+${header(F, ctx)}
+<div class="gridlines" aria-hidden="true"></div>
+${despreBody(ctx, F)}
+${footer(F, ctx)}
+<script src="/assets/site.js"></script>
+</body></html>`;
+}
+
+module.exports = { renderHome, renderEdition, renderProgram, renderDespre };

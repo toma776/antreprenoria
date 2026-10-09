@@ -914,3 +914,77 @@ a.ed-chip:hover b { color: var(--primary); }
 .crit b { font-size: 17px; }
 .price.ref { background: var(--surface-2); }
 .price.ref > b { color: var(--muted); }
+
+/* ---------- pagina /despre ---------- */
+#program, #istoric, #rbl, #echipa, #contact { scroll-margin-top: 130px; }
+.ab-figs dt { font-size: 22px; }
+.ab-figs dl div { grid-template-columns: 110px minmax(0, 1fr); align-items: baseline; }
+.ab-grid { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 12px; }
+.ab-card { padding: 22px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); display: grid; gap: 10px; align-content: start; }
+.ab-card p { margin: 0; font-size: 15.5px; line-height: 1.55; }
+.ab-alumni .who-h { margin-bottom: 4px; }
+.ab-logos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.ab-logos span { display: grid; place-items: center; height: 58px; padding: 8px; border-radius: var(--radius); background: #fff; border: 1px solid var(--line); text-align: center; }
+.ab-logos img { max-width: 100%; max-height: 38px; object-fit: contain; }
+.ab-logos b { font-size: 12.5px; line-height: 1.2; color: #3B4250; }
+.fine-muted { margin: 0; font-size: 12.5px; color: var(--muted); }
+/* istoricul: un rând de ediții, de la început până la următoarea */
+.hist { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(118px, 1fr); gap: 8px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: thin; }
+.hist > * { display: grid; gap: 3px; align-content: end; min-height: 128px; padding: 14px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); text-decoration: none; color: var(--ink); }
+.hist b { font: var(--d-weight) 26px/1 var(--f-num); font-stretch: var(--d-stretch); letter-spacing: var(--d-track); }
+.hist span { font-size: 13px; color: var(--muted); }
+.hist small { font-size: 12px; font-weight: 600; color: var(--primary); }
+.hist-start { background: var(--primary) !important; border-color: var(--primary) !important; color: var(--primary-ink) !important; min-width: 200px; }
+.hist-start span, .hist-start small { color: inherit !important; opacity: .85; }
+.hist-start small { font-weight: 500; }
+a.hist-ed:hover { border-color: var(--primary); transform: translateY(-2px); }
+.hist-ed { transition: transform .2s, border-color .2s; }
+.hist-ed.live { border-color: var(--accent); box-shadow: inset 0 3px 0 var(--accent); }
+.hist-ed.live small { color: var(--accent); }
+.hist-ed.next { background: transparent; border-style: dashed; }
+[data-brand="b"] .hist-start { background: var(--surface) !important; border-color: var(--accent) !important; color: var(--ink) !important; }
+[data-brand="b"] .hist small { color: var(--accent); }
+.ab-stats { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 22px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.ab-stats div { padding: 16px 18px; }
+.ab-stats div + div { border-left: 1px solid var(--line); }
+.ab-stats b { display: block; font: var(--d-weight) 32px/1 var(--f-num); font-stretch: var(--d-stretch); color: var(--primary); }
+.ab-stats span { display: block; margin-top: 6px; font-size: 13px; color: var(--muted); }
+[data-brand="b"] .ab-stats b { color: var(--accent); font-weight: 600; }
+/* organizatorul */
+.ab-rbl { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 56px; align-items: start; }
+.ab-rbl h2 { margin-bottom: 18px; }
+.ab-rbl p:not(.eyebrow) { color: var(--dark-muted); font-size: 16px; margin: 0 0 14px; max-width: 62ch; }
+.ab-rbl .btn { margin-top: 10px; }
+.ab-rbl-logo { display: grid; place-items: center; padding: 22px; border-radius: var(--radius); background: #fff; border: 1px solid var(--line); }
+.ab-rbl-logo img { max-width: 100%; max-height: 170px; object-fit: contain; }
+.ab-rbl-side dl { margin: 14px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ab-rbl-side dl div { padding: 16px; border-radius: var(--radius); background: var(--dark-2); }
+[data-brand="a"] .ab-rbl-side dl div { border: 1px solid var(--line); }
+.ab-rbl-side dt { font: var(--d-weight) 30px/1 var(--f-num); font-stretch: var(--d-stretch); color: var(--highlight); }
+.ab-rbl-side dd { margin: 6px 0 0; font-size: 13.5px; color: var(--dark-muted); }
+/* echipa */
+.team { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.team-card { display: grid; gap: 3px; align-content: start; padding: 18px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); scroll-margin-top: 130px; }
+.team-card img, .team-card .ph { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; font-size: 22px; }
+.team-card b { font-size: 16.5px; }
+.team-card span { font-size: 13.5px; color: var(--muted); margin-bottom: 6px; }
+.team-card a { font-size: 13.5px; font-weight: 600; color: var(--primary); text-decoration: none; word-break: break-all; }
+.team-card:target { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
+/* contact */
+.ab-social { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+.ab-social a { display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--dark-ink) 25%, transparent); color: var(--dark-ink); text-decoration: none; font-weight: 600; font-size: 14px; }
+.ab-social svg { width: 16px; height: 16px; fill: currentColor; }
+.ab-social a:hover { border-color: var(--primary); color: var(--primary); }
+.ab-contacts { display: grid; gap: 10px; }
+.ab-contacts .ask-card { text-decoration: none; transition: border-color .2s, transform .2s; }
+.ab-contacts .ask-card:hover { border-color: var(--primary); transform: translateX(4px); }
+.ab-contacts .ask-card b { font-size: 19px; }
+@media (max-width: 1080px) { .ab-grid { grid-template-columns: 1fr 1fr; } .ab-alumni { grid-column: 1 / -1; } .team { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 860px) { .ab-rbl { grid-template-columns: 1fr; gap: 32px; } .ab-stats { grid-template-columns: 1fr 1fr; } .ab-stats div:nth-child(3) { border-left: 0; } .ab-stats div:nth-child(n+3) { border-top: 1px solid var(--line); } }
+@media (max-width: 560px) { .ab-grid, .team { grid-template-columns: 1fr; } .ab-logos { grid-template-columns: repeat(2, 1fr); } }
+.ab-hero h1 { font-size: clamp(34px, 4.2vw, 56px); max-width: 16ch; }
+.hist { grid-template-columns: minmax(230px, 1.8fr); grid-auto-columns: minmax(96px, 1fr); }
+.hist b { font-size: 22px; }
+.hist span { font-size: 12.5px; }
+.ab-rbl-side dl { grid-template-columns: repeat(3, 1fr); }
+.ab-rbl-side dt { font-size: 26px; }
