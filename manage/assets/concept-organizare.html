@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panou nou · concept</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Concept de organizare pentru panoul de administrare. Folosește datele reale din /api/entitati; nu salvează nimic. */
+:root {
+  --bg: #F4F5F7; --panel: #fff; --panel-2: #F8F9FB; --ink: #171A21; --muted: #646B78; --line: #E3E6EB;
+  --side: #34373E; --side-ink: #E9EBEF; --side-muted: #A9AEB7;
+  --accent: #1057A4; --accent-soft: #E6EEF7; --red: #E32419; --red-soft: #FCE8E6; --amber: #A35A00; --amber-soft: #FBF0DD; --green: #0F8A62; --green-soft: #E2F4EC;
+  --idea: #FADC3A; --radius: 10px; --shadow: 0 1px 2px rgba(16, 30, 60, .05), 0 10px 30px -14px rgba(16, 30, 60, .2);
+  /* culorile rolurilor, aceleași peste tot */
+  --r-trainer: #1057A4; --r-invitat: #7A3FC4; --r-participant: #0F8A62; --r-sponsor: #C2410C; --r-gazda: #0E7490; --r-partener: #B45309; --r-echipa: #4B5563; --r-speaker: #6D28D9;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.5 Inter, system-ui, sans-serif; }
+a { color: var(--accent); text-decoration: none; }
+button { font: inherit; }
+.app { display: grid; grid-template-columns: 236px minmax(0, 1fr) 320px; min-height: 100vh; }
+body.no-ideas .app { grid-template-columns: 236px minmax(0, 1fr); }
+body.no-ideas .ideas, body.no-ideas .n { display: none !important; }
+
+/* bara laterală */
+.side { background: var(--side); color: var(--side-ink); padding: 18px 12px; display: flex; flex-direction: column; gap: 4px; position: sticky; top: 0; height: 100vh; }
+.brand { display: flex; align-items: center; gap: 10px; padding: 4px 8px 18px; }
+.brand img { width: 30px; height: 32px; object-fit: contain; }
+.brand b { display: block; font-size: 14.5px; } .brand small { color: var(--side-muted); font-size: 11.5px; }
+.nav-h { margin: 14px 10px 6px; font-size: 10.5px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--side-muted); }
+.nav-btn { display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 10px; border: 0; border-radius: 8px; background: transparent; color: var(--side-ink); text-align: left; cursor: pointer; position: relative; }
+.nav-btn:hover { background: rgba(255, 255, 255, .07); }
+.nav-btn.on { background: rgba(255, 255, 255, .13); color: #fff; font-weight: 600; }
+.nav-btn i { width: 18px; height: 18px; flex: none; opacity: .9; }
+.nav-btn em { margin-left: auto; font-style: normal; font-size: 11.5px; color: var(--side-muted); }
+.nav-btn .badge { margin-left: auto; padding: 1px 7px; border-radius: 999px; background: var(--red); color: #fff; font-size: 11px; font-weight: 600; font-style: normal; }
+.expert-only { display: none !important; }
+body.expert .expert-only { display: flex !important; }
+body.expert .nav-h.expert-only { display: block !important; }
+.mode { margin-top: auto; padding: 10px; border-radius: 10px; background: rgba(255, 255, 255, .06); }
+.mode > span:not(.n) { display: block; font-size: 11.5px; color: var(--side-muted); margin-bottom: 8px; }
+.seg { display: grid; grid-template-columns: 1fr 1fr; background: rgba(0, 0, 0, .25); border-radius: 8px; padding: 3px; }
+.seg button { border: 0; padding: 6px; border-radius: 6px; background: transparent; color: var(--side-muted); cursor: pointer; font-weight: 600; font-size: 12.5px; }
+.seg button.on { background: #fff; color: var(--ink); }
+
+/* zona principală */
+.main { min-width: 0; }
+.top { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 14px; padding: 14px 28px; background: rgba(244, 245, 247, .92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+.search { position: relative; flex: 1; max-width: 560px; }
+.search input { width: 100%; padding: 10px 14px 10px 38px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); font: inherit; outline: none; }
+.search input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.search svg { position: absolute; left: 12px; top: 50%; width: 16px; height: 16px; transform: translateY(-50%); color: var(--muted); }
+.search kbd { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font: 600 11px/1 Inter; color: var(--muted); border: 1px solid var(--line); border-radius: 5px; padding: 3px 6px; background: var(--panel-2); }
+.results { position: absolute; left: 0; right: 0; top: calc(100% + 6px); background: var(--panel); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); max-height: 420px; overflow: auto; padding: 6px; display: none; }
+.results.on { display: block; }
+.res-h { padding: 8px 10px 4px; font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.res { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 8px; cursor: pointer; }
+.res:hover { background: var(--panel-2); }
+.res img, .res .ph { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex: none; }
+.res small { color: var(--muted); }
+.toggle-ideas { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); cursor: pointer; font-weight: 600; font-size: 13px; }
+.toggle-ideas i { width: 10px; height: 10px; border-radius: 50%; background: var(--idea); box-shadow: 0 0 0 2px #E8C200 inset; }
+.view { padding: 26px 28px 60px; }
+h1 { margin: 0; font-size: 26px; letter-spacing: -.02em; }
+h2 { margin: 0 0 12px; font-size: 16px; }
+.sub { margin: 4px 0 0; color: var(--muted); }
+.head { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 13px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; font-weight: 600; font-size: 13px; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+.grid2 { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 16px; }
+.pad { padding: 18px; }
+
+/* bulinele cu numărul ideii */
+.n { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--idea); color: #3A3000; font: 700 11.5px/1 Inter; box-shadow: 0 0 0 3px rgba(250, 220, 58, .35); flex: none; vertical-align: middle; }
+.n.abs { position: absolute; top: -9px; right: -9px; z-index: 2; }
+.rel { position: relative; }
+
+/* Acum */
+.hero-now { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 20px; align-items: center; padding: 20px 22px; }
+.live { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: var(--red); background: var(--red-soft); padding: 4px 10px; border-radius: 999px; }
+.live::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--red); }
+.hero-now h1 { margin-top: 10px; }
+.ring { --p: 50; width: 96px; height: 96px; border-radius: 50%; display: grid; place-items: center; background: conic-gradient(var(--accent) calc(var(--p) * 1%), var(--accent-soft) 0); }
+.ring div { width: 74px; height: 74px; border-radius: 50%; background: var(--panel); display: grid; place-items: center; text-align: center; }
+.ring b { font-size: 20px; line-height: 1; } .ring small { font-size: 10.5px; color: var(--muted); }
+.tl { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 6px; padding: 0 22px 20px; }
+.tl div { display: grid; gap: 6px; font-size: 11.5px; color: var(--muted); min-width: 0; }
+.tl div::before { content: ""; height: 6px; border-radius: 4px; background: var(--line); }
+.tl .done::before { background: var(--accent); } .tl .next::before { background: var(--red); }
+.tl b { font-size: 12px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.todo { display: grid; }
+.todo-item { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 12px 16px; border-top: 1px solid var(--line); }
+.todo-item:first-of-type { border-top: 0; }
+.todo-ic { width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center; font-weight: 700; }
+.todo-ic.red { background: var(--red-soft); color: var(--red); } .todo-ic.amber { background: var(--amber-soft); color: var(--amber); } .todo-ic.blue { background: var(--accent-soft); color: var(--accent); }
+.todo-item b { display: block; } .todo-item span { font-size: 12.5px; color: var(--muted); }
+.quick { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.quick button { display: grid; gap: 4px; text-align: left; padding: 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel-2); cursor: pointer; }
+.quick button:hover { border-color: var(--accent); }
+.quick b { font-size: 13.5px; } .quick span { font-size: 12px; color: var(--muted); }
+.kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 16px; }
+.kpi { padding: 14px 16px; } .kpi b { display: block; font-size: 22px; letter-spacing: -.02em; } .kpi span { font-size: 12.5px; color: var(--muted); }
+
+/* ediții */
+.ed-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }
+.ed-card { padding: 16px; cursor: pointer; display: grid; gap: 10px; transition: transform .15s, border-color .15s; }
+.ed-card:hover { transform: translateY(-2px); border-color: var(--accent); }
+.ed-card .row { display: flex; justify-content: space-between; align-items: center; }
+.ed-card h3 { margin: 0; font-size: 20px; letter-spacing: -.02em; }
+.st { font-size: 11.5px; font-weight: 600; padding: 3px 8px; border-radius: 999px; }
+.st.live { padding: 3px 8px; } .st.open { background: var(--accent-soft); color: var(--accent); } .st.done { background: var(--panel-2); color: var(--muted); border: 1px solid var(--line); }
+.bar { height: 6px; border-radius: 4px; background: var(--line); overflow: hidden; } .bar i { display: block; height: 100%; background: var(--green); border-radius: 4px; }
+.bar.mid i { background: #D99A1E; } .bar.low i { background: var(--red); }
+.meta { font-size: 12.5px; color: var(--muted); }
+.faces { display: flex; } .faces img, .faces .ph { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; border: 2px solid var(--panel); margin-right: -7px; }
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 18px; }
+.tabs button { padding: 10px 14px; border: 0; border-bottom: 2px solid transparent; background: transparent; cursor: pointer; font-weight: 600; color: var(--muted); }
+.tabs button.on { color: var(--ink); border-bottom-color: var(--accent); }
+.tabs button em { font-style: normal; font-weight: 500; color: var(--muted); margin-left: 4px; font-size: 12px; }
+.ag { display: grid; }
+.ag-row { display: grid; grid-template-columns: 18px 58px minmax(0, 1fr) auto auto; gap: 14px; align-items: center; padding: 12px 16px; border-top: 1px solid var(--line); }
+.ag-row:first-child { border-top: 0; }
+.grip { color: #B8BDC6; cursor: grab; font-size: 14px; letter-spacing: -2px; }
+.date { text-align: center; border: 1px solid var(--line); border-radius: 8px; padding: 4px 0; } .date b { display: block; font-size: 17px; line-height: 1.1; } .date span { font-size: 10.5px; text-transform: uppercase; color: var(--muted); }
+.ag-row .t b { display: block; } .ag-row .t span { font-size: 12.5px; color: var(--muted); }
+.chip { display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 600; white-space: nowrap; border: 1px solid transparent; }
+.chip.warn { background: var(--amber-soft); color: var(--amber); } .chip.ok { background: var(--green-soft); color: var(--green); } .chip.bad { background: var(--red-soft); color: var(--red); }
+.role { --c: var(--muted); background: color-mix(in srgb, var(--c) 11%, transparent); color: var(--c); }
+.check { display: grid; gap: 10px; }
+.check div { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; gap: 10px; align-items: center; font-size: 13px; }
+.check i { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-size: 11px; font-weight: 700; }
+.check .y { background: var(--green-soft); color: var(--green); } .check .x { background: var(--amber-soft); color: var(--amber); }
+
+/* oameni și companii */
+.filters { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; align-items: center; }
+.filters button { padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); cursor: pointer; font-size: 12.5px; font-weight: 600; color: var(--muted); }
+.filters button.on { background: var(--ink); border-color: var(--ink); color: #fff; }
+.filters .sep { width: 1px; height: 22px; background: var(--line); margin: 0 4px; }
+.people { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 12px; }
+.pcard { padding: 12px; cursor: pointer; display: grid; gap: 6px; position: relative; transition: border-color .15s; }
+.pcard:hover { border-color: var(--accent); }
+.pcard img, .pcard .ph { width: 100%; aspect-ratio: 1; border-radius: 8px; object-fit: cover; background: var(--panel-2); }
+.pcard b { font-size: 13.5px; line-height: 1.25; } .pcard span { font-size: 12px; color: var(--muted); }
+.pcard .flag { position: absolute; top: 18px; right: 18px; }
+.ph { display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); font-weight: 700; }
+.orgs { display: grid; }
+.org { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto auto; gap: 14px; align-items: center; padding: 11px 16px; border-top: 1px solid var(--line); cursor: pointer; }
+.org:first-child { border-top: 0; } .org:hover { background: var(--panel-2); }
+.org .lg { width: 44px; height: 32px; border-radius: 6px; border: 1px solid var(--line); display: grid; place-items: center; overflow: hidden; background: #fff; font-size: 11px; font-weight: 700; color: var(--muted); }
+.org .lg img { max-width: 40px; max-height: 26px; object-fit: contain; }
+.org .roles { display: flex; gap: 4px; flex-wrap: wrap; justify-content: end; }
+.dots { display: flex; gap: 3px; } .dots i { width: 9px; height: 9px; border-radius: 2px; background: var(--line); } .dots i.on { background: var(--accent); }
+
+/* fișa laterală */
+.drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(440px, 100%); background: var(--panel); border-left: 1px solid var(--line); box-shadow: -20px 0 50px -20px rgba(16, 30, 60, .3); transform: translateX(105%); transition: transform .25s ease; z-index: 30; overflow-y: auto; }
+.drawer.on { transform: none; }
+.drawer-h { display: flex; gap: 14px; align-items: center; padding: 20px; border-bottom: 1px solid var(--line); }
+.drawer-h img, .drawer-h .ph { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; }
+.drawer-h .lgbig { width: 90px; height: 56px; object-fit: contain; border: 1px solid var(--line); border-radius: 8px; padding: 6px; background: #fff; }
+.drawer-h h3 { margin: 0; font-size: 18px; }
+.drawer .x { margin-left: auto; align-self: start; border: 0; background: var(--panel-2); width: 30px; height: 30px; border-radius: 8px; cursor: pointer; font-size: 16px; }
+.drawer section { padding: 16px 20px; border-bottom: 1px solid var(--line); }
+.drawer h4 { margin: 0 0 10px; font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.trail { display: grid; gap: 0; border-left: 2px solid var(--line); margin-left: 6px; }
+.trail div { position: relative; padding: 0 0 12px 16px; font-size: 13px; }
+.trail div::before { content: ""; position: absolute; left: -6px; top: 5px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); border: 2px solid var(--panel); }
+.trail b { display: block; } .trail span { color: var(--muted); font-size: 12px; }
+.field { display: grid; gap: 4px; margin-bottom: 10px; } .field label { font-size: 12px; color: var(--muted); font-weight: 600; }
+.field input, .field textarea { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; font: inherit; background: var(--panel-2); }
+.scrim { position: fixed; inset: 0; background: rgba(20, 24, 32, .25); z-index: 25; display: none; } .scrim.on { display: block; }
+
+/* coloana cu idei */
+.ideas { background: var(--panel); border-left: 1px solid var(--line); padding: 22px 20px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+.ideas h2 { font-size: 15px; } .ideas > p { margin: 0 0 16px; font-size: 12.5px; color: var(--muted); }
+.idea { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; padding: 12px 0; border-top: 1px solid var(--line); }
+.idea b { display: block; font-size: 13.5px; margin-bottom: 3px; } .idea p { margin: 0; font-size: 12.5px; color: var(--muted); }
+.idea .who { display: inline-block; margin-top: 6px; font-size: 11px; font-weight: 600; color: var(--accent); }
+.empty { padding: 30px; text-align: center; color: var(--muted); }
+@media (max-width: 1200px) { .app { grid-template-columns: 220px minmax(0, 1fr); } .ideas { display: none; } }
+@media (max-width: 760px) { .app, body.no-ideas .app { grid-template-columns: 1fr; } .side { position: static; height: auto; flex-direction: row; flex-wrap: wrap; } .nav-h, .mode, .brand small { display: none; } .grid2, .kpis { grid-template-columns: 1fr; } .top { padding: 12px 16px; } .view { padding: 18px 16px; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand"><img src="/assets/identitate/antreprenoria-simbol.png" alt=""><div><b>Antreprenoria</b><small>Panou de administrare</small></div></div>
+    <div class="nav-h">Lucru</div>
+    <button class="nav-btn on" data-view="acum"><i data-ic="home"></i>Acum <em class="badge" id="todo-count"></em></button>
+    <button class="nav-btn" data-view="editii"><i data-ic="cal"></i>Ediții <em id="c-ed"></em></button>
+    <button class="nav-btn" data-view="oameni"><i data-ic="ppl"></i>Oameni <em id="c-pp"></em></button>
+    <button class="nav-btn" data-view="companii"><i data-ic="org"></i>Companii <em id="c-org"></em></button>
+    <div class="nav-h">Site</div>
+    <button class="nav-btn" data-view="continut"><i data-ic="doc"></i>Conținut program</button>
+    <button class="nav-btn" data-view="identitate"><i data-ic="brand"></i>Identitate & branding</button>
+    <div class="nav-h expert-only">Expert</div>
+    <button class="nav-btn expert-only" data-view="matrice"><i data-ic="grid"></i>Curriculum pe ediții</button>
+    <button class="nav-btn expert-only" data-view="observatii"><i data-ic="flag"></i>Observații <em id="c-obs"></em></button>
+    <div class="mode rel"><span class="n abs">6</span><span>Cine lucrează în panou</span>
+      <div class="seg"><button class="on" data-mode="simplu">Simplu</button><button data-mode="expert">Expert</button></div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="top">
+      <div class="search rel"><span class="n abs">4</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" placeholder="Caută orice: om, companie, ediție, atelier…" autocomplete="off"><kbd>Ctrl K</kbd>
+        <div class="results" id="results"></div>
+      </div>
+      <button class="toggle-ideas" id="toggle-ideas"><i></i><span>Ascunde explicațiile</span></button>
+    </div>
+    <div class="view" id="view"><div class="empty">Se încarcă datele din creier…</div></div>
+  </div>
+
+  <aside class="ideas">
+    <h2>Ce propun</h2>
+    <p>Bulinele galbene din ecran arată unde se vede fiecare idee. Datele sunt cele reale din creier; nimic nu se salvează.</p>
+    <div class="idea"><span class="n">1</span><div><b>Meniu după ce faci, nu după cum sunt datele</b><p>Acum, Ediții, Oameni, Companii, apoi ce ține de site (conținut, identitate). Programul, curriculumul și observațiile nu mai sunt la același nivel cu edițiile.</p><span class="who">Pentru client</span></div></div>
+    <div class="idea"><span class="n">2</span><div><b>„Acum” ca pagină de start</b><p>Ediția în desfășurare cu agenda ca bară de progres, ce urmează și o listă scurtă „de făcut” calculată din date: atelier fără sponsor, poze lipsă, date greșite.</p><span class="who">Pentru amândoi</span></div></div>
+    <div class="idea"><span class="n">3</span><div><b>O ediție = un spațiu de lucru</b><p>Tab-uri Agendă, Participanți, Oameni, Parteneri, plus un scor de completitudine și o listă de verificare. Ordinea atelierelor se schimbă prin tragere.</p><span class="who">Pentru client</span></div></div>
+    <div class="idea"><span class="n">4</span><div><b>Căutare peste tot creierul</b><p>Un singur câmp (Ctrl K) găsește oameni, companii, ediții și ateliere. Încearcă „zitec” sau „vânzări”.</p><span class="who">Pentru amândoi</span></div></div>
+    <div class="idea"><span class="n">5</span><div><b>Fișă laterală în loc de pagini noi</b><p>Click pe un om sau o companie deschide fișa în dreapta, cu legăturile din creier: unde apare, ce roluri a avut, parcursul pe ediții. Lista rămâne pe loc.</p><span class="who">Pentru amândoi</span></div></div>
+    <div class="idea"><span class="n">6</span><div><b>Mod Simplu și mod Expert</b><p>Clientul vede doar ce administrează. În Expert apar matricea curriculumului, observațiile despre site și registrele complete.</p><span class="who">Tu vs. client</span></div></div>
+    <div class="idea"><span class="n">7</span><div><b>Aceleași culori pentru roluri, peste tot</b><p>Trainer, invitat, participant, sponsor, gazdă: fiecare rol are o culoare fixă, pe carduri, în fișe și în căutare.</p><span class="who">Pentru amândoi</span></div></div>
+    <div class="idea"><span class="n">8</span><div><b>Semnale de calitate pe carduri</b><p>„Fără poză”, „fără descriere”, „fără sponsor” apar direct pe element, iar filtrul „De completat” le adună într-un loc.</p><span class="who">Pentru client</span></div></div>
+  </aside>
+</div>
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-live="polite"></aside>
+
+<script>
+(async () => {
+  const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  const MON = ['ian', 'feb', 'mar', 'apr', 'mai', 'iun', 'iul', 'aug', 'sep', 'oct', 'noi', 'dec'];
+  const LUNI = ['ianuarie', 'februarie', 'martie', 'aprilie', 'mai', 'iunie', 'iulie', 'august', 'septembrie', 'octombrie', 'noiembrie', 'decembrie'];
+  const today = new Date().toISOString().slice(0, 10);
+  const day = (d) => { const [, m, z] = d.split('-').map(Number); return `${z} ${LUNI[m - 1]}`; };
+  const ini = (n) => n.split(/[\s-]+/).map((x) => x[0]).slice(0, 2).join('');
+  const av = (p) => (p?.imagine ? `<img src="${esc(p.imagine)}" alt="" loading="lazy">` : `<span class="ph">${esc(ini(p?.nume || '?'))}</span>`);
+  const ICONS = {
+    home: '<path d="M3 11 12 4l9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>', cal: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+    ppl: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.5a5 5 0 0 1 5.5 5"/>',
+    org: '<rect x="4" y="3" width="11" height="18" rx="1"/><path d="M15 9h5v12h-5M8 7h3M8 11h3M8 15h3"/>', doc: '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h7"/>',
+    brand: '<circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1.5"/><circle cx="15" cy="10" r="1.5"/><circle cx="12" cy="15" r="1.5"/>',
+    grid: '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>', flag: '<path d="M5 21V4h11l-2 4 2 4H5"/>',
+  };
+  $$('[data-ic]').forEach((i) => (i.outerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round">${ICONS[i.dataset.ic]}</svg>`));
+
+  const D = await fetch('/api/entitati').then((r) => r.json());
+  const P = Object.fromEntries(D.oameni.map((p) => [p.id, p]));
+  const O = Object.fromEntries(D.organizatii.map((o) => [o.id, o]));
+  const ED = Object.fromEntries(D.editii.map((e) => [e.id, e]));
+  const edLabel = (e) => (e.serie === 'Cluj' ? `Cluj #${e.numar}` : `#${e.numar}`);
+  const ROLE = { trainer: ['Trainer', 'trainer'], 'antreprenor invitat': ['Invitat', 'invitat'], participant: ['Participant', 'participant'], facilitator: ['Facilitator', 'invitat'], invitat: ['Invitat', 'invitat'], 'echipă': ['Echipă', 'echipa'],
+    alumni: ['Alumni', 'participant'], sponsor: ['Sponsor', 'sponsor'], partener: ['Partener', 'partener'], 'gazdă': ['Gazdă', 'gazda'], speaker: ['Speaker', 'speaker'], organizator: ['Organizator', 'echipa'],
+    'sponsor atelier': ['Sponsor', 'sponsor'], 'partener strategic': ['Partener strategic', 'partener'], 'partener ediție': ['Partener', 'partener'] };
+  const role = (r) => { const [l, c] = ROLE[r] || [r, 'echipa']; return `<span class="chip role" style="--c:var(--r-${c})">${esc(l)}</span>`; };
+
+  // starea ediției și completitudinea ei
+  function edState(e) {
+    const dated = e.ateliere.filter((a) => a.data && a.data.startsWith(String(e.an)));
+    const held = dated.filter((a) => a.data < today), next = dated.filter((a) => a.data >= today).sort((a, b) => a.data.localeCompare(b.data))[0];
+    const st = dated.length && held.length === dated.length ? 'done' : held.length ? 'live' : e.deschisa ? 'open' : 'done';
+    const checks = [
+      ['Toate atelierele au dată', e.ateliere.length && e.ateliere.every((a) => a.data && a.data.startsWith(String(e.an))), `${e.ateliere.filter((a) => a.data).length}/${e.ateliere.length}`],
+      ['Fiecare atelier are sponsor', e.ateliere.every((a) => a.sponsor || a.format === 'networking'), `${e.ateliere.filter((a) => a.sponsor).length}/${e.ateliere.length}`],
+      ['Participanții au poză', e.participanti.length && e.participanti.every((p) => p.imagine), `${e.participanti.filter((p) => p.imagine).length}/${e.participanti.length}`],
+      ['Atelierele au descriere', e.ateliere.every((a) => a.descriere || a.format !== 'full-day'), `${e.ateliere.filter((a) => a.descriere).length}/${e.ateliere.length}`],
+      ['Programul zilei e completat', e.ateliere.filter((a) => a.format === 'full-day').every((a) => a.program.length), `${e.ateliere.filter((a) => a.program.length).length}/${e.ateliere.length}`],
+    ];
+    const score = Math.round((checks.filter((c) => c[1]).length / checks.length) * 100);
+    return { held, next, st, checks, score };
+  }
+  const STL = { live: ['În desfășurare', 'live'], open: ['Înscrieri deschise', 'open'], done: ['Încheiată', 'done'] };
+  const ongoing = D.editii.filter((e) => edState(e).st === 'live').sort((a, b) => b.numar - a.numar)[0] || D.editii[D.editii.length - 1];
+
+  // lista „de făcut”, calculată din date
+  function todos() {
+    const out = [];
+    D.editii.filter((e) => e.deschisa || edState(e).st === 'live').forEach((e) => e.ateliere.filter((a) => a.cauta_sponsor).forEach((a) => out.push({ c: 'red', i: '€', t: `„${a.titlu}” nu are sponsor`, s: `Ediția ${edLabel(e)} · ${a.data ? day(a.data) : ''}`, a: 'Caută sponsor', go: () => openEdition(e.id, 'agenda') })));
+    const noPhoto = D.oameni.filter((p) => !p.imagine);
+    if (noPhoto.length) out.push({ c: 'amber', i: '◐', t: `${noPhoto.length} oameni fără poză`, s: noPhoto.map((p) => p.nume).slice(0, 3).join(', '), a: 'Vezi lista', go: () => { state.peopleFilter = 'lipsa'; show('oameni'); } });
+    const crit = D.observatii.filter((o) => o.nivel === 'critic');
+    if (crit.length) out.push({ c: 'red', i: '!', t: `${crit.length} probleme importante pe site-ul actual`, s: crit[0].text, a: 'Detalii', go: () => { setMode('expert'); show('observatii'); } });
+    const noDesc = D.organizatii.filter((o) => !o.descriere && o.tipuri.some((t) => ['sponsor', 'partener', 'gazdă'].includes(t)));
+    if (noDesc.length) out.push({ c: 'amber', i: '✎', t: `${noDesc.length} parteneri fără descriere`, s: noDesc.map((o) => o.nume).slice(0, 3).join(', '), a: 'Completează', go: () => { state.orgFilter = 'lipsa'; show('companii'); } });
+    const noLi = D.oameni.filter((p) => p.aparitii.length && !p.linkedin);
+    if (noLi.length) out.push({ c: 'blue', i: 'in', t: `${noLi.length} traineri și invitați fără LinkedIn`, s: 'Opțional, dar ajută pe pagina lor', a: 'Vezi', go: () => { state.peopleFilter = 'speakeri'; show('oameni'); } });
+    return out;
+  }
+
+  const state = { view: 'acum', peopleFilter: 'toti', orgFilter: 'toate' };
+  const V = {};
+
+  V.acum = () => {
+    const e = ongoing, s = edState(e), T = todos();
+    const total = e.ateliere.length;
+    return `<div class="head"><div><h1>Bună, să vedem ce e nou</h1><p class="sub">Tot ce contează azi, într-un singur loc.</p></div><a class="btn" href="/" target="_blank">Vezi site-ul ↗</a></div>
+    <div class="card rel" style="margin-bottom:16px"><span class="n abs">2</span>
+      <div class="hero-now"><div><span class="live">${STL[s.st][0]}</span><h1>Antreprenoria ${edLabel(e)}</h1>
+        <p class="sub">${esc(e.perioada)} · ${e.participanti.length} participanți · ${s.held.length} din ${total} întâlniri ținute${s.next ? ` · următoarea: <b>${esc(s.next.titlu.replace(/^(Atelier de Seară|COCKTAIL NETWORKING)\s*[-:]\s*/i, ''))}</b>, ${day(s.next.data)}` : ''}</p>
+        <div style="margin-top:12px;display:flex;gap:8px"><button class="btn primary" data-open-ed="${e.id}">Deschide ediția</button><button class="btn" data-open-ed="${e.id}" data-tab="participanti">Participanți</button></div></div>
+        <div class="ring" style="--p:${s.score}"><div><b>${s.score}%</b><small>completă</small></div></div></div>
+      <div class="tl">${e.ateliere.map((a) => `<div class="${a.data && a.data < today ? 'done' : s.next && a.id === s.next.id ? 'next' : ''}"><b>${esc(a.titlu.replace(/^(Atelier de Seară|COCKTAIL NETWORKING)\s*[-:]\s*/i, ''))}</b>${a.data ? day(a.data) : '—'}</div>`).join('')}</div>
+    </div>
+    <div class="grid2">
+      <div class="card todo rel"><span class="n abs">8</span><div class="pad" style="padding-bottom:6px"><h2>De făcut <span class="meta">· ${T.length}</span></h2></div>
+        ${T.map((t, i) => `<div class="todo-item"><span class="todo-ic ${t.c}">${t.i}</span><div><b>${esc(t.t)}</b><span>${esc(t.s)}</span></div><button class="btn" data-todo="${i}">${esc(t.a)}</button></div>`).join('')}</div>
+      <div class="card pad"><h2>Scurtături</h2><div class="quick">
+        <button data-go="oameni"><b>+ Participant</b><span>Adaugă în ediția curentă</span></button>
+        <button data-open-ed="${e.id}" data-tab="agenda"><b>Agenda ediției</b><span>Date, locații, speakeri</span></button>
+        <button data-go="companii"><b>+ Sponsor</b><span>Leagă o companie de un atelier</span></button>
+        <button data-go="identitate"><b>Branding</b><span>Varianta activă: A</span></button>
+      </div></div>
+    </div>
+    <div class="kpis">
+      <div class="card kpi"><b>${D.editii.length}</b><span>ediții în creier</span></div>
+      <div class="card kpi"><b>${D.oameni.filter((p) => p.aparitii.length).length}</b><span>traineri și invitați</span></div>
+      <div class="card kpi"><b>${D.oameni.filter((p) => p.tipuri.includes('participant')).length}</b><span>participanți</span></div>
+      <div class="card kpi"><b>${D.organizatii.length}</b><span>companii</span></div>
+    </div>`;
+  };
+
+  V.editii = () => {
+    const list = D.editii.slice().sort((a, b) => b.an - a.an || (a.sezon === 'toamnă' ? -1 : 1) || b.numar - a.numar);
+    return `<div class="head"><div><h1>Ediții</h1><p class="sub">Fiecare ediție e un spațiu de lucru. Bara arată cât de completă e pagina ei.</p></div><button class="btn primary">+ Ediție nouă</button></div>
+    <div class="ed-grid rel"><span class="n abs">3</span>${list.map((e) => { const s = edState(e); const spk = [...new Set(e.ateliere.flatMap((a) => a.program.flatMap((x) => x.speakeri.map((y) => y.persoana))))].map((id) => P[id]).filter(Boolean);
+      return `<div class="card ed-card" data-open-ed="${e.id}"><div class="row"><h3>${edLabel(e)}</h3><span class="st ${STL[s.st][1]}">${STL[s.st][0]}</span></div>
+      <div class="meta">${esc(e.serie)} · ${esc(e.perioada)}</div>
+      <div class="row meta"><span>${e.ateliere.length} ateliere · ${e.participanti.length} participanți</span><span class="faces">${spk.slice(0, 4).map(av).join('')}</span></div>
+      <div class="bar ${s.score < 50 ? 'low' : s.score < 80 ? 'mid' : ''}"><i style="width:${s.score}%"></i></div><div class="meta">Pagina e completă în proporție de ${s.score}%</div></div>`; }).join('')}</div>`;
+  };
+
+  function edition(id, tab = 'agenda') {
+    const e = ED[id], s = edState(e);
+    const spk = new Map(); e.ateliere.forEach((a) => a.program.forEach((x) => x.speakeri.forEach((y) => { const p = P[y.persoana]; if (p && !spk.has(p.id)) spk.set(p.id, { p, rol: y.rol }); })));
+    const partners = e.parteneri.map((x) => ({ o: O[x.organizatie], rol: x.rol })).filter((x) => x.o);
+    const TABS = [['agenda', 'Agendă', e.ateliere.length], ['participanti', 'Participanți', e.participanti.length], ['oameni', 'Traineri & invitați', spk.size], ['parteneri', 'Parteneri', partners.length]];
+    let body = '';
+    if (tab === 'agenda') body = `<div class="card ag">${e.ateliere.map((a) => { const [, m, d] = (a.data || '--').split('-'); const ppl = a.program.flatMap((x) => x.speakeri).map((y) => P[y.persoana]).filter(Boolean);
+      const wrongYear = a.data && !a.data.startsWith(String(e.an));
+      return `<div class="ag-row"><span class="grip" title="Trage ca să schimbi ordinea">⋮⋮</span><div class="date">${a.data ? `<b>${Number(d)}</b><span>${MON[Number(m) - 1]}</span>` : '<b>—</b>'}</div>
+        <div class="t"><b>${esc(a.titlu)}</b><span>${esc(a.format)}${a.locatie ? ' · ' + esc(a.locatie) : ''}${a.sponsor && O[a.sponsor] ? ' · ' + esc(O[a.sponsor].nume) : ''}</span></div>
+        <span class="faces">${ppl.slice(0, 3).map(av).join('')}</span>
+        <span>${a.cauta_sponsor ? '<span class="chip bad">Fără sponsor</span>' : wrongYear ? '<span class="chip warn">Verifică data</span>' : a.data && a.data < today ? '<span class="chip ok">Ținut</span>' : '<span class="chip">Programat</span>'}</span></div>`; }).join('')}</div>`;
+    if (tab === 'participanti') body = `<div class="people">${e.participanti.map((p) => `<div class="card pcard" data-person="${esc(p.persoana)}">${av(p)}${p.imagine ? '' : '<span class="chip warn flag">Fără poză</span>'}<b>${esc(p.nume)}</b><span>${esc(O[p.organizatie]?.nume || '')}</span></div>`).join('')}</div>`;
+    if (tab === 'oameni') body = `<div class="people">${[...spk.values()].map(({ p, rol }) => `<div class="card pcard" data-person="${esc(p.id)}">${av(p)}<b>${esc(p.nume)}</b><span>${role(rol)}</span></div>`).join('')}</div>`;
+    if (tab === 'parteneri') body = `<div class="card orgs">${partners.map(({ o, rol }) => `<div class="org" data-org="${esc(o.id)}"><span class="lg">${o.logo ? `<img src="${esc(o.logo)}" alt="">` : esc(ini(o.nume))}</span><div><b>${esc(o.nume)}</b><div class="meta">${esc(o.sector || '')}</div></div><span></span><span class="roles">${role(rol)}</span></div>`).join('')}</div>`;
+    return `<div class="head"><div><p class="sub" style="margin:0 0 6px"><a href="#" data-go="editii">← Ediții</a></p><h1>Antreprenoria ${edLabel(e)} <span class="st ${STL[s.st][1]}" style="vertical-align:middle">${STL[s.st][0]}</span></h1><p class="sub">${esc(e.serie)} · ${esc(e.perioada)}</p></div>
+      <div style="display:flex;gap:8px"><a class="btn" href="/editii/${e.serie === 'Cluj' ? 'cluj-' : ''}${e.numar}" target="_blank">Pagina pe site ↗</a><button class="btn primary">+ Atelier</button></div></div>
+    <div class="grid2" style="grid-template-columns:minmax(0,1fr) 280px">
+      <div class="rel"><span class="n abs">3</span><div class="tabs">${TABS.map(([k, l, c]) => `<button class="${k === tab ? 'on' : ''}" data-open-ed="${e.id}" data-tab="${k}">${l}<em>${c}</em></button>`).join('')}</div>${body}</div>
+      <div class="card pad rel" style="align-self:start"><span class="n abs">8</span><h2>Completitudine · ${s.score}%</h2><div class="bar ${s.score < 50 ? 'low' : s.score < 80 ? 'mid' : ''}" style="margin-bottom:14px"><i style="width:${s.score}%"></i></div>
+        <div class="check">${s.checks.map(([t, ok, n]) => `<div><i class="${ok ? 'y' : 'x'}">${ok ? '✓' : '!'}</i><span>${esc(t)}</span><span class="meta">${n}</span></div>`).join('')}</div></div>
+    </div>`;
+  }
+
+  V.oameni = () => {
+    const F = { toti: ['Toți', () => true], trainer: ['Traineri', (p) => p.tipuri.includes('trainer')], invitat: ['Invitați', (p) => p.tipuri.includes('antreprenor invitat') || p.tipuri.includes('facilitator')],
+      participant: ['Participanți', (p) => p.tipuri.includes('participant')], echipa: ['Echipă', (p) => p.tipuri.includes('echipă')], speakeri: ['Fără LinkedIn', (p) => p.aparitii.length && !p.linkedin], lipsa: ['De completat', (p) => !p.imagine] };
+    const f = F[state.peopleFilter] || F.toti;
+    const list = D.oameni.filter(f[1]).sort((a, b) => b.editii.length - a.editii.length || a.nume.localeCompare(b.nume)).slice(0, 60);
+    return `<div class="head"><div><h1>Oameni</h1><p class="sub">Un singur registru. Rolul se vede din culoare; click deschide fișa.</p></div><button class="btn primary">+ Om</button></div>
+    <div class="filters rel"><span class="n abs">7</span>${Object.entries(F).map(([k, [l, fn]], i) => `${i === 5 ? '<span class="sep"></span>' : ''}<button class="${k === state.peopleFilter ? 'on' : ''}" data-pf="${k}">${l} · ${D.oameni.filter(fn).length}</button>`).join('')}</div>
+    <div class="people rel"><span class="n abs">5</span>${list.map((p) => `<div class="card pcard" data-person="${esc(p.id)}">${av(p)}${p.imagine ? '' : '<span class="chip warn flag">Fără poză</span>'}<b>${esc(p.nume)}</b>
+      <span>${esc(O[p.organizatii[0]]?.nume || p.companii[0] || '')}</span><div>${p.tipuri.slice(0, 2).map(role).join(' ')}</div></div>`).join('')}</div>
+    ${D.oameni.filter(f[1]).length > 60 ? `<p class="meta" style="margin-top:12px">Primii 60 din ${D.oameni.filter(f[1]).length}. În panoul real lista se încarcă pe măsură ce derulezi.</p>` : ''}`;
+  };
+
+  V.companii = () => {
+    const has = (t) => (o) => o.tipuri.includes(t);
+    const F = { toate: ['Toate', () => true], alumni: ['Alumni', has('alumni')], sponsor: ['Sponsori', has('sponsor')], partener: ['Parteneri', has('partener')], gazda: ['Gazde', has('gazdă')], speaker: ['Ale speakerilor', has('speaker')],
+      ciclu: ['Din alumni, parteneri', (o) => o.ciclu], lipsa: ['De completat', (o) => !o.descriere && o.tipuri.some((t) => ['sponsor', 'partener', 'gazdă'].includes(t))] };
+    const f = F[state.orgFilter] || F.toate;
+    const eds = D.editii.slice().sort((a, b) => a.an - b.an || (a.sezon === 'primăvară' ? -1 : 1));
+    const list = D.organizatii.filter(f[1]).sort((a, b) => b.tipuri.length - a.tipuri.length || b.editii.length - a.editii.length).slice(0, 50);
+    return `<div class="head"><div><h1>Companii</h1><p class="sub">O companie apare o singură dată, cu toate rolurile ei. Pătrățelele arată edițiile în care apare.</p></div><button class="btn primary">+ Companie</button></div>
+    <div class="filters rel"><span class="n abs">7</span>${Object.entries(F).map(([k, [l, fn]], i) => `${i === 6 ? '<span class="sep"></span>' : ''}<button class="${k === state.orgFilter ? 'on' : ''}" data-of="${k}">${l} · ${D.organizatii.filter(fn).length}</button>`).join('')}</div>
+    <div class="card orgs rel"><span class="n abs">5</span>${list.map((o) => `<div class="org" data-org="${esc(o.id)}"><span class="lg">${o.logo ? `<img src="${esc(o.logo)}" alt="">` : esc(ini(o.nume))}</span>
+      <div><b>${esc(o.nume)}</b>${!o.descriere && o.tipuri.some((t) => ['sponsor', 'partener', 'gazdă'].includes(t)) ? ' <span class="chip warn">Fără descriere</span>' : ''}<div class="meta">${esc(o.sector || '')}</div></div>
+      <span class="dots" title="Edițiile în care apare">${eds.map((e) => `<i class="${o.editii.includes(e.id) ? 'on' : ''}" title="${esc(edLabel(e))}"></i>`).join('')}</span>
+      <span class="roles">${o.tipuri.filter((t) => t !== 'organizator').map(role).join('')}</span></div>`).join('')}</div>`;
+  };
+
+  V.continut = () => `<div class="head"><div><h1>Conținut program</h1><p class="sub">Textele care apar pe site, grupate după pagină, nu după structura datelor.</p></div></div>
+    <div class="grid2"><div class="card pad"><h2>Pagina „Despre”</h2>
+      <div class="field"><label>Slogan</label><input value="${esc(D.program.slogan)}"></div>
+      <div class="field"><label>Descriere</label><textarea rows="5">${esc(D.program.descriere || '')}</textarea></div>
+      <div class="field"><label>Pentru cine e</label><textarea rows="3">${esc(D.program.audienta || '')}</textarea></div></div>
+      <div class="card pad"><h2>Metodologia (${D.program.metodologie.length} pași)</h2>${D.program.metodologie.map((m, i) => `<div class="field"><label>Pasul ${i + 1}</label><input value="${esc(m.titlu.charAt(0) + m.titlu.slice(1).toLowerCase())}"></div>`).join('')}
+      <h2 style="margin-top:16px">Cifre declarate</h2>${D.program.cifre.map((c) => `<div class="field"><label>${esc(c.ce)}</label><input value="${esc(c.valoare)}"></div>`).join('')}</div></div>`;
+
+  V.identitate = () => `<div class="head"><div><h1>Identitate & branding</h1><p class="sub">Logo-uri, culori și varianta activă a site-ului, într-un singur loc.</p></div><a class="btn" href="/manage/branding">Deschide branding-ul actual</a></div>
+    <div class="people" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))">${(D.program.logouri || []).map((l) => `<div class="card pcard"><img src="${esc(l.fisier)}" alt="" style="object-fit:contain;background:#fff;padding:14px"><b>${esc(l.nume)}</b><span>${esc(l.marca)} · ${esc(l.dimensiuni)}</span></div>`).join('')}</div>`;
+
+  V.matrice = () => { const eds = D.editii.filter((e) => e.serie === 'București').sort((a, b) => a.numar - b.numar);
+    return `<div class="head"><div><h1>Curriculum pe ediții</h1><p class="sub">Doar în modul Expert.</p></div></div><div class="card" style="overflow:auto"><table style="border-collapse:collapse;width:100%;font-size:13px">
+    <tr><th style="text-align:left;padding:10px 14px">Temă</th>${eds.map((e) => `<th style="padding:10px">${edLabel(e)}</th>`).join('')}</tr>
+    ${D.teme.map((t) => `<tr style="border-top:1px solid var(--line)"><td style="padding:9px 14px">${esc(t.nume)}</td>${eds.map((e) => `<td style="text-align:center">${t.editii.includes(e.id) ? '<span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:var(--accent)"></span>' : ''}</td>`).join('')}</tr>`).join('')}</table></div>`; };
+
+  V.observatii = () => `<div class="head"><div><h1>Observații</h1><p class="sub">Ce am găsit pe site-ul actual. Doar în modul Expert.</p></div></div>
+    <div class="card todo">${D.observatii.slice().sort((a, b) => ['critic', 'mediu', 'minor'].indexOf(a.nivel) - ['critic', 'mediu', 'minor'].indexOf(b.nivel)).map((o) => `<div class="todo-item"><span class="todo-ic ${o.nivel === 'critic' ? 'red' : o.nivel === 'mediu' ? 'amber' : 'blue'}">${o.nivel[0].toUpperCase()}</span><div><b>${esc(o.text)}</b><span>${esc(o.zona)}</span></div><span class="chip">${esc(o.nivel)}</span></div>`).join('')}</div>`;
+
+  // ---------- fișa laterală ----------
+  function drawerPerson(id) {
+    const p = P[id]; if (!p) return;
+    const byEd = {}; p.aparitii.forEach((a) => (byEd[a.editie] = byEd[a.editie] || []).push(a));
+    const partEds = D.editii.filter((e) => e.participanti.some((x) => x.persoana === p.id));
+    openDrawer(`<div class="drawer-h">${av(p)}<div><h3>${esc(p.nume)}</h3><div class="meta">${esc(O[p.organizatii[0]]?.nume || p.companii[0] || '')}</div><div style="margin-top:6px">${p.tipuri.map(role).join(' ')}</div></div><button class="x" data-close>×</button></div>
+      <section><h4>Apare în</h4><div class="trail">${[...Object.entries(byEd).map(([ed, list]) => `<div><b>Ediția ${esc(edLabel(ED[ed] || { numar: ed, serie: '' }))}</b><span>${list.map((a) => esc(a.titlu) + ' · ' + esc(a.rol)).join('<br>')}</span></div>`),
+        ...partEds.map((e) => `<div><b>Ediția ${edLabel(e)}</b><span>participant</span></div>`)].join('') || '<span class="meta">Nicio apariție în ediții.</span>'}</div></section>
+      <section><h4>Fișa</h4><div class="field"><label>Nume</label><input value="${esc(p.nume)}"></div><div class="field"><label>LinkedIn</label><input value="${esc(p.linkedin || '')}" placeholder="lipsește"></div><div class="field"><label>Poză</label><input value="${esc(p.imagine || '')}" placeholder="lipsește"></div>
+        <button class="btn primary">Salvează</button> <span class="meta">(în concept nu salvează)</span></section>`);
+  }
+  function drawerOrg(id) {
+    const o = O[id]; if (!o) return;
+    openDrawer(`<div class="drawer-h">${o.logo ? `<img class="lgbig" src="${esc(o.logo)}" alt="">` : `<span class="ph">${esc(ini(o.nume))}</span>`}<div><h3>${esc(o.nume)}</h3><div class="meta">${esc(o.sector || o.tip || '')}</div><div style="margin-top:6px">${o.tipuri.filter((t) => t !== 'organizator').map(role).join(' ')}</div></div><button class="x" data-close>×</button></div>
+      ${o.ciclu ? `<section><h4>Din alumni, partener</h4><p style="margin:0">Alumni din ediția ${esc(edLabel(ED[o.ciclu.alumni_din]))}, apoi ${esc(o.ciclu.apoi.join(', '))}.</p></section>` : ''}
+      <section><h4>Parcurs pe ediții</h4><div class="trail">${(o.parcurs || []).map((x) => `<div><b>Ediția ${esc(edLabel(ED[x.editie] || { numar: x.editie, serie: '' }))}</b><span>${x.roluri.map(role).join(' ')}</span></div>`).join('') || '<span class="meta">—</span>'}</div></section>
+      ${o.oameni?.length ? `<section><h4>Oameni</h4><div class="faces" style="gap:0">${o.oameni.map((pid) => P[pid]).filter(Boolean).map((p) => `<span data-person="${esc(p.id)}" title="${esc(p.nume)}" style="cursor:pointer">${av(p)}</span>`).join('')}</div></section>` : ''}
+      <section><h4>Fișa</h4><div class="field"><label>Descriere</label><textarea rows="4" placeholder="lipsește">${esc(o.descriere || '')}</textarea></div><div class="field"><label>Site</label><input value="${esc(o.url || '')}"></div><button class="btn primary">Salvează</button> <span class="meta">(în concept nu salvează)</span></section>`);
+  }
+  const drawer = $('#drawer'), scrim = $('#scrim');
+  function openDrawer(html) { drawer.innerHTML = html; drawer.classList.add('on'); scrim.classList.add('on'); }
+  function closeDrawer() { drawer.classList.remove('on'); scrim.classList.remove('on'); }
+  scrim.addEventListener('click', closeDrawer);
+
+  // ---------- navigare ----------
+  let todoList = [];
+  function show(view, html) {
+    state.view = view;
+    $$('.nav-btn').forEach((b) => b.classList.toggle('on', b.dataset.view === (view === 'editie' ? 'editii' : view)));
+    if (view === 'acum') todoList = todos();
+    $('#view').innerHTML = html || V[view]();
+    window.scrollTo(0, 0);
+  }
+  function openEdition(id, tab) { show('editie', edition(id, tab)); }
+  function setMode(m) { document.body.classList.toggle('expert', m === 'expert'); $$('.seg button').forEach((b) => b.classList.toggle('on', b.dataset.mode === m)); }
+
+  document.addEventListener('click', (ev) => {
+    const t = ev.target.closest('[data-view],[data-go],[data-open-ed],[data-person],[data-org],[data-pf],[data-of],[data-todo],[data-close],[data-mode],[data-res]');
+    if (!t) return;
+    if (t.dataset.view) return show(t.dataset.view);
+    if (t.dataset.go) { ev.preventDefault(); return show(t.dataset.go); }
+    if (t.dataset.openEd) return openEdition(t.dataset.openEd, t.dataset.tab);
+    if (t.dataset.person) return drawerPerson(t.dataset.person);
+    if (t.dataset.org) return drawerOrg(t.dataset.org);
+    if (t.dataset.pf) { state.peopleFilter = t.dataset.pf; return show('oameni'); }
+    if (t.dataset.of) { state.orgFilter = t.dataset.of; return show('companii'); }
+    if (t.dataset.todo) return todoList[Number(t.dataset.todo)]?.go();
+    if (t.dataset.close !== undefined) return closeDrawer();
+    if (t.dataset.mode) return setMode(t.dataset.mode);
+  });
+  $('#toggle-ideas').addEventListener('click', () => { const off = document.body.classList.toggle('no-ideas'); $('#toggle-ideas span').textContent = off ? 'Arată explicațiile' : 'Ascunde explicațiile'; });
+
+  // ---------- căutare ----------
+  const plain = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const INDEX = [
+    ...D.oameni.map((p) => ({ k: 'Oameni', t: p.nume, s: O[p.organizatii[0]]?.nume || p.companii[0] || '', img: av(p), act: `data-person="${esc(p.id)}"`, q: plain(p.nume + ' ' + p.companii.join(' ')) })),
+    ...D.organizatii.map((o) => ({ k: 'Companii', t: o.nume, s: o.tipuri.join(', '), img: `<span class="ph" style="border-radius:6px">${esc(ini(o.nume))}</span>`, act: `data-org="${esc(o.id)}"`, q: plain(o.nume + ' ' + (o.sector || '')) })),
+    ...D.editii.map((e) => ({ k: 'Ediții', t: `Antreprenoria ${edLabel(e)}`, s: e.perioada, img: '<span class="ph" style="border-radius:6px">#</span>', act: `data-open-ed="${e.id}"`, q: plain(`${e.numar} ${e.serie} ${e.perioada} ${e.an}`) })),
+    ...D.editii.flatMap((e) => e.ateliere.map((a) => ({ k: 'Ateliere', t: a.titlu, s: `Ediția ${edLabel(e)}${a.data ? ' · ' + day(a.data) : ''}`, img: '<span class="ph" style="border-radius:6px">◷</span>', act: `data-open-ed="${e.id}" data-tab="agenda"`, q: plain(a.titlu) }))),
+  ];
+  const q = $('#q'), res = $('#results');
+  q.addEventListener('input', () => {
+    const v = plain(q.value.trim());
+    if (v.length < 2) { res.classList.remove('on'); return; }
+    const hits = INDEX.filter((x) => x.q.includes(v));
+    const groups = {}; hits.forEach((h) => (groups[h.k] = groups[h.k] || []).push(h));
+    res.innerHTML = Object.entries(groups).map(([k, l]) => `<div class="res-h">${k} · ${l.length}</div>${l.slice(0, 5).map((h) => `<div class="res" ${h.act}>${h.img}<div><b>${esc(h.t)}</b><br><small>${esc(h.s)}</small></div></div>`).join('')}`).join('') || '<div class="empty">Nimic găsit.</div>';
+    res.classList.add('on');
+  });
+  document.addEventListener('click', (e) => { if (!e.target.closest('.search')) res.classList.remove('on'); else if (e.target.closest('.res')) { res.classList.remove('on'); q.value = ''; } });
+  document.addEventListener('keydown', (e) => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); q.focus(); } if (e.key === 'Escape') { closeDrawer(); res.classList.remove('on'); } });
+
+  // numere în meniu
+  $('#c-ed').textContent = D.editii.length; $('#c-pp').textContent = D.oameni.length; $('#c-org').textContent = D.organizatii.length; $('#c-obs').textContent = D.observatii.length;
+  $('#todo-count').textContent = todos().length;
+  // bulina 1 pe meniu
+  $('.nav-h').insertAdjacentHTML('beforeend', ' <span class="n" style="width:18px;height:18px;font-size:10px;margin-left:6px">1</span>');
+  // ?v=editii | editie&ed=…&tab=… | oameni | companii …, ?mod=expert, ?fisa=om:id | org:id (linkuri directe spre un ecran)
+  const U = new URLSearchParams(location.search);
+  if (U.get('mod') === 'expert') setMode('expert');
+  if (U.get('v') === 'editie' && ED[U.get('ed')]) openEdition(U.get('ed'), U.get('tab') || 'agenda'); else show(V[U.get('v')] ? U.get('v') : 'acum');
+  const [fk, fid] = (U.get('fisa') || '').split(':');
+  if (fk === 'om') drawerPerson(fid); if (fk === 'org') drawerOrg(fid);
+})();
+</script>
+</body>
+</html>
