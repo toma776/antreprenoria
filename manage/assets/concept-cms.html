@@ -107,15 +107,52 @@
 .note-list { margin: 0; padding-left: 18px; color: var(--muted); }
 .note-list li { margin: 4px 0; }
 .note-list b { color: var(--ink); }
+
+.lrows { display: grid; gap: 6px; }
+.lrow { display: flex; gap: 6px; align-items: center; }
+.lrow input, .lrow select { min-width: 0; }
+.lrow .rel { flex-wrap: wrap; align-items: center; }
+.lrow .rel input { width: 90px; padding: 3px 8px; }
+.add-row { justify-self: start; }
+.f .rel-add { margin-top: 2px; }
+.rel i { font-style: normal; color: var(--muted); font-size: 11.5px; }
+table.mini { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+table.mini th { text-align: left; color: var(--muted); font-weight: 600; padding: 4px; }
+table.mini td { padding: 3px 4px; border-top: 1px solid var(--line); }
+table.mini input { width: 100%; padding: 4px 6px; }
+.mini-list { display: grid; gap: 4px; }
+.mini-list a { display: grid; grid-template-columns: 26px 1fr auto; gap: 8px; align-items: center; padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px; color: var(--ink); font-size: 13px; }
+.mini-list a b { color: var(--accent); }
+.mini-list a small { color: var(--muted); }
+.fs h4 .n { font-weight: 400; }
+.av.sq { border-radius: 10px; object-fit: contain; background: #fff; border: 1px solid var(--line); padding: 4px; }
+.av.num { border-radius: 12px; font-size: 13px; font-weight: 700; text-align: center; line-height: 1.1; padding: 2px; }
+.sp-hero, .sp-box, .sp-ag, .sp-ed { background: #fff; color: #1a1d24; border: 1px solid #e5e7ec; border-radius: 14px; padding: 16px; display: grid; gap: 6px; }
+.sp-hero small, .sp-box small { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #1057A4; }
+.sp-hero b { font-size: 22px; line-height: 1.15; letter-spacing: -.01em; }
+.sp-hero p, .sp-box p { margin: 0; color: #5f6470; font-size: 13px; }
+.sp-box b { font-size: 16px; }
+.sp-box ul { margin: 0; padding-left: 18px; color: #5f6470; font-size: 13px; }
+.sp-num { background: #34373E; color: #fff; border-radius: 14px; padding: 18px; display: grid; gap: 4px; }
+.sp-num b { font-size: 40px; line-height: 1; }
+.sp-num span { color: #B3B7BF; font-size: 13px; }
+.sp-ag span { font-size: 12px; color: #1057A4; font-weight: 600; }
+.sp-ag b { font-size: 16px; }
+.sp-ag small, .sp-ed small { color: #5f6470; font-size: 12.5px; }
+.sp-ed span { justify-self: start; font-size: 11.5px; font-weight: 600; padding: 3px 9px; border-radius: 20px; background: #eef0f3; color: #5f6470; }
+.sp-ed span.live { background: #e1f4ec; color: #0f8a62; }
+.sp-ed b { font-size: 34px; line-height: 1; }
+.sp-logo { background: #fff; border: 1px solid #e5e7ec; border-radius: 14px; height: 110px; display: grid; place-items: center; padding: 18px; }
+.sp-logo img { max-width: 100%; max-height: 64px; object-fit: contain; }
+.sp-logo b { color: #1a1d24; }
+.txt-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (max-width: 900px) { .txt-grid { grid-template-columns: 1fr; } }
+.pv-bar { overflow-x: auto; flex-wrap: nowrap; }
 </style>
 </head>
 <body>
 <div class="pv-bar"><b>Preview, nimic nu se salvează.</b>
-  <button data-pv="ent" class="on">1 · Entități, ușor reorganizate</button>
-  <button data-pv="list">2 · O listă: Traineri</button>
-  <button data-pv="edit">3 · Editare</button>
-  <button data-pv="new">4 · Adaugă nou</button>
-  <button data-pv="pub">5 · Cum ajunge pe site</button>
+  <button data-pv="ent">Entități</button><button data-pv="editii">Ediție</button><button data-pv="ateliere">Atelier</button><button data-pv="oameni">Oameni</button><button data-pv="org">Organizație</button><button data-pv="teme">Temă</button><button data-pv="texte">Texte de pe site</button><button data-pv="new">+ Adaugă</button><button data-pv="pub">Cum ajunge pe site</button>
 </div>
 <div class="app">
   <aside>
@@ -128,234 +165,6 @@
 <div class="drawer" id="drawer" role="dialog" aria-modal="true"></div>
 <div class="toast" id="toast" role="status"></div>
 
-<script>
-const $ = (s, el = document) => el.querySelector(s), $$ = (s, el = document) => [...el.querySelectorAll(s)];
-const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-const norm = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-const initials = (n) => String(n || '').split(/[\s-]+/).filter(Boolean).map((x) => x[0]).slice(0, 2).join('').toUpperCase();
-const toast = (m) => { const t = $('#toast'); t.textContent = m; t.classList.add('on'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('on'), 2400); };
-const IC = {
-  program: '<path d="M12 2l2.6 6.2L21 9l-5 4.4L17.5 20 12 16.6 6.5 20 8 13.4 3 9l6.4-.8z"/>',
-  editii: '<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/>',
-  oameni: '<path d="M16 19v-1a4 4 0 00-4-4H7a4 4 0 00-4 4v1M9.5 10a3 3 0 100-6 3 3 0 000 6zM21 19v-1a4 4 0 00-3-3.9M15.5 4.1a3 3 0 010 5.8"/>',
-  companii: '<path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-5h6v5"/>',
-  teme: '<path d="M4 19.5A2.5 2.5 0 016.5 17H20V3H6.5A2.5 2.5 0 004 5.5zM4 19.5A2.5 2.5 0 006.5 22H20v-5"/>',
-  texte: '<path d="M4 6h16M4 12h10M4 18h13"/>',
-};
-const icon = (id) => `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${IC[id]}</svg>`;
-
-let D, ED = {}, pending = [];
-const edLabel = (id) => { const e = ED[id]; return e ? (e.serie === 'Cluj' ? `Cluj #${e.numar}` : `#${e.numar}`) : id; };
-const edUrl = (id) => { const e = ED[id]; return e ? (e.serie === 'Cluj' ? `/editii/cluj-${e.numar}` : `/editii/${e.numar}`) : '#'; };
-const FULL = ['viziune', 'model-de-business', 'marketing', 'vanzari', 'cultura'];
-
-/* ---------- 1. ENTITĂȚI: aceleași 5 categorii, plus „Texte de pe site” ---------- */
-function categories() {
-  const has = (t) => D.oameni.filter((p) => p.tipuri.includes(t)).length;
-  const O = D.organizatii, oh = (t) => O.filter((o) => o.tipuri.includes(t)).length;
-  return [
-    { ic: 'program', t: 'Program', d: 'Identitatea programului, metodologia, cifrele și contactul.', site: ['/despre', '/program'],
-      lists: [['Identitate', null], ['Metodologie', D.program.metodologie.length, 'pas'], ['Cifre', D.program.cifre.length, 'cifră'], ['Echipă & contact', D.program.contact.echipa.length, 'om din echipă']], views: [] },
-    { ic: 'editii', t: 'Ediții', d: 'Fiecare ediție cu atelierele, participanții și partenerii ei.', site: ['/editii/…'],
-      lists: [['Ediții', D.editii.length, 'ediție'], ['Ateliere', D.editii.reduce((s, e) => s + e.ateliere.length, 0), 'atelier'], ['Locații', D.locatii.length, 'locație']], views: [] },
-    { ic: 'oameni', t: 'Oameni', d: 'O singură fișă pe om, chiar dacă are mai multe roluri.', site: ['/traineri', '/alumni'],
-      lists: [['Traineri', has('trainer'), 'trainer'], ['Antreprenori invitați', has('antreprenor invitat'), 'invitat'], ['Facilitatori', D.oameni.filter((p) => p.tipuri.includes('facilitator') || p.tipuri.includes('invitat')).length, 'facilitator'], ['Participanți', has('participant'), 'participant'], ['Echipa', has('echipă'), 'om din echipă']], views: [] },
-    { ic: 'companii', t: 'Organizații', d: 'O singură fișă pe companie, cu toate rolurile ei.', site: ['/parteneri'],
-      lists: [['Companii alumni', oh('alumni'), 'companie'], ['Parteneri & sponsori', O.filter((o) => ['partener', 'sponsor', 'organizator'].some((t) => o.tipuri.includes(t))).length, 'partener'], ['Companiile speakerilor', oh('speaker'), 'companie']],
-      views: [['Din alumni, parteneri', O.filter((o) => o.ciclu).length], ['Cu mai multe roluri', O.filter((o) => o.tipuri.filter((t) => t !== 'organizator').length > 1).length]] },
-    { ic: 'teme', t: 'Curriculum', d: 'Temele atelierelor, refolosite de la o ediție la alta.', site: ['/teme', '/teme/…'],
-      lists: [['Ateliere full-day', D.teme.filter((t) => t.format === 'full-day').length, 'temă'], ['Ateliere de seară', D.teme.filter((t) => t.format === 'seară').length, 'temă'], ['Networking', D.teme.filter((t) => t.format === 'networking').length, 'temă']],
-      views: [['Matricea pe ediții', null]] },
-    { ic: 'texte', t: 'Texte de pe site', d: 'Titlurile și paragrafele paginilor, care nu țin de o entitate anume.', site: ['/', '/despre', '/program', '/aplica'], isNew: true,
-      lists: [['Acasă', 7, 'text'], ['Despre', 5, 'text'], ['Program', 6, 'text'], ['Aplică', 4, 'text'], ['Meniu & footer', 9, 'text']], views: [] },
-  ];
-}
-function vEnt() {
-  const C = categories();
-  return `${pendingBar()}<div class="head"><div><div class="crumb">manage › entități</div><h1>Entitățile Antreprenoria</h1></div>
-    <input type="search" placeholder="Caută oameni, organizații, ateliere…"><button class="primary" data-new>+ Adaugă</button></div>
-  <div class="grid">${C.map((c) => `<div class="card cat">
-    <div class="cat-top"><span class="cat-ic">${icon(c.ic)}</span><span class="cat-n">${c.lists.reduce((s, l) => s + (l[1] || 0), 0) || ''}</span></div>
-    <div><h3>${c.t} ${c.isNew ? '<span class="tag ok">nou</span>' : ''}</h3><p>${c.d}</p></div>
-    <div class="onsite">Pe site: ${c.site.map((s) => `<code>${s}</code>`).join(' ')}</div>
-    <div class="glist">
-      ${c.lists.map(([n, k, one]) => `<div class="gl"><a href="#" data-open="${esc(n)}">${n}</a><em>${k ?? ''}</em>${one ? `<button class="add" data-new="${esc(one)}" title="Adaugă ${esc(one)}">+</button>` : ''}</div>`).join('')}
-      ${c.views.length ? `<div class="glabel">Vederi calculate</div>${c.views.map(([n, k]) => `<div class="gl calc"><a href="#">${n}</a><em>${k ?? ''}</em><i>automat</i></div>`).join('')}` : ''}
-    </div></div>`).join('')}</div>
-  <div class="card" style="margin-top:18px"><h3>Ce s-a schimbat față de acum</h3>
-    <ul class="note-list">
-      <li><b>Aceleași 5 categorii și aceeași pagină</b>, nimic mutat. Apare doar o a șasea, <b>Texte de pe site</b>, pentru textele paginilor care nu țin de un om sau o ediție.</li>
-      <li>Fiecare categorie spune <b>în ce pagini apare pe site</b>, ca să știi ce modifici.</li>
-      <li>Grupurile sunt împărțite în <b>liste</b> (cu <b>+</b> pentru adăugare) și <b>vederi calculate</b> (de ex. „Din alumni, parteneri”), care se completează singure din liste și nu se editează.</li>
-      <li>Un singur buton <b>+ Adaugă</b> sus, care te întreabă ce vrei să adaugi.</li>
-    </ul></div>`;
-}
-
-/* ---------- 2. LISTA: Traineri ---------- */
-let listFilter = 'trainer';
-const ROLES = [['trainer', 'Traineri'], ['antreprenor invitat', 'Antreprenori invitați'], ['facilitator', 'Facilitatori'], ['participant', 'Participanți'], ['echipă', 'Echipa']];
-const hidden = new Set(), drafts = new Set();
-function vList() {
-  const L = D.oameni.filter((p) => p.tipuri.includes(listFilter));
-  const lab = ROLES.find((r) => r[0] === listFilter)[1];
-  return `${pendingBar()}<div class="head"><div><div class="crumb">← Oameni · entități › Oameni › ${lab}</div><h1>${lab} <span class="n" style="font-weight:400;color:var(--muted);font-size:15px">${L.length}</span></h1></div>
-    <input type="search" id="lq" placeholder="Filtrează…"><button class="primary" data-new="${listFilter}">+ Adaugă ${lab.toLowerCase().replace(/i$/, '').replace(/ți invitați$/, ' invitat')}</button></div>
-  <p class="lead" style="margin-top:-6px">Pe site: <code>/traineri</code>, fișele din <code>/traineri/…</code>, cardurile din paginile edițiilor și ale temelor. Click pe un rând îl deschide pentru editare.</p>
-  <div class="chips">${ROLES.map(([k, l]) => `<button class="${k === listFilter ? 'on' : ''}" data-role="${k}">${l} · ${D.oameni.filter((p) => p.tipuri.includes(k)).length}</button>`).join('')}</div>
-  <div class="rows">${L.slice(0, 40).map((p) => row(p)).join('')}</div>`;
-}
-function row(p) {
-  const st = drafts.has(p.id) ? '<span class="st draft">modificat, nepublicat</span>' : hidden.has(p.id) ? '<span class="st off">ascuns pe site</span>' : '<span class="st on">pe site</span>';
-  return `<div class="row" data-edit="${p.id}" data-q="${esc(norm(p.nume + ' ' + (p.companii || []).join(' ')))}">
-    ${p.imagine ? `<img class="av" src="${esc(p.imagine)}" alt="" loading="lazy">` : `<span class="av">${initials(p.nume)}</span>`}
-    <div><h3>${esc(p.nume)}</h3><div class="meta">${esc((p.companii || [])[0] || '')}${p.editii.length ? ` · ${p.editii.length} ${p.editii.length === 1 ? 'ediție' : 'ediții'}: ${p.editii.slice(-4).map(edLabel).join(', ')}` : ''}</div></div>
-    <div class="acts">${st}<button class="sm">Editează</button></div></div>`;
-}
-
-/* ---------- 3/4. EDITORUL ---------- */
-function themesOf(p) { return [...new Set(p.aparitii.map((a) => a.tema).filter(Boolean))]; }
-function whereOnSite(p) {
-  const w = [];
-  if (p.tipuri.some((t) => ['trainer', 'antreprenor invitat', 'facilitator', 'invitat'].includes(t))) w.push(['/traineri', 'lista trainerilor și invitaților'], [`/traineri/${p.id || 'nume-nou'}`, 'fișa proprie']);
-  if (p.tipuri.includes('participant')) w.push(['/alumni', 'lista alumnilor']);
-  (p.editii || []).slice(-3).forEach((e) => w.push([edUrl(e), `ediția ${edLabel(e)}`]));
-  themesOf(p).filter((t) => FULL.includes(t)).slice(0, 2).forEach((t) => w.push([`/teme/${t}`, 'pagina temei']));
-  if (p.imagine && p.tipuri.includes('trainer')) w.push(['/', 'mozaicul de pe homepage']);
-  return w;
-}
-function editor(p, isNew) {
-  const orgs = D.organizatii.slice().sort((a, b) => a.nume.localeCompare(b.nume, 'ro'));
-  return `<div class="dr-head"><h2>${isNew ? `Adaugă ${esc(isNew === true ? 'om' : isNew)}` : esc(p.nume)}</h2>${isNew ? '' : '<span class="tag grey">Oameni</span>'}<button data-close>Închide ✕</button></div>
-  <div class="dr-body">
-    <div>
-      <div class="fs"><h4>Cine e</h4>
-        <div class="f"><label for="e-nume">Nume și prenume</label><input id="e-nume" value="${esc(p.nume || '')}" placeholder="ex. Andreea Popescu" autocomplete="off"></div>
-        <div class="dup" id="dup" hidden></div>
-        <div class="photo"><span class="av" id="e-av">${p.imagine ? `<img class="av" src="${esc(p.imagine)}" alt="">` : initials(p.nume) || '?'}</span>
-          <div class="drop">Trage aici o fotografie sau <a href="#">alege un fișier</a><br><small>Se decupează automat pătrat și se micșorează pentru site.</small></div></div>
-        <div class="f"><label for="e-li">LinkedIn</label><input id="e-li" value="${esc(p.linkedin || '')}" placeholder="https://www.linkedin.com/in/…"></div>
-      </div>
-      <div class="fs"><h4>Rol în program</h4>
-        <div class="checks-r">${[['trainer', 'Trainer'], ['antreprenor invitat', 'Antreprenor invitat'], ['facilitator', 'Facilitator'], ['participant', 'Participant (alumni)'], ['echipă', 'Echipă']].map(([k, l]) => `<label><input type="checkbox" data-tip="${k}" ${(p.tipuri || []).includes(k) ? 'checked' : ''}>${l}</label>`).join('')}</div>
-        <small class="ro">Un om poate avea mai multe roluri: un alumni care revine ca invitat rămâne aceeași fișă.</small>
-      </div>
-      <div class="fs"><h4>Companie și funcție</h4>
-        <div class="f2"><div class="f"><label for="e-org">Companie</label><input id="e-org" list="orgs" value="${esc((p.companii || [])[0] || '')}" placeholder="Caută sau scrie una nouă"><datalist id="orgs">${orgs.map((o) => `<option value="${esc(o.nume)}">`).join('')}</datalist><small>Dacă nu există, se creează și în Organizații.</small></div>
-          <div class="f"><label for="e-fn">Funcția afișată</label><input id="e-fn" value="${esc((p.functii || [])[0] || '')}" placeholder="ex. Fondator & CEO"></div></div>
-      </div>
-      <div class="fs"><h4>Prezentare <span class="tag ok">câmp nou</span></h4>
-        <div class="f"><label for="e-bio">Câteva rânduri despre el/ea</label><textarea id="e-bio" placeholder="Apare pe fișa de pe site. 2–3 fraze."></textarea></div>
-      </div>
-      <div class="fs"><h4>Unde apare în program</h4>
-        ${p.aparitii?.length ? `<ul class="ro">${p.aparitii.slice(-5).reverse().map((a) => `<li><b>${edLabel(a.editie)}</b> · ${esc(a.titlu || a.tema || '')} · ${esc(a.rol)}</li>`).join('')}</ul>` : '<p class="ro" style="margin:0">Încă nicăieri.</p>'}
-        <div class="rel"><button class="sm">+ Leagă de un atelier</button></div>
-        <small class="ro">Aparițiile se adaugă din ediție → atelier, alegând omul din listă. Așa nu se scrie același nume de două ori.</small>
-      </div>
-      <div class="fs"><h4>Vizibilitate</h4>
-        <div class="checks-r"><label><input type="radio" name="vis" ${hidden.has(p.id) ? '' : 'checked'}> Apare pe site</label><label><input type="radio" name="vis" ${hidden.has(p.id) ? 'checked' : ''}> Ascuns (rămâne în panou)</label></div>
-      </div>
-    </div>
-    <div class="sitebox">
-      <div class="sp"><div class="sp-lab">Cum arată pe site</div>
-        <div class="sp-card"><div class="ph" id="sp-ph" style="${p.imagine ? `background-image:url('${esc(p.imagine)}')` : ''}">${p.imagine ? '' : initials(p.nume) || '?'}</div>
-          <div class="tx"><b id="sp-n">${esc(p.nume || 'Nume Prenume')}</b><small id="sp-c">${esc((p.companii || [])[0] || 'Companie')}</small><br><span class="pill" id="sp-r">${esc(roleLabel(p.tipuri || []))}</span></div></div></div>
-      <div><div class="sp-lab">Apare pe aceste pagini</div><div class="where" id="where">${whereHtml(p)}</div></div>
-    </div>
-  </div>
-  <div class="dr-foot"><span>${isNew ? 'Se salvează ca ciornă. Apare pe site după „Publică”.' : 'Modificările rămân în panou până apeși „Publică pe site”.'}</span>
-    ${isNew ? '' : '<button class="danger">Șterge</button>'}<button data-close>Anulează</button><button class="primary" data-save="${esc(p.id || '')}">${isNew ? 'Adaugă' : 'Salvează'}</button></div>`;
-}
-const roleLabel = (t) => (t.includes('trainer') ? 'Trainer' : t.includes('antreprenor invitat') ? 'Antreprenor invitat' : t.includes('facilitator') ? 'Facilitator' : t.includes('participant') ? 'Alumni' : t.includes('echipă') ? 'Echipă' : 'Rol');
-const whereHtml = (p) => whereOnSite(p).map(([u, l]) => `<a href="${u}" target="_blank"><span>${l}</span><small>${u}</small></a>`).join('') || '<p class="ro">Alege un rol ca să vezi unde apare.</p>';
-
-function openEditor(p, isNew) {
-  const dr = $('#drawer');
-  dr.innerHTML = editor(p, isNew);
-  dr.classList.add('on'); $('#scrim').classList.add('on');
-  const cur = { ...p, tipuri: [...(p.tipuri || [])], companii: [...(p.companii || [])] };
-  const sync = () => {
-    cur.nume = $('#e-nume').value; cur.companii = [$('#e-org').value]; cur.tipuri = $$('[data-tip]:checked', dr).map((x) => x.dataset.tip);
-    $('#sp-n').textContent = cur.nume || 'Nume Prenume'; $('#sp-c').textContent = cur.companii[0] || 'Companie'; $('#sp-r').textContent = roleLabel(cur.tipuri);
-    if (!cur.imagine) $('#sp-ph').textContent = initials(cur.nume) || '?';
-    $('#where').innerHTML = whereHtml(cur);
-    if (isNew) dupCheck(cur.nume);
-  };
-  dr.addEventListener('input', sync); dr.addEventListener('change', sync);
-  setTimeout(() => $('#e-nume').focus(), 260);
-}
-// la adăugare: caută oameni cu nume asemănător, ca să nu apară de două ori
-function dupCheck(q) {
-  const box = $('#dup'), n = norm(q).trim();
-  if (n.length < 3) { box.hidden = true; return; }
-  const parts = n.split(/\s+/);
-  const hits = D.oameni.filter((p) => parts.every((x) => norm(p.nume).includes(x))).slice(0, 3);
-  box.hidden = !hits.length;
-  box.innerHTML = `<b>Există deja în entități:</b>${hits.map((p) => `<div class="d-row">${p.imagine ? `<img class="av" src="${esc(p.imagine)}" alt="">` : `<span class="av">${initials(p.nume)}</span>`}<div><b>${esc(p.nume)}</b><br><small>${esc(roleLabel(p.tipuri))}${p.editii.length ? ' · ' + p.editii.map(edLabel).join(', ') : ''}</small></div><button class="sm" data-edit="${p.id}">Deschide fișa</button></div>`).join('')}<small>Dacă e același om, deschide fișa și bifează rolul nou, în loc să creezi alta.</small>`;
-}
-function closeEditor() { $('#drawer').classList.remove('on'); $('#scrim').classList.remove('on'); }
-
-/* ---------- alege ce adaugi ---------- */
-function pickNew() {
-  const dr = $('#drawer');
-  const opts = [['Oameni', ['trainer', 'antreprenor invitat', 'facilitator', 'participant', 'om din echipă']], ['Ediții', ['ediție', 'atelier', 'locație']], ['Organizații', ['companie', 'partener']], ['Curriculum', ['temă']], ['Program', ['pas de metodologie', 'cifră']]];
-  dr.innerHTML = `<div class="dr-head"><h2>Ce vrei să adaugi?</h2><button data-close>Închide ✕</button></div>
-  <div style="padding:20px;overflow:auto">${opts.map(([g, L]) => `<div class="fs"><h4>${g}</h4><div class="checks-r">${L.map((x) => `<button data-new="${esc(x)}">+ ${esc(x)}</button>`).join('')}</div></div>`).join('')}
-  <p class="ro">Pentru exemplu, preview-ul arată formularul pentru oameni. Celelalte au aceeași formă: câmpurile entității în stânga, cum arată pe site în dreapta.</p></div>`;
-  dr.classList.add('on'); $('#scrim').classList.add('on');
-}
-
-/* ---------- 5. PUBLICARE ---------- */
-function pendingBar() {
-  return `<div class="pending" ${pending.length ? '' : 'hidden'}><span><b>${pending.length} ${pending.length === 1 ? 'modificare nepublicată' : 'modificări nepublicate'}</b> · ${pending.map(esc).join(', ')}</span><button>Vezi diferențele</button><button class="primary" data-publish>Publică pe site</button></div>`;
-}
-function vPub() {
-  return `<div class="head"><div><div class="crumb">preview</div><h1>Cum ajunge o modificare pe site</h1></div></div>
-  <div class="flow">
-    <div><i>1</i><b>Editezi în panou</b>Orice entitate sau text. Vezi pe loc cum va arăta.</div>
-    <div><i>2</i><b>Se salvează ca ciornă</b>Lista „modificări nepublicate” arată ce s-a schimbat, cu diferențele.</div>
-    <div><i>3</i><b>Publică pe site</b>Un buton. Site-ul se regenerează din entități.</div>
-    <div><i>4</i><b>Online în ~1 minut</b>Paginile afectate se actualizează: fișa omului, ediția, tema, homepage-ul.</div>
-  </div>
-  <div class="grid2" style="margin-top:16px">
-    <div class="card"><h3>Ce rămâne neatins</h3><ul class="note-list">
-      <li><b>Datele preluate de pe site-ul vechi</b> rămân sursa de pornire. Ce editezi se păstrează separat, deasupra lor, deci nu se pierde la o nouă preluare.</li>
-      <li><b>Vederile calculate</b> (parcursul companiilor, matricea temelor, cifrele agregate) se refac singure.</li>
-      <li><b>Cifrele de business</b> ale participanților rămân doar în panou. Pe site apar numai agregate.</li></ul></div>
-    <div class="card"><h3>De hotărât înainte de construcție</h3><ul class="note-list">
-      <li><b>Cine editează și de unde.</b> Acum panoul de pe Vercel e doar pentru vizualizare. Ca echipa programului să editeze online, panoul are nevoie de cont cu parolă și de o bază de date pentru modificări (putem folosi același Supabase ca la Leads).</li>
-      <li><b>Publicare imediată sau cu aprobare.</b> Fie oricine cu cont publică direct, fie modificările așteaptă o confirmare.</li>
-      <li><b>Fotografiile</b> încărcate din panou au nevoie de un loc de stocare (tot Supabase).</li></ul></div>
-  </div>`;
-}
-
-/* ---------- rutare preview ---------- */
-let pv = 'ent';
-function render() {
-  $$('.pv-bar [data-pv]').forEach((b) => b.classList.toggle('on', b.dataset.pv === pv));
-  $('#view').innerHTML = pv === 'list' ? vList() : pv === 'pub' ? vPub() : vEnt();
-}
-function demoPerson() { return D.oameni.find((p) => p.tipuri.includes('trainer') && p.imagine && p.aparitii.length > 4) || D.oameni[0]; }
-document.addEventListener('click', (e) => {
-  const t = e.target.closest('[data-pv],[data-role],[data-edit],[data-new],[data-close],[data-save],[data-publish],[data-open]');
-  if (!t) { if (e.target.id === 'scrim') closeEditor(); return; }
-  e.preventDefault();
-  if (t.dataset.pv) { pv = t.dataset.pv; closeEditor(); render(); if (pv === 'edit') { pv = 'list'; render(); openEditor(demoPerson()); } if (pv === 'new') { pv = 'list'; render(); openEditor({ tipuri: ['trainer'], aparitii: [], editii: [] }, 'trainer'); } return; }
-  if (t.dataset.role) { listFilter = t.dataset.role; render(); return; }
-  if (t.dataset.open) { pv = 'list'; const m = { Traineri: 'trainer', 'Antreprenori invitați': 'antreprenor invitat', Facilitatori: 'facilitator', Participanți: 'participant', Echipa: 'echipă' }[t.dataset.open]; if (m) listFilter = m; render(); return; }
-  if (t.dataset.edit) { const p = D.oameni.find((x) => x.id === t.dataset.edit); if (p) { if (pv !== 'list') { pv = 'list'; render(); } openEditor(p); } return; }
-  if (t.dataset.new !== undefined) { const k = t.dataset.new; if (!k) return pickNew(); const role = { 'om din echipă': 'echipă', invitat: 'antreprenor invitat' }[k] || k; openEditor({ tipuri: ROLES.some((r) => r[0] === role) ? [role] : [], aparitii: [], editii: [] }, k); return; }
-  if (t.dataset.close !== undefined) { closeEditor(); return; }
-  if (t.dataset.save !== undefined) { const n = $('#e-nume').value.trim() || 'om nou'; if (t.dataset.save) drafts.add(t.dataset.save); if (!pending.includes(n)) pending.push(n); closeEditor(); render(); toast(`Salvat: ${n}. Încă nepublicat.`); return; }
-  if (t.dataset.publish !== undefined) { toast(`În varianta reală: ${pending.length} modificări publicate pe site.`); pending = []; drafts.clear(); render(); }
-});
-document.addEventListener('input', (e) => { if (e.target.id === 'lq') { const q = norm(e.target.value); $$('.row').forEach((r) => { r.hidden = q && !r.dataset.q.includes(q); }); } });
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeEditor(); });
-
-fetch('/api/entitati').then((r) => r.json()).then((d) => {
-  D = d; D.editii.forEach((e) => { ED[e.id] = e; });
-  $('#n-ent').textContent = D.editii.length + D.editii.reduce((n, e) => n + e.ateliere.length, 0) + D.oameni.length + D.organizatii.length + D.locatii.length + D.teme.length;
-  render();
-});
-</script>
+<script src="/manage/assets/concept-cms.js"></script>
 </body>
 </html>
