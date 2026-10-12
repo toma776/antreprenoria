@@ -14,6 +14,7 @@ const { programBody } = require('./program');
 const { despreBody } = require('./despre');
 const { temeBody, temaBody } = require('./teme');
 const { traineriBody, trainerBody, personData } = require('./traineri');
+const { alumniBody, alumnusBody, alumniData, hasPage } = require('./alumni');
 const { aplicaBody, options: aplicaOptions } = require('./aplica');
 
 
@@ -262,6 +263,31 @@ ${footer(F, ctx)}
 </body></html>`;
 }
 
+// ---------- ALUMNI ----------
+function renderAlumni(opt = {}) {
+  const ctx = load(opt.brand), F = facts(ctx);
+  return `${head('Alumni Antreprenoria – antreprenorii care au trecut prin program', 'Alumnii Antreprenoria: antreprenori și manageri din toate edițiile încheiate, pe ediții și sectoare, și companiile care au revenit ca parteneri.', opt.brand)}
+${header(F, ctx)}
+<div class="gridlines" aria-hidden="true"></div>
+${alumniBody(ctx, F)}
+${footer(F, ctx)}
+<script src="/assets/site.js"></script>
+</body></html>`;
+}
+// pagina unui alumnus: doar cu profilul completat; opt.preview (doar local) o arată pentru oricine
+function renderAlumnus(opt = {}) {
+  const ctx = load(opt.brand), F = facts(ctx), a = alumniData(ctx).L.find((x) => x.id === opt.id);
+  if (!a || (!a.page && !opt.preview)) return null;
+  return `${head(`${a.nume} – alumni Antreprenoria`, `${a.nume}${a.org ? ', ' + a.org.nume : ''}: alumni Antreprenoria ${a.eds.map((e) => '#' + e.numar).join(', ')}.`, opt.brand)}
+${a.page ? '' : '<meta name="robots" content="noindex">'}
+${header(F, ctx)}
+<div class="gridlines" aria-hidden="true"></div>
+${alumnusBody(ctx, F, opt.id, { preview: !a.page })}
+${footer(F, ctx)}
+<script src="/assets/site.js"></script>
+</body></html>`;
+}
+
 function renderTema(opt = {}) {
   const ctx = load(opt.brand), F = facts(ctx), t = ctx.T[opt.id];
   if (!t) return null;
@@ -291,4 +317,4 @@ ${footer(F, ctx, { mcta: false })}
 // edițiile la care se poate aplica acum (pentru validarea de pe server)
 const applyOptions = () => { const ctx = load(); return aplicaOptions(ctx, facts(ctx)); };
 
-module.exports = { renderHome, renderEdition, renderProgram, renderDespre, renderTeme, renderTema, renderTraineri, renderTrainer, renderAplica, applyOptions };
+module.exports = { renderHome, renderEdition, renderProgram, renderDespre, renderTeme, renderTema, renderTraineri, renderTrainer, renderAlumni, renderAlumnus, renderAplica, applyOptions };

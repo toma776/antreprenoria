@@ -286,3 +286,25 @@
     apply();
   }));
 })();
+
+// /alumni: filtrele după ediție și după sector (se combină)
+(() => {
+  const grid = document.querySelector('.al-grid');
+  if (!grid) return;
+  const state = { ed: '', sector: '' };
+  const apply = () => {
+    let n = 0;
+    grid.querySelectorAll('.al-card').forEach((c) => {
+      const ok = (!state.ed || c.dataset.ed.split(' ').includes(state.ed)) && (!state.sector || c.dataset.sector === state.sector);
+      c.hidden = !ok; if (ok) n++;
+    });
+    document.querySelector('.tr-empty').hidden = n > 0;
+  };
+  document.querySelectorAll('[data-al-group]').forEach((g) => g.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-al]');
+    if (!b) return;
+    g.querySelectorAll('[data-al]').forEach((x) => x.classList.toggle('on', x === b));
+    state[g.dataset.alGroup] = b.dataset.al;
+    apply();
+  }));
+})();

@@ -56,12 +56,13 @@ function safe(base, rel) {
 }
 // modulele site-ului se reîncarcă la fiecare cerere, ca schimbările din data/ și site/ să apară fără repornire
 function fresh(mod) {
-  ['./site/render', './site/brand', './site/menu', './site/home', './site/util', './site/edition', './site/program', './site/despre', './site/teme', './site/aplica', './site/texte', './site/traineri'].forEach((m) => delete require.cache[require.resolve(m)]);
+  ['./site/render', './site/brand', './site/menu', './site/home', './site/util', './site/edition', './site/program', './site/despre', './site/teme', './site/aplica', './site/texte', './site/traineri', './site/alumni'].forEach((m) => delete require.cache[require.resolve(m)]);
   return require(mod);
 }
 
 // pe Vercel fișierele sunt doar pentru citire: modificările din panou se fac local și ajung pe site prin git push
 const READ_ONLY = !!process.env.VERCEL;
+const AL_RE = /^\/alumni\/([a-z0-9-]+)\/?$/;
 
 // ---------- CMS: modificările din panou (data/curare/editari.json) ----------
 const EDITARI = path.join(DATA, 'curare', 'editari.json');
@@ -291,6 +292,18 @@ async function handler(req, res) {
     const tr = /^\/traineri\/([a-z0-9-]+)\/?$/.exec(url);
     if (tr) {
       const html = fresh('./site/render').renderTrainer({ id: tr[1], brand: new URLSearchParams(query).get('brand') || undefined });
+      if (html) { res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' }); return res.end(html); }
+    }
+    // /alumni și /alumni/<id>: în previzualizare, doar local până la aprobare
+    if (!READ_ONLY && (url === '/alumni' || url === '/alumni/')) {
+      res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' });
+      return res.end(fresh('./site/render').renderAlumni({ brand: new URLSearchParams(query).get('brand') || undefined }));
+    }
+    if (!READ_ONLY && url === '/alumni/din-alumni-parteneri') { res.writeHead(301, { Location: '/alumni#din-alumni-parteneri' }); return res.end(); }
+    const al = !READ_ONLY && AL_RE.exec(url);
+    if (al) {
+      const q2 = new URLSearchParams(query);
+      const html = fresh('./site/render').renderAlumnus({ id: al[1], brand: q2.get('brand') || undefined, preview: q2.has('previzualizare') });
       if (html) { res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' }); return res.end(html); }
     }
     // /teme/vanzari: pagină pentru temele full-day; cele de seară duc la secțiunea lor din /teme
