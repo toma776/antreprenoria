@@ -1,15 +1,15 @@
 // Alumni: /alumni (toți participanții edițiilor încheiate, cu filtre) și /alumni/<id> (doar pentru profilurile completate).
 // Un participant devine alumnus când ediția lui se încheie; până atunci apare doar pe pagina ediției.
 // Cifrele de business apar numai agregat, niciodată pe om sau pe companie.
-const { esc, initials, img, milLei, today } = require('./util');
+const { esc, initials, img, milLei } = require('./util');
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : (n % 100 === 0 || n % 100 >= 20 ? 'de ' : '') + many}`;
 const avatar = (src, nume, w) => (src ? `<img src="${esc(img(src, w))}" alt="" loading="lazy">` : `<span class="ph">${esc(initials(nume || '?'))}</span>`);
 const edUrl = (e) => (e.serie === 'Cluj' ? `/editii/cluj-${e.numar}` : `/editii/${e.numar}`);
 const edLabel = (e) => (e.serie === 'Cluj' ? `Cluj #${e.numar}` : `#${e.numar}`);
 const chrono = (D) => D.editii.slice().sort((a, b) => a.an - b.an || (a.sezon === b.sezon ? (a.serie === 'Cluj') - (b.serie === 'Cluj') : a.sezon === 'primăvară' ? -1 : 1));
-// o ediție e încheiată când e marcată așa sau când toate atelierele datate au trecut
-const ended = (e) => /închis|încheiat/i.test(e.status || '') || (e.ateliere.some((a) => a.data) && e.ateliere.every((a) => !a.data || a.data < today()));
+// o ediție e încheiată (participanții devin alumni) doar după „Arhivează” din panou: starea „Ediție închisă”
+const ended = (e) => /închis|încheiat/i.test(e.status || '');
 const median = (a) => { const s = a.filter((x) => x != null).sort((x, y) => x - y); return s.length ? s[Math.floor(s.length / 2)] : null; };
 const quantile = (a, q) => { const s = a.filter((x) => x != null).sort((x, y) => x - y); return s.length ? s[Math.floor((s.length - 1) * q)] : null; };
 
@@ -55,7 +55,7 @@ function alumniBody(ctx, F) {
       <div class="hero-copy">
         <p class="eyebrow">Alumni</p>
         <h1>Antreprenorii care au trecut prin program.</h1>
-        <p class="lead">${plural(d.L.length, 'antreprenor', 'antreprenori')} și manageri din ${plural(d.eds.length, 'ediție încheiată', 'ediții încheiate')}, de la ${esc(edLabel(d.eds[0]))} încoace. Participanții edițiilor în curs devin alumni la final.</p>
+        <p class="lead">${plural(d.L.length, 'antreprenor', 'antreprenori')} și manageri din ${plural(d.eds.length, 'ediție încheiată', 'ediții încheiate')}, de la ${esc(edLabel(d.eds[0]))} încoace. Participanții unei ediții devin alumni când ediția se încheie oficial.</p>
       </div>
       <aside class="pg-glance" aria-label="În cifre">
         <div class="ed-live-top"><span>În cifre</span><span>agregat</span></div>

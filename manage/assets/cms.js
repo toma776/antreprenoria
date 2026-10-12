@@ -37,8 +37,8 @@ const CMS = (() => {
   const ROLE_MANUAL = [['trainer', 'Trainer'], ['antreprenor invitat', 'Antreprenor invitat'], ['facilitator', 'Facilitator'], ['echipă', 'Echipa programului']];
   const RL = { trainer: 'Trainer', 'antreprenor invitat': 'Antreprenor invitat', facilitator: 'Facilitator', invitat: 'Invitat' };
   const t0 = () => new Date().toISOString().slice(0, 10);
-  // o ediție e încheiată când e marcată așa sau când toate atelierele datate au trecut
-  const edEnded = (e) => /închis|încheiat/i.test(e.status || '') || (e.ateliere.some((a) => a.data) && e.ateliere.every((a) => !a.data || a.data < t0()));
+  // participanții devin alumni doar după arhivarea ediției (starea „Ediție închisă”), nu automat la final
+  const edEnded = (e) => /închis|încheiat/i.test(e.status || '');
   const partsOf = (id) => D.editii.filter((e) => e.participanti.some((x) => x.persoana === id));
   // rolurile unui om, cu edițiile lor, calculate din agende și participări
   function rolesOf(p) {
@@ -67,7 +67,7 @@ const CMS = (() => {
     const parts = p.id ? partsOf(p.id) : [];
     if (!parts.length) return '';
     const isAlum = parts.some(edEnded), full = (p.bio || '').trim().length > 20;
-    const msg = !isAlum ? 'Devine alumnus la finalul ediției. Pagina lui de alumni apare atunci, dacă textul de mai sus e completat.'
+    const msg = !isAlum ? 'Devine alumnus când ediția e arhivată. Pagina lui de alumni apare atunci, dacă textul de mai sus e completat.'
       : full ? `Are pagină de alumni pe site: <a href="/alumni/${esc(p.id)}" target="_blank" rel="noopener">/alumni/${esc(p.id)} ↗</a>`
       : `Nu are încă pagină de alumni. Apare când completezi textul de mai sus (cel puțin o frază). <a href="/alumni/${esc(p.id)}?previzualizare" target="_blank" rel="noopener">Previzualizează ↗</a>`;
     return `<div class="al-status ${full && isAlum ? 'ok' : ''}">${msg}</div>`;
@@ -85,7 +85,7 @@ const CMS = (() => {
       const roles = p.id ? rolesOf(p) : [];
       const manualOn = (p.tipuri || []).filter((t) => t === 'echipă' || !(p.aparitii || []).some((a) => a.rol === t));
       return fs_('Cine e', `${inp('nume', 'Nume și prenume', p.nume, { ph: 'ex. Andreea Popescu', req: true })}<div class="dup" id="dup" hidden></div>${photo('imagine', p.imagine)}${inp('linkedin', 'LinkedIn', p.linkedin, { ph: 'https://www.linkedin.com/in/…' })}`)
-        + (showParts ? fs_('Participări la ediții <span class="tag warn">cifrele rămân doar în panou</span>', rows('participari', 'Ediția, compania și cifrele declarate la înscriere', part, [['editie', '', 1, { select: eds().map((e) => [e.id, `${eLab(e.id)}${edEnded(e) ? '' : ' · în curs'}`]) }], ['companie', 'Companie', 1.4], ['cifra_afaceri', 'Cifra de afaceri (lei)', 1, 'num'], ['angajati', 'Angajați', .6, 'num']], '+ participare la altă ediție') + '<small class="ro">Cât timp ediția nu s-a încheiat, omul apare ca participant; după, devine alumni. Pe site apar doar cifrele agregate.</small>') : '')
+        + (showParts ? fs_('Participări la ediții <span class="tag warn">cifrele rămân doar în panou</span>', rows('participari', 'Ediția, compania și cifrele declarate la înscriere', part, [['editie', '', 1, { select: eds().map((e) => [e.id, `${eLab(e.id)}${edEnded(e) ? '' : ' · în curs'}`]) }], ['companie', 'Companie', 1.4], ['cifra_afaceri', 'Cifra de afaceri (lei)', 1, 'num'], ['angajati', 'Angajați', .6, 'num']], '+ participare la altă ediție') + '<small class="ro">Până la arhivarea ediției omul apare ca participant; după arhivare devine alumnus. Pe site apar doar cifrele agregate.</small>') : '')
         + fs_('Roluri în program', `${roles.length ? `<div class="roles">${roles.map(([r, L]) => `<span><b>${esc(r)}</b> ${L.map(eLab).join(', ')}</span>`).join('')}</div><small class="ro">Se calculează singure: din agenda atelierelor (trainer, invitat) și din participări (participant, alumni).</small>` : '<small class="ro">Încă fără roluri în ediții. Participarea se adaugă mai sus; trainerii și invitații se pun în agenda atelierelor.</small>'}
           <div class="f"><label>Adaugă manual</label>${checks('tipuri', ROLE_MANUAL, manualOn)}<small>Pentru cine nu e încă în agenda unui atelier (de ex. un trainer nou) sau face parte din echipă.</small></div>`)
         + fs_('Companie și funcție', f2(inp('companie', 'Companie', p.companii?.[p.companii.length - 1], { list: 'cms-orgs', ph: 'Caută sau scrie una nouă', hint: 'Dacă nu există, se adaugă și în Organizații.' }), inp('functie', 'Funcția afișată', p.functii?.[p.functii.length - 1], { ph: 'ex. Fondator & CEO' })))

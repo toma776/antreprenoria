@@ -34,8 +34,10 @@ function editionBody(ctx, F, e) {
   const dated = ws.filter((a) => a.data);
   const held = dated.filter((a) => a.data < t0);
   const next = dated.filter((a) => a.data >= t0).sort((a, b) => a.data.localeCompare(b.data))[0];
-  // o ediție arhivată din panou (stare „Ediție închisă”) e mereu în formatul de arhivă
-  const state = /închis/i.test(e.status || '') ? 'past' : !dated.length ? (e.deschisa ? 'open' : /pregătire/i.test(e.status || '') || !e.participanti.length ? 'soon' : 'past') : held.length === dated.length ? 'past' : held.length ? 'live' : e.deschisa ? 'open' : 'soon';
+  // formatul de arhivă doar după „Arhivează” din panou (stare „Ediție închisă”); până atunci, chiar dacă
+  // toate atelierele au trecut, pagina rămâne în formatul complet al unei ediții în desfășurare
+  const archived = /închis|încheiat/i.test(e.status || '');
+  const state = archived ? 'past' : !dated.length ? (e.deschisa ? 'open' : 'soon') : held.length ? 'live' : e.deschisa ? 'open' : 'soon';
   const STATE = { live: ['În desfășurare', 'live'], open: ['Înscrieri deschise', 'open'], soon: ['Urmează', 'open'], past: ['Încheiată', 'done'] }[state];
 
   // oamenii ediției: cine a vorbit / va vorbi, la ce atelier
@@ -106,7 +108,8 @@ function editionBody(ctx, F, e) {
           <b>${esc(cleanTitle(next.titlu))}</b>
           <span>${fmtDay(next.data)} · ${esc(FORMAT[next.format] || next.format)}${next.locatie ? ' · ' + esc(next.locatie) : ''}</span>
           ${facesOf(next).length ? `<div class="ed-next-people">${faces(facesOf(next))}<small>${esc(facesOf(next).map((p) => p.nume).join(', '))}</small></div>` : ''}
-        </div>` : state === 'past' ? `<div class="ed-next"><span class="ask-kicker">Ediția s-a încheiat</span><b>${plural(ws.length, 'întâlnire', 'întâlniri')}, ${plural(part.length, 'participant', 'participanți')}</b><span>Toată agenda rămâne mai jos.</span></div>`
+        </div>` : state === 'live' ? `<div class="ed-next"><span class="ask-kicker">Toate întâlnirile s-au ținut</span><b>${plural(ws.length, 'întâlnire', 'întâlniri')}, ${plural(part.length, 'participant', 'participanți')}</b><span>Ultima: ${fmtDay(dated.map((a) => a.data).sort().pop())}</span></div>`
+        : state === 'past' ? `<div class="ed-next"><span class="ask-kicker">Ediția s-a încheiat</span><b>${plural(ws.length, 'întâlnire', 'întâlniri')}, ${plural(part.length, 'participant', 'participanți')}</b><span>Toată agenda rămâne mai jos.</span></div>`
         : `<div class="ed-next">
           <span class="ask-kicker">Înscrieri deschise</span>
           <b>${price ? esc(price.pret_text) : esc(e.perioada)}</b>
