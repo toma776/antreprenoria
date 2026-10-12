@@ -62,6 +62,16 @@ const CMS = (() => {
     [...new Set((v.aparitii || []).map((a) => a.tema))].filter((x) => FULL.includes(x)).slice(0, 2).forEach((x) => w.push([`/teme/${x}`, 'pagina temei']));
     return w;
   }
+  // pagina de alumni: aceeași regulă ca pe site (site/alumni.js › hasPage): alumnus + text „despre” completat
+  function alumniPage(p) {
+    const parts = p.id ? partsOf(p.id) : [];
+    if (!parts.length) return '';
+    const isAlum = parts.some(edEnded), full = (p.bio || '').trim().length > 20;
+    const msg = !isAlum ? 'Devine alumnus la finalul ediției. Pagina lui de alumni apare atunci, dacă textul de mai sus e completat.'
+      : full ? `Are pagină de alumni pe site: <a href="/alumni/${esc(p.id)}" target="_blank" rel="noopener">/alumni/${esc(p.id)} ↗</a>`
+      : `Nu are încă pagină de alumni. Apare când completezi textul de mai sus (cel puțin o frază). <a href="/alumni/${esc(p.id)}?previzualizare" target="_blank" rel="noopener">Previzualizează ↗</a>`;
+    return `<div class="al-status ${full && isAlum ? 'ok' : ''}">${msg}</div>`;
+  }
   // ediția la care se adaugă de obicei participanți: cea mai nouă care nu s-a încheiat
   const edDefault = () => eds().find((e) => !edEnded(e))?.id || eds()[0].id;
   const personType = (kind, label, one, desc) => ({
@@ -79,7 +89,7 @@ const CMS = (() => {
         + fs_('Roluri în program', `${roles.length ? `<div class="roles">${roles.map(([r, L]) => `<span><b>${esc(r)}</b> ${L.map(eLab).join(', ')}</span>`).join('')}</div><small class="ro">Se calculează singure: din agenda atelierelor (trainer, invitat) și din participări (participant, alumni).</small>` : '<small class="ro">Încă fără roluri în ediții. Participarea se adaugă mai sus; trainerii și invitații se pun în agenda atelierelor.</small>'}
           <div class="f"><label>Adaugă manual</label>${checks('tipuri', ROLE_MANUAL, manualOn)}<small>Pentru cine nu e încă în agenda unui atelier (de ex. un trainer nou) sau face parte din echipă.</small></div>`)
         + fs_('Companie și funcție', f2(inp('companie', 'Companie', p.companii?.[p.companii.length - 1], { list: 'cms-orgs', ph: 'Caută sau scrie una nouă', hint: 'Dacă nu există, se adaugă și în Organizații.' }), inp('functie', 'Funcția afișată', p.functii?.[p.functii.length - 1], { ph: 'ex. Fondator & CEO' })))
-        + fs_('Prezentare', area('bio', 'Câteva rânduri despre el/ea', p.bio, { ph: kind === 'participant' ? '2–3 fraze. Apare pe pagina lui de alumni.' : '2–3 fraze. Apare pe fișa de pe site.' }))
+        + fs_('Prezentare', area('bio', 'Câteva rânduri despre el/ea', p.bio, { ph: kind === 'participant' ? '2–3 fraze. Apare pe pagina lui de alumni.' : '2–3 fraze. Apare pe fișa de pe site.' }) + alumniPage(p))
         + (p.aparitii?.length ? fs_('Unde apare în program', `<ul class="ro">${p.aparitii.slice(-6).reverse().map((a) => `<li><b>${eLab(a.editie)}</b> · ${esc(a.titlu || '')} · ${esc(a.rol)}</li>`).join('')}</ul><small class="ro">Aparițiile se schimbă din atelier: Ediții › ediția › Construiește › Traineri și invitați.</small>`) : '')
         + visField('oameni', p.id);
     },
