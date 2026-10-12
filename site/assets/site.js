@@ -308,3 +308,78 @@
     apply();
   }));
 })();
+
+// „Ce vrei să rezolvi?” pe mobil: contorul cu săgeți, indiciul „glisează” și o mică mișcare a rândului la prima vedere
+(() => {
+  const box = document.querySelector('.ask');
+  if (!box) return;
+  const tabs = [...box.querySelectorAll('[role="tab"]')], count = box.querySelector('.ask-count'), row = box.querySelector('.ask-chips'), hint = box.querySelector('.ask-hint');
+  const idx = () => tabs.findIndex((t) => t.getAttribute('aria-selected') === 'true');
+  const sync = () => { if (count) count.textContent = `${idx() + 1} din ${tabs.length}`; };
+  tabs.forEach((t) => t.addEventListener('click', () => setTimeout(sync)));
+  box.querySelectorAll('[data-ask-step]').forEach((b) => b.addEventListener('click', () => {
+    const i = (idx() + Number(b.dataset.askStep) + tabs.length) % tabs.length;
+    tabs[i].click();
+    if (hint) hint.classList.add('done');
+  }));
+  // după ce omul a derulat rândul sau a ales altă variantă, indiciul nu mai e necesar
+  row?.addEventListener('scroll', () => { if (row.scrollLeft > 30 && hint) hint.classList.add('done'); }, { passive: true });
+  tabs.forEach((t) => t.addEventListener('click', () => hint?.classList.add('done')));
+  if (!row || !matchMedia('(max-width: 720px)').matches || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const io = new IntersectionObserver((es) => {
+    if (!es[0].isIntersecting) return;
+    io.disconnect();
+    setTimeout(() => { row.scrollTo({ left: 90, behavior: 'smooth' }); setTimeout(() => row.scrollTo({ left: 0, behavior: 'smooth' }), 700); }, 400);
+  }, { threshold: 0.8 });
+  io.observe(row);
+})();
+
+// benzile care se derulează orizontal pe mobil (oameni, logo-uri): săgeți, „încă N →” și o mică mișcare la prima vedere
+(() => {
+  const mobile = matchMedia('(max-width: 720px)');
+  if (!mobile.matches) return;
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('.people, .ed-people, .logos').forEach((row) => {
+    const items = [...row.children].filter((x) => !x.hidden && x.offsetParent !== null);
+    if (row.scrollWidth <= row.clientWidth + 8 || items.length < 3) return;
+    const word = row.classList.contains('logos') ? ['logo', 'logo-uri'] : ['om', 'oameni'];
+    const bar = document.createElement('div');
+    bar.className = 'strip-nav';
+    bar.innerHTML = '<span class="strip-hint"></span><span class="strip-btns"><button type="button" aria-label="Înapoi">‹</button><button type="button" aria-label="Înainte">›</button></span>';
+    row.after(bar);
+    const [prev, next] = bar.querySelectorAll('button'), hint = bar.querySelector('.strip-hint');
+    // câte elemente au rămas în dreapta, încă nevăzute
+    const update = () => {
+      const edge = row.getBoundingClientRect().right;
+      const left = items.filter((x) => x.getBoundingClientRect().left > edge - 20).length;
+      const atEnd = row.scrollLeft + row.clientWidth >= row.scrollWidth - 8;
+      hint.innerHTML = atEnd || !left ? 'Ai văzut tot' : `Glisează pentru încă ${left === 1 ? `1 ${word[0]}` : `${left} ${word[1]}`} <i>→</i>`;
+      hint.classList.toggle('end', atEnd);
+      prev.disabled = row.scrollLeft < 8; next.disabled = atEnd;
+    };
+    // saltul merge din card în card (rândul are fixare pe carduri, deci ținta trebuie să fie exact începutul unui card)
+    const go = (dir) => {
+      const x0 = row.getBoundingClientRect().left + parseFloat(getComputedStyle(row).paddingLeft || 0);
+      const pos = items.map((x) => x.getBoundingClientRect().left - x0 + row.scrollLeft);
+      // cardul cel mai apropiat de poziția curentă, apoi următorul / anteriorul
+      const cur = pos.reduce((b, p, k) => (Math.abs(p - row.scrollLeft) < Math.abs(pos[b] - row.scrollLeft) ? k : b), 0);
+      const i = Math.max(0, Math.min(items.length - 1, cur + dir));
+      row.scrollTo({ left: pos[i], behavior: 'smooth' });
+      // unele browsere ignoră derularea lină pe rândurile cu fixare: atunci sărim direct
+      setTimeout(() => { if (Math.abs(row.scrollLeft - pos[i]) > 6) row.scrollTo({ left: pos[i] }); update(); }, 450);
+    };
+    prev.addEventListener('click', () => go(-1));
+    next.addEventListener('click', () => go(1));
+    let tm;
+    row.addEventListener('scroll', () => { clearTimeout(tm); tm = setTimeout(update, 60); }, { passive: true });
+    update();
+    if (still) return;
+    const io = new IntersectionObserver((es) => {
+      if (!es[0].isIntersecting) return;
+      io.disconnect();
+      if (row.scrollLeft > 8) return;
+      setTimeout(() => { row.scrollTo({ left: 70, behavior: 'smooth' }); setTimeout(() => row.scrollTo({ left: 0, behavior: 'smooth' }), 650); }, 350);
+    }, { threshold: 0.6 });
+    io.observe(row);
+  });
+})();
