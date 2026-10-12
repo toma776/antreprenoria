@@ -1357,31 +1357,22 @@ a.live:hover { color: var(--ink); text-decoration: underline; text-underline-off
 .mcta-ed::after { content: ""; flex: none; width: 8px; height: 8px; margin: 0 6px 0 auto; border-top: 2px solid var(--muted); border-right: 2px solid var(--muted); transform: rotate(45deg); }
 
 /* „Ce vrei să rezolvi?”: pe mobil se vede clar că există mai multe variante */
-.ask-nav, .ask-hint { display: none; }
+.ask-nav { display: none; }
 @media (max-width: 720px) {
   .ask-q { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .ask-nav { display: inline-flex; align-items: center; gap: 2px; flex: none; }
   .ask-nav button { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: 600 20px/1 var(--f-body); cursor: pointer; display: grid; place-items: center; padding: 0 0 2px; }
   .ask-nav button:active { background: var(--primary); color: var(--primary-ink); border-color: var(--primary); }
   .ask-count { min-width: 44px; text-align: center; font: 600 12.5px/1 var(--f-body); color: var(--muted); white-space: nowrap; }
-  .ask-hint { display: flex; align-items: center; gap: 6px; margin: 0; padding: 0 16px 8px; font-size: 13px; font-weight: 600; color: var(--primary); background: var(--surface-2); transition: opacity .3s, max-height .3s, padding .3s; max-height: 40px; overflow: hidden; }
-  .ask-hint span { display: inline-block; animation: ask-nudge 1.4s ease-in-out infinite; }
-  .ask-hint.done { opacity: 0; max-height: 0; padding-bottom: 0; }
   .ask-chips { border-top: 0; }
 }
-@keyframes ask-nudge { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(5px); } }
-@media (prefers-reduced-motion: reduce) { .ask-hint span { animation: none; } }
 /* bara de sub benzile orizontale de pe mobil */
 .strip-nav { display: none; }
 @media (max-width: 720px) {
-  .strip-nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; }
-  .strip-hint { font-size: 13px; font-weight: 600; color: var(--primary); }
-  .strip-hint i { display: inline-block; font-style: normal; animation: ask-nudge 1.4s ease-in-out infinite; }
-  .strip-hint.end { color: var(--muted); font-weight: 500; }
+  .strip-nav { display: flex; justify-content: flex-end; margin-top: 10px; }
   .strip-btns { display: inline-flex; gap: 8px; flex: none; }
   .strip-btns button { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: 600 22px/1 var(--f-body); display: grid; place-items: center; padding: 0 0 2px; cursor: pointer; }
   .strip-btns button:disabled { opacity: .35; cursor: default; }
   .strip-btns button:not(:disabled):active { background: var(--primary); color: var(--primary-ink); border-color: var(--primary); }
-  .sec-dark .strip-btns button, .sec-dark .strip-hint { color: inherit; }
+  .sec-dark .strip-btns button { color: inherit; }
 }
-@media (prefers-reduced-motion: reduce) { .strip-hint i { animation: none; } }

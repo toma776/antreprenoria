@@ -49,7 +49,6 @@ function askHtml(ctx, F) {
   return `<div class="ask" data-tabs>
     <div class="ask-q"><span>Ce vrei să rezolvi acum în compania ta?</span>
       <span class="ask-nav" aria-hidden="true"><button type="button" data-ask-step="-1" tabindex="-1" aria-label="Varianta anterioară">‹</button><b class="ask-count">1 din ${items.length}</b><button type="button" data-ask-step="1" tabindex="-1" aria-label="Varianta următoare">›</button></span></div>
-    <p class="ask-hint">Glisează pentru alte ${items.length - 1} situații <span>→</span></p>
     <div class="ask-chips" role="tablist" aria-label="Alege o provocare">${items.map((x, i) => `<button role="tab" data-tab="${x.id}" aria-selected="${i === 0}" aria-controls="ask-${x.id}">${esc(x.label)}</button>`).join('')}</div>
     ${items.map((x, i) => {
       const { t, ws, people, desc, next, cluj } = x.info;
