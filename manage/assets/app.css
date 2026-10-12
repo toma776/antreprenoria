@@ -551,3 +551,30 @@ a.btn.primary:hover { text-decoration: none; filter: brightness(1.07); }
 .roles { display: flex; flex-wrap: wrap; gap: 6px; }
 .roles span { font-size: 12.5px; padding: 4px 10px; border-radius: 20px; background: var(--accent-soft); color: var(--accent); }
 .roles b { font-weight: 700; margin-right: 4px; }
+/* constructor › participanți: lista ediției și formularul de adăugare */
+.bld-plist { display: grid; gap: 6px; }
+.bld-p { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto auto auto auto; gap: 10px; align-items: center; padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px; }
+.bld-p .av { width: 40px; height: 40px; font-size: 13px; }
+.bld-p b { display: block; font-size: 13.5px; }
+.bld-p small { color: var(--muted); font-size: 12px; }
+.bld-p .num { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bld-p .num i { font-style: normal; color: var(--warn); }
+@media (max-width: 760px) { .bld-p { grid-template-columns: 40px 1fr auto; } .bld-p .num { display: none; } }
+.bld-pf { border-color: color-mix(in srgb, var(--accent) 35%, var(--line)); }
+.bld-pf > h4 { color: var(--accent); }
+.bld-pdup { display: grid; gap: 4px; margin-top: 6px; padding: 8px; border: 1px solid var(--warn); background: var(--warn-soft); border-radius: 8px; }
+.bld-pdup[hidden], .bld-chosen[hidden] { display: none; }
+.bld-pdup > small { color: var(--warn); font-size: 12px; }
+.bld-pdup button { display: grid; grid-template-columns: 32px 1fr auto; gap: 10px; align-items: center; text-align: left; padding: 6px 8px; background: var(--panel); }
+.bld-pdup .av { width: 32px; height: 32px; font-size: 11px; }
+.bld-pdup b { display: block; font-size: 13px; }
+.bld-pdup small { color: var(--muted); font-size: 11.5px; }
+.bld-pdup em { font-style: normal; font-size: 12px; font-weight: 600; color: var(--accent); }
+.bld-chosen { margin-top: 6px; padding: 8px 10px; border-radius: 8px; background: var(--ok-soft); color: var(--ok); font-size: 12.5px; }
+.bld-chosen b { color: var(--ink); }
+.bld-pact { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.bld-leads { display: grid; gap: 6px; }
+.bld-lead { display: flex; gap: 10px; align-items: center; justify-content: space-between; padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px; }
+.bld-lead b { display: block; font-size: 13px; }
+.bld-lead small { color: var(--muted); font-size: 12px; }
+@media (max-width: 900px) { .bld-steps { position: static; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); } }

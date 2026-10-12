@@ -473,7 +473,7 @@ routes.entitati = function renderEntitati() {
   if (cat?.id === 'oameni' && grpId === 'p') { $('#view').innerHTML = CMS.pendingBar() + personPage(D, sub); $('#view .head')?.insertAdjacentHTML('beforeend', editBtn('oameni', sub)); return; }
   if (cat?.id === 'organizatii' && grpId === 'o') { $('#view').innerHTML = CMS.pendingBar() + orgPage(D, sub); $('#view .head')?.insertAdjacentHTML('beforeend', editBtn('organizatii', sub)); return; }
   // constructorul ediției: pașii, de la date la publicare
-  if (cat?.id === 'editii' && IX.ED[grpId] && sub === 'construieste') { $('#view').innerHTML = CMS.builder(grpId, pas); return; }
+  if (cat?.id === 'editii' && IX.ED[grpId] && sub === 'construieste') { $('#view').innerHTML = CMS.builder(grpId, pas); CMS.afterRender(); return; }
   if (cat?.id === 'editii' && IX.ED[grpId]) {
     $('#view').innerHTML = CMS.pendingBar() + editionPage(D, IX.ED[grpId], ED_SUBS.some(([s]) => s === sub) ? sub : 'program');
     $('#view .head')?.insertAdjacentHTML('beforeend', `<a class="btn primary" href="/manage/entitati/editii/${esc(grpId)}/construieste">Construiește ediția</a>${editBtn('editii', grpId)}`);

@@ -79,7 +79,7 @@ const CMS = (() => {
         + fs_('Roluri în program', `${roles.length ? `<div class="roles">${roles.map(([r, L]) => `<span><b>${esc(r)}</b> ${L.map(eLab).join(', ')}</span>`).join('')}</div><small class="ro">Se calculează singure: din agenda atelierelor (trainer, invitat) și din participări (participant, alumni).</small>` : '<small class="ro">Încă fără roluri în ediții. Participarea se adaugă mai sus; trainerii și invitații se pun în agenda atelierelor.</small>'}
           <div class="f"><label>Adaugă manual</label>${checks('tipuri', ROLE_MANUAL, manualOn)}<small>Pentru cine nu e încă în agenda unui atelier (de ex. un trainer nou) sau face parte din echipă.</small></div>`)
         + fs_('Companie și funcție', f2(inp('companie', 'Companie', p.companii?.[p.companii.length - 1], { list: 'cms-orgs', ph: 'Caută sau scrie una nouă', hint: 'Dacă nu există, se adaugă și în Organizații.' }), inp('functie', 'Funcția afișată', p.functii?.[p.functii.length - 1], { ph: 'ex. Fondator & CEO' })))
-        + (kind !== 'participant' ? fs_('Prezentare', area('bio', 'Câteva rânduri despre el/ea', p.bio, { ph: '2–3 fraze. Apare pe fișa de pe site.' })) : '')
+        + fs_('Prezentare', area('bio', 'Câteva rânduri despre el/ea', p.bio, { ph: kind === 'participant' ? '2–3 fraze. Apare pe pagina lui de alumni.' : '2–3 fraze. Apare pe fișa de pe site.' }))
         + (p.aparitii?.length ? fs_('Unde apare în program', `<ul class="ro">${p.aparitii.slice(-6).reverse().map((a) => `<li><b>${eLab(a.editie)}</b> · ${esc(a.titlu || '')} · ${esc(a.rol)}</li>`).join('')}</ul><small class="ro">Aparițiile se schimbă din atelier: Ediții › ediția › Construiește › Traineri și invitați.</small>`) : '')
         + visField('oameni', p.id);
     },
@@ -336,7 +336,7 @@ const CMS = (() => {
   }
   function datalists() {
     $('#cms-dl')?.remove();
-    document.body.insertAdjacentHTML('beforeend', `<div id="cms-dl" hidden><datalist id="cms-orgs">${D.organizatii.map((o) => `<option value="${esc(o.nume)}">`).join('')}</datalist><datalist id="cms-people">${D.oameni.map((p) => `<option value="${esc(p.nume)}">${esc(p.companii?.[p.companii.length - 1] || '')}</option>`).join('')}</datalist></div>`);
+    document.body.insertAdjacentHTML('beforeend', `<div id="cms-dl" hidden><datalist id="cms-orgs">${D.organizatii.map((o) => `<option value="${esc(o.nume)}">`).join('')}</datalist><datalist id="cms-sectoare">${(D.sectoare || []).map((x) => `<option value="${esc(x)}">`).join('')}</datalist><datalist id="cms-people">${D.oameni.map((p) => `<option value="${esc(p.nume)}">${esc(p.companii?.[p.companii.length - 1] || '')}</option>`).join('')}</datalist></div>`);
   }
 
   /* ---------- editorul ---------- */
@@ -412,10 +412,10 @@ const CMS = (() => {
       data = c.toDataURL(/png/.test(file.type) ? 'image/png' : 'image/jpeg', .86);
     }
     try {
-      const r = await api.send('/api/upload', 'POST', { nume: $('#cms-f [name=nume]')?.value || file.name, data });
+      const r = await api.send('/api/upload', 'POST', { nume: $('#cms-f [name=nume]')?.value || $('#bld-pf [name=p_nume]')?.value || file.name, data });
       $('input[type=hidden]', box).value = r.url;
       $('.av', box).outerHTML = `<span class="av ${box.querySelector('.sq') ? 'sq' : ''}"><img class="av ${box.querySelector('.sq') ? 'sq' : ''}" src="${esc(r.url)}" alt=""></span>`;
-      $('#cms-f').dispatchEvent(new Event('input', { bubbles: true }));
+      $('#cms-f')?.dispatchEvent(new Event('input', { bubbles: true }));
       toast('Imagine încărcată.');
     } catch (e) { toast(e.message); }
   }
@@ -522,7 +522,7 @@ const CMS = (() => {
         <div class="bld-main" id="bld" data-editie="${e.id}" data-pas="${cur}">
           ${S.on ? '' : '<div class="ro-note">Pe versiunea publicată panoul e doar pentru vizualizare.</div>'}
           ${STEP[cur](e, ck)}
-          ${S.on && cur !== 'site' ? `<div class="bld-foot"><button class="primary" data-bld-save>${next ? `Salvează și continuă: ${next[1]} →` : 'Salvează'}</button>${next ? `<a href="/manage/entitati/editii/${e.id}/construieste/${next[0]}">sari peste</a>` : ''}</div>` : ''}
+          ${S.on && cur !== 'site' ? `<div class="bld-foot">${cur === 'participanti' ? `<a class="btn primary" href="/manage/entitati/editii/${e.id}/construieste/${next[0]}">Continuă: ${next[1]} →</a>` : `<button class="primary" data-bld-save>${next ? `Salvează și continuă: ${next[1]} →` : 'Salvează'}</button>`}${next ? `${cur === 'participanti' ? '' : `<a href="/manage/entitati/editii/${e.id}/construieste/${next[0]}">sari peste</a>`}` : ''}</div>` : ''}
         </div>
       </div>`;
   }
@@ -568,8 +568,28 @@ const CMS = (() => {
     parteneri: (e) => `<h2>Parteneri și sponsori</h2><p class="lead">Partenerii ediției apar sus pe pagină; sponsorul unui atelier apare la atelierul lui.</p>
       <form id="bld-f"><div class="fs">${rows('parteneri', 'Partenerii ediției', e.parteneri.filter((x) => x.rol !== 'sponsor atelier').map((x) => ({ org: Oid(x.organizatie)?.nume || x.organizatie, rol: x.rol })), [['org', 'Organizația (scrie sau alege)', 1.4], ['rol', '', 1, { select: ORG_ROLES.filter(([r]) => r !== 'sponsor atelier') }]], '+ partener')}</div>
         <div class="fs"><h4>Sponsorii atelierelor</h4>${e.ateliere.slice().sort((a, b) => a.nr - b.nr).map((a) => `<div class="bld-sp" data-aid="${a.id}"><span>${a.nr}. ${esc(a.titlu)}</span><select data-k="sponsor"><option value="">Fără sponsor</option>${D.organizatii.slice().sort((x, y) => x.nume.localeCompare(y.nume, 'ro')).map((o) => `<option value="${o.id}" ${o.id === a.sponsor ? 'selected' : ''}>${esc(o.nume)}</option>`).join('')}</select><label class="ro"><input type="checkbox" data-k="cauta_sponsor" ${a.cauta_sponsor ? 'checked' : ''}> căutăm sponsor</label></div>`).join('') || '<small class="ro">Apar aici după ce adaugi atelierele.</small>'}</div></form>`,
-    participanti: (e) => `<h2>Participanți</h2><p class="lead">Antreprenorii selectați. Pasul se completează după selecție: ediția poate apărea pe site cu înscrierile deschise și fără ei, dar din ziua primului atelier devine obligatoriu. Compania și cifrele fiecăruia se completează pe fișa lui (Oameni › Participanți); pe site apar doar agregat.</p>
-      <form id="bld-f"><div class="fs"><div class="f"><label>Participanți · ${e.participanti.length}</label><div class="rel" data-chips="participanti">${e.participanti.map((x) => chip(x)).join('')}<input class="rel-add" list="cms-people" placeholder="+ participant (scrie numele)"></div></div></div></form>`,
+    participanti: (e) => {
+      const L = e.participanti, sum = L.reduce((n, x) => n + (x.cifra_afaceri || 0), 0);
+      return `<h2>Participanți</h2><p class="lead">Antreprenorii selectați, unul câte unul. Se completează după selecție; din ziua primului atelier pasul devine obligatoriu. Cifrele rămân în panou, pe site apar doar agregat.</p>
+      <div class="fs"><h4>În ediție · ${L.length}${L.length ? ` <span class="tag grey">cifră de afaceri cumulată ${esc(leiShort(sum))}</span>` : ''}</h4>
+        ${L.length ? `<div class="bld-plist">${L.map((x) => { const p = Pid(x.persoana), o = Oid(x.organizatie); return `<div class="bld-p">${p?.imagine || x.imagine ? `<img class="av" src="${esc(p?.imagine || x.imagine)}" alt="">` : `<span class="av">${initials(x.nume)}</span>`}
+          <div><b>${esc(x.nume)}</b><small>${esc(o?.nume || 'fără companie')}${p?.functii?.length ? ' · ' + esc(p.functii[p.functii.length - 1]) : ''}</small></div>
+          <span class="num">${x.cifra_afaceri ? esc(leiShort(x.cifra_afaceri)) : '<i>fără cifră</i>'}</span><span class="num">${x.angajati ?? '—'} ang.</span>
+          <button type="button" class="sm" data-cms-edit="participanti" data-cms-id="${esc(x.persoana)}">Fișa</button>${S.on ? `<button type="button" class="sm danger" data-bld-prem="${esc(x.persoana)}" title="Scoate din ediție">✕</button>` : ''}</div>`; }).join('')}</div>` : '<p class="ro" style="margin:0">Încă niciun participant.</p>'}</div>
+      ${S.on ? `<form class="fs bld-pf" id="bld-pf" onsubmit="return false"><h4>Adaugă un participant</h4>
+        <input type="hidden" name="p_id">
+        <div class="f"><label>Nume și prenume *</label><input name="p_nume" placeholder="Scrie numele; dacă a mai fost în program, îl găsești aici" autocomplete="off"><div id="bld-pdup" class="bld-pdup" hidden></div><div id="bld-pchosen" class="bld-chosen" hidden></div></div>
+        ${f2(inp('p_companie', 'Compania *', '', { list: 'cms-orgs', ph: 'Caută sau scrie una nouă' }), inp('p_functie', 'Funcția', '', { ph: 'ex. Fondator & CEO' }))}
+        ${f2(inp('p_cifra', 'Cifra de afaceri (lei)', '', { ph: 'ex. 12.500.000' }), inp('p_angajati', 'Angajați', '', { ph: 'ex. 45' }))}
+        ${f2(inp('p_sector', 'Sectorul companiei', '', { list: 'cms-sectoare', ph: 'Alege sau scrie' }), inp('p_linkedin', 'LinkedIn', '', { ph: 'https://www.linkedin.com/in/…' }))}
+        ${photo('p_imagine', '')}
+        ${area('p_bio', 'Despre el/ea', '', { ph: '2–3 fraze despre om și ce face. Apare pe pagina lui de alumni.' })}
+        ${area('p_descriere', 'Despre companie', '', { ph: 'Ce face compania, în 1–2 fraze.' })}
+        <small class="ro">Pe pagina lui de pe site vor apărea: fotografia, numele, funcția, compania, sectorul, LinkedIn, textele de mai sus și edițiile la care a participat. Cifra de afaceri și angajații nu apar niciodată individual, doar în totalul ediției.</small>
+        <div class="bld-pact"><button type="button" class="primary" data-bld-padd>Adaugă în ediție</button><button type="button" data-bld-pclear>Golește</button><small class="ro">După adăugare, formularul se golește pentru următorul.</small></div>
+      </form>
+      <div class="fs" id="bld-leads" data-editie="${e.id}"><h4>Din aplicări</h4><p class="ro" style="margin:0">Se încarcă aplicările pentru această ediție…</p></div>` : ''}`;
+    },
     site: (e, ck) => { const all = PASI.flatMap(([k, l]) => ck[k].map(([ok, t]) => [ok, t, k, l])); const off = hidden('editii', e.id); return `<h2>Pe site</h2><p class="lead">Verifică ce lipsește, apoi arată ediția pe site.</p>
       <div class="fs"><h4>Verificare</h4><ul class="bld-check">${all.map(([ok, t, k, l]) => `<li class="${ok ? 'ok' : ''}"><i>${ok ? '✓' : '!'}</i>${esc(cap(t))} <a href="/manage/entitati/editii/${e.id}/construieste/${k}">${esc(l)}</a></li>`).join('')}</ul></div>
       <div class="fs"><h4>Vizibilitate</h4><p class="ro" style="margin:0">${off ? 'Ediția e ascunsă: nu apare în meniu, pe homepage sau în listele de ediții. O poți previzualiza din butonul de sus.' : 'Ediția apare pe site-ul local; pe cel public după „Publică pe site”.'}</p>
@@ -617,17 +637,6 @@ const CMS = (() => {
           if (sp !== (a.sponsor || null) || cs !== !!a.cauta_sponsor) await put({ op: 'entitate', tip: 'ateliere', id: a.id, date: { sponsor: sp, cauta_sponsor: cs }, eticheta: `sponsor atelier ${a.nr}, ${eLab(e.id)}` });
         }
       }
-      if (pas === 'participanti') {
-        const L = [];
-        for (const c of chipsVal(f, 'participanti')) {
-          const old = e.participanti.find((x) => x.persoana === c.persoana);
-          if (old) { L.push(old); continue; }
-          const pid = c.persoana || (await put({ op: 'entitate', tip: 'oameni', nou: true, date: { nume: c.nume, tipuri: ['participant'] }, eticheta: `om nou: ${c.nume}` })).id;
-          const p = Pid(pid);
-          L.push({ persoana: pid, nume: p?.nume || c.nume, organizatie: p?.organizatii?.[p.organizatii.length - 1] || null, cifra_afaceri: null, angajati: null, descriere: null, imagine: p?.imagine || null });
-        }
-        if (JSON.stringify(L) !== JSON.stringify(e.participanti)) await put({ op: 'participanti', id: e.id, lista: L, eticheta: `participanți ${eLab(e.id)}` });
-      }
       await refresh();
       const i = PASI.findIndex(([k]) => k === pas);
       navigate(`/manage/entitati/editii/${e.id}/construieste/${(PASI[i + 1] || PASI[i])[0]}`);
@@ -637,15 +646,97 @@ const CMS = (() => {
   const refreshData = async () => { D = store.entitati = await api.get('/api/entitati'); };
   async function bldAction(fn, msg) { try { await fn(); await refresh(); go(routeFromPath()); if (msg) toast(msg); } catch (err) { toast(err.message); } }
 
+  /* ---------- participanții unei ediții: formularul de adăugare ---------- */
+  function pdupShow(q) {
+    const box = $('#bld-pdup'), n = nrm(q).trim();
+    if (!box) return;
+    if (n.length < 3 || $('#bld-pf [name=p_id]').value) { box.hidden = true; return; }
+    const hits = D.oameni.filter((p) => n.split(/\s+/).every((x) => nrm(p.nume).includes(x))).slice(0, 4);
+    box.hidden = !hits.length;
+    box.innerHTML = `<small>A mai fost în program? Alege fișa lui, ca să nu se dubleze:</small>${hits.map((p) => `<button type="button" data-bld-pick="${esc(p.id)}">${p.imagine ? `<img class="av" src="${esc(p.imagine)}" alt="">` : `<span class="av">${initials(p.nume)}</span>`}<span><b>${esc(p.nume)}</b><small>${esc(p.companii?.[p.companii.length - 1] || '')}${p.editii.length ? ' · ' + p.editii.map(eLab).join(', ') : ''}</small></span><em>Folosește</em></button>`).join('')}`;
+  }
+  // alege o fișă existentă: completează formularul cu ce știm deja despre om
+  function pPick(id) {
+    const p = Pid(id), f = $('#bld-pf');
+    if (!p) return;
+    const set = (k, v) => { const i = $(`[name=${k}]`, f); if (i && v != null && !i.value) i.value = v; };
+    $('[name=p_id]', f).value = id; $('[name=p_nume]', f).value = p.nume;
+    const last = D.editii.flatMap((e) => e.participanti.filter((x) => x.persoana === id).map((x) => ({ e, x }))).sort((a, b) => (b.e.an || 0) - (a.e.an || 0))[0];
+    set('p_companie', Oid(last?.x.organizatie)?.nume || p.companii?.[p.companii.length - 1]);
+    set('p_functie', p.functii?.[p.functii.length - 1]); set('p_linkedin', p.linkedin); set('p_bio', p.bio);
+    set('p_sector', Oid(last?.x.organizatie || p.organizatii?.[p.organizatii.length - 1])?.sector);
+    if (p.imagine) { const box = $('[data-photo=p_imagine]', f); $('input[type=hidden]', box).value = p.imagine; $('.av', box).innerHTML = `<img class="av" src="${esc(p.imagine)}" alt="">`; }
+    $('#bld-pdup').hidden = true;
+    const ch = $('#bld-pchosen'); ch.hidden = false;
+    ch.innerHTML = `Fișă existentă: <b>${esc(p.nume)}</b>${p.editii.length ? ` · a mai fost la ${p.editii.map(eLab).join(', ')}` : ''}. Cifrele de mai jos sunt pentru ediția asta. <a href="#" data-bld-pclear>alt om</a>`;
+    $('[name=p_cifra]', f).focus();
+  }
+  function pClear() {
+    const f = $('#bld-pf'); if (!f) return;
+    $$('input,textarea', f).forEach((i) => { if (i.type !== 'file') i.value = ''; });
+    $('[data-photo=p_imagine] .av', f).innerHTML = '?';
+    $('#bld-pdup').hidden = true; $('#bld-pchosen').hidden = true;
+    $('[name=p_nume]', f).focus();
+  }
+  async function pAdd(btn) {
+    const box = $('#bld'), e = ED(box.dataset.editie), f = $('#bld-pf'), v = Object.fromEntries($$('[name]', f).map((i) => [i.name, i.value.trim()]));
+    if (!v.p_nume) { $('[name=p_nume]', f).focus(); return toast('Scrie numele participantului.'); }
+    if (!v.p_companie) { $('[name=p_companie]', f).focus(); return toast('Scrie compania.'); }
+    if (v.p_id && e.participanti.some((x) => x.persoana === v.p_id)) return toast('E deja în ediție.');
+    btn.disabled = true; btn.textContent = 'Se adaugă…';
+    try {
+      let o = D.organizatii.find((x) => nrm(x.nume) === nrm(v.p_companie));
+      const oid = o?.id || (await put({ op: 'entitate', tip: 'organizatii', nou: true, date: { nume: v.p_companie, tip: 'companie', sector: v.p_sector || null, descriere: v.p_descriere || null }, eticheta: `companie nouă: ${v.p_companie}` })).id;
+      if (o && ((v.p_sector && !o.sector) || (v.p_descriere && !o.descriere))) await put({ op: 'entitate', tip: 'organizatii', id: o.id, date: { ...(v.p_sector && !o.sector ? { sector: v.p_sector } : {}), ...(v.p_descriere && !o.descriere ? { descriere: v.p_descriere } : {}) }, eticheta: `companie: ${o.nume}` });
+      const p = v.p_id ? Pid(v.p_id) : null;
+      const date = { nume: v.p_nume, imagine: v.p_imagine || p?.imagine || null, linkedin: v.p_linkedin || p?.linkedin || null,
+        companii: [...(p?.companii || []).filter((c) => nrm(c) !== nrm(v.p_companie)), v.p_companie], functii: [...(p?.functii || []).filter((c) => c !== v.p_functie), v.p_functie].filter(Boolean),
+        organizatii: [...new Set([...(p?.organizatii || []), oid])] };
+      if (v.p_bio) date.bio = v.p_bio;
+      const pid = (await put({ op: 'entitate', tip: 'oameni', id: p?.id, nou: !p, date, eticheta: `${p ? 'om' : 'om nou'}: ${v.p_nume}` })).id || p.id;
+      await refreshData();
+      const ed = ED(e.id);
+      await put({ op: 'participanti', id: e.id, lista: [...ed.participanti, { persoana: pid, nume: v.p_nume, organizatie: oid, cifra_afaceri: num(v.p_cifra), angajati: num(v.p_angajati), descriere: v.p_descriere || null, imagine: date.imagine }], eticheta: `participant ${eLab(e.id)}: ${v.p_nume}` });
+      await refresh(); go(routeFromPath());
+      toast(`Adăugat: ${v.p_nume}. Poți adăuga următorul.`);
+      setTimeout(() => $('#bld-pf [name=p_nume]')?.focus(), 50);
+    } catch (err) { toast(err.message); btn.disabled = false; btn.textContent = 'Adaugă în ediție'; }
+  }
+  // aplicările primite prin formularul de pe site pentru ediția asta (doar local)
+  const CA_LABEL = { 'sub-500k': 'sub 500.000 €', '500k-1m': '500.000 – 1 mil. €', '1m-10m': '1 – 10 mil. €', 'peste-10m': 'peste 10 mil. €' };
+  let LEADS = null;
+  async function loadLeads() {
+    const box = $('#bld-leads');
+    if (!box) return;
+    if (!LEADS) { try { LEADS = await api.get('/api/aplicari'); } catch (e) { LEADS = null; } }
+    const e = ED(box.dataset.editie), L = (Array.isArray(LEADS) ? LEADS : []).filter((a) => a.editie === e.id);
+    const inEd = new Set(e.participanti.map((x) => nrm(x.nume)));
+    box.innerHTML = `<h4>Din aplicări · ${L.length}</h4>${L.length ? `<div class="bld-leads">${L.map((a, i) => `<div class="bld-lead"><div><b>${esc(a.nume)}</b><small>${esc(a.companie)} · CUI ${esc(a.cui)} · ${esc(CA_LABEL[a.cifra_afaceri] || a.cifra_afaceri || '')}</small></div>${inEd.has(nrm(a.nume)) ? '<span class="tag ok">în ediție</span>' : `<button type="button" class="sm" data-bld-lead="${i}">Completează formularul</button>`}</div>`).join('')}</div><small class="ro">Aplicarea completează numele și compania; cifra exactă și restul le adaugi tu.</small>` : `<p class="ro" style="margin:0">${Array.isArray(LEADS) ? 'Nicio aplicare pentru această ediție încă. Aplicările din formularul de pe site apar aici.' : 'Aplicările se văd doar în panoul local.'}</p>`}`;
+    box._leads = L;
+  }
+  function leadFill(i) {
+    const a = $('#bld-leads')._leads[i], f = $('#bld-pf');
+    pClear();
+    $('[name=p_nume]', f).value = a.nume; $('[name=p_companie]', f).value = a.companie;
+    pdupShow(a.nume);
+    f.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  const afterRender = () => { if ($('#bld-leads')) loadLeads(); };
+
   /* ---------- evenimente ---------- */
   document.addEventListener('click', async (e) => {
-    const t = e.target.closest('[data-cms-edit],[data-cms-new],[data-cms-close],[data-cms-save],[data-cms-del],[data-cms-dup],[data-cms-publish],[data-cms-pick],[data-cms-texte-save],[data-cms-texte-reset],[data-add-row],[data-del-row],[data-del-chip],[data-photo-clear],[data-bld-save],[data-bld-perioada],[data-bld-copy],[data-bld-tema],[data-bld-del],[data-bld-ben],[data-bld-vis],.sg[data-href],.cat[data-href]');
+    const t = e.target.closest('[data-cms-edit],[data-cms-new],[data-cms-close],[data-cms-save],[data-cms-del],[data-cms-dup],[data-cms-publish],[data-cms-pick],[data-cms-texte-save],[data-cms-texte-reset],[data-add-row],[data-del-row],[data-del-chip],[data-photo-clear],[data-bld-save],[data-bld-perioada],[data-bld-copy],[data-bld-tema],[data-bld-del],[data-bld-ben],[data-bld-vis],[data-bld-padd],[data-bld-pclear],[data-bld-pick],[data-bld-prem],[data-bld-lead],.sg[data-href],.cat[data-href]');
     if (!t) { if (e.target.id === 'cms-scrim') close(); return; }
     if (t.matches('.sg[data-href],.cat[data-href]')) { if (e.target.closest('button,a')) return; e.preventDefault(); navigate(t.dataset.href); return; }
     e.preventDefault();
     const d = t.dataset;
     const bid = $('#bld')?.dataset.editie;
     if (d.bldSave !== undefined) { bldSave(t); return; }
+    if (d.bldPadd !== undefined) { pAdd(t); return; }
+    if (d.bldPclear !== undefined) { pClear(); return; }
+    if (d.bldPick) { pPick(d.bldPick); return; }
+    if (d.bldLead) { leadFill(+d.bldLead); return; }
+    if (d.bldPrem) { const ed = ED(bid), x = ed.participanti.find((y) => y.persoana === d.bldPrem); if (!confirm(`Scoți ${x?.nume} din ediție? Fișa omului rămâne.`)) return; return bldAction(() => put({ op: 'participanti', id: bid, lista: ed.participanti.filter((y) => y.persoana !== d.bldPrem), eticheta: `participant scos din ${eLab(bid)}: ${x?.nume}` }), 'Scos din ediție.'); }
     if (d.bldPerioada) { const i = $('#bld-f [name=perioada]'); if (i) i.value = d.bldPerioada; return; }
     if (d.bldCopy !== undefined) { const v = form($('#bld-copy')); t.disabled = true; t.textContent = 'Se copiază…'; return bldAction(() => put({ op: 'copiaza', id: bid, din: v.din, ce: Object.fromEntries(['ateliere', ...v.ce].map((k) => [k, true])), eticheta: `ediția ${eLab(bid)}: structura de la ${eLab(v.din)}` }), 'Structura a fost copiată. Acum pune datele atelierelor.'); }
     if (d.bldTema) { const tm = D.teme.find((x) => x.id === d.bldTema); return bldAction(async () => { const r2 = await put({ op: 'entitate', tip: 'ateliere', nou: true, editie: bid, date: { tema: tm.id, titlu: tm.nume, format: tm.format, descriere: '', data: null }, eticheta: `atelier nou: ${tm.nume}` }); const prog = agendaTip(tm.format, tm.id); if (prog.length) await put({ op: 'agenda', id: r2.id, lista: prog, eticheta: `agenda: ${tm.nume}` }); }, `Atelier adăugat: ${tm.nume}`); }
@@ -678,7 +769,7 @@ const CMS = (() => {
     if (d.addRow !== undefined) { const box = t.previousElementSibling; const first = box.firstElementChild; const c = first.cloneNode(true); $$('input', c).forEach((i) => { i.value = ''; }); $$('span[data-v]', c).forEach((s) => s.remove()); box.append(c); $('input', c)?.focus(); return; }
     if (d.delRow !== undefined) { const r = t.closest('.lrow'), box = r.parentElement; if (box.children.length > 1) r.remove(); else { $$('input', r).forEach((i) => { i.value = ''; }); $$('span[data-v]', r).forEach((s) => s.remove()); } $('#cms-f')?.dispatchEvent(new Event('input', { bubbles: true })); return; }
     if (d.delChip !== undefined) { t.closest('span').remove(); return; }
-    if (d.photoClear !== undefined) { const box = t.closest('[data-photo]'); $('input[type=hidden]', box).value = ''; $('.av', box).innerHTML = '?'; $('#cms-f').dispatchEvent(new Event('input', { bubbles: true })); }
+    if (d.photoClear !== undefined) { const box = t.closest('[data-photo]'); $('input[type=hidden]', box).value = ''; $('.av', box).innerHTML = '?'; $('#cms-f')?.dispatchEvent(new Event('input', { bubbles: true })); }
   });
   // etichete: la Enter sau la alegerea din listă, numele devine etichetă (om sau organizație existentă, ori una nouă)
   function addChip(input) {
@@ -688,9 +779,11 @@ const CMS = (() => {
     input.insertAdjacentHTML('beforebegin', `<span data-v="${esc(JSON.stringify(v))}">${esc(p?.nume || name)}${p ? '' : ' <i>nou</i>'}<button type="button" data-del-chip title="Scoate">✕</button></span>`);
     input.value = '';
   }
+  document.addEventListener('input', (e) => { if (e.target.matches('#bld-pf [name=p_nume]')) { $('#bld-pf [name=p_id]').value = ''; $('#bld-pchosen').hidden = true; pdupShow(e.target.value); } });
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && cur) close();
     if (e.key === 'Enter' && e.target.matches('.rel-add')) { e.preventDefault(); addChip(e.target); }
+    if (e.key === 'Enter' && e.target.matches('#bld-pf input')) { e.preventDefault(); pAdd($('[data-bld-padd]')); }
   });
   document.addEventListener('change', (e) => {
     if (e.target.matches('.rel-add')) addChip(e.target);
@@ -699,5 +792,5 @@ const CMS = (() => {
   document.addEventListener('dragover', (e) => { if (e.target.closest?.('[data-photo]')) e.preventDefault(); });
   document.addEventListener('drop', (e) => { const box = e.target.closest?.('[data-photo]'); if (box && e.dataTransfer.files[0]) { e.preventDefault(); upload(e.dataTransfer.files[0], box); } });
 
-  return { S, T, GROUP, CALC, SITE, builder, refresh, open, pickNew, pendingBar, addBtn, listHtml, rowHtml, sample, typeSite, textePage, texteCat, get on() { return S.on; } };
+  return { S, T, GROUP, CALC, SITE, builder, afterRender, refresh, open, pickNew, pendingBar, addBtn, listHtml, rowHtml, sample, typeSite, textePage, texteCat, get on() { return S.on; } };
 })();
