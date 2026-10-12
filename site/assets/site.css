@@ -1337,3 +1337,6 @@ section[id] { scroll-margin-top: 88px; }
 .logo img { display: block; height: 46px; width: auto; }
 .ftr .logo img { height: 58px; }
 @media (max-width: 760px) { .hdr .logo img { height: 38px; } }
+
+/* pe mobil header-ul rămâne doar cu logo-ul și meniul; Aplică e în meniu și în locurile-cheie din pagini */
+@media (max-width: 760px) { .hdr-cta > .btn { display: none; } }
