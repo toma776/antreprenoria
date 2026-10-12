@@ -110,10 +110,10 @@ function header(F, ctx) {
     ${logo('header', brandId)}
     <nav class="nav" id="nav" aria-label="Meniu principal">
       ${megaMenu(ctx, F)}
-      <div class="nav-foot"><a class="btn btn-primary btn-lg" href="/aplica">Aplică</a>${F.ongoing ? `<span class="live"><i></i>Ediția #${F.ongoing.numar} în desfășurare</span>` : ''}</div>
+      <div class="nav-foot"><a class="btn btn-primary btn-lg" href="/aplica">Aplică</a>${F.ongoing ? `<a class="live" href="/editii/${F.ongoing.numar}" title="Pagina ediției"><i></i>Ediția #${F.ongoing.numar} în desfășurare</a>` : ''}</div>
     </nav>
     <div class="hdr-cta">
-      ${F.ongoing ? `<span class="live"><i></i>Ediția #${F.ongoing.numar} în desfășurare</span>` : ''}
+      ${F.ongoing ? `<a class="live" href="/editii/${F.ongoing.numar}" title="Pagina ediției"><i></i>Ediția #${F.ongoing.numar} în desfășurare</a>` : ''}
       <a class="btn btn-primary" href="/aplica">Aplică</a>
       ${menuButton()}
     </div>

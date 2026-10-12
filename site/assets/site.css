@@ -1349,3 +1349,9 @@ section[id] { scroll-margin-top: 88px; }
 @media (max-width: 800px) { .al-co { grid-template-columns: 1fr; } }
 .al-preview { background: #FFF4D6; color: #6B5300; font-size: 14px; padding: 10px 0; }
 @media (max-width: 700px) { .al-grid { grid-template-columns: 1fr; } }
+
+/* ediția în desfășurare: link spre pagina ediției (header, meniu, bara de jos pe mobil) */
+a.live { text-decoration: none; border-radius: 6px; transition: color .15s; }
+a.live:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+[data-brand="a"] .hdr-cta a.live:hover { color: var(--h-ink); }
+.mcta-ed::after { content: ""; flex: none; width: 8px; height: 8px; margin: 0 6px 0 auto; border-top: 2px solid var(--muted); border-right: 2px solid var(--muted); transform: rotate(45deg); }
