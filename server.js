@@ -65,8 +65,12 @@ const READ_ONLY = !!process.env.VERCEL;
 
 // ---------- CMS: modificările din panou (data/curare/editari.json) ----------
 const EDITARI = path.join(DATA, 'curare', 'editari.json');
+// scripts/ rămâne doar local (.vercelignore): îl încărcăm la cerere, nu la build; pe Vercel panoul doar citește
+const script = (n) => require(path.join(ROOT, 'scripts', n));
+const EMPTY_EDITARI = () => ({ modificari: {}, program: {}, metodologie: null, cifre: null, agende: {}, participanti: {}, parteneri: {}, ascunse: [], texte: {}, nepublicate: [] });
 function readEditari() {
-  const { EMPTY } = require('./scripts/editari');
+  let EMPTY = EMPTY_EDITARI;
+  try { EMPTY = script('editari').EMPTY; } catch (e) {}
   let E = {};
   try { E = JSON.parse(fs.readFileSync(EDITARI, 'utf8')); } catch (e) {}
   const base = EMPTY();
@@ -80,7 +84,7 @@ function writeEditari(E) {
 const CMS_TIPURI = ['oameni', 'organizatii', 'editii', 'ateliere', 'locatii', 'teme', 'echipa'];
 function cmsEdit(b) {
   const E = readEditari(), D = JSON.parse(fs.readFileSync(path.join(DATA, 'entitati.json'), 'utf8'));
-  const { slug } = require('./scripts/lib');
+  const { slug } = script('lib');
   const note = (ce) => E.nepublicate.push({ cand: new Date().toISOString(), ce: String(ce || 'modificare').slice(0, 120) });
   const exists = (tip, id) => (tip === 'echipa' ? D.program.contact.echipa : tip === 'ateliere' ? D.editii.flatMap((e) => e.ateliere) : D[tip]).some((x) => x.id === id) || !!E.modificari[tip]?.[id];
   let id = b.id;
@@ -209,7 +213,7 @@ async function handler(req, res) {
       const ext = { png: 'png', jpeg: 'jpg', jpg: 'jpg', webp: 'webp', 'svg+xml': 'svg' }[m[1]];
       const dir = path.join(ROOT, 'site', 'assets', 'uploads');
       fs.mkdirSync(dir, { recursive: true });
-      const file = `${require('./scripts/lib').slug(nume || 'imagine').slice(0, 50) || 'imagine'}-${Date.now().toString(36)}.${ext}`;
+      const file = `${script('lib').slug(nume || 'imagine').slice(0, 50) || 'imagine'}-${Date.now().toString(36)}.${ext}`;
       fs.writeFileSync(path.join(dir, file), buf);
       return sendJson(res, 200, { url: `/assets/uploads/${file}` });
     }
