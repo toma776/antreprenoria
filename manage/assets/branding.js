@@ -125,7 +125,7 @@ routes.branding = async function renderBranding() {
   $('#view').innerHTML = `
     <div class="head"><div><div class="crumb">manage › branding · data/brand.json</div><h1>Branding</h1></div>
       <a class="btn" href="/" target="_blank" rel="noopener">Deschide site-ul ↗</a></div>
-    <p class="lead">Variantele de identitate vizuală ale site-ului. Cea activă se aplică imediat pe toate paginile: culori, fonturi, colțuri. Acum e activă <b>${esc(activ.id.toUpperCase())} · ${esc(activ.nume)}</b>.</p>
+    <p class="lead">${B.variante.length > 1 ? `Variantele de identitate vizuală ale site-ului. Cea activă se aplică imediat pe toate paginile: culori, fonturi, colțuri. Acum e activă <b>${esc(activ.id.toUpperCase())} · ${esc(activ.nume)}</b>.` : `Identitatea vizuală a site-ului: logo, culori, fonturi și forme, aplicate pe toate paginile.`}</p>
     ${[activ, ...B.variante.filter((v) => v !== activ)].map((v) => variantHtml(v, B.activ)).join('')}
     ${iconSection(B)}`;
   animateIcons();

@@ -4,7 +4,6 @@
 .menu-btn { position: relative; width: 44px; height: 44px; padding: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); cursor: pointer; }
 .menu-btn span { position: absolute; width: 7px; height: 7px; border-radius: 50%; background: var(--ink); transition: top .4s cubic-bezier(.6, 0, .2, 1), left .4s cubic-bezier(.6, 0, .2, 1), background .3s; }
 .menu-btn:is([aria-expanded="true"], .on) span { background: var(--primary); }
-[data-brand="b"] .menu-btn:is([aria-expanded="true"], .on) span { background: var(--accent); }
 
 /* Mare și două mici: cercul mare pleacă din stânga sus în dreapta jos */
 .mi-mare-si-doua-mici span:nth-child(1) { top: 11px; left: 11px; width: 11px; height: 11px; }

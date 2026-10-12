@@ -14,8 +14,6 @@ p { margin: 0; }
 .muted { color: var(--muted); }
 .lead { font-size: clamp(17px, 1.6vw, 20px); color: var(--muted); max-width: 62ch; margin-top: 18px; }
 .eyebrow { font-family: var(--eyebrow-font); font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--primary); margin-bottom: 14px; }
-[data-brand="b"] .eyebrow { color: var(--accent); letter-spacing: .04em; }
-[data-brand="b"] .eyebrow::before { content: "// "; opacity: .6; }
 
 /* butoane */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 11px 20px; border-radius: var(--radius-btn); font: 600 15px/1 var(--f-body); text-decoration: none; border: 1.5px solid transparent; cursor: pointer; transition: transform .15s, background .15s, color .15s, border-color .15s; white-space: nowrap; }
@@ -38,7 +36,6 @@ p { margin: 0; }
 .hdr-in { display: flex; align-items: center; gap: 28px; height: 72px; }
 .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
 .logo-mark { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; background: var(--primary); color: var(--primary-ink); font: 800 20px/1 var(--f-display); }
-[data-brand="b"] .logo-mark { background: transparent; border: 1.5px solid var(--accent); color: var(--accent); border-radius: 6px; }
 .logo-txt { font: 800 18px/1.05 var(--f-display); font-stretch: var(--d-stretch); letter-spacing: -0.01em; }
 .logo-txt small { display: block; font: 500 11px/1.3 var(--f-body); color: var(--muted); letter-spacing: 0; }
 .hdr-cta { display: flex; align-items: center; gap: 14px; }
@@ -59,7 +56,6 @@ p { margin: 0; }
 .stat b { display: block; font: var(--d-weight) clamp(30px, 3.4vw, 46px)/1 var(--f-num); font-stretch: var(--d-stretch); letter-spacing: var(--d-track); color: var(--ink); }
 .stat b em, .fig b em { font-style: normal; font-size: .45em; font-weight: 600; color: var(--muted); letter-spacing: 0; }
 .stat > span { display: block; margin-top: 8px; font-size: 14px; color: var(--muted); line-height: 1.35; }
-[data-brand="b"] .stat b { color: var(--accent); font-weight: 600; }
 
 /* secțiuni */
 .sec { padding: clamp(52px, 6.5vw, 84px) 0; }
@@ -78,8 +74,6 @@ p { margin: 0; }
 .people { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
 .person { display: flex; flex-direction: column; gap: 3px; text-decoration: none; }
 .person img, .person .ph { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: var(--radius); margin-bottom: 10px; background: var(--surface-2); transition: filter .2s; }
-[data-brand="b"] .person img { filter: grayscale(1); }
-[data-brand="b"] .person:hover img { filter: none; }
 .person b { font-size: 17px; }
 .person span { font-size: 14px; color: var(--muted); }
 .person-ed { font-family: var(--f-num); font-size: 12.5px !important; color: var(--primary) !important; }
@@ -97,7 +91,6 @@ p { margin: 0; }
 .sector { display: grid; grid-template-columns: 210px 1fr 32px; gap: 14px; align-items: center; font-size: 15px; }
 .sector i { height: 10px; border-radius: 6px; background: color-mix(in srgb, var(--dark-ink) 12%, transparent); position: relative; overflow: hidden; }
 .sector i::after { content: ""; position: absolute; inset: 0 auto 0 0; width: var(--w); background: var(--primary); border-radius: 6px; transition: width 1s ease; }
-[data-brand="b"] .sector i::after { background: var(--highlight); }
 .sector b { font-family: var(--f-num); text-align: right; }
 .cycle { margin-top: 56px; padding-top: 40px; border-top: 1px solid color-mix(in srgb, var(--dark-ink) 15%, transparent); display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 48px; }
 .cycle h3 { font-size: clamp(26px, 3vw, 36px); }
@@ -146,7 +139,6 @@ p { margin: 0; }
 /* footer: cărbune închis în A (diferit de banda finală gri), albastru-noapte în B */
 .ftr { --f-bg: #34373E; --f-ink: #F3F4F6; --f-muted: #B3B7BF; --f-line: rgba(255, 255, 255, .13); --f-card: #3E4149; --f-hi: #A9C8F5;
   position: relative; z-index: 2; background: var(--f-bg); color: var(--f-ink); padding-top: clamp(48px, 6vw, 72px); overflow: hidden; }
-[data-brand="b"] .ftr { --f-bg: #0F1522; --f-card: #151D2E; --f-muted: #8A94A7; --f-line: #232C3E; --f-hi: var(--accent); }
 .ftr a { color: inherit; text-decoration: none; }
 .ftr h4 { margin: 0 0 16px; font: 600 11.5px/1 var(--eyebrow-font); letter-spacing: .1em; text-transform: uppercase; color: var(--f-muted); }
 .ftr-top { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 380px); gap: 40px; align-items: start; padding-bottom: 48px; border-bottom: 1px solid var(--f-line); }
@@ -310,21 +302,6 @@ p { margin: 0; }
 
 .mm-scrim { position: fixed; inset: 72px 0 0 0; background: rgba(5, 10, 20, .28); backdrop-filter: blur(2px); z-index: -1; }
 
-/* B · Signal: grilă vizibilă, etichete monospace, linie sub secțiunea deschisă */
-[data-brand="b"] .mm-panel { background: var(--bg); border-top: 1px solid var(--line); }
-[data-brand="b"] .mm-in { gap: 0; }
-[data-brand="b"] .mm-intro, [data-brand="b"] .mm-cols { padding-right: 32px; margin-right: 32px; border-right: 1px solid var(--line); }
-[data-brand="b"] .mm-in.no-aside .mm-cols { border-right: 0; margin-right: 0; }
-[data-brand="b"] .mm-h::before { content: "// "; color: var(--accent); }
-[data-brand="b"] .mm-title span, [data-brand="b"] .mm-link:hover b { color: var(--accent); }
-[data-brand="b"] .mm-feature { background: var(--surface); border: 1px solid var(--line); }
-[data-brand="b"] .mm-feature::after { background: radial-gradient(circle, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%); }
-[data-brand="b"] .mm-feature b { font-family: var(--f-num); font-weight: 600; letter-spacing: -0.02em; }
-[data-brand="b"] .mm-editions b, [data-brand="b"] .mm-editions small { color: var(--accent); }
-[data-brand="b"] .mm-people-grid img { filter: grayscale(1); }
-[data-brand="b"] .mm-people-grid a:hover img { filter: none; }
-[data-brand="b"] .mm-trigger:hover, [data-brand="b"] .mm-item.open .mm-trigger { background: transparent; color: var(--accent); box-shadow: inset 0 -2px 0 var(--accent); border-radius: 0; }
-[data-brand="b"] .mm-badge.open { background: color-mix(in srgb, var(--accent) 15%, transparent); color: var(--accent); }
 
 /* butonul de meniu (mobil și tabletă) */
 .menu-btn { display: none; } /* forma iconului: menu-icon.css */
@@ -339,11 +316,10 @@ p { margin: 0; }
   .mm-item { border-bottom: 1px solid var(--line); }
   .mm-trigger { width: 100%; justify-content: space-between; padding: 16px 4px; font: var(--d-weight) 19px/1 var(--f-display); font-stretch: var(--d-stretch); border-radius: 0; }
   .mm-trigger:hover, .mm-item.open .mm-trigger { background: transparent; }
-  [data-brand="b"] .mm-trigger:hover, [data-brand="b"] .mm-item.open .mm-trigger { box-shadow: none; }
   .mm-panel { position: static; display: none; opacity: 1; visibility: visible; transform: none; box-shadow: none; border: 0; background: transparent; transition: none; }
   .mm-item.open .mm-panel { display: block; }
   .mm-in, .mm-in.no-aside { grid-template-columns: 1fr; gap: 18px; padding: 0 4px 20px; width: 100%; }
-  .mm-intro, [data-brand="b"] .mm-intro, [data-brand="b"] .mm-cols { border: 0; padding: 0; margin: 0; }
+  .mm-intro { border: 0; padding: 0; margin: 0; }
   .mm-title { display: none; }
   .mm-intro p { margin: 0; }
   .mm-cols { grid-template-columns: 1fr !important; gap: 18px; }
@@ -414,11 +390,6 @@ p { margin: 0; }
 .mz-dots i:nth-child(2) { top: 30%; left: 62%; width: 14%; height: 14%; background: var(--accent); }
 .mz-dots i:nth-child(3) { top: 62%; left: 30%; width: 14%; height: 14%; }
 .mosaic:hover .mz-dots i:nth-child(1) { top: 50%; left: 50%; }
-[data-brand="b"] .mz img { filter: grayscale(1); }
-[data-brand="b"] .mz:hover img { filter: none; }
-[data-brand="b"] .mz-stat { color: #fff; }
-[data-brand="b"] .mz-count { background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--line); }
-[data-brand="b"] .mz-count b { color: var(--accent); }
 /* intrarea: piesele apar pe rând la încărcare */
 html.rv .mz { animation: mz-in .7s cubic-bezier(.2, .7, .2, 1) both; }
 html.rv .mz:nth-child(1) { animation-delay: 80ms; }
@@ -489,7 +460,6 @@ html.rv .mz:nth-child(10) { animation-delay: 575ms; }
 .cur-evening { display: grid; gap: 0; align-content: start; }
 .cur-evening a { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--line); text-decoration: none; color: var(--ink); }
 .cur-evening span { font: 600 13px/1.5 var(--f-num); color: var(--muted); }
-[data-brand="b"] .cur-people img { filter: grayscale(1); }
 
 /* pulsul programului */
 .pulse { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 56px; align-items: start; }
@@ -498,7 +468,6 @@ html.rv .mz:nth-child(10) { animation-delay: 575ms; }
 .pulse-stat + .pulse-stat { border-left: 1px solid var(--line); }
 .pulse-stat b { display: block; font: var(--d-weight) 34px/1 var(--f-num); font-stretch: var(--d-stretch); color: var(--primary); }
 .pulse-stat > span { display: block; margin-top: 6px; font-size: 13px; color: var(--muted); line-height: 1.35; }
-[data-brand="b"] .pulse-stat b { color: var(--accent); font-weight: 600; }
 .feed { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
 .feed-top { display: flex; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--surface-2); font: 500 12.5px/1 var(--f-body); color: var(--muted); }
 .feed-top span:first-child { display: inline-flex; align-items: center; gap: 8px; }
@@ -533,9 +502,7 @@ html.rv .mz:nth-child(10) { animation-delay: 575ms; }
 .agenda-card li.done em { background: var(--primary-soft); color: var(--primary); border-color: transparent; }
 .agenda-card li.next { background: color-mix(in srgb, var(--accent) 7%, var(--surface)); font-weight: 600; }
 .agenda-card li.next em { background: var(--accent); color: #fff; border-color: transparent; }
-[data-brand="b"] .agenda-card li.next em { color: #0A0E17; }
 [data-brand="a"] .cta-band .btn-light { background: #fff; color: var(--primary); }
-[data-brand="b"] .cta-band .btn-light { background: var(--accent); color: #0A0E17; }
 
 /* varianta A: secțiunile închise (alumni, banda finală) au fundal gri deschis în loc de bleumarin.
    Variabilele „dark” se redefinesc local, ca toate elementele dinăuntru să treacă pe text închis. */
@@ -583,7 +550,6 @@ html.rv .mz:nth-child(10) { animation-delay: 575ms; }
 .crumbs b { color: var(--ink); font-weight: 600; }
 .ed-hero h1 { font-size: clamp(38px, 5.4vw, 72px); }
 .ed-num { color: var(--primary); }
-[data-brand="b"] .ed-num { color: var(--accent); }
 .ed-hero .lead { max-width: 50ch; }
 .ed-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; margin-top: 22px; font-size: 14.5px; color: var(--muted); }
 .ed-badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 11px; border-radius: 999px; font: 600 12.5px/1 var(--f-body); background: var(--surface-2); color: var(--ink); border: 1px solid var(--line); }
@@ -598,8 +564,6 @@ html.rv .mz:nth-child(10) { animation-delay: 575ms; }
 .ed-progress i { flex: 1; height: 8px; border-radius: 4px; background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--line); }
 .ed-progress i.done { background: var(--primary); box-shadow: none; }
 .ed-progress i.next { background: var(--accent); box-shadow: none; }
-[data-brand="b"] .ed-progress i.done { background: var(--accent); }
-[data-brand="b"] .ed-progress i.next { background: var(--primary); }
 .ed-next { display: grid; gap: 4px; padding: 18px; }
 .ed-next b { font: var(--d-weight) 24px/1.15 var(--f-display); font-stretch: var(--d-stretch); letter-spacing: var(--d-track); margin-top: 4px; }
 .ed-next > span:not(.ask-kicker) { font-size: 14px; color: var(--muted); }
@@ -608,7 +572,6 @@ html.rv .mz:nth-child(10) { animation-delay: 575ms; }
 .ed-live-link { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-top: 1px solid var(--line); font-weight: 600; font-size: 14.5px; color: var(--primary); text-decoration: none; transition: background .15s; }
 .ed-live-link:hover { background: var(--surface-2); }
 .ed-live-link svg { width: 18px; height: 18px; }
-[data-brand="b"] .ed-live-link { color: var(--accent); }
 .faces { display: inline-flex; flex: none; }
 .faces img, .faces .ph { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 2px solid var(--surface); margin-right: -9px; font-size: 12px; }
 .faces > :last-child { margin-right: 0; }
@@ -629,7 +592,6 @@ html.rv .mz:nth-child(10) { animation-delay: 575ms; }
 .ag-tag { justify-self: end; font: 600 11px/1 var(--eyebrow-font); letter-spacing: .04em; text-transform: uppercase; padding: 5px 8px; border-radius: 4px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
 .ag-tag.done { background: var(--primary-soft); color: var(--primary); border-color: transparent; }
 .ag-tag.next { background: var(--accent); color: #fff; border-color: transparent; }
-[data-brand="b"] .ag-tag.next { color: #0A0E17; }
 .ag-chev { width: 9px; height: 9px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(45deg); transition: transform .2s; justify-self: center; margin-top: -4px; }
 .ag-item[open] .ag-chev { transform: rotate(-135deg); margin-top: 4px; }
 .ag-item.done .ag-main b { color: var(--muted); }
@@ -669,9 +631,6 @@ html.rv .mz:nth-child(10) { animation-delay: 575ms; }
 .ed-person small { margin-top: 6px; font: 600 12px/1.4 var(--f-num); color: var(--primary); }
 .ed-role { position: absolute; top: 10px; left: 10px; padding: 4px 8px; border-radius: 4px; font: 600 10.5px/1 var(--eyebrow-font); letter-spacing: .06em; text-transform: uppercase; background: var(--surface); color: var(--ink); }
 .ed-role.tr { background: var(--primary); color: var(--primary-ink); }
-[data-brand="b"] .ed-person img { filter: grayscale(1); }
-[data-brand="b"] .ed-person:hover img { filter: none; }
-[data-brand="b"] .ed-person small { color: var(--accent); }
 
 /* colegii de ediție */
 .ed-parts { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; margin-top: 44px; }
@@ -681,14 +640,12 @@ html.rv .mz:nth-child(10) { animation-delay: 575ms; }
 .ed-part span span { display: block; font-size: 13px; color: var(--dark-muted); }
 .ed-part small { display: block; margin-top: 2px; font: 600 11.5px/1.3 var(--f-num); color: var(--highlight); }
 [data-brand="a"] .ed-part { border: 1px solid var(--line); }
-[data-brand="b"] .ed-part img { filter: grayscale(1); }
 
 /* ce include */
 .benefits { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; margin-bottom: 28px; }
 .benefit { background: var(--surface); padding: 20px; display: grid; gap: 6px; }
 .benefit b { font: var(--d-weight) clamp(30px, 3.2vw, 42px)/1 var(--f-num); font-stretch: var(--d-stretch); letter-spacing: var(--d-track); color: var(--primary); }
 .benefit span { font-size: 14.5px; color: var(--muted); }
-[data-brand="b"] .benefit b { color: var(--accent); font-weight: 600; }
 .ed-steps ul { margin: 10px 0 0; padding-left: 16px; display: grid; gap: 6px; font-size: 13.5px; color: var(--muted); line-height: 1.45; }
 
 /* parteneri */
@@ -760,7 +717,6 @@ html.rv .mz:nth-child(10) { animation-delay: 575ms; }
 .ed-figs dd { margin: 4px 0 2px; font: var(--d-weight) 30px/1 var(--f-num); font-stretch: var(--d-stretch); letter-spacing: var(--d-track); color: var(--primary); }
 .ed-figs dd em { font: 600 13px/1 var(--f-body); color: var(--muted); font-style: normal; }
 .ed-figs small { font-size: 12px; color: var(--muted); }
-[data-brand="b"] .ed-figs dd { color: var(--accent); font-weight: 600; }
 .ed-sum-sec { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 14px 18px 4px; }
 .ed-sum-sec span { font-size: 12.5px; color: var(--muted); margin-right: 4px; }
 .ed-sum-sec em { font-style: normal; font-size: 12px; font-weight: 600; padding: 4px 8px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); }
@@ -778,7 +734,6 @@ html.rv .mz:nth-child(10) { animation-delay: 575ms; }
 .ed-tablist button:hover { color: var(--ink); }
 .ed-tablist button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--primary); }
 .ed-tablist button[aria-selected="true"] em { background: var(--primary); color: var(--primary-ink); }
-[data-brand="b"] .ed-tablist button[aria-selected="true"] { border-bottom-color: var(--accent); }
 .ed-tabpanel { padding: 20px; }
 .ed-tabpanel[hidden] { display: none; }
 .ed-chips { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 6px 18px; }
@@ -790,8 +745,6 @@ html.rv .mz:nth-child(10) { animation-delay: 575ms; }
 .ed-chip small { display: block; margin-top: 1px; font: 600 11.5px/1.35 var(--f-num); color: var(--primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ed-chip small i { font-style: normal; padding: 1px 5px; border-radius: 3px; background: var(--primary); color: var(--primary-ink); margin-right: 2px; }
 a.ed-chip:hover b { color: var(--primary); }
-[data-brand="b"] .ed-chip small { color: var(--accent); }
-[data-brand="b"] .ed-chip img { filter: grayscale(1); }
 .ed-logos { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 14px; }
 .ed-logo { display: grid; gap: 8px; }
 .ed-logo > span { font-size: 12.5px; color: var(--muted); line-height: 1.35; }
@@ -817,14 +770,12 @@ a.ed-chip:hover b { color: var(--primary); }
 .pg-glance dl div:first-child { border-top: 0; }
 .pg-glance dt { font: var(--d-weight) 16px/1.25 var(--f-display); font-stretch: var(--d-stretch); color: var(--primary); }
 .pg-glance dd { margin: 0; font-size: 13.5px; color: var(--muted); line-height: 1.45; }
-[data-brand="b"] .pg-glance dt { color: var(--accent); }
 /* navigarea în pagină, lipită sub header la derulare */
 .pg-nav { position: sticky; top: 72px; z-index: 6; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(10px); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .pg-nav .wrap { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
 .pg-nav a { display: inline-flex; align-items: center; gap: 8px; padding: 14px 14px; font-size: 14.5px; font-weight: 600; color: var(--muted); text-decoration: none; white-space: nowrap; border-bottom: 2px solid transparent; }
 .pg-nav a i { font: 600 11.5px/1 var(--f-num); font-style: normal; color: var(--primary); }
 .pg-nav a:hover, .pg-nav a.on { color: var(--ink); border-bottom-color: var(--primary); }
-[data-brand="b"] .pg-nav a i { color: var(--accent); }
 #cum, #format, #metodologie, #pentru-cine, #investitie { scroll-margin-top: 130px; }
 
 /* o zi de atelier */
@@ -834,7 +785,6 @@ a.ed-chip:hover b { color: var(--primary); }
 .day-bar i.train { background: var(--primary); box-shadow: none; }
 .day-bar i.talk { background: color-mix(in srgb, var(--primary) 55%, var(--surface)); box-shadow: none; }
 .day-bar i.net { background: var(--accent); box-shadow: none; }
-[data-brand="b"] .day-bar i.train { background: var(--accent); } [data-brand="b"] .day-bar i.net { background: var(--primary); }
 .day-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; overflow-x: auto; scrollbar-width: thin; }
 .day-list li { display: grid; gap: 6px; align-content: start; padding: 12px; border-radius: var(--radius); background: var(--bg); border: 1px solid var(--line); }
 .day-list li.train { border-top: 3px solid var(--primary); } .day-list li.talk { border-top: 3px solid color-mix(in srgb, var(--primary) 55%, var(--surface)); } .day-list li.net { border-top: 3px solid var(--accent); }
@@ -853,7 +803,6 @@ a.ed-chip:hover b { color: var(--primary); }
 .fmt { display: grid; grid-template-columns: 1.4fr repeat(3, 1fr); gap: 12px; }
 .fmt-card { padding: 20px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); display: grid; gap: 6px; align-content: start; }
 .fmt-card > b { font: var(--d-weight) 44px/1 var(--f-num); font-stretch: var(--d-stretch); color: var(--primary); }
-[data-brand="b"] .fmt-card > b { color: var(--accent); font-weight: 600; }
 .fmt-card h3 { font-size: 18px; }
 .fmt-card p { margin: 0; font-size: 14px; color: var(--muted); }
 .fmt-card ul { margin: 4px 0 0; padding: 0; list-style: none; display: grid; gap: 4px; font-size: 14px; }
@@ -942,14 +891,11 @@ a.hist-ed:hover { border-color: var(--primary); transform: translateY(-2px); }
 .hist-ed.live { border-color: var(--accent); box-shadow: inset 0 3px 0 var(--accent); }
 .hist-ed.live small { color: var(--accent); }
 .hist-ed.next { background: transparent; border-style: dashed; }
-[data-brand="b"] .hist-start { background: var(--surface) !important; border-color: var(--accent) !important; color: var(--ink) !important; }
-[data-brand="b"] .hist small { color: var(--accent); }
 .ab-stats { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 22px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
 .ab-stats div { padding: 16px 18px; }
 .ab-stats div + div { border-left: 1px solid var(--line); }
 .ab-stats b { display: block; font: var(--d-weight) 32px/1 var(--f-num); font-stretch: var(--d-stretch); color: var(--primary); }
 .ab-stats span { display: block; margin-top: 6px; font-size: 13px; color: var(--muted); }
-[data-brand="b"] .ab-stats b { color: var(--accent); font-weight: 600; }
 /* organizatorul */
 .ab-rbl { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 56px; align-items: start; }
 .ab-rbl h2 { margin-bottom: 18px; }
@@ -1018,7 +964,6 @@ a.hist-ed:hover { border-color: var(--primary); transform: translateY(-2px); }
 .tm-sp { display: grid; justify-items: end; }
 .tm-sp img { max-width: 130px; max-height: 36px; object-fit: contain; }
 .tm-sp span { font-size: 12.5px; color: var(--muted); }
-[data-brand="b"] .tm-sp img { background: #fff; padding: 4px 6px; border-radius: 4px; }
 .tm-nav-b { font-size: 20px !important; }
 /* /teme: cardurile temelor full-day */
 .tm-cards { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
@@ -1044,7 +989,6 @@ a.hist-ed:hover { border-color: var(--primary); transform: translateY(-2px); }
 .tm-matrix tr.fd { background: color-mix(in srgb, var(--primary) 4%, var(--surface)); }
 .tm-matrix td i { display: inline-block; width: 14px; height: 14px; border-radius: 4px; background: var(--surface-2); }
 .tm-matrix td i.on { background: var(--primary); }
-[data-brand="b"] .tm-matrix td i.on { background: var(--accent); }
 /* atelierele de seară */
 .tm-evening { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
 .tm-ev { display: grid; gap: 10px; align-content: start; padding: 20px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); scroll-margin-top: 130px; }
@@ -1091,7 +1035,6 @@ a.hist-ed:hover { border-color: var(--primary); transform: translateY(-2px); }
   .mcta-ed small { font-weight: 500; font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .mcta-go { flex: none; padding: 13px 22px; font-size: 15.5px; margin-left: auto; }
   body.has-mcta .ftr-legal { padding-bottom: 96px; }
-  [data-brand="b"] .mcta { box-shadow: 0 0 0 1px var(--line), 0 18px 40px -12px rgba(0, 0, 0, .6); }
 
   /* 3. pagini mai scurte */
   .more-btn { display: block; width: 100%; margin-top: 12px; padding: 14px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: 600 15px/1.2 var(--f-body); cursor: pointer; }
@@ -1148,7 +1091,6 @@ a.hist-ed:hover { border-color: var(--primary); transform: translateY(-2px); }
 .ask-chips:not(.sx-r):not(.sx-l) { -webkit-mask-image: none; mask-image: none; }
 /* 6. meniul de secțiuni: secțiunea curentă */
 .pg-nav a.on { color: var(--ink); border-bottom-color: var(--primary); }
-[data-brand="b"] .pg-nav a.on { border-bottom-color: var(--accent); }
 /* 12. la salt la o secțiune, titlul nu mai ajunge sub header */
 section[id] { scroll-margin-top: 88px; }
 .ftr-quick { display: none; }
@@ -1186,13 +1128,11 @@ section[id] { scroll-margin-top: 88px; }
   .ftr-top { padding-bottom: 32px; }
   .ftr-claim { font-size: 30px; }
 
-  /* 11. pe ecranele tactile nu există hover: în varianta B pozele sunt direct color */
   /* 14. banda finală: fără agenda repetată */
   .cta-band .agenda-card { display: none; }
   .cta-band-in { gap: 32px; }
 }
 @media (hover: none) {
-  [data-brand="b"] :is(.person, .ed-person, .mz, .cur-people, .ed-part, .ed-chip, .mm-people-grid) img { filter: none !important; }
 }
 @media (max-width: 720px) {
   .btn { min-height: 44px; }
@@ -1330,7 +1270,6 @@ section[id] { scroll-margin-top: 88px; }
 .ap-contact b { font: var(--d-weight) 20px/1.2 var(--f-display); font-stretch: var(--d-stretch); }
 .ap-contact > span:not(.ask-kicker) { font-size: 14px; color: var(--muted); margin-top: -6px; }
 .ap-contact-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-[data-brand="b"] .af-group legend i { color: #fff; }
 .af-done { scroll-margin-top: 96px; }
 
 /* ---------- logo-ul real (în locul semnului „A”) ---------- */
