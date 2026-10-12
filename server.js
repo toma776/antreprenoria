@@ -56,12 +56,87 @@ function safe(base, rel) {
 }
 // modulele site-ului se reîncarcă la fiecare cerere, ca schimbările din data/ și site/ să apară fără repornire
 function fresh(mod) {
-  ['./site/render', './site/brand', './site/menu', './site/home', './site/util', './site/edition', './site/program', './site/despre', './site/teme', './site/aplica'].forEach((m) => delete require.cache[require.resolve(m)]);
+  ['./site/render', './site/brand', './site/menu', './site/home', './site/util', './site/edition', './site/program', './site/despre', './site/teme', './site/aplica', './site/texte'].forEach((m) => delete require.cache[require.resolve(m)]);
   return require(mod);
 }
 
 // pe Vercel fișierele sunt doar pentru citire: modificările din panou se fac local și ajung pe site prin git push
 const READ_ONLY = !!process.env.VERCEL;
+
+// ---------- CMS: modificările din panou (data/curare/editari.json) ----------
+const EDITARI = path.join(DATA, 'curare', 'editari.json');
+function readEditari() {
+  const { EMPTY } = require('./scripts/editari');
+  let E = {};
+  try { E = JSON.parse(fs.readFileSync(EDITARI, 'utf8')); } catch (e) {}
+  const base = EMPTY();
+  return { ...base, ...E, modificari: { ...base.modificari, ...(E.modificari || {}) } };
+}
+function writeEditari(E) {
+  fs.writeFileSync(EDITARI, JSON.stringify(E, null, 2) + '\n');
+  // entitățile se reconstruiesc imediat, ca site-ul local și panoul să arate modificarea
+  require('child_process').execFileSync(process.execPath, [path.join(ROOT, 'scripts', 'build-entities.js')], { cwd: ROOT, stdio: 'ignore' });
+}
+const CMS_TIPURI = ['oameni', 'organizatii', 'editii', 'ateliere', 'locatii', 'teme', 'echipa'];
+function cmsEdit(b) {
+  const E = readEditari(), D = JSON.parse(fs.readFileSync(path.join(DATA, 'entitati.json'), 'utf8'));
+  const { slug } = require('./scripts/lib');
+  const note = (ce) => E.nepublicate.push({ cand: new Date().toISOString(), ce: String(ce || 'modificare').slice(0, 120) });
+  const exists = (tip, id) => (tip === 'echipa' ? D.program.contact.echipa : tip === 'ateliere' ? D.editii.flatMap((e) => e.ateliere) : D[tip]).some((x) => x.id === id) || !!E.modificari[tip]?.[id];
+  let id = b.id;
+  switch (b.op) {
+    case 'entitate': {
+      if (b.tip === 'program') { Object.assign(E.program, b.date || {}); break; }
+      if (b.tip === 'metodologie' || b.tip === 'cifre') { if (!Array.isArray(b.lista)) return { error: 'lipsește lista' }; E[b.tip] = b.lista; break; }
+      if (!CMS_TIPURI.includes(b.tip)) return { error: 'tip necunoscut' };
+      const date = { ...(b.date || {}) };
+      if (b.nou) {
+        if (b.tip === 'ateliere') {
+          const ed = D.editii.find((e) => e.id === b.editie);
+          if (!ed) return { error: 'Alege ediția atelierului.' };
+          const nr = Math.max(0, ...ed.ateliere.map((a) => a.nr)) + 1;
+          id = `${ed.id}-a${nr}`; Object.assign(date, { nr, _nou: true, _editie: ed.id });
+        } else if (b.tip === 'editii') {
+          if (!date.numar) return { error: 'Scrie numărul ediției.' };
+          id = `${date.serie === 'Cluj' ? 'cluj' : 'bucuresti'}-${date.numar}`;
+          if (exists('editii', id)) return { error: 'Ediția există deja.' };
+          date._nou = true;
+        } else {
+          const base = slug(date.nume || date.titlu || '');
+          if (!base) return { error: 'Scrie numele.' };
+          id = base; let i = 2;
+          while (exists(b.tip, id)) id = `${base}-${i++}`;
+          date._nou = true;
+        }
+      }
+      if (!id) return { error: 'lipsește id-ul' };
+      E.modificari[b.tip][id] = { ...(E.modificari[b.tip][id] || {}), ...date };
+      break;
+    }
+    case 'ascuns': {
+      const k = `${b.tip}:${b.id}`;
+      E.ascunse = E.ascunse.filter((x) => x !== k);
+      if (b.ascuns) E.ascunse.push(k);
+      break;
+    }
+    case 'sterge': {
+      // se pot șterge doar elementele adăugate din panou; cele preluate din site-ul vechi se ascund
+      if (!E.modificari[b.tip]?.[b.id]?._nou) return { error: 'Doar ce ai adăugat din panou se poate șterge. Restul se poate ascunde.' };
+      delete E.modificari[b.tip][b.id];
+      break;
+    }
+    case 'agenda': case 'participanti': case 'parteneri': {
+      if (!Array.isArray(b.lista)) return { error: 'lipsește lista' };
+      E[b.op === 'agenda' ? 'agende' : b.op][b.id] = b.lista;
+      break;
+    }
+    case 'texte': Object.assign(E.texte, b.texte || {}); break;
+    default: return { error: 'operație necunoscută' };
+  }
+  note(b.eticheta);
+  writeEditari(E);
+  return { ok: true, id, nepublicate: E.nepublicate };
+}
 
 async function handler(req, res) {
   const [rawPath, query = ''] = req.url.split('#')[0].split('?');
@@ -96,6 +171,11 @@ async function handler(req, res) {
       if (!r || !r.ok) return sendJson(res, 502, { error: 'Nu am putut citi aplicările din Supabase.' });
       return sendJson(res, 200, await r.text());
     }
+    // starea CMS-ului pentru panou: dacă se poate edita, textele paginilor, modificările încă nepublicate
+    if (url === '/api/cms' && req.method === 'GET') {
+      const E = readEditari();
+      return sendJson(res, 200, { editabil: !READ_ONLY, pagini: fresh('./site/texte').PAGINI, texte: E.texte, nepublicate: E.nepublicate, editari: E });
+    }
     if (READ_ONLY && req.method !== 'GET') return sendJson(res, 403, { error: 'Pe versiunea publicată panoul e doar pentru vizualizare. Modificările se fac local, apoi git push.' });
     if (url === '/api/brand/activ' && req.method === 'PUT') {
       const { id } = await body(req);
@@ -114,6 +194,38 @@ async function handler(req, res) {
       if (culori !== undefined) I.culori = culori;
       fs.writeFileSync(brand.FILE, JSON.stringify(B, null, 2));
       return sendJson(res, 200, { ok: true, activ: I.activ, culori: I.culori });
+    }
+    // CMS-ul din panou: modificările se scriu în data/curare/editari.json, apoi entitățile se reconstruiesc
+    if (url === '/api/editari' && req.method === 'PUT') {
+      const r = cmsEdit(await body(req));
+      return sendJson(res, r.error ? 400 : 200, r);
+    }
+    if (url === '/api/upload' && req.method === 'POST') {
+      const { nume, data } = await body(req);
+      const m = /^data:image\/(png|jpe?g|webp|svg\+xml);base64,(.+)$/.exec(data || '');
+      if (!m) return sendJson(res, 400, { error: 'Fișierul trebuie să fie o imagine (PNG, JPG, WEBP sau SVG).' });
+      const buf = Buffer.from(m[2], 'base64');
+      if (buf.length > 4e6) return sendJson(res, 400, { error: 'Imaginea e prea mare (maxim 4 MB).' });
+      const ext = { png: 'png', jpeg: 'jpg', jpg: 'jpg', webp: 'webp', 'svg+xml': 'svg' }[m[1]];
+      const dir = path.join(ROOT, 'site', 'assets', 'uploads');
+      fs.mkdirSync(dir, { recursive: true });
+      const file = `${require('./scripts/lib').slug(nume || 'imagine').slice(0, 50) || 'imagine'}-${Date.now().toString(36)}.${ext}`;
+      fs.writeFileSync(path.join(dir, file), buf);
+      return sendJson(res, 200, { url: `/assets/uploads/${file}` });
+    }
+    if (url === '/api/publica' && req.method === 'POST') {
+      const E = readEditari(), n = E.nepublicate.length;
+      if (!n) return sendJson(res, 200, { ok: true, mesaj: 'Nimic de publicat.' });
+      E.nepublicate = [];
+      writeEditari(E);
+      const { execFileSync } = require('child_process');
+      const git = (...a) => execFileSync('git', a, { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+      try {
+        git('add', 'data', ...(fs.existsSync(path.join(ROOT, 'site', 'assets', 'uploads')) ? ['site/assets/uploads'] : []));
+        git('commit', '-m', `Panou: ${n} ${n === 1 ? 'modificare publicată' : 'modificări publicate'}`);
+        git('push', 'origin', 'main');
+      } catch (e) { return sendJson(res, 500, { error: 'Publicarea a eșuat: ' + String(e.stderr || e.message).slice(0, 300) }); }
+      return sendJson(res, 200, { ok: true, mesaj: `${n} ${n === 1 ? 'modificare publicată' : 'modificări publicate'}. Site-ul se actualizează în ~1 minut.` });
     }
     if (url.startsWith('/api/')) return sendJson(res, 404, { error: 'rută necunoscută' });
     if (url.startsWith('/manage/assets/')) return sendFile(res, safe(path.join(ROOT, 'manage', 'assets'), url.slice('/manage/assets/'.length)) || '');

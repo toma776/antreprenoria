@@ -2,6 +2,7 @@
 // Conținutul vine din creier: descrierea și audiența de pe /despre-noi, metodologia, agenda ediției curente, prețurile.
 // Profilul participanților apare doar agregat.
 const { esc, initials, milLei, img } = require('./util');
+const { tx } = require('./texte');
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : (n % 100 === 0 || n % 100 >= 20 ? 'de ' : '') + many}`;
 const avatar = (p) => (p?.imagine ? `<img src="${esc(img(p.imagine, 128))}" alt="" loading="lazy">` : `<span class="ph">${esc(initials(p?.nume || '?'))}</span>`);
@@ -51,7 +52,7 @@ function programBody(ctx, F) {
     <div class="hero-split">
       <div class="hero-copy">
         <p class="eyebrow">Programul · din ${D.program.de_cand}</p>
-        <h1>Trei luni în care te uiți strategic la compania ta.</h1>
+        <h1>${esc(tx(D, 'program.titlu'))}</h1>
         <p class="lead">${esc(sentence(D.program.descriere || '').replace(/\s*–\s*/g, ': ').split('. ').slice(0, 2).join('. ').replace(/\.?$/, '.'))}</p>
         <div class="hero-actions"><a class="btn btn-primary btn-lg" href="/aplica">Aplică</a><a class="btn btn-ghost btn-lg" href="#pentru-cine">Ești potrivit?</a></div>
       </div>
@@ -71,8 +72,8 @@ function programBody(ctx, F) {
   <nav class="pg-nav" aria-label="Secțiunile paginii"><div class="wrap">${NAV.map(([id, t], i) => `<a href="#${id}"><i>0${i + 1}</i>${t}</a>`).join('')}</div></nav>
 
   ${day ? `<section class="sec" id="cum"><div class="wrap">
-    <div class="sec-head row"><div><p class="eyebrow">Cum funcționează</p><h2>O zi de atelier, de la cafea la networking.</h2>
-      <p class="lead">Fiecare atelier full-day are aceeași structură: dimineața un trainer lucrează aplicat cu grupa, după-amiaza doi antreprenori povestesc cum au rezolvat exact problema zilei, seara networking cu colegii.</p></div></div>
+    <div class="sec-head row"><div><p class="eyebrow">Cum funcționează</p><h2>${esc(tx(D, 'program.zi.titlu'))}</h2>
+      <p class="lead">${esc(tx(D, 'program.zi.text'))}</p></div></div>
     <div class="day">
       <div class="day-bar" aria-hidden="true">${blocks.map((x) => `<i class="${kind(x)}" style="flex:${x.len}"></i>`).join('')}</div>
       <ol class="day-list" style="grid-template-columns:${blocks.map((x) => (kind(x) === 'break' ? 'minmax(84px, .6fr)' : 'minmax(150px, 1.4fr)')).join(' ')}">${blocks.map((x) => { const ppl = x.speakeri.map((s) => ({ p: P[s.persoana], s })).filter((y) => y.p);

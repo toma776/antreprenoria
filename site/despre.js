@@ -1,6 +1,7 @@
 // Pagina /despre: programul, istoricul, organizatorul (RBL), echipa și contactul, într-o singură pagină cu secțiuni.
 // Cifrele mari sunt cele declarate pe site-ul vechi (/despre-noi); arhiva detaliată începe cu ediția #16.
 const { esc, initials, img } = require('./util');
+const { tx } = require('./texte');
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : (n % 100 === 0 || n % 100 >= 20 ? 'de ' : '') + many}`;
 const edUrl = (e) => (e.serie === 'Cluj' ? `/editii/cluj-${e.numar}` : `/editii/${e.numar}`);
@@ -31,7 +32,7 @@ function despreBody(ctx, F) {
     <div class="hero-split">
       <div class="hero-copy">
         <p class="eyebrow">Despre Antreprenoria · din ${prog.de_cand}</p>
-        <h1>Cresc antreprenorii, crește România.</h1>
+        <h1>${esc(tx(D, 'despre.titlu'))}</h1>
         <p class="lead">${esc(sentence(prog.descriere || '').replace(/\s*–\s*/g, ': '))}</p>
       </div>
       <aside class="pg-glance ab-figs" aria-label="În cifre">
@@ -45,7 +46,7 @@ function despreBody(ctx, F) {
   <nav class="pg-nav" aria-label="Secțiunile paginii"><div class="wrap">${NAV.map(([id, t], i) => `<a href="#${id}"><i>0${i + 1}</i>${t}</a>`).join('')}</div></nav>
 
   <section class="sec" id="program"><div class="wrap">
-    <div class="sec-head row"><div><p class="eyebrow">Programul</p><h2>Cel mai longeviv program educațional al RBL.</h2>
+    <div class="sec-head row"><div><p class="eyebrow">Programul</p><h2>${esc(tx(D, 'despre.program.titlu'))}</h2>
       <p class="lead">${esc(sentence(prog.audienta ? 'Se adresează companiilor cu ' + prog.audienta.replace(/^companii cu /i, '') : ''))}</p></div>
       <a class="link-arrow" href="/program">Cum funcționează →</a></div>
     <div class="ab-grid">
@@ -88,7 +89,7 @@ function despreBody(ctx, F) {
   </div></section>
 
   <section class="sec" id="echipa"><div class="wrap">
-    <div class="sec-head"><p class="eyebrow">Echipa</p><h2>Oamenii din spatele programului.</h2></div>
+    <div class="sec-head"><p class="eyebrow">Echipa</p><h2>${esc(tx(D, 'despre.echipa.titlu'))}</h2></div>
     <div class="team">${prog.contact.echipa.map((m) => { const p = P[m.id];
       return `<div class="team-card" id="${esc(m.id)}">${p?.imagine ? `<img src="${esc(img(p.imagine, 256))}" alt="" loading="lazy">` : `<span class="ph">${esc(initials(m.nume))}</span>`}
         <b>${esc(m.nume)}</b><span>${esc(roleShort(m.rol))}</span>
@@ -98,7 +99,7 @@ function despreBody(ctx, F) {
   <section class="cta-band" id="contact"><div class="wrap cta-band-in">
     <div class="cta-band-copy">
       <p class="eyebrow">Contact</p>
-      <h2>Scrie-ne sau treci pe la noi.</h2>
+      <h2>${esc(tx(D, 'despre.contact.titlu'))}</h2>
       <p>${esc(prog.contact.adresa)}</p>
       <div class="ab-social">${prog.social.map((s) => `<a href="${esc(s.url)}" target="_blank" rel="noopener" aria-label="${esc(s.retea)}">${SOCIAL[s.retea] || ''}<span>${esc(s.retea)}</span></a>`).join('')}</div>
     </div>

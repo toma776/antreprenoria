@@ -7,6 +7,7 @@ const { megaMenu } = require('./menu');
 
 const DATA = path.join(__dirname, '..', 'data', 'entitati.json');
 const { esc, today, fmtDay, median, quantile, milLei, initials } = require('./util');
+const { tx } = require('./texte');
 const { homeBody } = require('./home');
 const { editionBody, findEdition, edLabel } = require('./edition');
 const { programBody } = require('./program');
@@ -16,8 +17,23 @@ const { aplicaBody, options: aplicaOptions } = require('./aplica');
 
 
 // ---------- date din creier ----------
+// ce e marcat „ascuns” în panou rămâne în date, dar nu apare pe site (nici în listele altor entități)
+function hideHidden(D) {
+  const off = (x) => !x?.ascuns;
+  const P = new Set(D.oameni.filter((p) => p.ascuns).map((p) => p.id)), O = new Set(D.organizatii.filter((o) => o.ascuns).map((o) => o.id));
+  D.oameni = D.oameni.filter(off); D.organizatii = D.organizatii.filter(off); D.locatii = D.locatii.filter(off); D.teme = D.teme.filter(off);
+  D.editii = D.editii.filter(off);
+  D.editii.forEach((e) => {
+    e.ateliere = e.ateliere.filter(off);
+    e.ateliere.forEach((a) => { a.program.forEach((m) => { m.speakeri = m.speakeri.filter((s) => !P.has(s.persoana)); }); if (O.has(a.sponsor)) a.sponsor = null; });
+    e.participanti = e.participanti.filter((x) => !P.has(x.persoana));
+    e.parteneri = e.parteneri.filter((x) => !O.has(x.organizatie));
+  });
+  D.program.contact.echipa = D.program.contact.echipa.filter(off);
+  return D;
+}
 function load(brandId) {
-  const D = JSON.parse(fs.readFileSync(DATA, 'utf8'));
+  const D = hideHidden(JSON.parse(fs.readFileSync(DATA, 'utf8')));
   const P = Object.fromEntries(D.oameni.map((p) => [p.id, p]));
   const O = Object.fromEntries(D.organizatii.map((o) => [o.id, o]));
   const T = Object.fromEntries(D.teme.map((t) => [t.id, t]));
@@ -120,7 +136,7 @@ function footer(F, ctx, opt = {}) {
     <div class="ftr-top">
       <div class="ftr-brand">
         ${logo('footer', ctx.brandId)}
-        <p class="ftr-claim">Cresc antreprenorii,<br>crește România.</p>
+        <p class="ftr-claim">${esc(tx(D, 'footer.mesaj')).replace(/\n/g, '<br>')}</p>
         <p class="ftr-sub">Program al Fundației Romanian Business Leaders, din ${D.program.de_cand}. ${F.maxNr} ediții în București, plus Cluj.</p>
         <div class="ftr-social">
           <a href="https://www.linkedin.com/company/antreprenoria" rel="noopener" aria-label="LinkedIn">${ICON.linkedin}</a>

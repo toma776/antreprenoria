@@ -1,7 +1,2 @@
-/* Pornire: încarcă entitățile și deschide ruta din URL. */
-api.get('/api/entitati').then((e) => {
-  store.entitati = e;
-  if (e) indexEntities(e);
-  updateCounts();
-  go(routeFromPath());
-});
+/* Pornire: încarcă entitățile și starea CMS-ului, apoi deschide ruta din URL. */
+CMS.refresh().then(() => go(routeFromPath()));

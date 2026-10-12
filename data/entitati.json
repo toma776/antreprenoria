@@ -2,7 +2,7 @@
   "meta": {
     "sursa": "https://antreprenoria.ro",
     "extras_la": "2026-10-08",
-    "generat": "2026-10-09T12:13:23.082Z",
+    "generat": "2026-10-12T09:24:39.694Z",
     "pagini": 11,
     "metoda": "paginile edițiilor (/antreprenoria-16 … /antreprenoria-22, /antreprenoria-cluj) + /despre-noi + /contact; companii, organizații, aliasuri, parteneri și teme curate manual în data/curare/"
   },
@@ -11469,7 +11469,7 @@
           "rol": "trainer",
           "companie": null,
           "organizatie": "garanti-bbva",
-          "data": "2025-10-28"
+          "data": "2026-10-28"
         }
       ],
       "editii": [
@@ -24719,5 +24719,6 @@
       "text": "Numele „Cristian Logofătu” e scris diferit pe site: „Cristian Logofatu”.",
       "persoana": "cristian-logofatu"
     }
-  ]
+  ],
+  "texte": {}
 }

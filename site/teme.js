@@ -37,7 +37,7 @@ function themeData(ctx, id) {
   const next = ws.filter(({ e, a }) => a.data && a.data >= t0 && a.data.startsWith(String(e.an))).sort((x, y) => x.a.data.localeCompare(y.a.data))[0];
   const titles = [];
   ws.forEach(({ e, a }) => { const n = cleanTitle(a.titlu); const k = n.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); const f = titles.find((x) => x.k === k); f ? f.eds.push(e) : titles.push({ k, n, eds: [e] }); });
-  return { t, ws, people: list, trainers: list.filter((x) => x.rol === 'trainer'), invited: list.filter((x) => x.rol !== 'trainer'), sponsors, desc: cap(normCase(latest?.a.descriere || '')), next, titles };
+  return { t, ws, people: list, trainers: list.filter((x) => x.rol === 'trainer'), invited: list.filter((x) => x.rol !== 'trainer'), sponsors, desc: t.descriere || cap(normCase(latest?.a.descriere || '')), next, titles };
 }
 
 const chip = (x, extra = '') => `<a class="ed-chip" href="/traineri/${esc(x.p.id)}">${avatar(x.p)}<span><b>${esc(x.p.nume)}</b><span>${esc(x.org)}</span>${extra}</span></a>`;

@@ -2,6 +2,7 @@
 // cifre în grilă, curriculum pe tab-uri, „Pulsul programului” (flux generat din date), agenda ediției în banda finală.
 // Cifrele de afaceri apar doar agregat.
 const { esc, initials, milLei, fmtDay, today, img } = require('./util');
+const { tx } = require('./texte');
 
 // sugestiile din hero: problema antreprenorului -> tema din curriculum
 const NEEDS = [
@@ -184,8 +185,8 @@ function homeBody(ctx, F) {
     <div class="hero-split">
       <div class="hero-copy">
         <p class="eyebrow">Acceleratorul Romanian Business Leaders · din ${D.program.de_cand}</p>
-        <h1>Crește-ți compania alături de antreprenorii care au făcut-o deja.</h1>
-        <p class="lead">Trei luni de ateliere cu lideri de business români, un grup selectat de colegi antreprenori și acces la comunitatea RBL.</p>
+        <h1>${esc(tx(D, 'acasa.titlu'))}</h1>
+        <p class="lead">${esc(tx(D, 'acasa.lead'))}</p>
         <div class="hero-actions"><a class="btn btn-primary btn-lg" href="/aplica">Aplică</a>${ong ? `<a class="btn btn-ghost btn-lg" href="${edUrl(ong)}"><i class="dot-live"></i>Ediția #${ong.numar}, acum</a>` : `<a class="btn btn-ghost btn-lg" href="/program">Cum funcționează</a>`}</div>
       </div>
       ${mosaic(ctx, F)}
@@ -202,8 +203,8 @@ function homeBody(ctx, F) {
   </div></section>
 
   <section class="sec" id="cum"><div class="wrap">
-    <div class="sec-head"><p class="eyebrow">Cum funcționează</p><h2>Un trimestru în care te uiți strategic la compania ta.</h2>
-      <p class="lead">La fiecare atelier: dimineața training aplicat, după-amiaza antreprenori care povestesc cum au rezolvat exact problema despre care vorbiți. Seara, networking cu colegii.</p></div>
+    <div class="sec-head"><p class="eyebrow">Cum funcționează</p><h2>${esc(tx(D, 'acasa.cum.titlu'))}</h2>
+      <p class="lead">${esc(tx(D, 'acasa.cum.text'))}</p></div>
     <ol class="steps">
       ${D.program.metodologie.map((m, i) => `<li class="step"><span class="step-n">0${i + 1}</span><h3>${esc(m.titlu.charAt(0) + m.titlu.slice(1).toLowerCase())}</h3><p>${esc(m.puncte[0].replace(/;$/, '.').replace(/\bANTREPRENORI\b/g, 'antreprenori'))}</p></li>`).join('')}
     </ol>
@@ -237,7 +238,7 @@ function homeBody(ctx, F) {
   </div></section>
 
   <section class="sec" id="traineri"><div class="wrap">
-    <div class="sec-head row"><div><p class="eyebrow">Traineri și antreprenori invitați</p><h2>Oameni care vorbesc din ce trăiesc.</h2>
+    <div class="sec-head row"><div><p class="eyebrow">Traineri și antreprenori invitați</p><h2>${esc(tx(D, 'acasa.oameni.titlu'))}</h2>
       <p class="lead">${F.constanti} dintre ei revin în cel puțin cinci ediții. Nu sunt invitați o dată, sunt parte din program.</p></div>
       <a class="link-arrow" href="/traineri">Toți cei ${F.speakers} →</a></div>
     <div class="people">
@@ -277,8 +278,8 @@ function homeBody(ctx, F) {
   </div></section>
 
   <section class="sec sec-alt" id="potrivit"><div class="wrap fit">
-    <div><p class="eyebrow">Pentru cine e</p><h2>Ești potrivit pentru Antreprenoria?</h2>
-      <p class="lead">Selectăm în jur de 25 de antreprenori pe ediție, ca discuțiile să fie între oameni cu provocări asemănătoare. Trei întrebări îți spun dacă merită să aplici.</p>
+    <div><p class="eyebrow">Pentru cine e</p><h2>${esc(tx(D, 'acasa.potrivit.titlu'))}</h2>
+      <p class="lead">${esc(tx(D, 'acasa.potrivit.text'))}</p>
       <ul class="checks"><li>Companie cu cifră de afaceri de peste 1 milion de euro</li><li>Sau peste 500.000 de euro, cu un avantaj competitiv inovativ</li><li>Un fondator sau manager care vrea să scaleze, nu doar să crească</li></ul></div>
     <form class="quiz" id="quiz" novalidate>
       <fieldset><legend>Cifra de afaceri anuală</legend>
@@ -293,15 +294,15 @@ function homeBody(ctx, F) {
   </div></section>
 
   <section class="sec" id="parteneri"><div class="wrap">
-    <div class="sec-head row"><div><p class="eyebrow">Parteneri</p><h2>Companiile care fac posibil programul.</h2></div><a class="link-arrow" href="/parteneri">Sponsorizează un atelier →</a></div>
+    <div class="sec-head row"><div><p class="eyebrow">Parteneri</p><h2>${esc(tx(D, 'acasa.parteneri.titlu'))}</h2></div><a class="link-arrow" href="/parteneri">Sponsorizează un atelier →</a></div>
     <div class="logos">${F.partners.slice(0, 14).map((o) => `<div class="logo-cell"><img src="${esc(o.logo)}" alt="${esc(o.nume)}" loading="lazy"></div>`).join('')}</div>
   </div></section>
 
   <section class="cta-band"><div class="wrap cta-band-in">
     <div class="cta-band-copy">
       <p class="eyebrow">Ediția #${F.maxNr + 1}</p>
-      <h2>Cresc antreprenorii, crește România.</h2>
-      <p>Următoarea ediție din București se formează acum. Lasă-ne datele și te anunțăm primul când se deschid înscrierile.</p>
+      <h2>${esc(tx(D, 'acasa.final.titlu'))}</h2>
+      <p>${esc(tx(D, 'acasa.final.text'))}</p>
       <div class="hero-actions"><a class="btn btn-light btn-lg" href="/aplica">Intră pe lista de așteptare</a>${F.cluj ? `<a class="btn btn-outline-light btn-lg" href="${edUrl(F.cluj)}">Aplică la Cluj #${F.cluj.numar}</a>` : ''}</div>
     </div>
     ${agendaCard(F)}

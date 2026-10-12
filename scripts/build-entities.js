@@ -315,6 +315,8 @@ const out = {
   sectoare: curCompanii.sectoare,
   observatii,
 };
+// modificările din panou (data/curare/editari.json), peste tot ce vine din site-ul vechi
+require('./editari').apply(out, readJson('curare/editari.json'));
 writeJson('entitati.json', out);
 const nTip = (t) => orgsUsed.filter((o) => o.tipuri.includes(t)).length;
 console.log(`ediții ${editii.length} · ateliere ${editii.reduce((n, e) => n + e.ateliere.length, 0)} · participări ${editii.reduce((n, e) => n + e.participanti.length, 0)}`);

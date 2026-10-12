@@ -1,0 +1,21 @@
+{
+  "_despre": "Modificările făcute din panou (Entități). Se aplică peste datele preluate de pe site-ul vechi la fiecare npm run build; vezi scripts/editari.js.",
+  "modificari": {
+    "oameni": {},
+    "organizatii": {},
+    "editii": {},
+    "ateliere": {},
+    "locatii": {},
+    "teme": {},
+    "echipa": {}
+  },
+  "program": {},
+  "metodologie": null,
+  "cifre": null,
+  "agende": {},
+  "participanti": {},
+  "parteneri": {},
+  "ascunse": [],
+  "texte": {},
+  "nepublicate": []
+}

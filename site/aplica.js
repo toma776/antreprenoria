@@ -2,6 +2,7 @@
 // Aceleași informații ca formularele vechi (nume, email, telefon, companie, CUI, cum ai aflat, acordul), plus ediția aleasă
 // și intervalul cifrei de afaceri, ca echipa să vadă eligibilitatea din prima. Validarea de aici e folosită și de server.
 const { esc } = require('./util');
+const { tx } = require('./texte');
 
 const edUrl = (e) => (e.serie === 'Cluj' ? `/editii/cluj-${e.numar}` : `/editii/${e.numar}`);
 const CA = [['sub-500k', 'Sub 500.000 €'], ['500k-1m', '500.000 – 1 mil. €'], ['1m-10m', '1 – 10 mil. €'], ['peste-10m', 'Peste 10 mil. €']];
@@ -61,8 +62,8 @@ function aplicaBody(ctx, F, opt = {}) {
   <section class="hero ap-hero"><div class="wrap">
     <nav class="crumbs" aria-label="Unde ești"><a href="/">Acasă</a><span>/</span><b>Aplică</b></nav>
     <p class="eyebrow">Aplică</p>
-    <h1>Locul tău la Antreprenoria.</h1>
-    <p class="lead">Durează două minute. Echipa programului verifică eligibilitatea companiei și te contactează. Nu plătești nimic acum.</p>
+    <h1>${esc(tx(D, 'aplica.titlu'))}</h1>
+    <p class="lead">${esc(tx(D, 'aplica.lead'))}</p>
   </div></section>
 
   <section class="ap-sec"><div class="wrap ap-grid">
@@ -102,7 +103,7 @@ function aplicaBody(ctx, F, opt = {}) {
       </fieldset>
 
       <div class="af-consent" data-f="acord">
-        <label><input type="checkbox" name="acord" required><span>Sunt de acord ca Fundația Romanian Business Leaders să folosească aceste date pentru selecția participanților și să mă contacteze despre program.</span></label>
+        <label><input type="checkbox" name="acord" required><span>${esc(tx(D, 'aplica.acord'))}</span></label>
         <small class="af-err" id="e-acord" role="alert"></small>
       </div>
       <input class="af-hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">

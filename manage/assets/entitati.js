@@ -461,27 +461,46 @@ routes.entitati = function renderEntitati() {
   const cat = CATS.find((c) => c.id === catId);
   const G = (c, g) => groupInfo(D, c.id, g);
   const total = (c) => (c.id === 'editii' ? c.groups.length : c.id === 'oameni' ? D.oameni.length : c.id === 'organizatii' ? D.organizatii.length : c.groups.reduce((n, g) => n + (G(c, g)?.count || 0), 0));
+  const CAT_LABEL = { program: 'Program', editii: 'Ediții', oameni: 'Oameni', organizatii: 'Organizații', teme: 'Curriculum' };
+  const onsite = (id) => `<div class="onsite">Pe site: ${CMS.SITE[id].map((u) => `<code>${esc(u)}</code>`).join(' ')}</div>`;
+  // butonul de editare de pe fișele complete (om, organizație, ediție)
+  const editBtn = (key, id) => `<button class="${CMS.on ? 'primary' : ''}" data-cms-edit="${key}" data-cms-id="${esc(id)}">${CMS.on ? 'Editează' : 'Vezi câmpurile'}</button>`;
+
+  // textele paginilor
+  if (catId === 'texte') { $('#view').innerHTML = grpId ? CMS.textePage(grpId) : CMS.texteCat(); return; }
 
   // pagini de detaliu
-  if (cat?.id === 'oameni' && grpId === 'p') { $('#view').innerHTML = personPage(D, sub); return; }
-  if (cat?.id === 'organizatii' && grpId === 'o') { $('#view').innerHTML = orgPage(D, sub); return; }
-  if (cat?.id === 'editii' && IX.ED[grpId]) { $('#view').innerHTML = editionPage(D, IX.ED[grpId], ED_SUBS.some(([s]) => s === sub) ? sub : 'program'); return; }
+  if (cat?.id === 'oameni' && grpId === 'p') { $('#view').innerHTML = CMS.pendingBar() + personPage(D, sub); $('#view .head')?.insertAdjacentHTML('beforeend', editBtn('oameni', sub)); return; }
+  if (cat?.id === 'organizatii' && grpId === 'o') { $('#view').innerHTML = CMS.pendingBar() + orgPage(D, sub); $('#view .head')?.insertAdjacentHTML('beforeend', editBtn('organizatii', sub)); return; }
+  if (cat?.id === 'editii' && IX.ED[grpId]) {
+    $('#view').innerHTML = CMS.pendingBar() + editionPage(D, IX.ED[grpId], ED_SUBS.some(([s]) => s === sub) ? sub : 'program');
+    $('#view .head')?.insertAdjacentHTML('beforeend', `${editBtn('editii', grpId)}${CMS.on ? `<button data-cms-new="ateliere" data-cms-editie="${esc(grpId)}">+ Atelier</button>` : ''}`);
+    return;
+  }
 
   if (!cat) {
+    const texte = CMS.S.pagini;
     $('#view').innerHTML = `
       <div class="head">
         <div><div class="crumb">manage › entități · sursa: ${link(D.meta.sursa, 'antreprenoria.ro')} (${esc(D.meta.extras_la)}) · ${D.meta.pagini} pagini citite</div><h1>Entitățile Antreprenoria</h1></div>
         <input type="search" id="q" placeholder="Caută oameni, organizații, ateliere…" aria-label="Caută în entități">
-        <button id="exp">Export JSON</button>
+        <button id="exp">Export JSON</button>${CMS.on ? '<button class="primary" data-cms-new="">+ Adaugă</button>' : ''}
       </div>
+      ${CMS.pendingBar()}
       <div class="cats" id="cats">${CATS.map((c) => `
         <a class="cat" href="/manage/entitati/${c.id}">
           <div class="cat-top"><span class="cat-ico">${icon(c.icon)}</span><span class="cat-total">${total(c)}</span></div>
           <h3>${esc(c.title)}</h3>
           <p>${esc(c.desc)}</p>
+          ${onsite(c.id)}
           <div class="cat-subs">${c.groups.map((g) => { const x = G(c, g); return `<span>${esc(c.id === 'editii' ? edLabel(IX.ED[g]) : x.title)}${x.count != null && c.id !== 'editii' ? ` <b>${x.count}</b>` : ''}</span>`; }).join('')}</div>
           <span class="cat-open">Deschide →</span>
         </a>`).join('')}
+        ${texte.length ? `<a class="cat" href="/manage/entitati/texte">
+          <div class="cat-top"><span class="cat-ico">${icon('teme')}</span><span class="cat-total">${texte.reduce((n, p) => n + p.blocuri.length, 0)}</span></div>
+          <h3>Texte de pe site</h3><p>Titlurile și frazele paginilor, care nu țin de o entitate anume.</p>${onsite('texte')}
+          <div class="cat-subs">${texte.map((p) => `<span>${esc(p.nume)} <b>${p.blocuri.length}</b></span>`).join('')}</div>
+          <span class="cat-open">Deschide →</span></a>` : ''}
       </div>
       <div id="results" class="hidden"></div>`;
     $('#exp').onclick = () => download('antreprenoria-entitati.json', JSON.stringify(D, null, 2), 'application/json');
@@ -491,32 +510,47 @@ routes.entitati = function renderEntitati() {
 
   const pills = `<div class="pills">${CATS.map((c) => `<a href="/manage/entitati/${c.id}" class="${c.id === cat.id ? 'on' : ''}">${esc(c.title)}${total(c) ? ` · ${total(c)}` : ''}</a>`).join('')}</div>`;
   const grp = cat.groups.includes(grpId) ? grpId : cat.groups.length === 1 ? cat.groups[0] : null;
+  const typeOf = (g) => CMS.GROUP[cat.id]?.[g];
 
+  // pagina categoriei: sub-grupurile, fiecare cu exemple, paginile de pe site și butonul de adăugare
   if (!grp) {
+    const calc = CMS.CALC[cat.id] || [];
+    const card = (g) => { const x = G(cat, g), k = typeOf(g), ty = k && CMS.T[k];
+      return `<div class="cat sg" data-href="/manage/entitati/${cat.id}/${g}">
+        <div class="cat-top"><span class="cat-ico">${icon(cat.icon)}</span>${x.count != null ? `<span class="cat-total">${x.count}</span>` : ''}</div>
+        <h3>${esc(x.title)}</h3><p>${esc(cut(x.desc, 160))}</p>
+        ${ty ? `<div class="onsite">Pe site: ${CMS.typeSite(ty).map((u) => `<code>${esc(u)}</code>`).join(' ')}</div>${CMS.sample(k)}` : ''}
+        <div class="sg-act"><a class="btn sm" href="/manage/entitati/${cat.id}/${g}">${ty?.single ? 'Deschide' : 'Vezi lista'}</a>${ty && CMS.on && ty.one ? `<button class="sm primary" data-cms-new="${k}">+ ${esc(ty.one)}</button>` : ''}</div>
+      </div>`; };
+    const lists = cat.groups.filter((g) => !calc.includes(g)), views = cat.groups.filter((g) => calc.includes(g));
     $('#view').innerHTML = `
       <div class="head"><div>
         <div class="crumb"><a href="/manage/entitati">← Toate categoriile</a> · manage › entități › ${esc(cat.title)}</div>
-        <h1><span class="cat-ico">${icon(cat.icon)}</span>${esc(cat.title)}</h1></div></div>
+        <h1><span class="cat-ico">${icon(cat.icon)}</span>${esc(cat.title)}</h1></div>
+        ${CMS.on ? (cat.id === 'editii' ? CMS.addBtn('editii', '+ Ediție nouă') : `<button class="primary" data-cms-pick="${CAT_LABEL[cat.id]}">+ Adaugă în ${CAT_LABEL[cat.id]}</button>`) : ''}</div>
       <p class="lead">${esc(cat.desc)}</p>
+      ${CMS.pendingBar()}
       ${pills}
-      ${cat.id === 'editii' ? editionCards(D) : `<div class="cats">${cat.groups.map((g) => { const x = G(cat, g); return `
-        <a class="cat" href="/manage/entitati/${cat.id}/${g}">
-          <div class="cat-top"><span class="cat-ico">${icon(cat.icon)}</span>${x.count != null ? `<span class="cat-total">${x.count}</span>` : ''}</div>
-          <h3>${esc(x.title)}</h3><p>${esc(cut(x.desc, 220))}</p><span class="cat-open">Deschide →</span>
-        </a>`; }).join('')}</div>`}`;
+      ${cat.id === 'editii' ? editionCards(D) : `<div class="cats">${lists.map(card).join('')}</div>
+        ${views.length ? `<section style="margin-top:22px"><h2>Vederi calculate <span class="n">se completează singure din liste, nu se editează</span></h2><div class="cats">${views.map((g) => { const x = G(cat, g); return `<a class="cat calcv" href="/manage/entitati/${cat.id}/${g}"><div class="cat-top"><span class="cat-ico">${icon(cat.icon)}</span>${x.count != null ? `<span class="cat-total">${x.count}</span>` : ''}</div><h3>${esc(x.title)} <span class="tag grey">automat</span></h3><p>${esc(cut(x.desc, 160))}</p><span class="cat-open">Deschide →</span></a>`; }).join('')}</div></section>` : ''}`}`;
     return;
   }
 
-  const x = G(cat, grp);
+  // pagina unui grup: lista editabilă (sau vizualizarea detaliată de până acum)
+  const x = G(cat, grp), k = typeOf(grp), ty = k && CMS.T[k];
   const multi = cat.groups.length > 1;
+  const mode = ty && new URLSearchParams(location.search).get('vedere') === 'detaliat' ? 'detaliat' : ty ? 'lista' : 'detaliat';
   $('#view').innerHTML = `
     <div class="head"><div>
       <div class="crumb">${multi ? `<a href="/manage/entitati/${cat.id}">← ${esc(cat.title)}</a> · <a href="/manage/entitati">entități</a> › ${esc(cat.title)} › ${esc(x.title)}` : `<a href="/manage/entitati">← Toate categoriile</a> · entități › ${esc(cat.title)}`}</div>
       <h1><span class="cat-ico">${icon(cat.icon)}</span>${esc(x.title)}${x.count != null ? ` <span class="muted" style="font-weight:400;font-size:16px">${x.count}</span>` : ''}</h1></div>
-      <input type="search" id="qg" placeholder="Filtrează…" aria-label="Filtrează">
+      ${ty?.single ? '' : '<input type="search" id="qg" placeholder="Filtrează…" aria-label="Filtrează">'}
+      ${ty && !ty.single ? `<div class="seg"><a href="/manage/entitati/${cat.id}/${grp}" class="${mode === 'lista' ? 'on' : ''}">Listă</a><a href="/manage/entitati/${cat.id}/${grp}?vedere=detaliat" class="${mode === 'detaliat' ? 'on' : ''}">Detaliat</a></div>` : ''}
+      ${ty ? CMS.addBtn(k) : ''}${ty?.single && CMS.on ? `<button class="primary" data-cms-edit="${k}" data-cms-id="program">Editează</button>` : ''}
     </div>
-    <p class="lead">${esc(x.desc)}</p>
+    <p class="lead">${esc(x.desc)}${mode === 'lista' && !ty.single ? (CMS.on ? ' Click pe un rând îl deschide pentru editare.' : '') : ''}</p>
+    ${CMS.pendingBar()}
     ${multi ? `<div class="pills">${cat.groups.map((g) => { const y = G(cat, g); return `<a href="/manage/entitati/${cat.id}/${g}" class="${g === grp ? 'on' : ''}">${esc(y.title)}${y.count != null ? ` · ${y.count}` : ''}</a>`; }).join('')}</div>` : ''}
-    <section id="grp">${x.html()}</section>`;
-  $('#qg').addEventListener('input', (e) => filterIn($('#grp'), e.target.value.trim()));
+    <section id="grp">${mode === 'lista' && !ty.single ? CMS.listHtml(k) : x.html()}</section>`;
+  $('#qg')?.addEventListener('input', (e) => filterIn($('#grp'), e.target.value.trim()));
 };
