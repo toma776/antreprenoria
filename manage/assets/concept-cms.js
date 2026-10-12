@@ -195,27 +195,49 @@ const CATS = [
 function vEnt() {
   return `${pendingBar()}<div class="head"><div><div class="crumb">manage › entități</div><h1>Entitățile Antreprenoria</h1></div>
     <input type="search" placeholder="Caută oameni, organizații, ateliere…"><button class="primary" data-new="">+ Adaugă</button></div>
-  <div class="grid">${CATS.map((c) => {
+  <div class="grid">${CATS.map((c, ci) => {
     const lists = c.texte ? Object.entries(TEXTE).map(([k, x]) => `<div class="gl"><a href="#" data-texte="${k}">${x.label}</a><em>${x.blocks.length}</em></div>`).join('')
       : c.lists.map((k) => `<div class="gl"><a href="#" data-list="${k}">${TYPES[k].label}</a><em>${TYPES[k].single ? '' : TYPES[k].items().length}</em>${TYPES[k].one ? `<button class="add" data-new="${k}" title="Adaugă ${esc(TYPES[k].one)}">+</button>` : ''}</div>`).join('');
     const n = c.texte ? Object.values(TEXTE).reduce((s, x) => s + x.blocks.length, 0) : c.lists.reduce((s, k) => s + (TYPES[k].single ? 0 : TYPES[k].items().length), 0);
-    return `<div class="card cat"><div class="cat-top"><span class="cat-ic">${icon(c.ic)}</span><span class="cat-n">${n}</span></div>
+    return `<div class="card cat click" data-cat="${ci}" title="Deschide ${esc(c.t)}"><div class="cat-top"><span class="cat-ic">${icon(c.ic)}</span><span class="cat-n">${n}</span></div>
       <div><h3>${c.t} ${c.texte ? '<span class="tag ok">nou</span>' : ''}</h3><p>${c.d}</p></div>
       <div class="onsite">Pe site: ${c.site.map((s) => `<code>${s}</code>`).join(' ')}</div>
       <div class="glist">${lists}${c.views ? `<div class="glabel">Vederi calculate</div>${c.views().map(([v, k]) => `<div class="gl calc"><a href="#">${v}</a><em>${k ?? ''}</em><i>automat</i></div>`).join('')}` : ''}</div></div>`;
   }).join('')}</div>
   <div class="card" style="margin-top:18px"><h3>Ce s-a schimbat față de acum</h3><ul class="note-list">
     <li><b>Aceleași 5 categorii, în același loc.</b> Se adaugă doar <b>Texte de pe site</b>, pentru titlurile și frazele paginilor.</li>
-    <li>Fiecare categorie spune <b>în ce pagini apare pe site</b>.</li>
+    <li>Fiecare categorie spune <b>în ce pagini apare pe site</b>. <b>Click pe card</b> deschide pagina categoriei, cu toate sub-grupurile ei.</li>
     <li><b>Toate listele</b> au <b>+</b> pentru adăugare și se deschid în același tip de editor: câmpurile în stânga, cum arată pe site în dreapta, plus paginile afectate.</li>
     <li><b>Vederile calculate</b> se completează singure din liste și nu se editează.</li>
     <li>Legăturile dintre entități se <b>aleg</b>, nu se scriu: atelierul își alege tema, locația, sponsorul și oamenii; ediția își alege participanții și partenerii.</li></ul></div>`;
 }
 
+/* ---------- PAGINA UNEI CATEGORII: sub-grupurile ei ---------- */
+const typeSite = (ty) => { const x = ty.items()[0] || (ty.blank ? ty.blank() : {}); return [...new Set(ty.where({ ...x, ...ty.values(x) }).map(([u]) => u.split('#')[0].replace(/^\/(traineri|editii|teme)\/.+$/, '/$1/…')))].slice(0, 3); };
+function sample(k) {
+  const ty = TYPES[k], items = ty.items().slice(0, 5);
+  if (ty.single) return `<p class="ro" style="margin:0">${esc(String(ty.row(items[0]).meta || '').slice(0, 90))}</p>`;
+  return `<div class="sg-sample">${items.map((x) => { const r = ty.row(x); return r.img ? `<img class="av ${r.sq ? 'sq' : ''}" src="${esc(r.img)}" alt="" title="${esc(r.title)}" loading="lazy">` : `<span class="sg-pill" title="${esc(r.title)}">${esc(r.num != null ? r.num + ' · ' : '')}${esc(String(r.title).slice(0, 26))}</span>`; }).join('')}${ty.items().length > 5 ? `<span class="sg-more">+${ty.items().length - 5}</span>` : ''}</div>`;
+}
+function vCat(ci) {
+  const c = CATS[ci];
+  const card = (inner, attrs) => `<div class="card sg click" ${attrs}>${inner}</div>`;
+  const groups = c.texte
+    ? Object.entries(TEXTE).map(([k, x]) => card(`<div class="sg-top"><h3>${x.label}</h3><span class="cat-n">${x.blocks.length}</span></div><p>Titlurile și frazele paginii.</p><div class="onsite">Pe site: <code>${x.url}</code></div><p class="ro sg-quote">„${esc(x.blocks[1]?.[1] || x.blocks[0][1])}”</p><div class="sg-act"><button class="sm" data-texte="${k}">Editează textele</button></div>`, `data-texte="${k}"`)).join('')
+    : c.lists.map((k) => { const ty = TYPES[k], n = ty.single ? '' : ty.items().length;
+      return card(`<div class="sg-top"><h3>${ty.label}</h3><span class="cat-n">${n}</span></div><p>${esc(ty.desc || '')}</p><div class="onsite">Pe site: ${typeSite(ty).map((u) => `<code>${esc(u)}</code>`).join(' ')}</div>${sample(k)}
+        <div class="sg-act"><button class="sm" data-list="${k}">${ty.single ? 'Editează' : 'Vezi lista'}</button>${ty.one ? `<button class="sm primary" data-new="${k}">+ ${esc(ty.one)}</button>` : ''}</div>`, ty.single ? `data-edit-type="${k}" data-edit-id="program"` : `data-list="${k}"`); }).join('');
+  const views = c.views ? `<section style="margin-top:22px"><h2>Vederi calculate <span class="n">se completează singure</span></h2><div class="grid">${c.views().map(([v, k]) => `<div class="card sg calcv"><div class="sg-top"><h3>${v}</h3><span class="cat-n">${k ?? ''}</span></div><p>Calculată din liste. Nu se editează.</p></div>`).join('')}</div></section>` : '';
+  return `${pendingBar()}<div class="head"><div><div class="crumb"><a href="#" data-home>← Entități</a> · manage › entități › ${c.t}</div><h1><span class="cat-ic">${icon(c.ic)}</span>${c.t}</h1></div>
+    ${c.lists ? `<button class="primary" data-pick="${ci}">+ Adaugă în ${c.t}</button>` : ''}</div>
+  <p class="lead" style="margin-top:-6px">${c.d} Pe site: ${c.site.map((u) => `<code>${u}</code>`).join(' ')}</p>
+  <div class="grid">${groups}</div>${views}`;
+}
+
 /* ---------- LISTA unui tip ---------- */
 function vList(k) {
-  const ty = TYPES[k], items = ty.items(), cat = CATS.find((c) => c.lists?.includes(k));
-  return `${pendingBar()}<div class="head"><div><div class="crumb">← ${cat.t} · entități › ${cat.t} › ${ty.label}</div><h1>${ty.label} <span class="n" style="font-weight:400;color:var(--muted);font-size:15px">${ty.single ? '' : items.length}</span></h1></div>
+  const ty = TYPES[k], items = ty.items(), ci = view.ci != null && CATS[view.ci].lists?.includes(k) ? view.ci : CATS.findIndex((c) => c.lists?.includes(k)), cat = CATS[ci];
+  return `${pendingBar()}<div class="head"><div><div class="crumb"><a href="#" data-cat="${ci}">← ${cat.t}</a> · entități › ${cat.t} › ${ty.label}</div><h1>${ty.label} <span class="n" style="font-weight:400;color:var(--muted);font-size:15px">${ty.single ? '' : items.length}</span></h1></div>
     ${ty.single ? '' : '<input type="search" id="lq" placeholder="Filtrează…">'}${ty.one ? `<button class="primary" data-new="${k}">+ Adaugă ${esc(ty.one)}</button>` : ''}</div>
   <p class="lead" style="margin-top:-6px">${esc(ty.desc || '')} Click pe un rând îl deschide pentru editare.</p>
   <div class="chips">${cat.lists.map((x) => `<button class="${x === k ? 'on' : ''}" data-list="${x}">${TYPES[x].label}${TYPES[x].single ? '' : ' · ' + TYPES[x].items().length}</button>`).join('')}</div>
@@ -267,10 +289,10 @@ function dupCheck(ty, q, k) {
 function closeEditor() { $('#drawer').classList.remove('on'); $('#scrim').classList.remove('on'); }
 function findType(id) { for (const [k, ty] of Object.entries(TYPES)) { const x = ty.items().find((i) => i.id === id); if (x) return [k, x]; } return []; }
 
-function pickNew() {
+function pickNew(only) {
   const dr = $('#drawer');
   dr.innerHTML = `<div class="dr-head"><h2>Ce vrei să adaugi?</h2><button data-close>Închide ✕</button></div>
-  <div style="padding:20px;overflow:auto">${CATS.filter((c) => c.lists).map((c) => `<div class="fs"><h4>${c.t}</h4><div class="checks-r">${[...new Set(c.lists)].filter((k) => TYPES[k].one).map((k) => `<button data-new="${k}">+ ${esc(TYPES[k].one)}</button>`).join('')}</div></div>`).join('')}</div>`;
+  <div style="padding:20px;overflow:auto">${CATS.filter((c, i) => c.lists && (only == null || i === only)).map((c) => `<div class="fs"><h4>${c.t}</h4><div class="checks-r">${[...new Set(c.lists)].filter((k) => TYPES[k].one).map((k) => `<button data-new="${k}">+ ${esc(TYPES[k].one)}</button>`).join('')}</div></div>`).join('')}</div>`;
   dr.classList.add('on'); $('#scrim').classList.add('on');
 }
 
@@ -290,18 +312,21 @@ function vPub() {
 let view = { v: 'ent' };
 function render() {
   $$('.pv-bar [data-pv]').forEach((b) => b.classList.toggle('on', b.dataset.pv === view.pv));
-  $('#view').innerHTML = view.v === 'list' ? vList(view.k) : view.v === 'texte' ? vTexte(view.k) : view.v === 'pub' ? vPub() : vEnt();
+  $('#view').innerHTML = view.v === 'cat' ? vCat(view.ci) : view.v === 'list' ? vList(view.k) : view.v === 'texte' ? vTexte(view.k) : view.v === 'pub' ? vPub() : vEnt();
   window.scrollTo(0, 0);
 }
 const DEMO = { ent: () => ({ v: 'ent' }), editii: () => ({ v: 'list', k: 'editii', open: ['editii', ED['bucuresti-22']] }), ateliere: () => ({ v: 'list', k: 'ateliere', open: ['ateliere', TYPES.ateliere.items()[0]] }), oameni: () => ({ v: 'list', k: 'traineri' }), org: () => ({ v: 'list', k: 'parteneri', open: ['parteneri', O['garanti-bbva']] }), teme: () => ({ v: 'list', k: 'full-day', open: ['full-day', T.vanzari] }), texte: () => ({ v: 'texte', k: 'acasa' }), new: () => ({ v: 'ent', pick: true }), pub: () => ({ v: 'pub' }) };
 document.addEventListener('click', (e) => {
-  const t = e.target.closest('[data-pv],[data-list],[data-texte],[data-edit-type],[data-new],[data-close],[data-save],[data-save-texts],[data-publish],[data-dup-open],.add-row');
+  const t = e.target.closest('[data-cat],[data-home],[data-pick],[data-pv],[data-list],[data-texte],[data-edit-type],[data-new],[data-close],[data-save],[data-save-texts],[data-publish],[data-dup-open],.add-row');
   if (!t) { if (e.target.id === 'scrim') closeEditor(); return; }
   e.preventDefault();
   const d = t.dataset;
+  if (d.home !== undefined) { closeEditor(); view = { v: 'ent', pv: 'ent' }; render(); return; }
+  if (d.pick !== undefined) { pickNew(+d.pick); return; }
+  if (d.cat !== undefined && !d.list && !d.texte) { closeEditor(); view = { v: 'cat', ci: +d.cat, pv: view.pv }; render(); return; }
   if (t.classList.contains('add-row')) { const box = t.previousElementSibling.classList.contains('lrows') ? t.previousElementSibling : t.parentElement.querySelector('.lrows'); const last = box.lastElementChild; if (last) { const c = last.cloneNode(true); $$('input', c).forEach((i) => { i.value = ''; }); box.append(c); } return; }
   if (d.pv) { closeEditor(); const s = DEMO[d.pv](); view = { ...s, pv: d.pv }; render(); if (s.open) openEditor(s.open[0], s.open[1]); if (s.pick) pickNew(); return; }
-  if (d.list) { closeEditor(); view = { v: 'list', k: d.list, pv: view.pv }; render(); return; }
+  if (d.list) { closeEditor(); view = { v: 'list', k: d.list, pv: view.pv, ci: view.ci }; render(); return; }
   if (d.texte) { closeEditor(); view = { v: 'texte', k: d.texte, pv: view.pv }; render(); return; }
   if (d.editType) { const x = TYPES[d.editType].items().find((i) => String(i.id) === d.editId); if (x) openEditor(d.editType, x); return; }
   if (d.dupOpen) { const [k, x] = findType(d.dupOpen); if (k) openEditor(k, x); return; }

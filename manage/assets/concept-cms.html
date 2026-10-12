@@ -148,6 +148,20 @@ table.mini input { width: 100%; padding: 4px 6px; }
 .txt-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 18px; align-items: start; }
 @media (max-width: 900px) { .txt-grid { grid-template-columns: 1fr; } }
 .pv-bar { overflow-x: auto; flex-wrap: nowrap; }
+
+.card.click { cursor: pointer; transition: border-color .15s, box-shadow .15s; }
+.card.click:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); box-shadow: var(--shadow); }
+.head h1 .cat-ic { width: 34px; height: 34px; }
+.sg { display: flex; flex-direction: column; gap: 10px; }
+.sg-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.sg-top .cat-n { font-size: 22px; }
+.sg-sample { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.sg-sample .av { width: 34px; height: 34px; font-size: 12px; }
+.sg-pill { font-size: 12px; padding: 3px 9px; border-radius: 20px; background: var(--panel-2); border: 1px solid var(--line); white-space: nowrap; }
+.sg-more { font-size: 12px; color: var(--muted); }
+.sg-quote { font-style: italic; margin: 0; }
+.sg-act { display: flex; gap: 6px; margin-top: auto; padding-top: 4px; }
+.calcv { border-style: dashed; background: var(--panel-2); }
 </style>
 </head>
 <body>
