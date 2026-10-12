@@ -34,7 +34,7 @@ function editionBody(ctx, F, e) {
   const dated = ws.filter((a) => a.data);
   const held = dated.filter((a) => a.data < t0);
   const next = dated.filter((a) => a.data >= t0).sort((a, b) => a.data.localeCompare(b.data))[0];
-  const state = !dated.length ? (e.deschisa ? 'open' : 'past') : held.length === dated.length ? 'past' : held.length ? 'live' : e.deschisa ? 'open' : 'soon';
+  const state = !dated.length ? (e.deschisa ? 'open' : /pregătire/i.test(e.status || '') || !e.participanti.length ? 'soon' : 'past') : held.length === dated.length ? 'past' : held.length ? 'live' : e.deschisa ? 'open' : 'soon';
   const STATE = { live: ['În desfășurare', 'live'], open: ['Înscrieri deschise', 'open'], soon: ['Urmează', 'open'], past: ['Încheiată', 'done'] }[state];
 
   // oamenii ediției: cine a vorbit / va vorbi, la ce atelier

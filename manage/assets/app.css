@@ -506,3 +506,45 @@ ul.ro { margin: 0; padding-left: 18px; }
 .where a small { color: var(--muted); }
 .txt-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 18px; align-items: start; }
 @media (max-width: 900px) { .txt-grid { grid-template-columns: 1fr; } }
+
+/* constructorul de ediție: pașii în stânga, pasul curent în dreapta */
+.bld { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 900px) { .bld { grid-template-columns: 1fr; } }
+.bld-steps { position: sticky; top: 16px; display: grid; gap: 4px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 8px; }
+.bld-steps a { display: grid; grid-template-columns: 28px 1fr; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 8px; color: var(--ink); }
+.bld-steps a:hover { background: var(--panel-2); text-decoration: none; }
+.bld-steps a.on { background: var(--accent-soft); }
+.bld-steps i { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--line); font-style: normal; font-size: 12.5px; font-weight: 700; color: var(--muted); background: var(--panel); }
+.bld-steps a.on i { border-color: var(--accent); color: var(--accent); }
+.bld-steps a.ok i { background: var(--ok); border-color: var(--ok); color: #fff; }
+.bld-steps span { font-size: 13.5px; font-weight: 600; line-height: 1.3; }
+.bld-steps em { font-style: normal; font-weight: 400; color: var(--muted); }
+.bld-steps small { display: block; font-weight: 400; font-size: 11.5px; color: var(--warn); }
+.bld-steps a.ok small, .bld-steps small:only-of-type:not([class]) { color: var(--muted); }
+.bld-main { min-width: 0; }
+.bld-main > h2 { font-size: 18px; margin-bottom: 4px; }
+.bld-main > .lead { margin: 0 0 14px; }
+.bld-miss { padding: 9px 12px; margin-bottom: 12px; border-radius: 8px; background: var(--warn-soft); color: var(--warn); font-size: 13px; }
+.bld-foot { display: flex; gap: 14px; align-items: center; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+.bld-foot a { font-size: 13px; color: var(--muted); }
+.bld-start { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
+@media (max-width: 1000px) { .bld-start { grid-template-columns: 1fr; } }
+.bld-start .primary { justify-self: start; }
+.bld-add { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 12px; }
+.bld-add > span { font-size: 13px; font-weight: 600; margin-right: 4px; }
+.bld-add small { color: var(--muted); font-size: 11px; }
+.bld-ws { display: grid; gap: 6px; }
+.bld-w { display: grid; grid-template-columns: 28px 150px minmax(0, 1.3fr) minmax(0, 1fr) auto auto auto; gap: 8px; align-items: center; padding: 8px 10px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
+.bld-w .n { color: var(--accent); text-align: center; }
+.bld-w input, .bld-w select { min-width: 0; padding: 6px 8px; }
+@media (max-width: 1100px) { .bld-w { grid-template-columns: 28px 1fr 1fr; } }
+.bld-ppl .fs h4 { text-transform: none; letter-spacing: 0; font-size: 14px; color: var(--ink); }
+.bld-sp { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) auto; gap: 10px; align-items: center; font-size: 13px; }
+.bld-sp label { display: inline-flex; gap: 6px; align-items: center; font-weight: 400; white-space: nowrap; }
+.bld-check { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.bld-check li { display: flex; gap: 10px; align-items: center; font-size: 13.5px; }
+.bld-check li i { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; font-style: normal; font-weight: 700; font-size: 12px; background: var(--warn-soft); color: var(--warn); flex: none; }
+.bld-check li.ok i { background: var(--ok-soft); color: var(--ok); }
+.bld-check li a { margin-left: auto; font-size: 12.5px; }
+a.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+a.btn.primary:hover { text-decoration: none; filter: brightness(1.07); }

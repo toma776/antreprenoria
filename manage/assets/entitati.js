@@ -153,8 +153,8 @@ function programContact(D) {
 /* ---------- EDIȚII ---------- */
 function editionCards(D) {
   return `<div class="ed-cards">${edOrder(D).reverse().map((e) => `
-    <a class="ed-card ${e.serie === 'Cluj' ? 'cluj' : ''}" href="/manage/entitati/editii/${e.id}">
-      <div class="cat-top"><span class="ed-num">${esc(edLabel(e))}<small>${esc(e.serie)}</small></span>${tags(e.status, e.deschisa ? 'ok' : 'grey')}</div>
+    <a class="ed-card ${e.serie === 'Cluj' ? 'cluj' : ''}" href="/manage/entitati/editii/${e.id}${e.ascuns ? '/construieste' : ''}">
+      <div class="cat-top"><span class="ed-num">${esc(edLabel(e))}<small>${esc(e.serie)}</small></span>${e.ascuns ? '<span class="tag warn">în construcție · ascunsă</span>' : tags(e.status, e.deschisa ? 'ok' : 'grey')}</div>
       <div class="muted small">${esc(e.perioada)}${e.locatii.length ? ' · ' + esc(e.locatii.filter((l) => l !== 'TBD')[0] || '') : ''}</div>
       <div class="ed-stats"><span><b>${e.ateliere.length}</b> ateliere</span><span><b>${e.participanti.length}</b> participanți</span><span><b>${new Set(e.ateliere.flatMap((a) => a.program.flatMap((p) => p.speakeri.map((s) => s.persoana)))).size}</b> speakeri</span><span><b>${editionPartners(D, e).length}</b> parteneri</span></div>
     </a>`).join('')}</div>`;
@@ -457,7 +457,7 @@ routes.entitati = function renderEntitati() {
   const D = store.entitati;
   if (!D) { $('#view').innerHTML = '<div class="card empty"><b>Lipsește data/entitati.json</b>Rulează <code>npm run sync</code>.</div>'; return; }
   const CATS = entityCategories(D);
-  const [catId, grpId, sub] = location.pathname.replace(/^\/manage\/entitati\/?/, '').split('/');
+  const [catId, grpId, sub, pas] = location.pathname.replace(/^\/manage\/entitati\/?/, '').split('/');
   const cat = CATS.find((c) => c.id === catId);
   const G = (c, g) => groupInfo(D, c.id, g);
   const total = (c) => (c.id === 'editii' ? c.groups.length : c.id === 'oameni' ? D.oameni.length : c.id === 'organizatii' ? D.organizatii.length : c.groups.reduce((n, g) => n + (G(c, g)?.count || 0), 0));
@@ -472,9 +472,11 @@ routes.entitati = function renderEntitati() {
   // pagini de detaliu
   if (cat?.id === 'oameni' && grpId === 'p') { $('#view').innerHTML = CMS.pendingBar() + personPage(D, sub); $('#view .head')?.insertAdjacentHTML('beforeend', editBtn('oameni', sub)); return; }
   if (cat?.id === 'organizatii' && grpId === 'o') { $('#view').innerHTML = CMS.pendingBar() + orgPage(D, sub); $('#view .head')?.insertAdjacentHTML('beforeend', editBtn('organizatii', sub)); return; }
+  // constructorul ediției: pașii, de la date la publicare
+  if (cat?.id === 'editii' && IX.ED[grpId] && sub === 'construieste') { $('#view').innerHTML = CMS.builder(grpId, pas); return; }
   if (cat?.id === 'editii' && IX.ED[grpId]) {
     $('#view').innerHTML = CMS.pendingBar() + editionPage(D, IX.ED[grpId], ED_SUBS.some(([s]) => s === sub) ? sub : 'program');
-    $('#view .head')?.insertAdjacentHTML('beforeend', `${editBtn('editii', grpId)}${CMS.on ? `<button data-cms-new="ateliere" data-cms-editie="${esc(grpId)}">+ Atelier</button>` : ''}`);
+    $('#view .head')?.insertAdjacentHTML('beforeend', `<a class="btn primary" href="/manage/entitati/editii/${esc(grpId)}/construieste">Construiește ediția</a>${editBtn('editii', grpId)}`);
     return;
   }
 

@@ -18,11 +18,11 @@ const { aplicaBody, options: aplicaOptions } = require('./aplica');
 
 // ---------- date din creier ----------
 // ce e marcat „ascuns” în panou rămâne în date, dar nu apare pe site (nici în listele altor entități)
-function hideHidden(D) {
+function hideHidden(D, keepEditii) {
   const off = (x) => !x?.ascuns;
   const P = new Set(D.oameni.filter((p) => p.ascuns).map((p) => p.id)), O = new Set(D.organizatii.filter((o) => o.ascuns).map((o) => o.id));
   D.oameni = D.oameni.filter(off); D.organizatii = D.organizatii.filter(off); D.locatii = D.locatii.filter(off); D.teme = D.teme.filter(off);
-  D.editii = D.editii.filter(off);
+  if (!keepEditii) D.editii = D.editii.filter(off);
   D.editii.forEach((e) => {
     e.ateliere = e.ateliere.filter(off);
     e.ateliere.forEach((a) => { a.program.forEach((m) => { m.speakeri = m.speakeri.filter((s) => !P.has(s.persoana)); }); if (O.has(a.sponsor)) a.sponsor = null; });
@@ -32,8 +32,8 @@ function hideHidden(D) {
   D.program.contact.echipa = D.program.contact.echipa.filter(off);
   return D;
 }
-function load(brandId) {
-  const D = hideHidden(JSON.parse(fs.readFileSync(DATA, 'utf8')));
+function load(brandId, preview) {
+  const D = hideHidden(JSON.parse(fs.readFileSync(DATA, 'utf8')), preview);
   const P = Object.fromEntries(D.oameni.map((p) => [p.id, p]));
   const O = Object.fromEntries(D.organizatii.map((o) => [o.id, o]));
   const T = Object.fromEntries(D.teme.map((t) => [t.id, t]));
@@ -186,7 +186,8 @@ ${footer(F, ctx)}
 // ---------- PAGINA UNEI EDIȚII ----------
 // întoarce null dacă ediția nu există (serverul răspunde 404)
 function renderEdition(opt = {}) {
-  const ctx = load(opt.brand), F = facts(ctx), e = findEdition(ctx.D, opt.key);
+  // previzualizare din panou (doar local): arată și ediția încă ascunsă
+  const ctx = load(opt.brand, opt.preview), F = facts(ctx), e = findEdition(ctx.D, opt.key);
   if (!e) return null;
   const name = `Antreprenoria ${e.serie === 'Cluj' ? 'Cluj ' : ''}#${e.numar}`;
   return `${head(`${name} · ${e.perioada} – Antreprenoria`, `${name}, ${e.perioada}: agenda atelierelor, traineri și antreprenori invitați, colegii de ediție și partenerii.`, opt.brand)}

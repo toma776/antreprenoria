@@ -2,7 +2,7 @@
   "meta": {
     "sursa": "https://antreprenoria.ro",
     "extras_la": "2026-10-08",
-    "generat": "2026-10-12T09:24:39.694Z",
+    "generat": "2026-10-12T10:16:24.873Z",
     "pagini": 11,
     "metoda": "paginile edițiilor (/antreprenoria-16 … /antreprenoria-22, /antreprenoria-cluj) + /despre-noi + /contact; companii, organizații, aliasuri, parteneri și teme curate manual în data/curare/"
   },
@@ -6541,6 +6541,33 @@
           "rol": "partener strategic"
         }
       ]
+    },
+    {
+      "id": "bucuresti-23",
+      "serie": "București",
+      "numar": 23,
+      "cheie": "bucuresti-23",
+      "slug": null,
+      "url": null,
+      "titlu": "Antreprenoria #23",
+      "subtitlu": "",
+      "perioada": "",
+      "an": 2027,
+      "sezon": "primăvară",
+      "status": "În pregătire",
+      "deschisa": false,
+      "link_inscriere": null,
+      "beneficii": [],
+      "valoare_estimata": null,
+      "preturi": [],
+      "metodologie": [],
+      "participanti_titlu": null,
+      "locatii": [],
+      "ateliere": [],
+      "participanti": [],
+      "parteneri": [],
+      "adaugat_din_panou": true,
+      "ascuns": true
     }
   ],
   "oameni": [
@@ -13322,6 +13349,10 @@
         {
           "editie": "cluj-1",
           "rol": "organizator"
+        },
+        {
+          "editie": "bucuresti-23",
+          "rol": "organizator"
         }
       ],
       "participari": [],
@@ -13337,7 +13368,8 @@
         "bucuresti-20",
         "bucuresti-21",
         "bucuresti-22",
-        "cluj-1"
+        "cluj-1",
+        "bucuresti-23"
       ],
       "parcurs": [
         {
@@ -13384,6 +13416,12 @@
         },
         {
           "editie": "cluj-1",
+          "roluri": [
+            "organizator"
+          ]
+        },
+        {
+          "editie": "bucuresti-23",
           "roluri": [
             "organizator"
           ]

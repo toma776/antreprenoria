@@ -105,6 +105,8 @@ function cmsEdit(b) {
           id = `${date.serie === 'Cluj' ? 'cluj' : 'bucuresti'}-${date.numar}`;
           if (exists('editii', id)) return { error: 'Ediția există deja.' };
           date._nou = true;
+          // o ediție nouă nu apare pe site până nu e gata (pasul „Pe site” din constructor)
+          if (!E.ascunse.includes(`editii:${id}`)) E.ascunse.push(`editii:${id}`);
         } else {
           const base = slug(date.nume || date.titlu || '');
           if (!base) return { error: 'Scrie numele.' };
@@ -135,6 +137,27 @@ function cmsEdit(b) {
       break;
     }
     case 'texte': Object.assign(E.texte, b.texte || {}); break;
+    // constructorul de ediție: copiază structura altei ediții (atelierele cu temele și agenda, beneficiile, prețul)
+    case 'copiaza': {
+      const tinta = D.editii.find((e) => e.id === b.id), sursa = D.editii.find((e) => e.id === b.din);
+      if (!tinta || !sursa) return { error: 'Ediție inexistentă.' };
+      const ce = b.ce || {};
+      if (ce.ateliere) {
+        let nr = Math.max(0, ...tinta.ateliere.map((a) => a.nr));
+        for (const a of sursa.ateliere.slice().sort((x, y) => x.nr - y.nr)) {
+          nr += 1;
+          const aid = `${tinta.id}-a${nr}`;
+          E.modificari.ateliere[aid] = { _nou: true, _editie: tinta.id, nr, titlu: a.titlu, tema: a.tema, format: a.format, descriere: a.descriere, data: null, data_text: null,
+            loc: ce.locatii ? a.loc : null, locatie: ce.locatii ? a.locatie : null, sponsor: null, cauta_sponsor: false };
+          E.agende[aid] = (a.program || []).map((m) => ({ interval: m.interval, activitate: m.activitate, speakeri: ce.oameni ? m.speakeri : [] }));
+        }
+      }
+      const p = (E.modificari.editii[tinta.id] ||= {});
+      if (ce.beneficii) p.beneficii = [...sursa.beneficii];
+      if (ce.preturi) p.preturi = sursa.preturi.filter((x) => !x.ascuns).map((x) => ({ ...x, nota: null }));
+      if (ce.preturi && sursa.valoare_estimata) p.valoare_estimata = sursa.valoare_estimata;
+      break;
+    }
     default: return { error: 'operație necunoscută' };
   }
   note(b.eticheta);
@@ -257,7 +280,7 @@ async function handler(req, res) {
     // /editii/22, /editii/cluj-1
     const ed = /^\/editii\/((?:cluj-)?\d+)\/?$/.exec(url);
     if (ed) {
-      const html = fresh('./site/render').renderEdition({ key: ed[1], brand: new URLSearchParams(query).get('brand') || undefined });
+      const html = fresh('./site/render').renderEdition({ key: ed[1], brand: new URLSearchParams(query).get('brand') || undefined, preview: !READ_ONLY && new URLSearchParams(query).has('previzualizare') });
       if (html) { res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' }); return res.end(html); }
     }
     // /teme/vanzari: pagină pentru temele full-day; cele de seară duc la secțiunea lor din /teme
