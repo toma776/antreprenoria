@@ -13,6 +13,7 @@ const { editionBody, findEdition, edLabel } = require('./edition');
 const { programBody } = require('./program');
 const { despreBody } = require('./despre');
 const { temeBody, temaBody } = require('./teme');
+const { traineriBody, trainerBody, personData } = require('./traineri');
 const { aplicaBody, options: aplicaOptions } = require('./aplica');
 
 
@@ -236,6 +237,31 @@ ${footer(F, ctx)}
 </body></html>`;
 }
 // întoarce { html } pentru o temă full-day, { redirect } pentru una de seară, null dacă tema nu există
+// ---------- TRAINERI ȘI INVITAȚI ----------
+function renderTraineri(opt = {}) {
+  const ctx = load(opt.brand), F = facts(ctx);
+  return `${head('Traineri și antreprenori invitați – Antreprenoria', 'Trainerii, antreprenorii invitați și facilitatorii atelierelor Antreprenoria: temele lor, edițiile și atelierele ținute.', opt.brand)}
+${header(F, ctx)}
+<div class="gridlines" aria-hidden="true"></div>
+${traineriBody(ctx, F)}
+${footer(F, ctx)}
+<script src="/assets/site.js"></script>
+</body></html>`;
+}
+// întoarce null dacă omul nu există sau nu a ținut niciun atelier (serverul răspunde 404)
+function renderTrainer(opt = {}) {
+  const ctx = load(opt.brand), F = facts(ctx), d = personData(ctx, opt.id);
+  if (!d) return null;
+  const desc = `${d.p.nume}${d.org ? ', ' + d.org : ''}: atelierele ținute la Antreprenoria, temele și edițiile.`;
+  return `${head(`${d.p.nume} – Antreprenoria`, desc, opt.brand)}
+${header(F, ctx)}
+<div class="gridlines" aria-hidden="true"></div>
+${trainerBody(ctx, F, opt.id)}
+${footer(F, ctx)}
+<script src="/assets/site.js"></script>
+</body></html>`;
+}
+
 function renderTema(opt = {}) {
   const ctx = load(opt.brand), F = facts(ctx), t = ctx.T[opt.id];
   if (!t) return null;
@@ -265,4 +291,4 @@ ${footer(F, ctx, { mcta: false })}
 // edițiile la care se poate aplica acum (pentru validarea de pe server)
 const applyOptions = () => { const ctx = load(); return aplicaOptions(ctx, facts(ctx)); };
 
-module.exports = { renderHome, renderEdition, renderProgram, renderDespre, renderTeme, renderTema, renderAplica, applyOptions };
+module.exports = { renderHome, renderEdition, renderProgram, renderDespre, renderTeme, renderTema, renderTraineri, renderTrainer, renderAplica, applyOptions };

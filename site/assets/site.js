@@ -264,3 +264,25 @@
     }
   });
 })();
+
+// /traineri: filtrele după rol și după temă (se combină)
+(() => {
+  const grid = document.querySelector('.tr-grid');
+  if (!grid) return;
+  const state = { rol: '', tema: '' };
+  const apply = () => {
+    let n = 0;
+    grid.querySelectorAll('.tr-card').forEach((c) => {
+      const ok = (!state.rol || c.dataset.rol === state.rol) && (!state.tema || c.dataset.teme.split(' ').includes(state.tema));
+      c.hidden = !ok; if (ok) n++;
+    });
+    document.querySelector('.tr-empty').hidden = n > 0;
+  };
+  document.querySelectorAll('[data-tr-group]').forEach((g) => g.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-tr]');
+    if (!b) return;
+    g.querySelectorAll('[data-tr]').forEach((x) => x.classList.toggle('on', x === b));
+    state[g.dataset.trGroup] = b.dataset.tr;
+    apply();
+  }));
+})();

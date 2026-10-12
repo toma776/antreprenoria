@@ -56,7 +56,7 @@ function safe(base, rel) {
 }
 // modulele site-ului se reîncarcă la fiecare cerere, ca schimbările din data/ și site/ să apară fără repornire
 function fresh(mod) {
-  ['./site/render', './site/brand', './site/menu', './site/home', './site/util', './site/edition', './site/program', './site/despre', './site/teme', './site/aplica', './site/texte'].forEach((m) => delete require.cache[require.resolve(m)]);
+  ['./site/render', './site/brand', './site/menu', './site/home', './site/util', './site/edition', './site/program', './site/despre', './site/teme', './site/aplica', './site/texte', './site/traineri'].forEach((m) => delete require.cache[require.resolve(m)]);
   return require(mod);
 }
 
@@ -281,6 +281,16 @@ async function handler(req, res) {
     const ed = /^\/editii\/((?:cluj-)?\d+)\/?$/.exec(url);
     if (ed) {
       const html = fresh('./site/render').renderEdition({ key: ed[1], brand: new URLSearchParams(query).get('brand') || undefined, preview: !READ_ONLY && new URLSearchParams(query).has('previzualizare') });
+      if (html) { res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' }); return res.end(html); }
+    }
+    // /traineri și /traineri/<id>: în previzualizare, doar local până la aprobare
+    if (!READ_ONLY && (url === '/traineri' || url === '/traineri/')) {
+      res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' });
+      return res.end(fresh('./site/render').renderTraineri({ brand: new URLSearchParams(query).get('brand') || undefined }));
+    }
+    const tr = !READ_ONLY && /^\/traineri\/([a-z0-9-]+)\/?$/.exec(url);
+    if (tr) {
+      const html = fresh('./site/render').renderTrainer({ id: tr[1], brand: new URLSearchParams(query).get('brand') || undefined });
       if (html) { res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' }); return res.end(html); }
     }
     // /teme/vanzari: pagină pentru temele full-day; cele de seară duc la secțiunea lor din /teme
