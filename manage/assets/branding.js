@@ -14,6 +14,19 @@ function loadBrandFonts(B) {
 const fontStack = (t) => `'${t.font}', ${t.rezerva}`;
 const colorOf = (v, token) => v.culori.find((c) => c.token === token)?.hex;
 
+// logo-ul variantei: fiecare fișier pe fundalul pentru care e făcut, cu locul unde apare pe site
+function logoHtml(v) {
+  const L = v.logo;
+  if (!L) return '';
+  const use = L.pe_site || {};
+  const where = (id) => [use.header === id && 'header', use.footer === id && 'footer'].filter(Boolean);
+  return `<h4 class="bh">Logo</h4>
+    <p class="small" style="margin:0 0 10px">${esc(L._despre || '')}</p>
+    <div class="blogo-grid">${L.variante.map((x) => { const w = where(x.id); return `<a class="blogo" href="${esc(x.fisier)}" target="_blank" rel="noopener">
+      <span class="blogo-img" style="background:${x.fundal === 'închis' ? '#34373E' : '#fff'}"><img src="${esc(x.fisier)}" alt="${esc(x.nume)}" loading="lazy"></span>
+      <b>${esc(x.nume)}${w.length ? ` <span class="tag ok">pe site: ${w.join(', ')}</span>` : ''}</b>
+      <small>${esc(x.folosire)} · ${esc(x.dimensiuni)} · ${esc(x.sursa)}</small></a>`; }).join('')}</div>`;
+}
 function variantHtml(v, activ) {
   const T = v.tipografie, isOn = v.id === activ;
   const main = v.culori.filter((c) => c.principala), rest = v.culori.filter((c) => !c.principala);
@@ -28,6 +41,8 @@ function variantHtml(v, activ) {
         <a class="btn" href="/?brand=${encodeURIComponent(v.id)}" target="_blank" rel="noopener">Previzualizează ↗</a>
       </div>
     </div>
+
+    ${logoHtml(v)}
 
     <h4 class="bh">Culori principale</h4>
     <div class="bsw-grid">${main.map((c) => swatch(c, true)).join('')}</div>

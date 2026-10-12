@@ -16,12 +16,12 @@ const { aplicaBody, options: aplicaOptions } = require('./aplica');
 
 
 // ---------- date din creier ----------
-function load() {
+function load(brandId) {
   const D = JSON.parse(fs.readFileSync(DATA, 'utf8'));
   const P = Object.fromEntries(D.oameni.map((p) => [p.id, p]));
   const O = Object.fromEntries(D.organizatii.map((o) => [o.id, o]));
   const T = Object.fromEntries(D.teme.map((t) => [t.id, t]));
-  return { D, P, O, T };
+  return { D, P, O, T, brandId };
 }
 
 function facts({ D, P }) {
@@ -62,8 +62,24 @@ function head(title, desc, brandId) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="${esc(brand.fontsHref(v))}" rel="stylesheet">
 <link rel="stylesheet" href="/assets/brand.css"><link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/menu-icon.css">
-<script>/* animațiile de la scroll pornesc doar cu JS și fără „reduce motion” */if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('rv')</script><link rel="icon" href="/manage/assets/logo-letter.png">
+<script>/* animațiile de la scroll pornesc doar cu JS și fără „reduce motion” */if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('rv')</script>${favicons(v)}
 </head><body>`;
+}
+// logo-ul: varianta potrivită fundalului din fiecare loc (data/brand.json › variante › logo › pe_site);
+// header-ul A și footerul sunt gri închis, deci logo cu text alb; header-ul deschis al lui B folosește logo-ul cu text gri
+const LOGO_DIR = '/assets/identitate/';
+const LOGO_DEFAULT = { header: 'orizontal', footer: 'orizontal-alb', favicon: LOGO_DIR + 'favicon-32.png', apple_touch: LOGO_DIR + 'favicon-180.png' };
+function logoUse(brandId) {
+  const v = brand.pick(brand.load(), brandId);
+  return { ...LOGO_DEFAULT, ...(v.logo?.pe_site || {}) };
+}
+function logo(where, brandId) {
+  const id = logoUse(brandId)[where];
+  return `<a class="logo logo-${where}" href="/" aria-label="Antreprenoria – acasă"><img src="${LOGO_DIR}antreprenoria-logo-${esc(id)}-web.png" alt="Antreprenoria" width="480" height="157"></a>`;
+}
+function favicons(v) {
+  const u = { ...LOGO_DEFAULT, ...(v.logo?.pe_site || {}) };
+  return `<link rel="icon" type="image/png" sizes="32x32" href="${esc(u.favicon)}"><link rel="apple-touch-icon" href="${esc(u.apple_touch)}">`;
 }
 // butonul de meniu pe mobil: iconul (trei cercuri) și modul de culoare vin din data/brand.json › icon_meniu
 function menuButton() {
@@ -71,8 +87,9 @@ function menuButton() {
   return `<button class="menu-btn mi-${esc(I.activ)} mc-${esc(I.culori)}" aria-label="Deschide meniul" aria-expanded="false" aria-controls="nav"><span></span><span></span><span></span></button>`;
 }
 function header(F, ctx) {
+  const brandId = ctx.brandId;
   return `<header class="hdr"><div class="wrap hdr-in">
-    <a class="logo" href="/" aria-label="Antreprenoria – acasă"><span class="logo-mark">A</span><span class="logo-txt">Antreprenoria<small>by Romanian Business Leaders</small></span></a>
+    ${logo('header', brandId)}
     <nav class="nav" id="nav" aria-label="Meniu principal">
       ${megaMenu(ctx, F)}
       <div class="nav-foot"><a class="btn btn-primary btn-lg" href="/aplica">Aplică</a>${F.ongoing ? `<span class="live"><i></i>Ediția #${F.ongoing.numar} în desfășurare</span>` : ''}</div>
@@ -102,7 +119,7 @@ function footer(F, ctx, opt = {}) {
   <div class="wrap">
     <div class="ftr-top">
       <div class="ftr-brand">
-        <a class="logo" href="/"><span class="logo-mark">A</span><span class="logo-txt">Antreprenoria<small>by Romanian Business Leaders</small></span></a>
+        ${logo('footer', ctx.brandId)}
         <p class="ftr-claim">Cresc antreprenorii,<br>crește România.</p>
         <p class="ftr-sub">Program al Fundației Romanian Business Leaders, din ${D.program.de_cand}. ${F.maxNr} ediții în București, plus Cluj.</p>
         <div class="ftr-social">
@@ -140,7 +157,7 @@ ${opt.mcta === false ? '' : `<!-- doar pe mobil: acțiunea principală, la înde
 
 // ---------- HOMEPAGE ----------
 function renderHome(opt = {}) {
-  const ctx = load(), F = facts(ctx);
+  const ctx = load(opt.brand), F = facts(ctx);
   return `${head('Antreprenoria – acceleratorul antreprenorilor Romanian Business Leaders', 'Program de accelerare pentru companii în creștere: ateliere cu antreprenori de top, un grup selectat de colegi și comunitatea Romanian Business Leaders. Din 2013.', opt.brand)}
 ${header(F, ctx)}
 <div class="gridlines" aria-hidden="true"></div>
@@ -153,7 +170,7 @@ ${footer(F, ctx)}
 // ---------- PAGINA UNEI EDIȚII ----------
 // întoarce null dacă ediția nu există (serverul răspunde 404)
 function renderEdition(opt = {}) {
-  const ctx = load(), F = facts(ctx), e = findEdition(ctx.D, opt.key);
+  const ctx = load(opt.brand), F = facts(ctx), e = findEdition(ctx.D, opt.key);
   if (!e) return null;
   const name = `Antreprenoria ${e.serie === 'Cluj' ? 'Cluj ' : ''}#${e.numar}`;
   return `${head(`${name} · ${e.perioada} – Antreprenoria`, `${name}, ${e.perioada}: agenda atelierelor, traineri și antreprenori invitați, colegii de ediție și partenerii.`, opt.brand)}
@@ -167,7 +184,7 @@ ${footer(F, ctx)}
 
 // ---------- PROGRAM ----------
 function renderProgram(opt = {}) {
-  const ctx = load(), F = facts(ctx);
+  const ctx = load(opt.brand), F = facts(ctx);
   return `${head('Programul Antreprenoria – cum funcționează, pentru cine e, investiția', 'Cum arată o zi de atelier, formatul unei ediții, metodologia, cui se adresează programul și cât costă. Acceleratorul Romanian Business Leaders, din 2013.', opt.brand)}
 ${header(F, ctx)}
 <div class="gridlines" aria-hidden="true"></div>
@@ -179,7 +196,7 @@ ${footer(F, ctx)}
 
 // ---------- DESPRE ----------
 function renderDespre(opt = {}) {
-  const ctx = load(), F = facts(ctx);
+  const ctx = load(opt.brand), F = facts(ctx);
   return `${head('Despre Antreprenoria – programul, istoricul, Romanian Business Leaders, echipa', 'Antreprenoria este programul de accelerare al Fundației Romanian Business Leaders, din 2013: istoricul edițiilor, organizatorul, echipa și contactul.', opt.brand)}
 ${header(F, ctx)}
 <div class="gridlines" aria-hidden="true"></div>
@@ -192,7 +209,7 @@ ${footer(F, ctx)}
 // ---------- TEME ----------
 // /teme: curriculum-ul; /teme/<id>: doar temele full-day au pagină (cele de seară sunt secțiuni pe /teme)
 function renderTeme(opt = {}) {
-  const ctx = load(), F = facts(ctx);
+  const ctx = load(opt.brand), F = facts(ctx);
   return `${head('Curriculum-ul Antreprenoria – temele atelierelor', 'Cele cinci teme full-day ale programului (viziune, model de business, marketing, vânzări, cultură organizațională) și atelierele de seară, ediție cu ediție.', opt.brand)}
 ${header(F, ctx)}
 <div class="gridlines" aria-hidden="true"></div>
@@ -203,7 +220,7 @@ ${footer(F, ctx)}
 }
 // întoarce { html } pentru o temă full-day, { redirect } pentru una de seară, null dacă tema nu există
 function renderTema(opt = {}) {
-  const ctx = load(), F = facts(ctx), t = ctx.T[opt.id];
+  const ctx = load(opt.brand), F = facts(ctx), t = ctx.T[opt.id];
   if (!t) return null;
   if (t.format !== 'full-day') return { redirect: `/teme#${t.id}` };
   return { html: `${head(`${t.nume} – temă Antreprenoria`, `Atelierul full-day „${t.nume}”: cine l-a predat la fiecare ediție, antreprenorii invitați, sponsorii și următoarea dată.`, opt.brand)}
@@ -217,7 +234,7 @@ ${footer(F, ctx)}
 
 // ---------- APLICĂ ----------
 function renderAplica(opt = {}) {
-  const ctx = load(), F = facts(ctx);
+  const ctx = load(opt.brand), F = facts(ctx);
   return `${head('Aplică la Antreprenoria', 'Formularul de înscriere la Atelierele Antreprenoria: ediția, datele tale și ale companiei. Durează două minute.', opt.brand)}
 ${header(F, ctx)}
 <div class="gridlines" aria-hidden="true"></div>

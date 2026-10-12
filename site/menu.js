@@ -48,7 +48,7 @@ function panels(ctx, F) {
           <span class="mm-people">${F.next.program.flatMap((x) => x.speakeri).map((s) => P[s.persoana]).filter(Boolean).map((p) => `<span class="mm-face">${pic(p)}</span>`).join('')}</span>
           <span class="mm-more">Agenda ediției #${ong.numar} →</span></a>` : '' },
 
-    { id: 'editii', title: 'Ediții', href: '/editii', intro: `Două ediții pe an în București, plus Cluj. Toate rămân în arhivă.`,
+    { id: 'editii', title: 'Ediții', href: '/editii', intro: `Două ediții pe an în București, plus Cluj.`,
       cols: [
         col('Acum', [
           ong ? link(edUrl(ong), `Antreprenoria #${ong.numar}`, `${esc(ong.perioada)} · ${held} din ${ong.ateliere.length} ateliere ținute`, `<em class="mm-badge live">în desfășurare</em>`) : '',

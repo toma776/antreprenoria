@@ -219,7 +219,7 @@ function homeBody(ctx, F) {
     <div class="pulse-copy">
       <p class="eyebrow">Pulsul programului</p>
       <h2>Programul se întâmplă acum.</h2>
-      <p class="lead">Ateliere, parteneri, ediții noi. Totul vine direct din agenda programului și se actualizează singur.</p>
+      <p class="lead">Ateliere, parteneri, ediții noi.</p>
       <div class="pulse-stats">
         ${nextIn === 0 ? `<div class="pulse-stat"><b>Azi</b><span>e atelier: ${esc(F.next.titlu.replace(/^(Atelier de Seară|COCKTAIL NETWORKING)\s*[-:]\s*/i, ''))}</span></div>` : nextIn != null ? `<div class="pulse-stat"><b><span data-count="${nextIn}">${nextIn}</span></b><span>${nextIn === 1 ? 'zi' : 'zile'} până la următorul atelier</span></div>` : ''}
         <div class="pulse-stat"><b><span data-count="${heldYear}">${heldYear}</span></b><span>ateliere ținute în ${today().slice(0, 4)}</span></div>
@@ -227,7 +227,7 @@ function homeBody(ctx, F) {
       </div>
     </div>
     <div class="feed" role="list">
-      <div class="feed-top"><span><i class="dot-live"></i>Actualizat ${fmtDay(today())}</span><span>${feed.length} evenimente</span></div>
+      <div class="feed-top"><span><i class="dot-live"></i>Noutăți</span><span>${feed.length} evenimente</span></div>
       ${feed.map((f) => `<a class="feed-item" role="listitem" href="${esc(f.href)}">
         <span class="feed-tag ${KIND[f.kind][1]}">${KIND[f.kind][0]}</span>
         <span class="feed-body"><b>${esc(f.title)}</b><span>${esc(f.text)}</span></span>
@@ -253,7 +253,6 @@ function homeBody(ctx, F) {
         <div class="fig"><b>${milLei(F.q1)}–${milLei(F.q3)}<em> mil. lei</em></b><span>cifra de afaceri a jumătății „de mijloc” a participanților</span></div>
         <div class="fig"><b><span data-count="${F.medianAng}">${F.medianAng}</span></b><span>angajați, la mediană</span></div>
         <div class="fig"><b><span data-count="${F.participanti}">${F.participanti}</span></b><span>antreprenori și manageri în edițiile #16–#${F.maxNr}</span></div>
-        <p class="fine">Cifre agregate din datele declarate la înscriere, edițiile 2023–2026.</p>
       </div>
       <div class="sectors">${F.sectors.slice(0, 9).map(([s, n]) => `<div class="sector"><span>${esc(s)}</span><i style="--w:${(n / maxSector) * 100}%"></i><b>${n}</b></div>`).join('')}</div>
     </div>

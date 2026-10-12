@@ -381,3 +381,11 @@ details.obs-done > summary { cursor: pointer; font-weight: 600; padding: 6px 0; 
 .seg-chips button { padding: 6px 12px; border-radius: 20px; font-size: 13px; }
 #ap-q { min-width: 260px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--ink); font: inherit; }
 tr.warn-row td { background: var(--warn-soft); }
+
+/* BRANDING: logo-ul variantei */
+.blogo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin-bottom: 8px; }
+.blogo { display: grid; align-content: start; gap: 6px; text-decoration: none; color: inherit; min-width: 0; }
+.blogo-img { display: grid; place-items: center; height: 120px; padding: 18px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.blogo-img img { display: block; max-width: 100%; max-height: 84px; width: auto; height: auto; object-fit: contain; }
+.blogo b { font-size: 13.5px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.blogo small { font-size: 12px; color: var(--muted); line-height: 1.4; }

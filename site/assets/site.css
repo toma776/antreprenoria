@@ -1332,3 +1332,8 @@ section[id] { scroll-margin-top: 88px; }
 .ap-contact-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 [data-brand="b"] .af-group legend i { color: #fff; }
 .af-done { scroll-margin-top: 96px; }
+
+/* ---------- logo-ul real (în locul semnului „A”) ---------- */
+.logo img { display: block; height: 46px; width: auto; }
+.ftr .logo img { height: 58px; }
+@media (max-width: 760px) { .hdr .logo img { height: 38px; } }

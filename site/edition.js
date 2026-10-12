@@ -184,7 +184,6 @@ function editionBody(ctx, F, e) {
         ${ca.filter(Boolean).length >= 5 ? `<div class="fig"><b>${milLei(quantile(ca, 0.25))}–${milLei(quantile(ca, 0.75))}<em> mil. lei</em></b><span>cifra de afaceri a jumătății „de mijloc” a companiilor</span></div>` : ''}
         ${ang.filter(Boolean).length >= 5 ? `<div class="fig"><b><span data-count="${median(ang)}">${median(ang)}</span></b><span>angajați, la mediană</span></div>` : ''}
         <div class="fig"><b><span data-count="${companies.size}">${companies.size}</span></b><span>companii</span></div>
-        <p class="fine">Cifre agregate din datele declarate la înscriere. Nu publicăm date financiare per companie.</p>
       </div>
       <div class="sectors">${sectorList.slice(0, 9).map(([s, n]) => `<div class="sector"><span>${esc(s)}</span><i style="--w:${(n / maxSector) * 100}%"></i><b>${n}</b></div>`).join('')}</div>
     </div>
@@ -259,7 +258,6 @@ function editionBody(ctx, F, e) {
             ${ca.filter(Boolean).length >= 5 ? `<div><dt>CA mediană</dt><dd>${milLei(median(ca))}<em> mil. lei</em></dd><small>${median(ang) ? `${median(ang)} angajați, la mediană` : ''}</small></div>` : ''}
           </dl>
           ${topSectors.length ? `<div class="ed-sum-sec"><span>Sectoare</span>${topSectors.map(([s, n]) => `<em>${esc(s)} · ${n}</em>`).join('')}${sectorList.length > 4 ? `<em>+${sectorList.length - 4}</em>` : ''}</div>` : ''}
-          <p class="ed-sum-note">Cifre agregate din datele declarate la înscriere.</p>
         </aside>
       </div>
     </div></section>`;

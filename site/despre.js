@@ -35,7 +35,7 @@ function despreBody(ctx, F) {
         <p class="lead">${esc(sentence(prog.descriere || '').replace(/\s*–\s*/g, ': '))}</p>
       </div>
       <aside class="pg-glance ab-figs" aria-label="În cifre">
-        <div class="ed-live-top"><span>În cifre</span><span>declarate de RBL</span></div>
+        <div class="ed-live-top"><span>În cifre</span></div>
         <dl>${cifre.map((c) => `<div><dt>${esc(c.valoare)}</dt><dd>${esc(c.ce)}</dd></div>`).join('')}
           <div><dt>${F.maxNr} ediții</dt><dd>în București din ${prog.de_cand}, plus Cluj din ${F.cluj ? F.cluj.an : ''}</dd></div></dl>
       </aside>
@@ -58,10 +58,10 @@ function despreBody(ctx, F) {
 
   <section class="sec sec-alt" id="istoric"><div class="wrap">
     <div class="sec-head row"><div><p class="eyebrow">Istoricul</p><h2>Din ${prog.de_cand} până la ediția #${F.maxNr}.</h2>
-      <p class="lead">Două ediții pe an în București${F.cluj ? `, iar din ${F.cluj.an} și la Cluj` : ''}. Arhiva detaliată, cu agendele și participanții, începe cu ediția #${first.numar}.</p></div>
+      <p class="lead">Două ediții pe an în București${F.cluj ? `, iar din ${F.cluj.an} și la Cluj` : ''}.</p></div>
       <a class="link-arrow" href="/editii">Toate edițiile →</a></div>
     <div class="hist">
-      <div class="hist-start"><b>${prog.de_cand}</b><span>Prima ediție</span><small>edițiile #1–#${first.numar - 1}, înainte de arhiva de pe site</small></div>
+      <div class="hist-start"><b>${prog.de_cand}</b><span>Prima ediție</span><small>edițiile #1–#${first.numar - 1}</small></div>
       ${arhiva.map((e) => `<a class="hist-ed ${F.ongoing && e.id === F.ongoing.id ? 'live' : ''}" href="${edUrl(e)}"><b>#${e.numar}</b><span>${esc(e.sezon)} ${e.an}</span><small>${F.ongoing && e.id === F.ongoing.id ? 'în desfășurare' : plural(e.participanti.length, 'participant', 'participanți')}</small></a>`).join('')}
       ${F.cluj ? `<a class="hist-ed cluj" href="${edUrl(F.cluj)}"><b>Cluj #${F.cluj.numar}</b><span>${esc(F.cluj.sezon)} ${F.cluj.an}</span><small>înscrieri deschise</small></a>` : ''}
       <a class="hist-ed next" href="/aplica"><b>#${F.maxNr + 1}</b><span>următoarea</span><small>listă de așteptare</small></a>

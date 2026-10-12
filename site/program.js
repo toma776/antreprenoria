@@ -118,7 +118,6 @@ function programBody(ctx, F) {
           <div class="fig"><b>${F.medianAng}</b><span>angajați, la mediană</span></div>
         </div>
         <div class="sectors">${F.sectors.slice(0, 7).map(([s, n]) => `<div class="sector"><span>${esc(s)}</span><i style="--w:${(n / maxSector) * 100}%"></i><b>${n}</b></div>`).join('')}</div>
-        <p class="fine">${F.participanti} de participanți din edițiile #16–#${F.maxNr}. Cifre agregate din datele declarate la înscriere.</p>
       </div>
     </div>
   </div></section>
