@@ -548,3 +548,6 @@ ul.ro { margin: 0; padding-left: 18px; }
 .bld-check li a { margin-left: auto; font-size: 12.5px; }
 a.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 a.btn.primary:hover { text-decoration: none; filter: brightness(1.07); }
+.roles { display: flex; flex-wrap: wrap; gap: 6px; }
+.roles span { font-size: 12.5px; padding: 4px 10px; border-radius: 20px; background: var(--accent-soft); color: var(--accent); }
+.roles b { font-weight: 700; margin-right: 4px; }

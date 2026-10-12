@@ -33,39 +33,65 @@ const CMS = (() => {
   const visField = (tip, id) => (S.on ? fs_('Vizibilitate', checks('_vis', [['on', 'Apare pe site'], ['off', 'Ascuns (rămâne în panou)']], hidden(tip, id) ? 'off' : 'on', 'radio')) : '');
 
   /* ---------- tipurile ---------- */
-  const ROLE_OPTS = [['trainer', 'Trainer'], ['antreprenor invitat', 'Antreprenor invitat'], ['facilitator', 'Facilitator'], ['participant', 'Participant (alumni)'], ['echipă', 'Echipă']];
-  const roleLabel = (t) => (t.includes('trainer') ? 'Trainer' : t.includes('antreprenor invitat') ? 'Antreprenor invitat' : t.includes('facilitator') ? 'Facilitator' : t.includes('participant') ? 'Alumni' : t.includes('echipă') ? 'Echipă' : 'Rol');
+  // rolurile care se pot pune de mână (cât timp omul nu e încă în agenda vreunui atelier); participarea vine doar din ediții
+  const ROLE_MANUAL = [['trainer', 'Trainer'], ['antreprenor invitat', 'Antreprenor invitat'], ['facilitator', 'Facilitator'], ['echipă', 'Echipa programului']];
+  const RL = { trainer: 'Trainer', 'antreprenor invitat': 'Antreprenor invitat', facilitator: 'Facilitator', invitat: 'Invitat' };
+  const t0 = () => new Date().toISOString().slice(0, 10);
+  // o ediție e încheiată când e marcată așa sau când toate atelierele datate au trecut
+  const edEnded = (e) => /închis|încheiat/i.test(e.status || '') || (e.ateliere.some((a) => a.data) && e.ateliere.every((a) => !a.data || a.data < t0()));
+  const partsOf = (id) => D.editii.filter((e) => e.participanti.some((x) => x.persoana === id));
+  // rolurile unui om, cu edițiile lor, calculate din agende și participări
+  function rolesOf(p) {
+    const out = [], by = {};
+    (p.aparitii || []).forEach((a) => { (by[a.rol] ||= new Set()).add(a.editie); });
+    Object.entries(by).forEach(([r, s]) => out.push([RL[r] || cap(r), [...s]]));
+    const parts = partsOf(p.id), alumni = parts.filter(edEnded), now = parts.filter((e) => !edEnded(e));
+    if (now.length) out.push(['Participant', now.map((e) => e.id)]);
+    if (alumni.length) out.push(['Alumni', alumni.map((e) => e.id)]);
+    return out;
+  }
+  const roleLabel = (t, id) => { const parts = id ? partsOf(id) : []; return t.includes('trainer') ? 'Trainer' : t.includes('antreprenor invitat') ? 'Antreprenor invitat' : t.includes('facilitator') ? 'Facilitator' : parts.some((e) => !edEnded(e)) ? 'Participant' : t.includes('participant') ? 'Alumni' : t.includes('echipă') ? 'Echipă' : 'Participant'; };
   const personRow = (p) => ({ img: p.imagine, title: p.nume, meta: `${p.companii?.[p.companii.length - 1] || ''}${p.editii?.length ? ` · ${p.editii.length === 1 ? '1 ediție' : p.editii.length + ' ediții'}: ${p.editii.slice(-4).map(eLab).join(', ')}` : ''}` });
-  const personCard = (v) => `<div class="sp-card"><div class="ph" style="${v.imagine ? `background-image:url('${esc(v.imagine)}')` : ''}">${v.imagine ? '' : initials(v.nume) || '?'}</div><div class="tx"><b>${esc(v.nume || 'Nume Prenume')}</b><small>${esc(v.functie || '')}${v.functie && v.companie ? ', ' : ''}${esc(v.companie || '')}</small><br><span class="pill">${esc(roleLabel([].concat(v.tipuri || [])))}</span></div></div>`;
+  const personCard = (v) => `<div class="sp-card"><div class="ph" style="${v.imagine ? `background-image:url('${esc(v.imagine)}')` : ''}">${v.imagine ? '' : initials(v.nume) || '?'}</div><div class="tx"><b>${esc(v.nume || 'Nume Prenume')}</b><small>${esc(v.functie || '')}${v.functie && v.companie ? ', ' : ''}${esc(v.companie || '')}</small><br><span class="pill">${esc(roleLabel([].concat(v.tipuri || []), v.id))}</span></div></div>`;
   function personWhere(v) {
     const w = [], t = [].concat(v.tipuri || []);
     if (t.includes('echipă')) w.push(['/despre#echipa', 'echipa, pe pagina Despre']);
-    if (t.includes('participant')) w.push(['/', 'cifrele agregate ale edițiilor']);
     if (t.some((x) => ['trainer', 'antreprenor invitat', 'facilitator', 'invitat'].includes(x))) w.push(['/', 'traineri pe homepage'], ['/traineri', 'lista trainerilor (în lucru)']);
     (v.editii || []).slice(-3).forEach((e) => w.push([eUrl(e), `ediția ${eLab(e)}`]));
+    if (v.id && partsOf(v.id).length) w.push(['/', 'cifrele agregate ale edițiilor (fără nume)']);
     [...new Set((v.aparitii || []).map((a) => a.tema))].filter((x) => FULL.includes(x)).slice(0, 2).forEach((x) => w.push([`/teme/${x}`, 'pagina temei']));
     return w;
   }
+  // ediția la care se adaugă de obicei participanți: cea mai nouă care nu s-a încheiat
+  const edDefault = () => eds().find((e) => !edEnded(e))?.id || eds()[0].id;
   const personType = (kind, label, one, desc) => ({
     tip: 'oameni', label, one, desc, kind,
     items: () => D.oameni.filter((p) => (kind === 'facilitator' ? p.tipuri.includes('facilitator') || p.tipuri.includes('invitat') : p.tipuri.includes(kind))),
-    row: personRow, blank: () => ({ tipuri: [kind], aparitii: [], editii: [], companii: [], functii: [] }),
+    row: personRow, blank: () => ({ tipuri: kind === 'participant' ? [] : [kind], aparitii: [], editii: [], companii: [], functii: [], _addPart: kind === 'participant' ? edDefault() : null }),
     fields: (p) => {
-      const part = D.editii.flatMap((e) => e.participanti.filter((x) => x.persoana === p.id).map((x) => ({ editie: e.id, companie: Oid(x.organizatie)?.nume || '', cifra_afaceri: x.cifra_afaceri ?? '', angajati: x.angajati ?? '' })));
+      const part = partsOf(p.id).map((e) => { const x = e.participanti.find((y) => y.persoana === p.id); return { editie: e.id, companie: Oid(x.organizatie)?.nume || '', cifra_afaceri: x.cifra_afaceri ?? '', angajati: x.angajati ?? '' }; });
+      if (p._addPart && !part.some((x) => x.editie === p._addPart)) part.unshift({ editie: p._addPart, companie: p.companii?.[p.companii.length - 1] || '', cifra_afaceri: '', angajati: '' });
+      const showParts = kind === 'participant' || part.length;
+      const roles = p.id ? rolesOf(p) : [];
+      const manualOn = (p.tipuri || []).filter((t) => t === 'echipă' || !(p.aparitii || []).some((a) => a.rol === t));
       return fs_('Cine e', `${inp('nume', 'Nume și prenume', p.nume, { ph: 'ex. Andreea Popescu', req: true })}<div class="dup" id="dup" hidden></div>${photo('imagine', p.imagine)}${inp('linkedin', 'LinkedIn', p.linkedin, { ph: 'https://www.linkedin.com/in/…' })}`)
-        + fs_('Rol în program', `${checks('tipuri', ROLE_OPTS, p.tipuri)}<small class="ro">Un om poate avea mai multe roluri: un alumni care revine ca invitat rămâne aceeași fișă. Rolurile de trainer și invitat vin și din agenda atelierelor.</small>`)
+        + (showParts ? fs_('Participări la ediții <span class="tag warn">cifrele rămân doar în panou</span>', rows('participari', 'Ediția, compania și cifrele declarate la înscriere', part, [['editie', '', 1, { select: eds().map((e) => [e.id, `${eLab(e.id)}${edEnded(e) ? '' : ' · în curs'}`]) }], ['companie', 'Companie', 1.4], ['cifra_afaceri', 'Cifra de afaceri (lei)', 1, 'num'], ['angajati', 'Angajați', .6, 'num']], '+ participare la altă ediție') + '<small class="ro">Cât timp ediția nu s-a încheiat, omul apare ca participant; după, devine alumni. Pe site apar doar cifrele agregate.</small>') : '')
+        + fs_('Roluri în program', `${roles.length ? `<div class="roles">${roles.map(([r, L]) => `<span><b>${esc(r)}</b> ${L.map(eLab).join(', ')}</span>`).join('')}</div><small class="ro">Se calculează singure: din agenda atelierelor (trainer, invitat) și din participări (participant, alumni).</small>` : '<small class="ro">Încă fără roluri în ediții. Participarea se adaugă mai sus; trainerii și invitații se pun în agenda atelierelor.</small>'}
+          <div class="f"><label>Adaugă manual</label>${checks('tipuri', ROLE_MANUAL, manualOn)}<small>Pentru cine nu e încă în agenda unui atelier (de ex. un trainer nou) sau face parte din echipă.</small></div>`)
         + fs_('Companie și funcție', f2(inp('companie', 'Companie', p.companii?.[p.companii.length - 1], { list: 'cms-orgs', ph: 'Caută sau scrie una nouă', hint: 'Dacă nu există, se adaugă și în Organizații.' }), inp('functie', 'Funcția afișată', p.functii?.[p.functii.length - 1], { ph: 'ex. Fondator & CEO' })))
-        + (kind === 'participant' ? fs_('Participări <span class="tag warn">cifrele rămân doar în panou</span>', rows('participari', 'Ediția, compania și cifrele declarate', part, [['editie', '', 1, { select: eds().map((e) => [e.id, eLab(e.id)]) }], ['companie', 'Companie', 1.4], ['cifra_afaceri', 'Cifra de afaceri (lei)', 1, 'num'], ['angajati', 'Angajați', .6, 'num']], '+ participare la o ediție') + '<small class="ro">Pe site apar doar cifrele agregate ale edițiilor.</small>') : '')
         + (kind !== 'participant' ? fs_('Prezentare', area('bio', 'Câteva rânduri despre el/ea', p.bio, { ph: '2–3 fraze. Apare pe fișa de pe site.' })) : '')
-        + (p.aparitii?.length ? fs_('Unde apare în program', `<ul class="ro">${p.aparitii.slice(-6).reverse().map((a) => `<li><b>${eLab(a.editie)}</b> · ${esc(a.titlu || '')} · ${esc(a.rol)}</li>`).join('')}</ul><small class="ro">Aparițiile se schimbă din atelier: Ediții › ediția › Ateliere › Editează.</small>`) : '')
+        + (p.aparitii?.length ? fs_('Unde apare în program', `<ul class="ro">${p.aparitii.slice(-6).reverse().map((a) => `<li><b>${eLab(a.editie)}</b> · ${esc(a.titlu || '')} · ${esc(a.rol)}</li>`).join('')}</ul><small class="ro">Aparițiile se schimbă din atelier: Ediții › ediția › Construiește › Traineri și invitați.</small>`) : '')
         + visField('oameni', p.id);
     },
-    values: (p) => ({ nume: p.nume, imagine: p.imagine, companie: p.companii?.[p.companii.length - 1], functie: p.functii?.[p.functii.length - 1], tipuri: p.tipuri }),
+    values: (p) => ({ id: p.id, nume: p.nume, imagine: p.imagine, companie: p.companii?.[p.companii.length - 1], functie: p.functii?.[p.functii.length - 1], tipuri: p.tipuri }),
     preview: personCard, where: personWhere,
     dup: (q) => D.oameni.filter((p) => nrm(q).split(/\s+/).every((x) => nrm(p.nume).includes(x))),
     async save(f, p, nou) {
-      const v = form(f), ops = [];
+      const v = form(f);
       if (!v.nume.trim()) throw new Error('Scrie numele.');
+      const want = rowsVal(f, 'participari').filter((x) => x.editie);
+      if (kind === 'participant' && !want.length) throw new Error('Alege ediția la care participă.');
+      if (new Set(want.map((x) => x.editie)).size < want.length) throw new Error('Aceeași ediție apare de două ori la participări.');
       let orgId = null;
       if (v.companie.trim()) {
         const o = D.organizatii.find((x) => nrm(x.nume) === nrm(v.companie));
@@ -73,22 +99,23 @@ const CMS = (() => {
       }
       const comp = [...(p.companii || []).filter((c) => nrm(c) !== nrm(v.companie)), v.companie.trim()].filter(Boolean);
       const fn = [...(p.functii || []).filter((c) => c !== v.functie), v.functie.trim()].filter(Boolean);
+      // rolurile bifate de mână; participarea și aparițiile din agende se adaugă singure la reconstruire
       const date = { nume: v.nume.trim(), imagine: v.imagine || null, linkedin: v.linkedin || null, companii: comp, functii: fn, tipuri: v.tipuri, organizatii: [...new Set([...(p.organizatii || []), orgId].filter(Boolean))] };
       if (v.bio !== undefined) date.bio = v.bio.trim() || null;
       const r = await put({ op: 'entitate', tip: 'oameni', id: p.id, nou, date, eticheta: `${nou ? 'om nou' : 'om'}: ${date.nume}` });
       const id = r.id || p.id;
-      if (kind === 'participant') {
-        const want = rowsVal(f, 'participari').filter((x) => x.editie);
-        const touched = new Set([...want.map((x) => x.editie), ...D.editii.filter((e) => e.participanti.some((x) => x.persoana === id)).map((e) => e.id)]);
+      if ($('[data-rows="participari"]', f)) {
+        const touched = new Set([...want.map((x) => x.editie), ...partsOf(id).map((e) => e.id)]);
         for (const eid of touched) {
           const e = ED(eid), cur = e.participanti.find((x) => x.persoana === id), w = want.find((x) => x.editie === eid);
           let L = e.participanti.filter((x) => x.persoana !== id);
           if (w) {
-            const o = D.organizatii.find((x) => nrm(x.nume) === nrm(w.companie));
-            const oid = o?.id || (w.companie ? (await put({ op: 'entitate', tip: 'organizatii', nou: true, date: { nume: w.companie, tip: 'companie' }, eticheta: `companie nouă: ${w.companie}` })).id : null);
+            const o = D.organizatii.find((x) => nrm(x.nume) === nrm(w.companie || v.companie));
+            const oname = (w.companie || v.companie).trim();
+            const oid = o?.id || (oname ? (await put({ op: 'entitate', tip: 'organizatii', nou: true, date: { nume: oname, tip: 'companie' }, eticheta: `companie nouă: ${oname}` })).id : null);
             L = [...L, { ...(cur || {}), persoana: id, nume: date.nume, organizatie: oid, cifra_afaceri: num(w.cifra_afaceri), angajati: num(w.angajati), descriere: cur?.descriere || null, imagine: date.imagine || cur?.imagine || null }];
           }
-          if (JSON.stringify(L) !== JSON.stringify(e.participanti)) await put({ op: 'participanti', id: eid, lista: L, eticheta: `participanți ${eLab(eid)}` });
+          if (JSON.stringify(L) !== JSON.stringify(e.participanti)) await put({ op: 'participanti', id: eid, lista: L, eticheta: `participanți ${eLab(eid)}: ${date.nume}` });
         }
       }
       await visSave(f, 'oameni', id);
@@ -349,7 +376,7 @@ const CMS = (() => {
     if (nrm(q).trim().length < 3) { box.hidden = true; return; }
     const hits = ty.dup(q.trim()).slice(0, 3);
     box.hidden = !hits.length;
-    box.innerHTML = `<b>Există deja:</b>${hits.map((h) => `<div class="d-row">${h.imagine || h.logo ? `<img class="av ${h.logo ? 'sq' : ''}" src="${esc(h.imagine || h.logo)}" alt="">` : `<span class="av">${initials(h.nume)}</span>`}<div><b>${esc(h.nume)}</b><br><small>${esc((h.tipuri || [h.format]).join(', '))}${h.editii?.length ? ' · ' + h.editii.map(eLab).join(', ') : ''}</small></div><button type="button" class="sm" data-cms-dup="${esc(h.id)}">Deschide fișa</button></div>`).join('')}<small>Dacă e același, deschide fișa existentă și adaugă rolul nou, în loc să creezi încă una.</small>`;
+    box.innerHTML = `<b>Există deja:</b>${hits.map((h) => `<div class="d-row">${h.imagine || h.logo ? `<img class="av ${h.logo ? 'sq' : ''}" src="${esc(h.imagine || h.logo)}" alt="">` : `<span class="av">${initials(h.nume)}</span>`}<div><b>${esc(h.nume)}</b><br><small>${esc((h.tipuri || [h.format]).join(', '))}${h.editii?.length ? ' · ' + h.editii.map(eLab).join(', ') : ''}</small></div><button type="button" class="sm primary" data-cms-dup="${esc(h.id)}">${T[cur.key]?.kind === 'participant' ? 'Folosește această fișă' : 'Deschide fișa'}</button></div>`).join('')}<small>${T[cur.key]?.kind === 'participant' ? 'A mai fost în program? Folosește fișa lui: i se adaugă participarea la ediția nouă, fără o fișă dublă.' : 'Dacă e același, deschide fișa existentă și adaugă rolul nou, în loc să creezi încă una.'}</small>`;
   }
   function close() { $('#cms-drawer')?.classList.remove('on'); $('#cms-scrim')?.classList.remove('on'); cur = null; }
   async function save(btn) {
@@ -626,6 +653,7 @@ const CMS = (() => {
     if (d.bldBen) { const src = ED(d.bldBen), box = $('[data-rows=beneficii] .lrows'); const tpl = box.firstElementChild; box.innerHTML = ''; src.beneficii.forEach((b) => { const c = tpl.cloneNode(true); $('input', c).value = b; box.append(c); }); t.remove(); return; }
     if (d.bldVis) { return bldAction(() => put({ op: 'ascuns', tip: 'editii', id: bid, ascuns: d.bldVis === 'off', eticheta: `ediția ${eLab(bid)} ${d.bldVis === 'off' ? 'ascunsă' : 'arătată pe site'}` }), d.bldVis === 'off' ? 'Ediția e ascunsă de pe site.' : 'Ediția apare acum pe site-ul local.'); }
     if (d.cmsEdit) { const ty = T[d.cmsEdit], x = ty.items().find((i) => String(i.id) === d.cmsId); if (x) open(d.cmsEdit, x); return; }
+    if (d.cmsDup && T[cur.key].tip === 'oameni') { const k = cur.key, p = Pid(d.cmsDup); if (p) open(k, { ...p, _addPart: T[k].kind === 'participant' ? edDefault() : null }); return; }
     if (d.cmsDup) { const k = cur.key; const x = T[k].tip === 'oameni' ? Pid(d.cmsDup) : T[k].tip === 'organizatii' ? Oid(d.cmsDup) : D.teme.find((y) => y.id === d.cmsDup); if (x) open(T[k].tip === 'oameni' ? 'oameni' : T[k].tip === 'organizatii' ? 'organizatii' : 'teme', x); return; }
     if (d.cmsNew !== undefined) { if (!d.cmsNew) return pickNew(); const ty = T[d.cmsNew]; const b = ty.blank ? ty.blank() : {}; if (d.cmsEditie) b.editie = d.cmsEditie; open(d.cmsNew, b, true); return; }
     if (d.cmsPick !== undefined) { pickNew(d.cmsPick); return; }

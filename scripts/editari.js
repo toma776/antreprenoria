@@ -106,7 +106,9 @@ function relink(out, M) {
   // tipurile oamenilor: din apariții și participări, plus cele puse manual (echipă) sau bifate în panou
   out.oameni.forEach((p) => {
     const manual = M.oameni?.[p.id]?.tipuri;
-    p.tipuri = manual ? [...manual] : [...p._tip, ...p._keep.filter((t) => !p._tip.includes(t))];
+    // rolurile din panou se adaugă celor calculate (agende, participări); „participant” vine doar din participări
+    const extra = manual ? manual.filter((t) => t !== 'participant') : p._keep;
+    p.tipuri = [...p._tip, ...extra.filter((t) => !p._tip.includes(t))];
     delete p._tip; delete p._keep;
     p.nr_aparitii = p.aparitii.length;
   });
