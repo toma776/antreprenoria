@@ -580,3 +580,8 @@ a.btn.primary:hover { text-decoration: none; filter: brightness(1.07); }
 @media (max-width: 900px) { .bld-steps { position: static; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); } }
 .al-status { padding: 8px 10px; border-radius: 8px; background: var(--panel-2); border: 1px solid var(--line); color: var(--muted); font-size: 12.5px; }
 .al-status.ok { background: var(--ok-soft); border-color: transparent; color: var(--ok); }
+/* anunțul de arhivare pentru o ediție încheiată */
+.arch { display: flex; gap: 14px; align-items: center; padding: 12px 16px; margin-bottom: 14px; border-radius: var(--radius); background: var(--warn-soft); border: 1px solid color-mix(in srgb, var(--warn) 35%, transparent); }
+.arch > div { flex: 1; display: grid; gap: 2px; }
+.arch b { color: var(--ink); }
+.arch span { font-size: 13px; color: var(--muted); }

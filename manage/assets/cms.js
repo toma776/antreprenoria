@@ -526,7 +526,7 @@ const CMS = (() => {
     return `<div class="head"><div><div class="crumb"><a href="/manage/entitati/editii">← Ediții</a> · entități › Ediții › ${esc(eLab(e.id))}</div>
         <h1><span class="cat-ico">${icon('editii')}</span>Construiește Antreprenoria ${esc(eLab(e.id))} ${off ? '<span class="tag warn">ascunsă pe site</span>' : '<span class="tag ok">pe site</span>'}</h1></div>
         <a class="btn" href="${url}" target="_blank" rel="noopener">${off ? 'Previzualizează pagina' : 'Vezi pagina'} ↗</a><a class="btn" href="/manage/entitati/editii/${e.id}">Fișa ediției</a></div>
-      ${pendingBar()}
+      ${pendingBar()}${archiveBanner(e)}
       <div class="bld">
         <nav class="bld-steps">${PASI.map(([k, l], i) => { const ok = done(ck[k]), opt = !ck[k].length; return `<a href="/manage/entitati/editii/${e.id}/construieste/${k}" class="${k === cur ? 'on' : ''} ${ok && !opt ? 'ok' : ''}"><i>${ok && !opt ? '✓' : i + 1}</i><span>${l}${count[k] != null ? ` <em>${count[k]}</em>` : ''}${opt ? ` <small>${{ participanti: 'după selecție', parteneri: 'dacă sunt' }[k] || 'opțional'}</small>` : !ok ? ` <small>${ck[k].filter(([o]) => !o).length} de completat</small>` : ''}</span></a>`; }).join('')}</nav>
         <div class="bld-main" id="bld" data-editie="${e.id}" data-pas="${cur}">
@@ -656,6 +656,23 @@ const CMS = (() => {
   const refreshData = async () => { D = store.entitati = await api.get('/api/entitati'); };
   async function bldAction(fn, msg) { try { await fn(); await refresh(); go(routeFromPath()); if (msg) toast(msg); } catch (err) { toast(err.message); } }
 
+  /* ---------- arhivarea: după ultimul atelier, ediția se poate închide oficial ---------- */
+  const lastDay = (e) => e.ateliere.map((a) => a.data).filter(Boolean).sort().pop();
+  const archived = (e) => /închis|încheiat/i.test(e.status || '');
+  // de arhivat: are ateliere datate, toate au trecut, dar starea nu e încă „Ediție închisă”
+  const toArchive = (e) => !archived(e) && e.ateliere.some((a) => a.data) && e.ateliere.every((a) => !a.data || a.data < t0());
+  const archiveBanner = (e) => (toArchive(e) ? `<div class="arch"><div><b>Ediția ${esc(eLab(e.id))} s-a încheiat pe ${esc(dayRo(lastDay(e)))}.</b><span>Arhivarea închide înscrierile, scoate prețul de pe site și trece pagina ediției în formatul edițiilor anterioare. Participanții devin alumni.</span></div>${S.on ? `<button class="primary" data-cms-archive="${esc(e.id)}">Arhivează</button>` : ''}</div>` : '');
+  async function archive(id, btn) {
+    const e = ED(id);
+    if (!confirm(`Arhivezi ediția ${eLab(id)}?\n\n• starea devine „Ediție închisă”\n• înscrierile se închid și prețul dispare de pe site\n• pagina ediției trece în formatul edițiilor anterioare\n• cei ${e.participanti.length} participanți devin alumni`)) return;
+    btn.disabled = true; btn.textContent = 'Se arhivează…';
+    try {
+      await put({ op: 'entitate', tip: 'editii', id, date: { status: 'Ediție închisă', deschisa: false, preturi: (e.preturi || []).map((p) => ({ ...p, ascuns: true })) }, eticheta: `ediția ${eLab(id)} arhivată` });
+      await refresh(); go(routeFromPath());
+      toast(`Ediția ${eLab(id)} e arhivată. Se vede pe site-ul local; pe cel public după „Publică pe site”.`);
+    } catch (err) { toast(err.message); btn.disabled = false; btn.textContent = 'Arhivează'; }
+  }
+
   /* ---------- participanții unei ediții: formularul de adăugare ---------- */
   function pdupShow(q) {
     const box = $('#bld-pdup'), n = nrm(q).trim();
@@ -735,13 +752,14 @@ const CMS = (() => {
 
   /* ---------- evenimente ---------- */
   document.addEventListener('click', async (e) => {
-    const t = e.target.closest('[data-cms-edit],[data-cms-new],[data-cms-close],[data-cms-save],[data-cms-del],[data-cms-dup],[data-cms-publish],[data-cms-pick],[data-cms-texte-save],[data-cms-texte-reset],[data-add-row],[data-del-row],[data-del-chip],[data-photo-clear],[data-bld-save],[data-bld-perioada],[data-bld-copy],[data-bld-tema],[data-bld-del],[data-bld-ben],[data-bld-vis],[data-bld-padd],[data-bld-pclear],[data-bld-pick],[data-bld-prem],[data-bld-lead],.sg[data-href],.cat[data-href]');
+    const t = e.target.closest('[data-cms-edit],[data-cms-new],[data-cms-close],[data-cms-save],[data-cms-del],[data-cms-dup],[data-cms-publish],[data-cms-pick],[data-cms-texte-save],[data-cms-texte-reset],[data-add-row],[data-del-row],[data-del-chip],[data-photo-clear],[data-bld-save],[data-bld-perioada],[data-bld-copy],[data-bld-tema],[data-bld-del],[data-bld-ben],[data-bld-vis],[data-cms-archive],[data-bld-padd],[data-bld-pclear],[data-bld-pick],[data-bld-prem],[data-bld-lead],.sg[data-href],.cat[data-href]');
     if (!t) { if (e.target.id === 'cms-scrim') close(); return; }
     if (t.matches('.sg[data-href],.cat[data-href]')) { if (e.target.closest('button,a')) return; e.preventDefault(); navigate(t.dataset.href); return; }
     e.preventDefault();
     const d = t.dataset;
     const bid = $('#bld')?.dataset.editie;
     if (d.bldSave !== undefined) { bldSave(t); return; }
+    if (d.cmsArchive) { archive(d.cmsArchive, t); return; }
     if (d.bldPadd !== undefined) { pAdd(t); return; }
     if (d.bldPclear !== undefined) { pClear(); return; }
     if (d.bldPick) { pPick(d.bldPick); return; }
@@ -802,5 +820,5 @@ const CMS = (() => {
   document.addEventListener('dragover', (e) => { if (e.target.closest?.('[data-photo]')) e.preventDefault(); });
   document.addEventListener('drop', (e) => { const box = e.target.closest?.('[data-photo]'); if (box && e.dataTransfer.files[0]) { e.preventDefault(); upload(e.dataTransfer.files[0], box); } });
 
-  return { S, T, GROUP, CALC, SITE, builder, afterRender, refresh, open, pickNew, pendingBar, addBtn, listHtml, rowHtml, sample, typeSite, textePage, texteCat, get on() { return S.on; } };
+  return { S, T, GROUP, CALC, SITE, builder, afterRender, archiveBanner, toArchive, archived, refresh, open, pickNew, pendingBar, addBtn, listHtml, rowHtml, sample, typeSite, textePage, texteCat, get on() { return S.on; } };
 })();

@@ -154,7 +154,7 @@ function programContact(D) {
 function editionCards(D) {
   return `<div class="ed-cards">${edOrder(D).reverse().map((e) => `
     <a class="ed-card ${e.serie === 'Cluj' ? 'cluj' : ''}" href="/manage/entitati/editii/${e.id}${e.ascuns ? '/construieste' : ''}">
-      <div class="cat-top"><span class="ed-num">${esc(edLabel(e))}<small>${esc(e.serie)}</small></span>${e.ascuns ? '<span class="tag warn">în construcție · ascunsă</span>' : tags(e.status, e.deschisa ? 'ok' : 'grey')}</div>
+      <div class="cat-top"><span class="ed-num">${esc(edLabel(e))}<small>${esc(e.serie)}</small></span>${e.ascuns ? '<span class="tag warn">în construcție · ascunsă</span>' : CMS.toArchive(e) ? '<span class="tag warn">încheiată · de arhivat</span>' : CMS.archived(e) ? '<span class="tag grey">arhivată</span>' : tags(e.status, e.deschisa ? 'ok' : 'grey')}</div>
       <div class="muted small">${esc(e.perioada)}${e.locatii.length ? ' · ' + esc(e.locatii.filter((l) => l !== 'TBD')[0] || '') : ''}</div>
       <div class="ed-stats"><span><b>${e.ateliere.length}</b> ateliere</span><span><b>${e.participanti.length}</b> participanți</span><span><b>${new Set(e.ateliere.flatMap((a) => a.program.flatMap((p) => p.speakeri.map((s) => s.persoana)))).size}</b> speakeri</span><span><b>${editionPartners(D, e).length}</b> parteneri</span></div>
     </a>`).join('')}</div>`;
@@ -475,7 +475,7 @@ routes.entitati = function renderEntitati() {
   // constructorul ediției: pașii, de la date la publicare
   if (cat?.id === 'editii' && IX.ED[grpId] && sub === 'construieste') { $('#view').innerHTML = CMS.builder(grpId, pas); CMS.afterRender(); return; }
   if (cat?.id === 'editii' && IX.ED[grpId]) {
-    $('#view').innerHTML = CMS.pendingBar() + editionPage(D, IX.ED[grpId], ED_SUBS.some(([s]) => s === sub) ? sub : 'program');
+    $('#view').innerHTML = CMS.pendingBar() + CMS.archiveBanner(IX.ED[grpId]) + editionPage(D, IX.ED[grpId], ED_SUBS.some(([s]) => s === sub) ? sub : 'program');
     $('#view .head')?.insertAdjacentHTML('beforeend', `<a class="btn primary" href="/manage/entitati/editii/${esc(grpId)}/construieste">Construiește ediția</a>${editBtn('editii', grpId)}`);
     return;
   }
@@ -533,7 +533,7 @@ routes.entitati = function renderEntitati() {
       <p class="lead">${esc(cat.desc)}</p>
       ${CMS.pendingBar()}
       ${pills}
-      ${cat.id === 'editii' ? editionCards(D) : `<div class="cats">${lists.map(card).join('')}</div>
+      ${cat.id === 'editii' ? D.editii.map((x) => CMS.archiveBanner(x)).join('') + editionCards(D) : `<div class="cats">${lists.map(card).join('')}</div>
         ${views.length ? `<section style="margin-top:22px"><h2>Vederi calculate <span class="n">se completează singure din liste, nu se editează</span></h2><div class="cats">${views.map((g) => { const x = G(cat, g); return `<a class="cat calcv" href="/manage/entitati/${cat.id}/${g}"><div class="cat-top"><span class="cat-ico">${icon(cat.icon)}</span>${x.count != null ? `<span class="cat-total">${x.count}</span>` : ''}</div><h3>${esc(x.title)} <span class="tag grey">automat</span></h3><p>${esc(cut(x.desc, 160))}</p><span class="cat-open">Deschide →</span></a>`; }).join('')}</div></section>` : ''}`}`;
     return;
   }
