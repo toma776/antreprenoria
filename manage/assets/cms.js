@@ -473,7 +473,7 @@ const CMS = (() => {
       oameni: ws.length ? [[fd.every((a) => slots(a).trainer.length), 'un trainer la fiecare atelier full-day'], [fd.every((a) => slots(a).invitati.length), 'antreprenori invitați la fiecare full-day']] : [[false, 'întâi atelierele (pasul 2)']],
       inscrieri: [[!e.deschisa || e.preturi.some((p) => p.pret_text), 'prețul (înscrierile sunt deschise)'], [e.beneficii.length > 0, 'ce primește participantul']],
       parteneri: [],
-      participanti: [],
+      participanti: ws.some((a) => a.data && a.data <= new Date().toISOString().slice(0, 10)) ? [[e.participanti.length > 0, 'participanții (ediția a început)']] : [],
       site: [[!hidden('editii', e.id), 'ediția e vizibilă pe site']],
     };
     return c;
@@ -491,7 +491,7 @@ const CMS = (() => {
         <a class="btn" href="${url}" target="_blank" rel="noopener">${off ? 'Previzualizează pagina' : 'Vezi pagina'} ↗</a><a class="btn" href="/manage/entitati/editii/${e.id}">Fișa ediției</a></div>
       ${pendingBar()}
       <div class="bld">
-        <nav class="bld-steps">${PASI.map(([k, l], i) => { const ok = done(ck[k]), opt = !ck[k].length; return `<a href="/manage/entitati/editii/${e.id}/construieste/${k}" class="${k === cur ? 'on' : ''} ${ok && !opt ? 'ok' : ''}"><i>${ok && !opt ? '✓' : i + 1}</i><span>${l}${count[k] != null ? ` <em>${count[k]}</em>` : ''}${opt ? ' <small>opțional</small>' : !ok ? ` <small>${ck[k].filter(([o]) => !o).length} de completat</small>` : ''}</span></a>`; }).join('')}</nav>
+        <nav class="bld-steps">${PASI.map(([k, l], i) => { const ok = done(ck[k]), opt = !ck[k].length; return `<a href="/manage/entitati/editii/${e.id}/construieste/${k}" class="${k === cur ? 'on' : ''} ${ok && !opt ? 'ok' : ''}"><i>${ok && !opt ? '✓' : i + 1}</i><span>${l}${count[k] != null ? ` <em>${count[k]}</em>` : ''}${opt ? ` <small>${{ participanti: 'după selecție', parteneri: 'dacă sunt' }[k] || 'opțional'}</small>` : !ok ? ` <small>${ck[k].filter(([o]) => !o).length} de completat</small>` : ''}</span></a>`; }).join('')}</nav>
         <div class="bld-main" id="bld" data-editie="${e.id}" data-pas="${cur}">
           ${S.on ? '' : '<div class="ro-note">Pe versiunea publicată panoul e doar pentru vizualizare.</div>'}
           ${STEP[cur](e, ck)}
@@ -541,7 +541,7 @@ const CMS = (() => {
     parteneri: (e) => `<h2>Parteneri și sponsori</h2><p class="lead">Partenerii ediției apar sus pe pagină; sponsorul unui atelier apare la atelierul lui.</p>
       <form id="bld-f"><div class="fs">${rows('parteneri', 'Partenerii ediției', e.parteneri.filter((x) => x.rol !== 'sponsor atelier').map((x) => ({ org: Oid(x.organizatie)?.nume || x.organizatie, rol: x.rol })), [['org', 'Organizația (scrie sau alege)', 1.4], ['rol', '', 1, { select: ORG_ROLES.filter(([r]) => r !== 'sponsor atelier') }]], '+ partener')}</div>
         <div class="fs"><h4>Sponsorii atelierelor</h4>${e.ateliere.slice().sort((a, b) => a.nr - b.nr).map((a) => `<div class="bld-sp" data-aid="${a.id}"><span>${a.nr}. ${esc(a.titlu)}</span><select data-k="sponsor"><option value="">Fără sponsor</option>${D.organizatii.slice().sort((x, y) => x.nume.localeCompare(y.nume, 'ro')).map((o) => `<option value="${o.id}" ${o.id === a.sponsor ? 'selected' : ''}>${esc(o.nume)}</option>`).join('')}</select><label class="ro"><input type="checkbox" data-k="cauta_sponsor" ${a.cauta_sponsor ? 'checked' : ''}> căutăm sponsor</label></div>`).join('') || '<small class="ro">Apar aici după ce adaugi atelierele.</small>'}</div></form>`,
-    participanti: (e) => `<h2>Participanți</h2><p class="lead">Antreprenorii selectați. Compania și cifrele fiecăruia se completează pe fișa lui (Oameni › Participanți); pe site apar doar agregat.</p>
+    participanti: (e) => `<h2>Participanți</h2><p class="lead">Antreprenorii selectați. Pasul se completează după selecție: ediția poate apărea pe site cu înscrierile deschise și fără ei, dar din ziua primului atelier devine obligatoriu. Compania și cifrele fiecăruia se completează pe fișa lui (Oameni › Participanți); pe site apar doar agregat.</p>
       <form id="bld-f"><div class="fs"><div class="f"><label>Participanți · ${e.participanti.length}</label><div class="rel" data-chips="participanti">${e.participanti.map((x) => chip(x)).join('')}<input class="rel-add" list="cms-people" placeholder="+ participant (scrie numele)"></div></div></div></form>`,
     site: (e, ck) => { const all = PASI.flatMap(([k, l]) => ck[k].map(([ok, t]) => [ok, t, k, l])); const off = hidden('editii', e.id); return `<h2>Pe site</h2><p class="lead">Verifică ce lipsește, apoi arată ediția pe site.</p>
       <div class="fs"><h4>Verificare</h4><ul class="bld-check">${all.map(([ok, t, k, l]) => `<li class="${ok ? 'ok' : ''}"><i>${ok ? '✓' : '!'}</i>${esc(cap(t))} <a href="/manage/entitati/editii/${e.id}/construieste/${k}">${esc(l)}</a></li>`).join('')}</ul></div>
