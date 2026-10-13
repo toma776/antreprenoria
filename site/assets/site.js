@@ -554,3 +554,60 @@ const peopleSearch = (() => {
     });
   });
 })();
+
+// /parteneri: formularul „Susține programul” (sponsorizare, găzduire, mentorat), deschis cu opțiunea butonului deja bifată
+(() => {
+  const dlg = document.getElementById('implica');
+  if (!dlg) return;
+  const form = dlg.querySelector('#im-form'), done = dlg.querySelector('.im-done'), status = form.querySelector('.af-status');
+  const open = (tip) => {
+    form.hidden = false; done.hidden = true; status.textContent = ''; status.className = 'af-status';
+    // butonul fără opțiune („Devino partener”) deschide formularul fără nicio alegere bifată
+    form.querySelectorAll('input[name="tip"]').forEach((r) => { r.checked = !!tip && r.value === tip; });
+    dlg.showModal();
+    // după alegerea opțiunii, primul câmp gol primește focusul
+    setTimeout(() => (form.querySelector('input[name="tip"]:checked') ? form.querySelector('#im-nume') : form.querySelector('input[name="tip"]')).focus(), 50);
+  };
+  document.querySelectorAll('[data-implica]').forEach((b) => b.addEventListener('click', (e) => { e.preventDefault(); open(b.dataset.implica); }));
+  dlg.querySelectorAll('[data-im-close]').forEach((b) => b.addEventListener('click', () => dlg.close()));
+  dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); }); // click pe fundal
+  // aceeași validare ca pe server (site/implicare.js)
+  const check = () => {
+    const v = (k) => (form.elements[k]?.value || '').trim(), errs = {};
+    if (!form.querySelector('input[name="tip"]:checked')) errs.tip = 'Alege cum vrei să te implici.';
+    if (v('nume').split(/\s+/).filter(Boolean).length < 2) errs.nume = 'Scrie numele și prenumele.';
+    if (v('companie').length < 2) errs.companie = 'Scrie numele companiei.';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v('email'))) errs.email = 'Adresa de email nu pare corectă.';
+    if (v('telefon') && v('telefon').replace(/\D/g, '').length < 9) errs.telefon = 'Numărul de telefon pare prea scurt.';
+    if (!form.elements.acord.checked) errs.acord = 'Avem nevoie de acordul tău ca să te putem contacta.';
+    return errs;
+  };
+  const show = (errs) => {
+    form.querySelectorAll('[data-f]').forEach((f) => { const m = errs[f.dataset.f]; f.classList.toggle('bad', !!m); const e = f.querySelector('.af-err'); if (e) e.textContent = m || ''; });
+    const first = form.querySelector('.bad input, .bad textarea');
+    if (first) first.focus();
+  };
+  form.addEventListener('input', (e) => { const f = e.target.closest('[data-f]'); if (f?.classList.contains('bad')) show(Object.fromEntries(Object.entries(check()).filter(([k]) => form.querySelector(`[data-f="${k}"]`).classList.contains('bad')))); });
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const errs = check();
+    show(errs);
+    if (Object.keys(errs).length) return;
+    const btn = form.querySelector('[type="submit"]');
+    btn.disabled = true; btn.textContent = 'Se trimite…';
+    const data = Object.fromEntries(new FormData(form));
+    data.acord = form.elements.acord.checked;
+    try {
+      const r = await fetch('/api/implicare', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+      const j = await r.json().catch(() => ({}));
+      if (r.status === 422 && j.errors) { show(j.errors); throw new Error(j.error); }
+      if (!r.ok) throw new Error('Nu am putut trimite mesajul acum. Încearcă din nou sau scrie-ne pe email.');
+      form.reset(); form.hidden = true; done.hidden = false; done.focus();
+    } catch (err) {
+      status.textContent = err.message || 'Nu am putut trimite mesajul.'; status.className = 'af-status err';
+    } finally { btn.disabled = false; btn.textContent = 'Trimite'; }
+  });
+  // deschis din adresă: /parteneri?implicare=sponsorizare
+  const q = new URLSearchParams(location.search).get('implicare');
+  if (q !== null) open(q);
+})();

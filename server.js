@@ -56,7 +56,7 @@ function safe(base, rel) {
 }
 // modulele site-ului se reîncarcă la fiecare cerere, ca schimbările din data/ și site/ să apară fără repornire
 function fresh(mod) {
-  ['./site/render', './site/brand', './site/menu', './site/home', './site/util', './site/edition', './site/program', './site/despre', './site/teme', './site/aplica', './site/texte', './site/traineri', './site/alumni', './site/parteneri'].forEach((m) => delete require.cache[require.resolve(m)]);
+  ['./site/render', './site/brand', './site/menu', './site/home', './site/util', './site/edition', './site/program', './site/despre', './site/teme', './site/aplica', './site/texte', './site/traineri', './site/alumni', './site/parteneri', './site/implicare'].forEach((m) => delete require.cache[require.resolve(m)]);
   return require(mod);
 }
 
@@ -190,6 +190,26 @@ async function handler(req, res) {
       const r = await fetch(`${SUPABASE.url}/rest/v1/aplicari`, { method: 'POST', headers: { apikey: SUPABASE.key, 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify(rec) }).catch(() => null);
       if (!r || !r.ok) { console.error('aplicare nesalvată', r && r.status, r && await r.text()); return sendJson(res, 503, { error: 'nedisponibil' }); }
       return sendJson(res, 200, { ok: true });
+    }
+    // formularul „Susține programul” (/parteneri): sponsorizare, găzduire, mentorat; salvat în Supabase (tabelul implicari)
+    if (url === '/api/implicare' && req.method === 'POST') {
+      const input = await body(req).catch(() => null);
+      if (!input) return sendJson(res, 400, { error: 'Cerere invalidă.' });
+      if (input.website) return sendJson(res, 200, { ok: true }); // câmpul-capcană pentru roboți
+      const v = fresh('./site/implicare').validate(input);
+      if (!v.ok) return sendJson(res, 422, { error: 'Verifică câmpurile marcate.', errors: v.errors });
+      const d = v.data;
+      const rec = { tip: d.tip, nume: d.nume, companie: d.companie, email: d.email, telefon: d.telefon || null, mesaj: d.mesaj || null, acord: true, sursa_pagina: String(req.headers.referer || '').slice(0, 300) || null };
+      const r = await fetch(`${SUPABASE.url}/rest/v1/implicari`, { method: 'POST', headers: { apikey: SUPABASE.key, 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify(rec) }).catch(() => null);
+      if (!r || !r.ok) { console.error('implicare nesalvată', r && r.status, r && await r.text()); return sendJson(res, 503, { error: 'nedisponibil' }); }
+      return sendJson(res, 200, { ok: true });
+    }
+    if (url === '/api/implicari' && req.method === 'GET') {
+      if (READ_ONLY) return sendJson(res, 403, { error: 'Mesajele se văd doar în panoul local.' });
+      if (!process.env.APLICARI_CHEIE) return sendJson(res, 503, { error: 'Lipsește APLICARI_CHEIE în .env.local.' });
+      const r = await fetch(`${SUPABASE.url}/rest/v1/rpc/implicari_lista`, { method: 'POST', headers: { apikey: SUPABASE.key, 'Content-Type': 'application/json' }, body: JSON.stringify({ cheie: process.env.APLICARI_CHEIE }) }).catch(() => null);
+      if (!r || !r.ok) return sendJson(res, 502, { error: 'Nu am putut citi mesajele din Supabase.' });
+      return sendJson(res, 200, await r.text());
     }
     // lista aplicărilor pentru panou: doar local, cu cheia din .env.local (pe Vercel panoul e public, deci nu le arată)
     if (url === '/api/aplicari' && req.method === 'GET') {

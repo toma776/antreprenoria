@@ -1,6 +1,7 @@
 // /parteneri: partenerii edițiilor, sponsorii atelierelor, gazdele și cum te poți implica.
 // Totul vine din ediții: partenerii din antetul fiecărei ediții, sponsorii și gazdele din ateliere.
 const { esc, fmtDay, today } = require('./util');
+const { implicareDialog } = require('./implicare');
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : (n % 100 === 0 || n % 100 >= 20 ? 'de ' : '') + many}`;
 const edUrl = (e) => (e.serie === 'Cluj' ? `/editii/cluj-${e.numar}` : `/editii/${e.numar}`);
@@ -39,7 +40,6 @@ function parteneriBody(ctx, F) {
   const d = partnersData(ctx);
   const { T } = d;
   const contact = d.team['larisa-slavenie'] || d.team['raluca-bedereag'], spons = d.team['iulian-rizea'] || contact;
-  const mail = (m, subject) => (m ? `mailto:${esc(m.email)}?subject=${encodeURIComponent(subject)}` : '/despre#contact');
   const NAV = [['parteneri', 'Partenerii edițiilor'], ['sponsori', 'Sponsorii atelierelor'], ...(d.ciclu.length ? [['din-alumni', 'Din alumni, parteneri']] : []), ['implica-te', 'Implică-te']];
   return `<main>
   <section class="hero pg-hero"><div class="wrap">
@@ -49,7 +49,7 @@ function parteneriBody(ctx, F) {
         <p class="eyebrow">Parteneri și sponsori</p>
         <h1>Companiile care fac posibil programul.</h1>
         <p class="lead">Partenerii susțin câte o ediție întreagă, sponsorii câte un atelier, gazdele își deschid sediul pentru o zi de lucru. Antreprenoria e organizată de Fundația Romanian Business Leaders.</p>
-        <div class="hero-actions"><a class="btn btn-primary btn-lg" href="#implica-te">Devino partener</a><a class="btn btn-ghost btn-lg" href="#sponsori">Vezi sponsorii</a></div>
+        <div class="hero-actions"><a class="btn btn-primary btn-lg" href="?implicare=sponsorizare#implica-te" data-implica="">Devino partener</a><a class="btn btn-ghost btn-lg" href="#sponsori">Vezi sponsorii</a></div>
       </div>
       <aside class="pg-glance" aria-label="În cifre">
         <div class="ed-live-top"><span>În cifre</span><span>din ${d.byId ? chrono(ctx.D)[0].an : ''}</span></div>
@@ -101,13 +101,14 @@ function parteneriBody(ctx, F) {
     <div class="sec-head"><p class="eyebrow">Implică-te</p><h2>Trei feluri de a susține programul.</h2></div>
     ${d.open.length ? `<div class="pt-open"><span class="ask-kicker">Caută sponsor acum</span><ul>${d.open.map(({ e, a }) => `<li><b>${esc(cleanTitle(a.titlu))}</b><span>ediția ${esc(edLabel(e))}${a.data ? ` · ${fmtDay(a.data)}` : ''}${a.locatie ? ` · ${esc(a.locatie)}` : ''}</span></li>`).join('')}</ul></div>` : ''}
     <div class="pt-ways">
-      <div class="pt-way" id="sponsorizeaza"><span class="pt-n">01</span><h3>Sponsorizează un atelier</h3><p>Numele companiei tale pe pagina ediției și la atelier, o zi alături de 25 de antreprenori care lucrează la tema aleasă și un speaker din echipa ta, dacă vrei.</p><a class="btn btn-primary" href="${mail(spons, 'Sponsorizare atelier Antreprenoria')}">Scrie-ne despre sponsorizare</a></div>
-      <div class="pt-way" id="gazduieste"><span class="pt-n">02</span><h3>Găzduiește un atelier</h3><p>O sală pentru o zi întreagă de lucru, pentru în jur de 30 de oameni. Atelierele s-au ținut până acum la ${esc(ctx.D.locatii.map((l) => l.nume.replace(/^Sediul /, '')).join(', '))}.</p><a class="btn btn-ghost" href="${mail(contact, 'Găzduire atelier Antreprenoria')}">Propune un spațiu</a></div>
-      <div class="pt-way" id="mentor"><span class="pt-n">03</span><h3>Devino trainer sau mentor</h3><p>Trainerii și antreprenorii invitați vin din comunitatea Romanian Business Leaders și își împart experiența pro-bono.</p><a class="btn btn-ghost" href="${mail(contact, 'Trainer sau mentor la Antreprenoria')}">Scrie-ne</a></div>
+      <div class="pt-way" id="sponsorizeaza"><span class="pt-n">01</span><h3>Sponsorizează un atelier</h3><p>Numele companiei tale pe pagina ediției și la atelier, o zi alături de 25 de antreprenori care lucrează la tema aleasă și un speaker din echipa ta, dacă vrei.</p><a class="btn btn-primary" href="?implicare=sponsorizare#implica-te" data-implica="sponsorizare">Scrie-ne despre sponsorizare</a></div>
+      <div class="pt-way" id="gazduieste"><span class="pt-n">02</span><h3>Găzduiește un atelier</h3><p>O sală pentru o zi întreagă de lucru, pentru în jur de 30 de oameni. Atelierele s-au ținut până acum la ${esc(ctx.D.locatii.map((l) => l.nume.replace(/^Sediul /, '')).join(', '))}.</p><a class="btn btn-ghost" href="?implicare=gazduire#implica-te" data-implica="gazduire">Propune un spațiu</a></div>
+      <div class="pt-way" id="mentor"><span class="pt-n">03</span><h3>Devino trainer sau mentor</h3><p>Trainerii și antreprenorii invitați vin din comunitatea Romanian Business Leaders și își împart experiența pro-bono.</p><a class="btn btn-ghost" href="?implicare=mentorat#implica-te" data-implica="mentorat">Scrie-ne</a></div>
     </div>
     ${contact ? `<p class="pt-contact">Parteneriate: <b>${esc(contact.nume)}</b>, <a href="mailto:${esc(contact.email)}">${esc(contact.email)}</a>${spons && spons !== contact ? ` · Sponsorizări ateliere: <b>${esc(spons.nume)}</b>, <a href="mailto:${esc(spons.email)}">${esc(spons.email)}</a>` : ''}</p>` : ''}
   </div></section>
-</main>`;
+</main>
+${implicareDialog()}`;
 }
 
 module.exports = { parteneriBody, partnersData };
