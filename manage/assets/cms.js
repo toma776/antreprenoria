@@ -344,13 +344,24 @@ const CMS = (() => {
   async function put(b) {
     const r = await api.send('/api/editari', 'PUT', { ...b, grup: GRUP || undefined });
     S.pending = r.nepublicate || S.pending;
+    sideCard();
     return r;
   }
   async function refresh() {
     const [e, c] = await Promise.all([api.get('/api/entitati'), api.get('/api/cms')]);
     store.entitati = e; D = e; if (e) indexEntities(e);
     if (c) { S.on = c.editabil; S.pagini = c.pagini; S.texte = c.texte; S.pending = c.nepublicate; S.E = c.editari; }
-    updateCounts(); datalists();
+    updateCounts(); datalists(); sideCard();
+  }
+  // cardul din bara stângă: panoul local (editabil) sau cel publicat, plus modificările nepublicate
+  function sideCard() {
+    const card = $('#side-card');
+    if (!card) return;
+    card.classList.toggle('ro', !S.on);
+    $('#side-mode').textContent = S.on ? 'Panou local · editabil' : 'Versiunea publicată · doar vizualizare';
+    const n = S.on ? pendingGroups().length : 0, p = $('#side-pending');
+    p.hidden = !n;
+    p.innerHTML = n ? `<span>${n} ${n === 1 ? 'modificare nepublicată' : 'modificări nepublicate'}</span><b>→</b>` : '';
   }
   function datalists() {
     $('#cms-dl')?.remove();

@@ -12,17 +12,24 @@
 <div class="app">
   <aside>
     <a class="logo" href="/manage" data-route="dashboard">
-      <img src="/manage/assets/logo-letter.png" alt="">
-      <span>Antreprenoria<small>Panou de administrare</small></span>
+      <span class="logo-mark"><img src="/manage/assets/logo-letter.png" alt=""></span>
+      <span class="logo-txt">Antreprenoria<small>Panou de administrare</small></span>
     </a>
     <nav id="nav">
-      <a href="/manage" data-route="dashboard">Dashboard</a>
-      <a href="/manage/entitati" data-route="entitati">Entități <span class="n" id="n-entitati"></span></a>
-      <a href="/manage/sinapse" data-route="sinapse">Sinapse</a>
-      <a href="/manage/leads" data-route="leads">Leads <span class="n" id="n-leads"></span></a>
-      <a href="/manage/branding" data-route="branding">Branding</a>
+      <span class="nav-h">Conținut</span>
+      <a href="/manage" data-route="dashboard"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h6V4H4zM14 20h6v-9h-6zM14 4v4h6V4zM4 20h6v-4H4z"/></svg><span>Dashboard</span></a>
+      <a href="/manage/entitati" data-route="entitati"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 3 8l9 5 9-5-9-5zM3 13l9 5 9-5M3 17.5l9 5 9-5"/></svg><span>Entități</span><span class="n" id="n-entitati"></span></a>
+      <a href="/manage/sinapse" data-route="sinapse"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6a2 2 0 1 0 0 .01M18 6a2 2 0 1 0 0 .01M12 18a2 2 0 1 0 0 .01M7.6 7.2l3.2 9M16.4 7.2l-3.2 9M8 6h8"/></svg><span>Sinapse</span></a>
+      <span class="nav-h">Comunitate</span>
+      <a href="/manage/leads" data-route="leads"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v12H4zM4 7l8 6 8-6"/></svg><span>Leads</span><span class="n" id="n-leads"></span></a>
+      <span class="nav-h">Identitate</span>
+      <a href="/manage/branding" data-route="branding"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1 0 1.6-.8 1.6-1.6 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-.9.7-1.6 1.6-1.6H16a5 5 0 0 0 5-5c0-4-4-7.4-9-7.4zM7.5 12a1 1 0 1 0 0 .01M10 8a1 1 0 1 0 0 .01M15 8a1 1 0 1 0 0 .01"/></svg><span>Branding</span></a>
     </nav>
-    <div class="foot"><a href="https://antreprenoria.ro" target="_blank" rel="noopener">↗ antreprenoria.ro</a></div>
+    <div class="side-card" id="side-card">
+      <div class="side-status"><i></i><span id="side-mode">Se încarcă…</span></div>
+      <a class="side-pending" id="side-pending" href="/manage/entitati" hidden></a>
+      <div class="side-links"><a href="/" target="_blank" rel="noopener">Site local ↗</a><a href="https://antreprenoria-dwf3.vercel.app" target="_blank" rel="noopener">Site public ↗</a></div>
+    </div>
   </aside>
   <main id="view"><div class="empty">Se încarcă…</div></main>
 </div>
