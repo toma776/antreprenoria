@@ -170,6 +170,6 @@ function patch(E, list) {
 }
 // starea publicată, curățată (fără vechea listă de etichete „nepublicate”)
 const published = (E) => { const P = { ...EMPTY(), ...clone(E || {}) }; P.modificari = { ...EMPTY().modificari, ...P.modificari }; delete P.nepublicate; return P; };
-const working = (P, J) => (J?.intrari || []).reduce((E, it) => patch(E, it.patch), clone(P));
+const working = (P, J) => (J?.intrari || []).filter((it) => it.tinta !== 'brand').reduce((E, it) => patch(E, it.patch), clone(P));
 
 module.exports = { apply, relink, EMPTY, LISTS, diff, patch, published, working };

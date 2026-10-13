@@ -97,7 +97,10 @@ function logoUse(brandId) {
 }
 function logo(where, brandId) {
   const id = logoUse(brandId)[where];
-  return `<a class="logo logo-${where}" href="/" aria-label="Antreprenoria – acasă"><img src="${LOGO_DIR}antreprenoria-logo-${esc(id)}-web.png" alt="Antreprenoria" width="480" height="157"></a>`;
+  // fișierul variantei alese (versiunea ușoară pentru web, dacă există); un logo înlocuit din panou apare direct
+  const x = brand.pick(brand.load(), brandId).logo?.variante?.find((y) => y.id === id);
+  const src = x?.web || x?.fisier || `${LOGO_DIR}antreprenoria-logo-${id}-web.png`;
+  return `<a class="logo logo-${where}" href="/" aria-label="Antreprenoria – acasă"><img src="${esc(src)}" alt="Antreprenoria"></a>`;
 }
 function favicons(v) {
   const u = { ...LOGO_DEFAULT, ...(v.logo?.pe_site || {}) };

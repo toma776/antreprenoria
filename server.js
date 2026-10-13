@@ -85,7 +85,16 @@ function readEditari() {
   try { return script('editari').working(P, readJurnal()); } catch (e) { return P; }
 }
 // entitățile se reconstruiesc imediat, ca site-ul local și panoul să arate modificarea
-const rebuild = () => require('child_process').execFileSync(process.execPath, [path.join(ROOT, 'scripts', 'build-entities.js')], { cwd: ROOT, stdio: 'ignore' });
+// brandul (culori, fonturi, forme, logo): publicat în data/brand.json; local, plus modificările nepublicate = data/brand-local.json
+const BRAND = path.join(DATA, 'brand.json'), BRAND_LOCAL = path.join(DATA, 'brand-local.json');
+const BRAND_SECT = ['culori', 'tipografie', 'forme', 'google_fonts', 'logo'];
+const patchBrand = (B, list) => { list.forEach((x) => { const v = B.variante.find((y) => y.id === x.p[0]); if (v && BRAND_SECT.includes(x.p[1])) v[x.p[1]] = JSON.parse(JSON.stringify(x.v)); }); return B; };
+const brandWorking = () => readJurnal().intrari.filter((x) => x.tinta === 'brand').reduce((B, x) => patchBrand(B, x.patch), readJson(BRAND, { variante: [] }));
+function writeBrandLocal() {
+  const has = readJurnal().intrari.some((x) => x.tinta === 'brand');
+  if (has) writeJson(BRAND_LOCAL, brandWorking()); else if (fs.existsSync(BRAND_LOCAL)) fs.unlinkSync(BRAND_LOCAL);
+}
+const rebuild = () => { require('child_process').execFileSync(process.execPath, [path.join(ROOT, 'scripts', 'build-entities.js')], { cwd: ROOT, stdio: 'ignore' }); writeBrandLocal(); };
 const writeJson = (f, v) => fs.writeFileSync(f, JSON.stringify(v, null, 2) + '\n');
 // lista pentru panou: fiecare modificare nepublicată, cu eticheta și grupul ei (o salvare din panou poate avea mai multe)
 const pendingList = () => readJurnal().intrari.map(({ id, cand, ce, grup }) => ({ id, cand, ce, grup }));
@@ -101,10 +110,12 @@ function saveVersion(P, info) {
   if (!H.versiuni.length && info.inainte) {
     const id0 = 'v0-' + Date.now().toString(36);
     writeJson(path.join(VERSIUNI, id0 + '.json'), info.inainte);
+    if (info.inainteBrand) writeJson(path.join(VERSIUNI, id0 + '.brand.json'), info.inainteBrand);
     H.versiuni.push({ id: id0, cand: new Date(Date.now() - 1000).toISOString(), tip: 'pornire', ce: ['Starea de dinainte de istoric'] });
   }
   const id = 'v' + (H.versiuni.length) + '-' + Date.now().toString(36);
   writeJson(path.join(VERSIUNI, id + '.json'), P);
+  writeJson(path.join(VERSIUNI, id + '.brand.json'), readJson(BRAND, null));
   H.versiuni.push({ id, cand: new Date().toISOString(), tip: info.tip, ce: info.ce, din: info.din || null });
   writeJson(ISTORIC, H);
   return id;
@@ -112,7 +123,7 @@ function saveVersion(P, info) {
 const gitPublish = (msg) => {
   const { execFileSync } = require('child_process');
   const git = (...a) => execFileSync('git', a, { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
-  git('add', 'data/curare/editari.json', 'data/entitati.json', 'data/curare/istoric.json', 'data/curare/versiuni', ...(fs.existsSync(path.join(ROOT, 'site', 'assets', 'uploads')) ? ['site/assets/uploads'] : []));
+  git('add', 'data/curare/editari.json', 'data/entitati.json', 'data/brand.json', 'data/curare/istoric.json', 'data/curare/versiuni', ...(fs.existsSync(path.join(ROOT, 'site', 'assets', 'uploads')) ? ['site/assets/uploads'] : []));
   git('commit', '-m', msg);
   git('push', 'origin', 'main');
 };
@@ -177,6 +188,19 @@ function cmsEdit(b) {
     }
     case 'texte': Object.assign(E.texte, b.texte || {}); break;
     // ordinea echipei (pe /despre și în contacte)
+    // brandul: o secțiune a unei variante (culori, tipografie, forme, logo; google_fonts merge cu tipografia)
+    case 'brand': {
+      const Bw = brandWorking(), v = Bw.variante.find((x) => x.id === b.varianta);
+      if (!v) return { error: 'Variantă inexistentă.' };
+      const changes = Object.entries(b.valori || {}).filter(([k, val]) => BRAND_SECT.includes(k) && JSON.stringify(v[k]) !== JSON.stringify(val)).map(([k, val]) => ({ p: [v.id, k], v: val }));
+      if (changes.length) {
+        const J = readJurnal(), eid = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+        J.intrari.push({ id: eid, tinta: 'brand', cand: new Date().toISOString(), ce: String(b.eticheta || 'brand').slice(0, 140), grup: String(b.grup || eid).slice(0, 40), patch: changes });
+        writeJson(JURNAL, J);
+        writeBrandLocal();
+      }
+      return { ok: true, nepublicate: pendingList() };
+    }
     case 'ordine_echipa': if (!Array.isArray(b.lista)) return { error: 'lipsește lista' }; E.ordine_echipa = b.lista.map(String); break;
     // constructorul de ediție: copiază structura altei ediții (atelierele cu temele și agenda, beneficiile, prețul)
     case 'copiaza': {
@@ -218,7 +242,7 @@ async function handler(req, res) {
   const url = decodeURIComponent(rawPath);
   try {
     if (req.method === 'GET' && JSON_FILES[url]) {
-      const f = url === '/api/entitati' ? dataFile() : path.join(DATA, JSON_FILES[url]);
+      const f = url === '/api/entitati' ? dataFile() : url === '/api/brand' && !READ_ONLY && fs.existsSync(BRAND_LOCAL) ? BRAND_LOCAL : path.join(DATA, JSON_FILES[url]);
       return fs.existsSync(f) ? sendJson(res, 200, fs.readFileSync(f, 'utf8')) : sendJson(res, 404, { error: 'lipsește ' + JSON_FILES[url] });
     }
     // formularul de aplicare: validare pe server (aceleași reguli ca în pagină), apoi salvare
@@ -274,20 +298,22 @@ async function handler(req, res) {
     if (READ_ONLY && req.method !== 'GET') return sendJson(res, 403, { error: 'Pe versiunea publicată panoul e doar pentru vizualizare. Modificările se fac local, apoi git push.' });
     if (url === '/api/brand/activ' && req.method === 'PUT') {
       const { id } = await body(req);
-      const brand = fresh('./site/brand'), B = brand.load();
+      const brand = fresh('./site/brand'), B = readJson(brand.FILE, {}); // varianta publicată, nu cea de lucru
       if (!B.variante.some((v) => v.id === id)) return sendJson(res, 400, { error: 'variantă inexistentă' });
       B.activ = id;
       fs.writeFileSync(brand.FILE, JSON.stringify(B, null, 2));
+      writeBrandLocal();
       return sendJson(res, 200, { ok: true, activ: id });
     }
     if (url === '/api/brand/icon' && req.method === 'PUT') {
       const { activ, culori } = await body(req);
-      const brand = fresh('./site/brand'), B = brand.load(), I = B.icon_meniu;
+      const brand = fresh('./site/brand'), B = readJson(brand.FILE, {}), I = B.icon_meniu;
       if (activ !== undefined && !I.variante.some((v) => v.id === activ)) return sendJson(res, 400, { error: 'icon inexistent' });
       if (culori !== undefined && !I.moduri_culoare.some((m) => m.id === culori)) return sendJson(res, 400, { error: 'mod de culoare inexistent' });
       if (activ !== undefined) I.activ = activ;
       if (culori !== undefined) I.culori = culori;
       fs.writeFileSync(brand.FILE, JSON.stringify(B, null, 2));
+      writeBrandLocal();
       return sendJson(res, 200, { ok: true, activ: I.activ, culori: I.culori });
     }
     // CMS-ul din panou: modificările se scriu în data/curare/editari.json, apoi entitățile se reconstruiesc
@@ -315,13 +341,16 @@ async function handler(req, res) {
       const sel = J.intrari.filter((x) => !pick || pick.has(x.id));
       if (!sel.length) return sendJson(res, 200, { ok: true, mesaj: 'Nimic de publicat.', nepublicate: pendingList() });
       const ED = script('editari'), P = readPublished(), inainte = JSON.parse(JSON.stringify(P));
-      sel.forEach((x) => ED.patch(P, x.patch));
+      const Bp = readJson(BRAND, null), inainteBrand = JSON.parse(JSON.stringify(Bp));
+      sel.filter((x) => x.tinta !== 'brand').forEach((x) => ED.patch(P, x.patch));
+      const selBrand = sel.filter((x) => x.tinta === 'brand');
+      if (selBrand.length) { selBrand.forEach((x) => patchBrand(Bp, x.patch)); writeJson(BRAND, Bp); }
       J.intrari = J.intrari.filter((x) => !sel.includes(x));
       writeJson(EDITARI, { _despre: PUB_NOTE, ...P });
       writeJson(JURNAL, J);
       rebuild();
       const n = new Set(sel.map((x) => x.grup)).size;
-      saveVersion(P, { tip: 'publicare', ce: [...new Set(sel.map((x) => x.ce))], inainte });
+      saveVersion(P, { tip: 'publicare', ce: [...new Set(sel.map((x) => x.ce))], inainte, inainteBrand });
       try {
         gitPublish(`Panou: ${n === 1 ? 'publicat' : n + ' modificări publicate'}: ${[...new Set(sel.map((x) => x.ce))].slice(0, 6).join('; ')}`);
       } catch (e) { return sendJson(res, 500, { error: 'Publicarea a eșuat: ' + String(e.stderr || e.message).slice(0, 300), nepublicate: pendingList() }); }
@@ -339,9 +368,10 @@ async function handler(req, res) {
       if (!v) return sendJson(res, 404, { error: 'Versiune inexistentă.' });
       const snap = readJson(path.join(VERSIUNI, v.id + '.json'), null);
       if (!snap) return sendJson(res, 500, { error: 'Copia versiunii lipsește.' });
-      const P = readPublished();
-      if (JSON.stringify(P) === JSON.stringify(snap)) return sendJson(res, 200, { ok: true, mesaj: 'Site-ul e deja la această versiune.' });
+      const P = readPublished(), snapBrand = readJson(path.join(VERSIUNI, v.id + '.brand.json'), null), Bnow = readJson(BRAND, null);
+      if (JSON.stringify(P) === JSON.stringify(snap) && (!snapBrand || JSON.stringify(snapBrand) === JSON.stringify(Bnow))) return sendJson(res, 200, { ok: true, mesaj: 'Site-ul e deja la această versiune.' });
       writeJson(EDITARI, { _despre: PUB_NOTE, ...snap });
+      if (snapBrand) writeJson(BRAND, snapBrand);
       rebuild();
       const when = new Date(v.cand).toLocaleString('ro-RO', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
       saveVersion(snap, { tip: 'revenire', ce: [`Revenire la versiunea din ${when}`], din: v.id });

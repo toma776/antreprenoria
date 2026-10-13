@@ -20,7 +20,7 @@ function logoHtml(v) {
   if (!L) return '';
   const use = L.pe_site || {};
   const where = (id) => [use.header === id && 'header', use.footer === id && 'footer'].filter(Boolean);
-  return `<h4 class="bh">Logo</h4>
+  return `<h4 class="bh">Logo ${CMS.on ? `<button class="sm b-edit" data-bedit="logo" data-var="${esc(v.id)}">Editează</button>` : ''}</h4>
     <p class="small" style="margin:0 0 10px">${esc(L._despre || '')}</p>
     <div class="blogo-grid">${L.variante.map((x) => { const w = where(x.id); return `<a class="blogo" href="${esc(x.fisier)}" target="_blank" rel="noopener">
       <span class="blogo-img" style="background:${x.fundal === 'închis' ? '#34373E' : '#fff'}"><img src="${esc(x.fisier)}" alt="${esc(x.nume)}" loading="lazy"></span>
@@ -44,12 +44,12 @@ function variantHtml(v, activ) {
 
     ${logoHtml(v)}
 
-    <h4 class="bh">Culori principale</h4>
+    <h4 class="bh">Culori principale ${CMS.on ? `<button class="sm b-edit" data-bedit="culori" data-var="${esc(v.id)}">Editează</button>` : ''}</h4>
     <div class="bsw-grid">${main.map((c) => swatch(c, true)).join('')}</div>
     <details class="all-colors"><summary>Toate culorile (${v.culori.length})</summary>
       <div class="bsw-grid small-grid">${rest.map((c) => swatch(c)).join('')}</div></details>
 
-    <h4 class="bh">Tipografie</h4>
+    <h4 class="bh">Tipografie ${CMS.on ? `<button class="sm b-edit" data-bedit="tipografie" data-var="${esc(v.id)}">Editează</button>` : ''}</h4>
     <div class="type-spec" style="background:${esc(colorOf(v, 'bg'))};color:${esc(colorOf(v, 'ink'))};border-radius:${esc(v.forme.raza)}">
       <div>
         <small style="color:${esc(colorOf(v, 'muted'))}">Titluri · ${esc(T.titluri.font)} ${T.titluri.greutate}${T.titluri.latime !== '100%' ? ` · lățime ${esc(T.titluri.latime)}` : ''}</small>
@@ -67,7 +67,7 @@ function variantHtml(v, activ) {
       </div>
     </div>
 
-    <h4 class="bh">Forme</h4>
+    <h4 class="bh">Forme ${CMS.on ? `<button class="sm b-edit" data-bedit="forme" data-var="${esc(v.id)}">Editează</button>` : ''}</h4>
     <dl class="kv"><dt>Colțuri carduri</dt><dd>${esc(v.forme.raza)}</dd><dt>Colțuri butoane</dt><dd>${esc(v.forme.raza_buton)}</dd><dt>Schemă</dt><dd>${v.schema === 'dark' ? 'fundal închis' : 'fundal deschis'}</dd></dl>
 
     <h4 class="bh">Homepage în această variantă</h4>
@@ -120,6 +120,7 @@ routes.branding = async function renderBranding() {
   $('#view').innerHTML = '<div class="empty">Se încarcă…</div>';
   const B = await api.get('/api/brand');
   if (!B) { $('#view').innerHTML = '<div class="card empty"><b>Lipsește data/brand.json</b></div>'; return; }
+  window.BRAND_DATA = B; // pentru editorul de brand (brand-edit.js)
   loadBrandFonts(B);
   const activ = B.variante.find((v) => v.id === B.activ);
   $('#view').innerHTML = `

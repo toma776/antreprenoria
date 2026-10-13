@@ -7,3 +7,4 @@ Thumbs.db
 # modificările din panou încă nepublicate (doar local; se publică din panou)
 data/curare/editari-local.json
 data/entitati-local.json
+data/brand-local.json

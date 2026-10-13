@@ -161,7 +161,8 @@
             "fundal": "deschis",
             "dimensiuni": "1713×562",
             "sursa": "derivat: fără slogan",
-            "folosire": "antete pe fundal deschis"
+            "folosire": "antete pe fundal deschis",
+            "web": "/assets/identitate/antreprenoria-logo-orizontal-web.png"
           },
           {
             "id": "orizontal-alb",
@@ -170,7 +171,8 @@
             "fundal": "închis",
             "dimensiuni": "1713×562",
             "sursa": "derivat: fără slogan, text alb",
-            "folosire": "header-ul și footerul site-ului (gri închis)"
+            "folosire": "header-ul și footerul site-ului (gri închis)",
+            "web": "/assets/identitate/antreprenoria-logo-orizontal-alb-web.png"
           },
           {
             "id": "simbol",

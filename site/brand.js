@@ -4,7 +4,9 @@ const fs = require('fs');
 const path = require('path');
 
 const FILE = path.join(__dirname, '..', 'data', 'brand.json');
-const load = () => JSON.parse(fs.readFileSync(FILE, 'utf8'));
+// local, cu modificările de brand încă nepublicate din panou (brand-local.json); pe Vercel, doar ce e publicat
+const LOCAL = path.join(__dirname, '..', 'data', 'brand-local.json');
+const load = () => JSON.parse(fs.readFileSync(!process.env.VERCEL && fs.existsSync(LOCAL) ? LOCAL : FILE, 'utf8'));
 
 // varianta afișată: cea cerută pentru previzualizare, dacă există, altfel cea activă
 function pick(B, preview) {
