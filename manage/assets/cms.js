@@ -444,7 +444,9 @@ const CMS = (() => {
 
   /* ---------- bucăți pentru paginile din entitati.js ---------- */
   const pendingBar = () => (!S.on ? '<div class="pending ro-mode"><span>Pe versiunea publicată panoul e doar pentru vizualizare. Editarea și publicarea se fac din panoul local.</span></div>'
-    : S.pending.length ? `<div class="pending"><span><b>${S.pending.length} ${S.pending.length === 1 ? 'modificare nepublicată' : 'modificări nepublicate'}</b> · ${esc([...new Set(S.pending.map((p) => p.ce))].slice(-6).join(', '))}${S.pending.length > 6 ? '…' : ''}</span><button class="primary" data-cms-publish>Publică pe site</button></div>` : '');
+    // fiecare modificare pe rândul ei, cele mai noi primele, cu ora la care a fost făcută
+    : S.pending.length ? `<div class="pending pending-list"><div class="pending-top"><b>${S.pending.length} ${S.pending.length === 1 ? 'modificare nepublicată' : 'modificări nepublicate'}</b><button class="primary" data-cms-publish>Publică pe site</button></div>
+      <ol>${S.pending.slice().reverse().map((p) => `<li><time>${esc(new Date(p.cand).toLocaleString('ro-RO', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }))}</time><span>${esc(p.ce)}</span></li>`).join('')}</ol></div>` : '');
   const addBtn = (key, label) => (S.on && T[key]?.one ? `<button class="primary" data-cms-new="${key}">${label || '+ Adaugă ' + esc(T[key].one)}</button>` : '');
   function rowHtml(key, x) {
     const ty = T[key], r = ty.row(x, x._i), off = hidden(ty.tip, x.id), nw = isNew(ty.tip, x.id);
