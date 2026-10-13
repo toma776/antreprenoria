@@ -314,8 +314,8 @@ async function handler(req, res) {
       const html = fresh('./site/render').renderTrainer({ id: tr[1], brand: new URLSearchParams(query).get('brand') || undefined });
       if (html) { res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' }); return res.end(html); }
     }
-    // /editii: lista edițiilor — în previzualizare, doar local până la aprobare
-    if (!READ_ONLY && (url === '/editii' || url === '/editii/')) {
+    // /editii: lista edițiilor (active sus, arhiva pe ani)
+    if ((url === '/editii' || url === '/editii/')) {
       res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' });
       return res.end(fresh('./site/render').renderEditii({ brand: new URLSearchParams(query).get('brand') || undefined }));
     }
