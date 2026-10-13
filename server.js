@@ -297,7 +297,8 @@ async function handler(req, res) {
     // /alumni: toți alumnii; /alumni/<id>: doar cu profil completat (previzualizarea pentru ceilalți merge doar local)
     if ((url === '/alumni' || url === '/alumni/')) {
       res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' });
-      return res.end(fresh('./site/render').renderAlumni({ brand: new URLSearchParams(query).get('brand') || undefined }));
+      const q1 = new URLSearchParams(query);
+      return res.end(fresh('./site/render').renderAlumni({ brand: q1.get('brand') || undefined, sector: q1.get('sector') || undefined, editie: q1.get('editie') || undefined }));
     }
     if (url === '/alumni/din-alumni-parteneri') { res.writeHead(301, { Location: '/alumni#din-alumni-parteneri' }); return res.end(); }
     const al = AL_RE.exec(url);

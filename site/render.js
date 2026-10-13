@@ -269,7 +269,7 @@ function renderAlumni(opt = {}) {
   return `${head('Alumni Antreprenoria – antreprenorii care au trecut prin program', 'Alumnii Antreprenoria: antreprenori și manageri din toate edițiile încheiate, pe ediții și sectoare, și companiile care au revenit ca parteneri.', opt.brand)}
 ${header(F, ctx)}
 <div class="gridlines" aria-hidden="true"></div>
-${alumniBody(ctx, F)}
+${alumniBody(ctx, F, { sector: opt.sector, editie: opt.editie })}
 ${footer(F, ctx)}
 <script src="/assets/site.js"></script>
 </body></html>`;

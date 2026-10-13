@@ -7,6 +7,8 @@ const median = (arr) => { const a = arr.filter((x) => x != null).sort((x, y) => 
 const quantile = (arr, q) => { const a = arr.filter((x) => x != null).sort((x, y) => x - y); return a.length ? a[Math.floor((a.length - 1) * q)] : null; };
 const milLei = (n) => `${(n / 1e6).toLocaleString('ro-RO', { maximumFractionDigits: 1 })}`;
 const initials = (n) => n.split(/[\s-]+/).map((x) => x[0]).slice(0, 2).join('');
+// pentru adrese și filtre în URL: „Tech & software” -> tech-si-software
+const slug = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/&/g, 'si').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
 // pozele de pe antreprenoria.ro au până la 800px; pe Vercel le cerem redimensionate (și în WebP) prin optimizarea de imagini
 // (vercel.json › images); local rămân cum sunt. Lățimile trebuie să fie printre cele din vercel.json › images.sizes.
@@ -17,4 +19,4 @@ const img = (u, w = 384) => {
   return `/_vercel/image?url=${encodeURIComponent(u)}&w=${size}&q=75`;
 };
 
-module.exports = { esc, today, MONTHS, fmtDay, median, quantile, milLei, initials, img };
+module.exports = { esc, today, MONTHS, fmtDay, median, quantile, milLei, initials, slug, img };

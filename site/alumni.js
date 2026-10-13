@@ -1,7 +1,7 @@
 // Alumni: /alumni (toți participanții edițiilor încheiate, cu filtre) și /alumni/<id> (doar pentru profilurile completate).
 // Un participant devine alumnus când ediția lui se încheie; până atunci apare doar pe pagina ediției.
 // Cifrele de business apar numai agregat, niciodată pe om sau pe companie.
-const { esc, initials, img, milLei } = require('./util');
+const { esc, initials, img, milLei, slug } = require('./util');
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : (n % 100 === 0 || n % 100 >= 20 ? 'de ' : '') + many}`;
 const avatar = (src, nume, w) => (src ? `<img src="${esc(img(src, w))}" alt="" loading="lazy">` : `<span class="ph">${esc(initials(nume || '?'))}</span>`);
@@ -40,11 +40,15 @@ function alumniData(ctx) {
 const href = (a) => (a.speaker ? `/traineri/${a.id}` : a.page ? `/alumni/${a.id}` : '');
 
 // ---------- /alumni ----------
-function alumniBody(ctx, F) {
+function alumniBody(ctx, F, sel = {}) {
   const d = alumniData(ctx);
+  // filtrele cerute prin adresă: ?sector=tech-si-software, ?editie=bucuresti-18 (sau 18)
+  const selS = d.sectors.find(([s]) => slug(s) === sel.sector)?.[0] || '';
+  const selE = d.eds.find((e) => e.id === sel.editie || String(e.numar) === String(sel.editie || '').replace(/^#/, ''))?.id || '';
+  const shown = (x) => (!selS || x.sector === selS) && (!selE || x.eds.some((e) => e.id === selE));
   const maxS = d.sectors[0]?.[1] || 1;
   const card = (a) => { const h = href(a), tag = h ? 'a' : 'div';
-    return `<${tag} class="al-card ${h ? 'link' : ''}" ${h ? `href="${h}"` : ''} data-ed="${esc(a.eds.map((e) => e.id).join(' '))}" data-sector="${esc(a.sector || '')}">
+    return `<${tag} class="al-card ${h ? 'link' : ''}" ${h ? `href="${h}"` : ''} ${shown(a) ? '' : 'hidden'} data-ed="${esc(a.eds.map((e) => e.id).join(' '))}" data-sector="${esc(a.sector || '')}">
       <span class="al-ph">${avatar(a.imagine, a.nume, 256)}</span>
       <span class="al-tx"><b>${esc(a.nume)}</b><span>${esc(a.org?.nume || '')}</span><small>${a.eds.map(edLabel).join(', ')}${a.sector ? ` · ${esc(a.sector)}` : ''}</small>${a.speaker ? '<em>a revenit ca speaker</em>' : ''}</span>
     </${tag}>`; };
@@ -57,7 +61,7 @@ function alumniBody(ctx, F) {
         <h1>Antreprenorii care au trecut prin program.</h1>
         <p class="lead">${plural(d.L.length, 'antreprenor', 'antreprenori')} și manageri din ${plural(d.eds.length, 'ediție încheiată', 'ediții încheiate')}, de la ${esc(edLabel(d.eds[0]))} încoace. Participanții unei ediții devin alumni când ediția se încheie oficial.</p>
       </div>
-      <aside class="pg-glance" aria-label="În cifre">
+      <aside class="pg-glance" id="cifre" aria-label="În cifre">
         <div class="ed-live-top"><span>În cifre</span><span>agregat</span></div>
         <dl>
           <div><dt>${plural(d.companies, 'companie', 'companii')}</dt><dd>din ${plural(d.sectors.length, 'sector', 'sectoare')}</dd></div>
@@ -70,11 +74,11 @@ function alumniBody(ctx, F) {
 
   <section class="sec tr-list-sec"><div class="wrap">
     <div class="tr-filters" role="group" aria-label="Filtrează">
-      <div class="tr-f sx" data-al-group="ed"><button class="on" data-al="">Toate edițiile · ${d.L.length}</button>${d.eds.slice().reverse().map((e) => `<button data-al="${esc(e.id)}">${esc(edLabel(e))} · ${e.participanti.length}</button>`).join('')}</div>
-      <div class="tr-f tr-f-teme sx" data-al-group="sector"><button class="on" data-al="">Toate sectoarele</button>${d.sectors.map(([s, n]) => `<button data-al="${esc(s)}">${esc(s)} · ${n}</button>`).join('')}</div>
+      <div class="tr-f sx" data-al-group="ed" data-param="editie"><button class="${selE ? '' : 'on'}" data-al="">Toate edițiile · ${d.L.length}</button>${d.eds.slice().reverse().map((e) => `<button class="${selE === e.id ? 'on' : ''}" data-al="${esc(e.id)}" data-q="${esc(String(e.numar))}">${esc(edLabel(e))} · ${e.participanti.length}</button>`).join('')}</div>
+      <div class="tr-f tr-f-teme sx" data-al-group="sector" data-param="sector"><button class="${selS ? '' : 'on'}" data-al="">Toate sectoarele</button>${d.sectors.map(([s, n]) => `<button class="${selS === s ? 'on' : ''}" data-al="${esc(s)}" data-q="${esc(slug(s))}">${esc(s)} · ${n}</button>`).join('')}</div>
     </div>
     <div class="al-grid">${d.L.map(card).join('')}</div>
-    <p class="tr-empty" hidden>Nimeni pentru combinația asta.</p>
+    <p class="tr-empty" ${d.L.some(shown) ? 'hidden' : ''}>Nimeni pentru combinația asta.</p>
   </div></section>
 
   ${d.ciclu.length ? `<section class="sec sec-alt" id="din-alumni-parteneri"><div class="wrap">

@@ -1,8 +1,8 @@
 // Meniul principal (mega-meniu): fiecare secțiune a site-ului deschide un panou cu tot ce conține,
 // generat din creier. Pe desktop panourile se deschid la hover sau click; pe mobil devin acordeon într-un meniu lateral.
-const { img } = require('./util');
+const { img, slug } = require('./util');
+const { alumniData } = require('./alumni');
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-const slug = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/&/g, 'si').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const today = () => new Date().toISOString().slice(0, 10);
 const MONTHS = ['ian.', 'feb.', 'mar.', 'apr.', 'mai', 'iun.', 'iul.', 'aug.', 'sep.', 'oct.', 'nov.', 'dec.'];
 const shortDay = (d) => { const [, m, z] = d.split('-').map(Number); return `${z} ${MONTHS[m - 1]}`; };
@@ -18,6 +18,8 @@ function panels(ctx, F) {
   const { D, P, O, T } = ctx;
   const themePeople = (t) => new Set(D.editii.flatMap((e) => e.ateliere.filter((a) => a.tema === t.id).flatMap((a) => a.program.flatMap((x) => x.speakeri.map((s) => s.persoana))))).size;
   const fullDay = D.teme.filter((t) => t.format === 'full-day');
+  // alumnii, ca pe pagina /alumni (aceleași numere în meniu și în filtre)
+  const AL = alumniData(ctx);
   const evening = D.teme.filter((t) => t.format === 'seară');
   const ong = F.ongoing;
   const held = ong ? ong.ateliere.filter((a) => a.data && a.data < today() && a.data.startsWith(String(ong.an))).length : 0;
@@ -88,9 +90,9 @@ function panels(ctx, F) {
         ].join('')),
       ] },
 
-    { id: 'alumni', title: 'Alumni', href: '/alumni', intro: `${F.alumni} de companii în ultimele ${D.editii.filter((e) => e.participanti.length).length} ediții, din ${F.sectors.length} sectoare.`,
+    { id: 'alumni', title: 'Alumni', href: '/alumni', intro: `${AL.L.length} de antreprenori din ${AL.eds.length} ediții încheiate, din ${AL.sectors.length} sectoare.`,
       cols: [
-        col('Pe sectoare', `<div class="mm-sectors">${F.sectors.map(([s, n]) => `<a href="/alumni?sector=${esc(slug(s))}"><span>${esc(s)}</span><b>${n}</b></a>`).join('')}</div>`, 'wide'),
+        col('Pe sectoare', `<div class="mm-sectors">${AL.sectors.map(([s, n]) => `<a href="/alumni?sector=${esc(slug(s))}"><span>${esc(s)}</span><b>${n}</b></a>`).join('')}</div>`, 'wide'),
         col('Comunitatea', [
           link('/alumni/din-alumni-parteneri', 'Din alumni, parteneri', `${F.ciclu.length} companii revenite ca sponsori, gazde sau cu speakeri`),
           link('/alumni#cifre', 'Cine participă, în cifre', 'Mediane și intervale, fără date individuale'),

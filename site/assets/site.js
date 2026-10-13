@@ -285,13 +285,28 @@
     state[g.dataset.trGroup] = b.dataset.tr;
     apply();
   }));
+  // filtrele din adresă: ?rol=antreprenor-invitat, ?tema=vanzari
+  const q = new URLSearchParams(location.search), key = (v) => String(v || '').replace(/\s+/g, '-');
+  [['rol', 'rol'], ['tema', 'tema']].forEach(([p, gname]) => {
+    const v = q.get(p), g = document.querySelector(`[data-tr-group="${gname}"]`);
+    const b = v && g && [...g.querySelectorAll('[data-tr]')].find((x) => x.dataset.tr && key(x.dataset.tr) === v);
+    if (b) { b.click(); if (g.scrollWidth > g.clientWidth) g.scrollLeft = b.offsetLeft - g.offsetLeft - 16; }
+  });
 })();
 
 // /alumni: filtrele după ediție și după sector (se combină)
 (() => {
   const grid = document.querySelector('.al-grid');
   if (!grid) return;
+  // filtrul cerut prin adresă vine deja selectat din server (butonul .on)
   const state = { ed: '', sector: '' };
+  document.querySelectorAll('[data-al-group]').forEach((g) => { state[g.dataset.alGroup] = g.querySelector('.on')?.dataset.al || ''; const on = g.querySelector('.on'); if (on && g.scrollWidth > g.clientWidth) g.scrollLeft = on.offsetLeft - g.offsetLeft - 16; });
+  // adresa se actualizează la fiecare filtru, ca linkul să poată fi trimis mai departe
+  const syncUrl = () => {
+    const u = new URL(location.href);
+    document.querySelectorAll('[data-al-group]').forEach((g) => { const q = g.querySelector('.on')?.dataset.q; q ? u.searchParams.set(g.dataset.param, q) : u.searchParams.delete(g.dataset.param); });
+    history.replaceState(null, '', u.pathname + u.search + u.hash);
+  };
   const apply = () => {
     let n = 0;
     grid.querySelectorAll('.al-card').forEach((c) => {
@@ -306,6 +321,7 @@
     g.querySelectorAll('[data-al]').forEach((x) => x.classList.toggle('on', x === b));
     state[g.dataset.alGroup] = b.dataset.al;
     apply();
+    syncUrl();
   }));
 })();
 
