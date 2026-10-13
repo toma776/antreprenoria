@@ -2,7 +2,16 @@
   "_despre": "Modificările făcute din panou (Entități). Se aplică peste datele preluate de pe site-ul vechi la fiecare npm run build; vezi scripts/editari.js.",
   "modificari": {
     "oameni": {},
-    "organizatii": {},
+    "organizatii": {
+      "cluj-business-campus": {
+        "nume": "Cluj Business Campus",
+        "logo": "https://antreprenoria.ro/images/cluj/cluj-business-campus-logo.png",
+        "tip": "Spațiu de birouri",
+        "sector": null,
+        "url": "https://www.cbcampus.ro/",
+        "descriere": null
+      }
+    },
     "editii": {
       "bucuresti-23": {
         "serie": "București",
