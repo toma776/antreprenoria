@@ -1376,3 +1376,6 @@ a.live:hover { color: var(--ink); text-decoration: underline; text-underline-off
   .strip-btns button:not(:disabled):active { background: var(--primary); color: var(--primary-ink); border-color: var(--primary); }
   .sec-dark .strip-btns button { color: inherit; }
 }
+/* ancora #lista (alumni, traineri): sub header-ul fix */
+#lista { scroll-margin-top: 92px; }
+@media (max-width: 720px) { #lista { scroll-margin-top: 84px; } }

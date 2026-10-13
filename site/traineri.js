@@ -83,7 +83,7 @@ function traineriBody(ctx, F) {
     </div>
   </div></section>
 
-  <section class="sec tr-list-sec"><div class="wrap">
+  <section class="sec tr-list-sec" id="lista"><div class="wrap">
     <div class="tr-filters" role="group" aria-label="Filtrează">
       <div class="tr-f" data-tr-group="rol"><button class="on" data-tr="">Toți · ${L.length}</button>${[['trainer', 'Traineri'], ['antreprenor invitat', 'Antreprenori invitați'], ['facilitator', 'Facilitatori']].map(([k, l]) => `<button data-tr="${esc(k)}">${l} · ${n(k)}</button>`).join('')}</div>
       <div class="tr-f tr-f-teme sx" data-tr-group="tema"><button class="on" data-tr="">Toate temele</button>${themes.map((t) => `<button data-tr="${esc(t.id)}">${esc(t.nume)}</button>`).join('')}</div>

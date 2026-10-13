@@ -390,3 +390,21 @@
     io.observe(row);
   });
 })();
+
+// /alumni și /traineri deschise cu un filtru în adresă (fără #lista): pornesc direct de la filtre și listă
+(() => {
+  const list = document.getElementById('lista');
+  if (!list) return;
+  const q = new URLSearchParams(location.search);
+  if (location.hash !== '#lista' && !['sector', 'editie', 'rol', 'tema'].some((k) => q.get(k))) return;
+  // după fonturi și imagini titlul de sus își schimbă înălțimea: ne repoziționăm, dacă omul n-a derulat între timp
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; // la reîncărcare, browserul nu mai pune poziția veche peste a noastră
+  const go = () => list.scrollIntoView({ block: 'start' });
+  go();
+  let moved = false;
+  addEventListener('wheel', () => { moved = true; }, { once: true, passive: true });
+  addEventListener('touchstart', () => { moved = true; }, { once: true, passive: true });
+  const again = () => { if (!moved) go(); };
+  document.fonts?.ready.then(again);
+  addEventListener('load', again);
+})();

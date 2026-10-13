@@ -83,20 +83,20 @@ function panels(ctx, F) {
       cols: [
         col('Cei mai prezenți', `<div class="mm-people-grid">${F.topTrainers.map((p) => `<a href="/traineri/${esc(p.id)}">${pic(p)}<b>${esc(p.nume)}</b><span>${esc(O[p.organizatii[0]]?.nume || p.functii[0] || '')} · ${p.editii.length} ediții</span></a>`).join('')}</div>`, 'wide'),
         col('După rol', [
-          link('/traineri?rol=trainer', 'Traineri', `${D.oameni.filter((p) => p.tipuri.includes('trainer')).length} oameni care țin training-ul de dimineață`),
-          link('/traineri?rol=antreprenor-invitat', 'Antreprenori invitați', `${D.oameni.filter((p) => p.tipuri.includes('antreprenor invitat')).length} antreprenori care își spun povestea`),
-          link('/traineri?rol=facilitator', 'Facilitatori de seară', 'Mastermind, finanțare, board of advisors'),
+          link('/traineri?rol=trainer#lista', 'Traineri', `${D.oameni.filter((p) => p.tipuri.includes('trainer')).length} oameni care țin training-ul de dimineață`),
+          link('/traineri?rol=antreprenor-invitat#lista', 'Antreprenori invitați', `${D.oameni.filter((p) => p.tipuri.includes('antreprenor invitat')).length} antreprenori care își spun povestea`),
+          link('/traineri?rol=facilitator#lista', 'Facilitatori de seară', 'Mastermind, finanțare, board of advisors'),
           `<a class="mm-all" href="/traineri">Toți cei ${F.speakers} →</a>`,
         ].join('')),
       ] },
 
     { id: 'alumni', title: 'Alumni', href: '/alumni', intro: `${AL.L.length} de antreprenori din ${AL.eds.length} ediții încheiate, din ${AL.sectors.length} sectoare.`,
       cols: [
-        col('Pe sectoare', `<div class="mm-sectors">${AL.sectors.map(([s, n]) => `<a href="/alumni?sector=${esc(slug(s))}"><span>${esc(s)}</span><b>${n}</b></a>`).join('')}</div>`, 'wide'),
+        col('Pe sectoare', `<div class="mm-sectors">${AL.sectors.map(([s, n]) => `<a href="/alumni?sector=${esc(slug(s))}#lista"><span>${esc(s)}</span><b>${n}</b></a>`).join('')}</div>`, 'wide'),
         col('Comunitatea', [
           link('/alumni/din-alumni-parteneri', 'Din alumni, parteneri', `${F.ciclu.length} companii revenite ca sponsori, gazde sau cu speakeri`),
           link('/alumni#cifre', 'Cine participă, în cifre', 'Mediane și intervale, fără date individuale'),
-          link('/alumni', 'Directorul alumni', 'Filtrabil după sector și ediție'),
+          link('/alumni#lista', 'Directorul alumni', 'Filtrabil după sector și ediție'),
         ].join('')),
       ],
       feature: `<a class="mm-feature" href="/alumni#cifre">

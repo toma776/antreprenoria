@@ -72,7 +72,7 @@ function alumniBody(ctx, F, sel = {}) {
     </div>
   </div></section>
 
-  <section class="sec tr-list-sec"><div class="wrap">
+  <section class="sec tr-list-sec" id="lista"><div class="wrap">
     <div class="tr-filters" role="group" aria-label="Filtrează">
       <div class="tr-f sx" data-al-group="ed" data-param="editie"><button class="${selE ? '' : 'on'}" data-al="">Toate edițiile · ${d.L.length}</button>${d.eds.slice().reverse().map((e) => `<button class="${selE === e.id ? 'on' : ''}" data-al="${esc(e.id)}" data-q="${esc(String(e.numar))}">${esc(edLabel(e))} · ${e.participanti.length}</button>`).join('')}</div>
       <div class="tr-f tr-f-teme sx" data-al-group="sector" data-param="sector"><button class="${selS ? '' : 'on'}" data-al="">Toate sectoarele</button>${d.sectors.map(([s, n]) => `<button class="${selS === s ? 'on' : ''}" data-al="${esc(s)}" data-q="${esc(slug(s))}">${esc(s)} · ${n}</button>`).join('')}</div>
