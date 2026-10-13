@@ -72,6 +72,9 @@ const CMS = (() => {
       : `Nu are încă pagină de alumni. Apare când completezi textul de mai sus (cel puțin o frază). <a href="/alumni/${esc(p.id)}?previzualizare" target="_blank" rel="noopener">Previzualizează ↗</a>`;
     return `<div class="al-status ${full && isAlum ? 'ok' : ''}">${msg}</div>`;
   }
+  // compania curentă a omului (ultima din fișă) și adresa de site scrisă fără „https://”
+  const orgOf = (p) => Oid(p.organizatii?.[p.organizatii.length - 1]) || D.organizatii.find((o) => nrm(o.nume) === nrm(p.companii?.[p.companii.length - 1]));
+  const normUrl = (u) => { u = String(u || '').trim(); return !u ? null : /^https?:\/\//i.test(u) ? u : 'https://' + u; };
   // ediția la care se adaugă de obicei participanți: cea mai nouă care nu s-a încheiat
   const edDefault = () => eds().find((e) => !edEnded(e))?.id || eds()[0].id;
   const personType = (kind, label, one, desc) => ({
@@ -88,7 +91,7 @@ const CMS = (() => {
         + (showParts ? fs_('Participări la ediții <span class="tag warn">cifrele rămân doar în panou</span>', rows('participari', 'Ediția, compania și cifrele declarate la înscriere', part, [['editie', '', 1, { select: eds().map((e) => [e.id, `${eLab(e.id)}${edEnded(e) ? '' : ' · în curs'}`]) }], ['companie', 'Companie', 1.4], ['cifra_afaceri', 'Cifra de afaceri (lei)', 1, 'num'], ['angajati', 'Angajați', .6, 'num']], '+ participare la altă ediție') + '<small class="ro">Până la arhivarea ediției omul apare ca participant; după arhivare devine alumnus. Pe site apar doar cifrele agregate.</small>') : '')
         + fs_('Roluri în program', `${roles.length ? `<div class="roles">${roles.map(([r, L]) => `<span><b>${esc(r)}</b> ${L.map(eLab).join(', ')}</span>`).join('')}</div><small class="ro">Se calculează singure: din agenda atelierelor (trainer, invitat) și din participări (participant, alumni).</small>` : '<small class="ro">Încă fără roluri în ediții. Participarea se adaugă mai sus; trainerii și invitații se pun în agenda atelierelor.</small>'}
           <div class="f"><label>Adaugă manual</label>${checks('tipuri', ROLE_MANUAL, manualOn)}<small>Pentru cine nu e încă în agenda unui atelier (de ex. un trainer nou) sau face parte din echipă.</small></div>`)
-        + fs_('Companie și funcție', f2(inp('companie', 'Companie', p.companii?.[p.companii.length - 1], { list: 'cms-orgs', ph: 'Caută sau scrie una nouă', hint: 'Dacă nu există, se adaugă și în Organizații.' }), inp('functie', 'Funcția afișată', p.functii?.[p.functii.length - 1], { ph: 'ex. Fondator & CEO' })))
+        + fs_('Companie și funcție', f2(inp('companie', 'Companie', p.companii?.[p.companii.length - 1], { list: 'cms-orgs', ph: 'Caută sau scrie una nouă', hint: 'Dacă nu există, se adaugă și în Organizații.' }), inp('functie', 'Funcția afișată', p.functii?.[p.functii.length - 1], { ph: 'ex. Fondator & CEO' })) + inp('site', 'Site-ul companiei', orgOf(p)?.url, { ph: 'https://…', hint: 'Se salvează la companie și apare pe pagina de alumni („Site-ul companiei”).' }))
         + fs_('Prezentare', area('bio', 'Câteva rânduri despre el/ea', p.bio, { ph: kind === 'participant' ? '2–3 fraze. Apare pe pagina lui de alumni.' : '2–3 fraze. Apare pe fișa de pe site.' }) + alumniPage(p))
         + (p.aparitii?.length ? fs_('Unde apare în program', `<ul class="ro">${p.aparitii.slice(-6).reverse().map((a) => `<li><b>${eLab(a.editie)}</b> · ${esc(a.titlu || '')} · ${esc(a.rol)}</li>`).join('')}</ul><small class="ro">Aparițiile se schimbă din atelier: Ediții › ediția › Construiește › Traineri și invitați.</small>`) : '')
         + visField('oameni', p.id);
@@ -107,6 +110,9 @@ const CMS = (() => {
         const o = D.organizatii.find((x) => nrm(x.nume) === nrm(v.companie));
         orgId = o?.id || (await put({ op: 'entitate', tip: 'organizatii', nou: true, date: { nume: v.companie.trim(), tip: 'companie' }, eticheta: `companie nouă: ${v.companie.trim()}` })).id;
       }
+      // site-ul ține de companie: îl actualizăm acolo dacă s-a schimbat
+      const site = normUrl(v.site);
+      if (orgId && site !== (Oid(orgId)?.url || null)) await put({ op: 'entitate', tip: 'organizatii', id: orgId, date: { url: site }, eticheta: `site: ${v.companie.trim()}` });
       const comp = [...(p.companii || []).filter((c) => nrm(c) !== nrm(v.companie)), v.companie.trim()].filter(Boolean);
       const fn = [...(p.functii || []).filter((c) => c !== v.functie), v.functie.trim()].filter(Boolean);
       // rolurile bifate de mână; participarea și aparițiile din agende se adaugă singure la reconstruire
@@ -592,6 +598,7 @@ const CMS = (() => {
         ${f2(inp('p_companie', 'Compania *', '', { list: 'cms-orgs', ph: 'Caută sau scrie una nouă' }), inp('p_functie', 'Funcția', '', { ph: 'ex. Fondator & CEO' }))}
         ${f2(inp('p_cifra', 'Cifra de afaceri (lei)', '', { ph: 'ex. 12.500.000' }), inp('p_angajati', 'Angajați', '', { ph: 'ex. 45' }))}
         ${f2(inp('p_sector', 'Sectorul companiei', '', { list: 'cms-sectoare', ph: 'Alege sau scrie' }), inp('p_linkedin', 'LinkedIn', '', { ph: 'https://www.linkedin.com/in/…' }))}
+        ${inp('p_site', 'Site-ul companiei', '', { ph: 'https://…' })}
         ${photo('p_imagine', '')}
         ${area('p_bio', 'Despre el/ea', '', { ph: '2–3 fraze despre om și ce face. Apare pe pagina lui de alumni.' })}
         ${area('p_descriere', 'Despre companie', '', { ph: 'Ce face compania, în 1–2 fraze.' })}
@@ -690,7 +697,7 @@ const CMS = (() => {
     $('[name=p_id]', f).value = id; $('[name=p_nume]', f).value = p.nume;
     const last = D.editii.flatMap((e) => e.participanti.filter((x) => x.persoana === id).map((x) => ({ e, x }))).sort((a, b) => (b.e.an || 0) - (a.e.an || 0))[0];
     set('p_companie', Oid(last?.x.organizatie)?.nume || p.companii?.[p.companii.length - 1]);
-    set('p_functie', p.functii?.[p.functii.length - 1]); set('p_linkedin', p.linkedin); set('p_bio', p.bio);
+    set('p_functie', p.functii?.[p.functii.length - 1]); set('p_linkedin', p.linkedin); set('p_site', Oid(last?.x.organizatie || p.organizatii?.[p.organizatii.length - 1])?.url); set('p_bio', p.bio);
     set('p_sector', Oid(last?.x.organizatie || p.organizatii?.[p.organizatii.length - 1])?.sector);
     if (p.imagine) { const box = $('[data-photo=p_imagine]', f); $('input[type=hidden]', box).value = p.imagine; $('.av', box).innerHTML = `<img class="av" src="${esc(p.imagine)}" alt="">`; }
     $('#bld-pdup').hidden = true;
@@ -713,7 +720,8 @@ const CMS = (() => {
     btn.disabled = true; btn.textContent = 'Se adaugă…';
     try {
       let o = D.organizatii.find((x) => nrm(x.nume) === nrm(v.p_companie));
-      const oid = o?.id || (await put({ op: 'entitate', tip: 'organizatii', nou: true, date: { nume: v.p_companie, tip: 'companie', sector: v.p_sector || null, descriere: v.p_descriere || null }, eticheta: `companie nouă: ${v.p_companie}` })).id;
+      const oid = o?.id || (await put({ op: 'entitate', tip: 'organizatii', nou: true, date: { nume: v.p_companie, tip: 'companie', sector: v.p_sector || null, descriere: v.p_descriere || null, url: normUrl(v.p_site) }, eticheta: `companie nouă: ${v.p_companie}` })).id;
+      if (o && v.p_site && normUrl(v.p_site) !== o.url) await put({ op: 'entitate', tip: 'organizatii', id: o.id, date: { url: normUrl(v.p_site) }, eticheta: `site: ${o.nume}` });
       if (o && ((v.p_sector && !o.sector) || (v.p_descriere && !o.descriere))) await put({ op: 'entitate', tip: 'organizatii', id: o.id, date: { ...(v.p_sector && !o.sector ? { sector: v.p_sector } : {}), ...(v.p_descriere && !o.descriere ? { descriere: v.p_descriere } : {}) }, eticheta: `companie: ${o.nume}` });
       const p = v.p_id ? Pid(v.p_id) : null;
       const date = { nume: v.p_nume, imagine: v.p_imagine || p?.imagine || null, linkedin: v.p_linkedin || p?.linkedin || null,
