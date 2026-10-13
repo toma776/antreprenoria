@@ -294,13 +294,13 @@ async function handler(req, res) {
       const html = fresh('./site/render').renderTrainer({ id: tr[1], brand: new URLSearchParams(query).get('brand') || undefined });
       if (html) { res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' }); return res.end(html); }
     }
-    // /parteneri: în previzualizare, doar local până la aprobare; linkurile vechi din meniu duc la secțiunea lor
-    if (!READ_ONLY && (url === '/parteneri' || url === '/parteneri/')) {
+    // /parteneri: partenerii edițiilor, sponsorii atelierelor, implicarea; linkurile vechi din meniu duc la secțiunea lor
+    if ((url === '/parteneri' || url === '/parteneri/')) {
       res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' });
       return res.end(fresh('./site/render').renderParteneri({ brand: new URLSearchParams(query).get('brand') || undefined }));
     }
     const PT = { '/parteneri/sponsorizare': 'sponsorizeaza', '/parteneri/gazda': 'gazduieste', '/parteneri/mentor': 'mentor' };
-    if (!READ_ONLY && PT[url]) { res.writeHead(301, { Location: '/parteneri#' + PT[url] }); return res.end(); }
+    if (PT[url]) { res.writeHead(301, { Location: '/parteneri#' + PT[url] }); return res.end(); }
     // /alumni: toți alumnii; /alumni/<id>: doar cu profil completat (previzualizarea pentru ceilalți merge doar local)
     if ((url === '/alumni' || url === '/alumni/')) {
       res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' });
