@@ -94,7 +94,7 @@ function parteneriBody(ctx, F) {
   ${d.ciclu.length ? `<section class="sec" id="din-alumni"><div class="wrap">
     <div class="sec-head row"><div><p class="eyebrow">Din alumni, parteneri</p><h2>Vii ca participant. Revii ca partener.</h2>
       <p class="lead">${plural(d.ciclu.length, 'companie a trecut', 'companii au trecut')} prin program și s-au întors să-l susțină.</p></div><a class="link-arrow" href="/alumni">Alumnii →</a></div>
-    <div class="al-cycle">${d.ciclu.map((x) => { const o = x.o, e0 = d.byId[o.ciclu.alumni_din]; return `<div class="al-cyc">${logo(o)}<b>${esc(o.nume)}</b><span>alumni ${esc(e0 ? edLabel(e0) : '')} → ${esc(o.ciclu.apoi.map((r) => r.replace(' atelier', '')).join(', '))}</span></div>`; }).join('')}</div>
+    <div class="al-cycle" style="--n:${d.ciclu.length}">${d.ciclu.map((x) => { const o = x.o, e0 = d.byId[o.ciclu.alumni_din]; return `<div class="al-cyc">${logo(o)}<b>${esc(o.nume)}</b><span>alumni ${esc(e0 ? edLabel(e0) : '')} → ${esc(o.ciclu.apoi.map((r) => r.replace(' atelier', '')).join(', '))}</span></div>`; }).join('')}</div>
   </div></section>` : ''}
 
   <section class="sec sec-alt" id="implica-te"><div class="wrap">
