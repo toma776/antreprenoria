@@ -408,3 +408,37 @@
   document.fonts?.ready.then(again);
   addEventListener('load', again);
 })();
+
+// /alumni: rândurile cu fotografii apar treptat la derulare (în fiecare rând, de la stânga la dreapta)
+// PREVIZUALIZARE: deocamdată doar local (localhost), până la aprobare
+(() => {
+  const grid = document.querySelector('.al-grid');
+  if (!grid || !document.documentElement.classList.contains('rv')) return;
+  if (!/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) return;
+  grid.classList.add('al-rv');
+  const io = new IntersectionObserver((es) => es.forEach((e) => {
+    if (!e.isIntersecting) return;
+    e.target.classList.add('in');
+    io.unobserve(e.target);
+  }), { threshold: 0.2, rootMargin: '0px 0px -6% 0px' });
+  // întârzierea fiecărui card: poziția lui în rând (cardurile din același rând au același offsetTop)
+  const arm = () => {
+    const cards = [...grid.querySelectorAll('.al-card')].filter((c) => !c.hidden);
+    let top = null, col = 0;
+    cards.forEach((c) => {
+      if (c.offsetTop !== top) { top = c.offsetTop; col = 0; }
+      c.style.setProperty('--al-d', `${col++ * 70}ms`);
+      c.classList.remove('in');
+      io.observe(c);
+    });
+  };
+  arm();
+  // la schimbarea filtrului, cardurile rămase intră din nou, rând cu rând
+  document.querySelectorAll('[data-al-group]').forEach((g) => g.addEventListener('click', (e) => { if (!e.target.closest('[data-al]')) return;
+    requestAnimationFrame(() => {
+      arm();
+      // lista filtrată e mai scurtă: dacă a rămas deasupra ecranului, urcăm la ea
+      if (grid.getBoundingClientRect().top < 0) document.getElementById('lista')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }));
+})();

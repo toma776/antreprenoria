@@ -1379,3 +1379,9 @@ a.live:hover { color: var(--ink); text-decoration: underline; text-underline-off
 /* ancora #lista (alumni, traineri): sub header-ul fix */
 #lista { scroll-margin-top: 92px; }
 @media (max-width: 720px) { #lista { scroll-margin-top: 84px; } }
+
+/* /alumni: apariția treptată a rândurilor (previzualizare, activă din site.js) */
+.rv .al-grid.al-rv .al-card { opacity: 0; transform: translateY(18px); transition: opacity .55s cubic-bezier(.2, .7, .2, 1), transform .55s cubic-bezier(.2, .7, .2, 1); transition-delay: var(--al-d, 0ms); }
+.rv .al-grid.al-rv .al-card .al-ph img { transform: scale(.82); transition: transform .7s cubic-bezier(.2, .7, .2, 1); transition-delay: var(--al-d, 0ms); }
+.rv .al-grid.al-rv .al-card.in { opacity: 1; transform: none; }
+.rv .al-grid.al-rv .al-card.in .al-ph img { transform: none; }
