@@ -56,7 +56,7 @@ function safe(base, rel) {
 }
 // modulele site-ului se reîncarcă la fiecare cerere, ca schimbările din data/ și site/ să apară fără repornire
 function fresh(mod) {
-  ['./site/render', './site/brand', './site/menu', './site/home', './site/util', './site/edition', './site/program', './site/despre', './site/teme', './site/aplica', './site/texte', './site/traineri', './site/alumni', './site/parteneri', './site/implicare'].forEach((m) => delete require.cache[require.resolve(m)]);
+  ['./site/render', './site/brand', './site/menu', './site/home', './site/util', './site/edition', './site/program', './site/despre', './site/teme', './site/aplica', './site/texte', './site/traineri', './site/alumni', './site/parteneri', './site/implicare', './site/editii'].forEach((m) => delete require.cache[require.resolve(m)]);
   return require(mod);
 }
 
@@ -313,6 +313,11 @@ async function handler(req, res) {
     if (tr) {
       const html = fresh('./site/render').renderTrainer({ id: tr[1], brand: new URLSearchParams(query).get('brand') || undefined });
       if (html) { res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' }); return res.end(html); }
+    }
+    // /editii: lista edițiilor — în previzualizare, doar local până la aprobare
+    if (!READ_ONLY && (url === '/editii' || url === '/editii/')) {
+      res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' });
+      return res.end(fresh('./site/render').renderEditii({ brand: new URLSearchParams(query).get('brand') || undefined }));
     }
     // /parteneri: partenerii edițiilor, sponsorii atelierelor, implicarea; linkurile vechi din meniu duc la secțiunea lor
     if ((url === '/parteneri' || url === '/parteneri/')) {

@@ -1461,3 +1461,43 @@ a.live:hover { color: var(--ink); text-decoration: underline; text-underline-off
 @media (max-width: 639px) { .al-cycle { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; } .al-cyc { padding: 12px; } .al-cyc .logo-cell { height: 60px; } }
 .al-cyc { align-content: start; }
 .al-cyc .logo-cell img { max-height: 46px; }
+
+/* ---------- /editii ---------- */
+.ex-actives { display: grid; grid-template-columns: repeat(min(var(--n, 2), 3), minmax(0, 1fr)); gap: 16px; }
+.ex-active { display: grid; align-content: start; gap: 10px; padding: 26px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface); color: var(--ink); text-decoration: none; transition: border-color .2s, transform .2s, box-shadow .2s; }
+.ex-active:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 18px 40px -24px rgba(16, 30, 60, .35); }
+.ex-active.is-live { border-color: color-mix(in srgb, var(--primary) 45%, var(--line)); }
+.ex-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.ex-where { font-size: 13px; color: var(--muted); font-weight: 600; }
+.ex-num { font: var(--d-weight) clamp(46px, 5vw, 68px)/1 var(--f-num); font-stretch: var(--d-stretch); letter-spacing: -.02em; }
+.ex-per { font-size: 15px; color: var(--muted); }
+.ex-prog { display: flex; gap: 4px; margin-top: 6px; }
+.ex-prog i { flex: 1; height: 6px; border-radius: 3px; background: var(--surface-2); }
+.ex-prog i.done { background: var(--primary); }
+.ex-prog i.next { background: color-mix(in srgb, var(--primary) 40%, var(--surface-2)); }
+.ex-meta { font-size: 13.5px; color: var(--muted); }
+.ex-next { display: grid; gap: 2px; padding: 12px 14px; border-radius: 10px; background: var(--surface-2); margin-top: 4px; }
+.ex-next small { font-size: 11.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--primary); }
+.ex-next b { font-size: 16px; }
+.ex-next span { font-size: 13.5px; color: var(--muted); }
+.ex-price { font-weight: 700; font-size: 15px; }
+.ex-go { margin-top: 4px; font-weight: 700; color: var(--primary); font-size: 15px; }
+.ex-year { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 24px; padding: 26px 0; border-top: 1px solid var(--line); }
+.ex-year:first-of-type { border-top: 0; padding-top: 6px; }
+.ex-year h3 { font: var(--d-weight) 30px/1 var(--f-num); font-stretch: var(--d-stretch); color: var(--muted); }
+.ex-pasts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.ex-past { display: grid; align-content: start; gap: 8px; padding: 20px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface); color: var(--ink); text-decoration: none; transition: border-color .2s, transform .2s; }
+.ex-past:hover { border-color: var(--primary); transform: translateY(-2px); }
+.ex-past-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.ex-past .ex-num { font-size: 42px; }
+.ex-past-top span { font-size: 13px; color: var(--muted); text-transform: capitalize; }
+.ex-figs { display: flex; gap: 16px; font-size: 14px; color: var(--muted); }
+.ex-figs b { color: var(--ink); font-family: var(--f-num); }
+.ex-faces { display: flex; align-items: center; margin-top: 4px; }
+.ex-faces img, .ex-faces .ph { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 2px solid var(--surface); margin-left: -8px; background: var(--surface-2); display: grid; place-items: center; font-size: 11px; font-weight: 700; color: var(--primary); }
+.ex-faces > :first-child { margin-left: 0; }
+.ex-faces em { font-style: normal; font-size: 12.5px; color: var(--muted); margin-left: 8px; }
+.ex-themes { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+.ex-themes i { font-style: normal; font-size: 12px; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+@media (max-width: 900px) { .ex-actives { grid-template-columns: 1fr; } .ex-year { grid-template-columns: 1fr; gap: 12px; } }
+@media (max-width: 640px) { .ex-pasts { grid-template-columns: 1fr; } .ex-active { padding: 20px; } }
