@@ -3,3 +3,7 @@ node_modules/
 .DS_Store
 Thumbs.db
 .env.local
+
+# modificările din panou încă nepublicate (doar local; se publică din panou)
+data/curare/editari-local.json
+data/entitati-local.json

@@ -1,4 +1,5 @@
 {
+  "_despre": "Modificările făcute din panou (Entități). Se aplică peste datele preluate de pe site-ul vechi la fiecare npm run build; vezi scripts/editari.js.",
   "modificari": {
     "oameni": {},
     "organizatii": {},
@@ -35,12 +36,5 @@
   "ascunse": [
     "editii:bucuresti-23"
   ],
-  "texte": {},
-  "nepublicate": [
-    {
-      "cand": "2026-10-12T10:07:21.642Z",
-      "ce": "ediție nouă #23"
-    }
-  ],
-  "_despre": "Modificările făcute din panou (Entități). Se aplică peste datele preluate de pe site-ul vechi la fiecare npm run build; vezi scripts/editari.js."
+  "texte": {}
 }

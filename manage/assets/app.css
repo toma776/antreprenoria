@@ -592,3 +592,6 @@ a.btn.primary:hover { text-decoration: none; filter: brightness(1.07); }
 .pending-list li { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 12px; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 13px; color: var(--ink); }
 .pending-list li:last-child { border-bottom: 0; }
 .pending-list time { color: var(--muted); font-variant-numeric: tabular-nums; }
+.pending-list li { grid-template-columns: 120px minmax(0, 1fr) auto; align-items: center; }
+.pending-act { display: inline-flex; gap: 6px; }
+@media (max-width: 640px) { .pending-list li { grid-template-columns: 1fr; gap: 4px; } }

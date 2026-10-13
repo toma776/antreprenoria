@@ -5,7 +5,9 @@ const path = require('path');
 const brand = require('./brand');
 const { megaMenu } = require('./menu');
 
-const DATA = path.join(__dirname, '..', 'data', 'entitati.json');
+// local, cu modificările încă nepublicate din panou (entitati-local.json); pe Vercel, doar ce e publicat
+const DATA_PUB = path.join(__dirname, '..', 'data', 'entitati.json'), DATA_LOCAL = path.join(__dirname, '..', 'data', 'entitati-local.json');
+const dataFile = () => (!process.env.VERCEL && fs.existsSync(DATA_LOCAL) ? DATA_LOCAL : DATA_PUB);
 const { esc, today, fmtDay, median, quantile, milLei, initials } = require('./util');
 const { tx } = require('./texte');
 const { homeBody } = require('./home');
@@ -37,7 +39,7 @@ function hideHidden(D, keepEditii) {
   return D;
 }
 function load(brandId, preview) {
-  const D = hideHidden(JSON.parse(fs.readFileSync(DATA, 'utf8')), preview);
+  const D = hideHidden(JSON.parse(fs.readFileSync(dataFile(), 'utf8')), preview);
   const P = Object.fromEntries(D.oameni.map((p) => [p.id, p]));
   const O = Object.fromEntries(D.organizatii.map((o) => [o.id, o]));
   const T = Object.fromEntries(D.teme.map((t) => [t.id, t]));

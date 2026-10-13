@@ -126,4 +126,48 @@ function relink(out, M) {
   });
 }
 
-module.exports = { apply, relink, EMPTY, LISTS };
+// ---------- jurnalul modificărilor nepublicate ----------
+// editari.json = starea PUBLICATĂ (pe git, folosită de Vercel). Fiecare modificare făcută din panou se păstrează separat,
+// în editari-local.json (doar local), ca o listă de schimbări punctuale („patch”), ca să poată fi publicată sau anulată singură.
+// Starea de lucru (cea văzută local) = cea publicată + toate schimbările din jurnal, în ordine.
+const clone = (x) => JSON.parse(JSON.stringify(x));
+const isObj = (x) => x && typeof x === 'object' && !Array.isArray(x);
+// cât de adânc coborâm în fiecare parte, ca o schimbare să atingă cât mai puțin: câmpul unei entități, un text, lista unei ediții
+const DEPTH = { modificari: 3, program: 1, texte: 1, agende: 1, participanti: 1, parteneri: 1, metodologie: 0, cifre: 0 };
+function diff(before, after) {
+  const out = [];
+  const walk = (a, b, p, d) => {
+    if (d === 0 || !isObj(a) || !isObj(b)) {
+      if (JSON.stringify(a) !== JSON.stringify(b)) out.push(b === undefined ? { p, del: true } : { p, v: clone(b) });
+      return;
+    }
+    for (const k of new Set([...Object.keys(a), ...Object.keys(b)])) walk(a[k], b[k], [...p, k], d - 1);
+  };
+  for (const [k, d] of Object.entries(DEPTH)) walk(before[k] ?? (d ? {} : null), after[k] ?? (d ? {} : null), [k], d);
+  // entitățile ascunse: ce s-a adăugat și ce s-a scos din listă
+  const A = new Set(before.ascunse || []), B = new Set(after.ascunse || []);
+  [...B].filter((x) => !A.has(x)).forEach((x) => out.push({ ascuns: x, on: true }));
+  [...A].filter((x) => !B.has(x)).forEach((x) => out.push({ ascuns: x, on: false }));
+  return out;
+}
+function patch(E, list) {
+  for (const x of list) {
+    if (x.ascuns) {
+      E.ascunse = (E.ascunse || []).filter((y) => y !== x.ascuns);
+      if (x.on) E.ascunse.push(x.ascuns);
+      continue;
+    }
+    let o = E;
+    for (const k of x.p.slice(0, -1)) { if (!isObj(o[k])) o[k] = {}; o = o[k]; }
+    const last = x.p[x.p.length - 1];
+    if (x.del) delete o[last]; else o[last] = clone(x.v);
+    // o entitate rămasă fără câmpuri dispare din modificări
+    if (x.p[0] === 'modificari' && x.p.length === 4 && x.del) { const ent = E.modificari[x.p[1]]?.[x.p[2]]; if (ent && !Object.keys(ent).length) delete E.modificari[x.p[1]][x.p[2]]; }
+  }
+  return E;
+}
+// starea publicată, curățată (fără vechea listă de etichete „nepublicate”)
+const published = (E) => { const P = { ...EMPTY(), ...clone(E || {}) }; P.modificari = { ...EMPTY().modificari, ...P.modificari }; delete P.nepublicate; return P; };
+const working = (P, J) => (J?.intrari || []).reduce((E, it) => patch(E, it.patch), clone(P));
+
+module.exports = { apply, relink, EMPTY, LISTS, diff, patch, published, working };

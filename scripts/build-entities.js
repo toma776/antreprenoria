@@ -315,9 +315,18 @@ const out = {
   sectoare: curCompanii.sectoare,
   observatii,
 };
-// modificările din panou (data/curare/editari.json), peste tot ce vine din site-ul vechi
-require('./editari').apply(out, readJson('curare/editari.json'));
+// modificările din panou, peste tot ce vine din site-ul vechi:
+//   entitati.json       = cu modificările PUBLICATE (data/curare/editari.json), pe git, pentru Vercel
+//   entitati-local.json = plus modificările încă nepublicate (data/curare/editari-local.json), doar local
+const ED = require('./editari');
+const base = JSON.parse(JSON.stringify(out));
+const pub = ED.published(readJson('curare/editari.json'));
+ED.apply(out, pub);
 writeJson('entitati.json', out);
+const jurnal = readJson('curare/editari-local.json');
+const localFile = path.join(__dirname, '..', 'data', 'entitati-local.json');
+if (jurnal?.intrari?.length) writeJson('entitati-local.json', ED.apply(base, ED.working(pub, jurnal)));
+else if (fs.existsSync(localFile)) fs.unlinkSync(localFile);
 const nTip = (t) => orgsUsed.filter((o) => o.tipuri.includes(t)).length;
 console.log(`ediții ${editii.length} · ateliere ${editii.reduce((n, e) => n + e.ateliere.length, 0)} · participări ${editii.reduce((n, e) => n + e.participanti.length, 0)}`);
 console.log(`oameni ${oameniList.length} (speakeri ${oameniList.filter((p) => p.aparitii.length).length}) · organizații ${orgsUsed.length} (alumni ${nTip('alumni')}, parteneri ${nTip('partener')}, sponsori ${nTip('sponsor')}, gazde ${nTip('gazdă')}, ale speakerilor ${nTip('speaker')}) · locații ${out.locatii.length}`);

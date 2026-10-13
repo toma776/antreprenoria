@@ -64,29 +64,39 @@ function fresh(mod) {
 const READ_ONLY = !!process.env.VERCEL;
 const AL_RE = /^\/alumni\/([a-z0-9-]+)\/?$/;
 
-// ---------- CMS: modificările din panou (data/curare/editari.json) ----------
+// ---------- CMS: modificările din panou ----------
+// data/curare/editari.json       = ce e PUBLICAT (pe git; Vercel construiește site-ul din el)
+// data/curare/editari-local.json = jurnalul modificărilor încă nepublicate, fiecare cu schimbările ei (doar local)
+// Local, site-ul și panoul folosesc starea de lucru = publicat + jurnal (data/entitati-local.json).
 const EDITARI = path.join(DATA, 'curare', 'editari.json');
+const JURNAL = path.join(DATA, 'curare', 'editari-local.json');
 // scripts/ rămâne doar local (.vercelignore): îl încărcăm la cerere, nu la build; pe Vercel panoul doar citește
 const script = (n) => require(path.join(ROOT, 'scripts', n));
-const EMPTY_EDITARI = () => ({ modificari: {}, program: {}, metodologie: null, cifre: null, agende: {}, participanti: {}, parteneri: {}, ascunse: [], texte: {}, nepublicate: [] });
+const EMPTY_EDITARI = () => ({ modificari: {}, program: {}, metodologie: null, cifre: null, agende: {}, participanti: {}, parteneri: {}, ascunse: [], texte: {} });
+const readJson = (f, def) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return def; } };
+function readPublished() {
+  const E = readJson(EDITARI, {});
+  try { return script('editari').published(E); } catch (e) { return { ...EMPTY_EDITARI(), ...E }; }
+}
+const readJurnal = () => { const J = readJson(JURNAL, null); return J && Array.isArray(J.intrari) ? J : { intrari: [] }; };
+// starea de lucru: publicat + toate modificările din jurnal
 function readEditari() {
-  let EMPTY = EMPTY_EDITARI;
-  try { EMPTY = script('editari').EMPTY; } catch (e) {}
-  let E = {};
-  try { E = JSON.parse(fs.readFileSync(EDITARI, 'utf8')); } catch (e) {}
-  const base = EMPTY();
-  return { ...base, ...E, modificari: { ...base.modificari, ...(E.modificari || {}) } };
+  const P = readPublished();
+  try { return script('editari').working(P, readJurnal()); } catch (e) { return P; }
 }
-function writeEditari(E) {
-  fs.writeFileSync(EDITARI, JSON.stringify(E, null, 2) + '\n');
-  // entitățile se reconstruiesc imediat, ca site-ul local și panoul să arate modificarea
-  require('child_process').execFileSync(process.execPath, [path.join(ROOT, 'scripts', 'build-entities.js')], { cwd: ROOT, stdio: 'ignore' });
-}
+// entitățile se reconstruiesc imediat, ca site-ul local și panoul să arate modificarea
+const rebuild = () => require('child_process').execFileSync(process.execPath, [path.join(ROOT, 'scripts', 'build-entities.js')], { cwd: ROOT, stdio: 'ignore' });
+const writeJson = (f, v) => fs.writeFileSync(f, JSON.stringify(v, null, 2) + '\n');
+// lista pentru panou: fiecare modificare nepublicată, cu eticheta și grupul ei (o salvare din panou poate avea mai multe)
+const pendingList = () => readJurnal().intrari.map(({ id, cand, ce, grup }) => ({ id, cand, ce, grup }));
+// datele de lucru local, cele publicate pe Vercel
+const DATA_LOCAL = path.join(DATA, 'entitati-local.json');
+const dataFile = () => (!READ_ONLY && fs.existsSync(DATA_LOCAL) ? DATA_LOCAL : path.join(DATA, 'entitati.json'));
 const CMS_TIPURI = ['oameni', 'organizatii', 'editii', 'ateliere', 'locatii', 'teme', 'echipa'];
 function cmsEdit(b) {
-  const E = readEditari(), D = JSON.parse(fs.readFileSync(path.join(DATA, 'entitati.json'), 'utf8'));
+  const E = readEditari(), D = JSON.parse(fs.readFileSync(dataFile(), 'utf8'));
+  const before = JSON.parse(JSON.stringify(E));
   const { slug } = script('lib');
-  const note = (ce) => E.nepublicate.push({ cand: new Date().toISOString(), ce: String(ce || 'modificare').slice(0, 120) });
   const exists = (tip, id) => (tip === 'echipa' ? D.program.contact.echipa : tip === 'ateliere' ? D.editii.flatMap((e) => e.ateliere) : D[tip]).some((x) => x.id === id) || !!E.modificari[tip]?.[id];
   let id = b.id;
   switch (b.op) {
@@ -161,9 +171,16 @@ function cmsEdit(b) {
     }
     default: return { error: 'operație necunoscută' };
   }
-  note(b.eticheta);
-  writeEditari(E);
-  return { ok: true, id, nepublicate: E.nepublicate };
+  // în jurnal intră doar ce s-a schimbat de fapt; publicat rămâne neatins până la „Publică”
+  const changes = script('editari').diff(before, E);
+  if (changes.length) {
+    const J = readJurnal();
+    const eid = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    J.intrari.push({ id: eid, cand: new Date().toISOString(), ce: String(b.eticheta || 'modificare').slice(0, 140), grup: String(b.grup || eid).slice(0, 40), patch: changes });
+    writeJson(JURNAL, J);
+    rebuild();
+  }
+  return { ok: true, id, nepublicate: pendingList() };
 }
 
 async function handler(req, res) {
@@ -171,7 +188,7 @@ async function handler(req, res) {
   const url = decodeURIComponent(rawPath);
   try {
     if (req.method === 'GET' && JSON_FILES[url]) {
-      const f = path.join(DATA, JSON_FILES[url]);
+      const f = url === '/api/entitati' ? dataFile() : path.join(DATA, JSON_FILES[url]);
       return fs.existsSync(f) ? sendJson(res, 200, fs.readFileSync(f, 'utf8')) : sendJson(res, 404, { error: 'lipsește ' + JSON_FILES[url] });
     }
     // formularul de aplicare: validare pe server (aceleași reguli ca în pagină), apoi salvare
@@ -222,7 +239,7 @@ async function handler(req, res) {
     // starea CMS-ului pentru panou: dacă se poate edita, textele paginilor, modificările încă nepublicate
     if (url === '/api/cms' && req.method === 'GET') {
       const E = readEditari();
-      return sendJson(res, 200, { editabil: !READ_ONLY, pagini: fresh('./site/texte').PAGINI, texte: E.texte, nepublicate: E.nepublicate, editari: E });
+      return sendJson(res, 200, { editabil: !READ_ONLY, pagini: fresh('./site/texte').PAGINI, texte: E.texte, nepublicate: READ_ONLY ? [] : pendingList(), editari: E });
     }
     if (READ_ONLY && req.method !== 'GET') return sendJson(res, 403, { error: 'Pe versiunea publicată panoul e doar pentru vizualizare. Modificările se fac local, apoi git push.' });
     if (url === '/api/brand/activ' && req.method === 'PUT') {
@@ -261,19 +278,37 @@ async function handler(req, res) {
       fs.writeFileSync(path.join(dir, file), buf);
       return sendJson(res, 200, { url: `/assets/uploads/${file}` });
     }
+    // publicarea: modificările alese (sau toate) trec din jurnal în editari.json, apoi pe git; Vercel publică singur
     if (url === '/api/publica' && req.method === 'POST') {
-      const E = readEditari(), n = E.nepublicate.length;
-      if (!n) return sendJson(res, 200, { ok: true, mesaj: 'Nimic de publicat.' });
-      E.nepublicate = [];
-      writeEditari(E);
+      const { ids } = await body(req).catch(() => ({}));
+      const J = readJurnal(), pick = Array.isArray(ids) ? new Set(ids) : null;
+      const sel = J.intrari.filter((x) => !pick || pick.has(x.id));
+      if (!sel.length) return sendJson(res, 200, { ok: true, mesaj: 'Nimic de publicat.', nepublicate: pendingList() });
+      const ED = script('editari'), P = readPublished();
+      sel.forEach((x) => ED.patch(P, x.patch));
+      J.intrari = J.intrari.filter((x) => !sel.includes(x));
+      writeJson(EDITARI, { _despre: 'Modificările PUBLICATE din panou. Cele nepublicate stau în editari-local.json (doar local). Vezi scripts/editari.js.', ...P });
+      writeJson(JURNAL, J);
+      rebuild();
+      const n = new Set(sel.map((x) => x.grup)).size;
       const { execFileSync } = require('child_process');
       const git = (...a) => execFileSync('git', a, { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
       try {
-        git('add', 'data', ...(fs.existsSync(path.join(ROOT, 'site', 'assets', 'uploads')) ? ['site/assets/uploads'] : []));
-        git('commit', '-m', `Panou: ${n} ${n === 1 ? 'modificare publicată' : 'modificări publicate'}`);
+        git('add', 'data/curare/editari.json', 'data/entitati.json', ...(fs.existsSync(path.join(ROOT, 'site', 'assets', 'uploads')) ? ['site/assets/uploads'] : []));
+        git('commit', '-m', `Panou: ${n === 1 ? 'publicat' : n + ' modificări publicate'}: ${[...new Set(sel.map((x) => x.ce))].slice(0, 6).join('; ')}`);
         git('push', 'origin', 'main');
-      } catch (e) { return sendJson(res, 500, { error: 'Publicarea a eșuat: ' + String(e.stderr || e.message).slice(0, 300) }); }
-      return sendJson(res, 200, { ok: true, mesaj: `${n} ${n === 1 ? 'modificare publicată' : 'modificări publicate'}. Site-ul se actualizează în ~1 minut.` });
+      } catch (e) { return sendJson(res, 500, { error: 'Publicarea a eșuat: ' + String(e.stderr || e.message).slice(0, 300), nepublicate: pendingList() }); }
+      return sendJson(res, 200, { ok: true, mesaj: `${n === 1 ? 'Modificarea a fost publicată' : n + ' modificări publicate'}. Site-ul se actualizează în ~1 minut.`, nepublicate: pendingList() });
+    }
+    // renunțarea la modificări nepublicate: dispar din jurnal, iar starea locală revine la cea de dinainte
+    if (url === '/api/renunta' && req.method === 'POST') {
+      const { ids } = await body(req).catch(() => ({}));
+      if (!Array.isArray(ids) || !ids.length) return sendJson(res, 400, { error: 'Alege modificarea.' });
+      const J = readJurnal(), pick = new Set(ids);
+      J.intrari = J.intrari.filter((x) => !pick.has(x.id));
+      writeJson(JURNAL, J);
+      rebuild();
+      return sendJson(res, 200, { ok: true, nepublicate: pendingList() });
     }
     if (url.startsWith('/api/')) return sendJson(res, 404, { error: 'rută necunoscută' });
     if (url.startsWith('/manage/assets/')) return sendFile(res, safe(path.join(ROOT, 'manage', 'assets'), url.slice('/manage/assets/'.length)) || '');

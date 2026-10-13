@@ -339,8 +339,10 @@ const CMS = (() => {
   }
 
   /* ---------- server ---------- */
+  let GRUP = null;
+  const newGroup = () => { GRUP = Date.now().toString(36) + Math.random().toString(36).slice(2, 6); };
   async function put(b) {
-    const r = await api.send('/api/editari', 'PUT', b);
+    const r = await api.send('/api/editari', 'PUT', { ...b, grup: GRUP || undefined });
     S.pending = r.nepublicate || S.pending;
     return r;
   }
@@ -443,10 +445,20 @@ const CMS = (() => {
   }
 
   /* ---------- bucăți pentru paginile din entitati.js ---------- */
-  const pendingBar = () => (!S.on ? '<div class="pending ro-mode"><span>Pe versiunea publicată panoul e doar pentru vizualizare. Editarea și publicarea se fac din panoul local.</span></div>'
-    // fiecare modificare pe rândul ei, cele mai noi primele, cu ora la care a fost făcută
-    : S.pending.length ? `<div class="pending pending-list"><div class="pending-top"><b>${S.pending.length} ${S.pending.length === 1 ? 'modificare nepublicată' : 'modificări nepublicate'}</b><button class="primary" data-cms-publish>Publică pe site</button></div>
-      <ol>${S.pending.slice().reverse().map((p) => `<li><time>${esc(new Date(p.cand).toLocaleString('ro-RO', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }))}</time><span>${esc(p.ce)}</span></li>`).join('')}</ol></div>` : '');
+  // modificările nepublicate: un rând pentru fiecare salvare (pașii ei, dacă au fost mai mulți), cu Publică și Renunță
+  const pendingGroups = () => {
+    const g = new Map();
+    S.pending.forEach((p) => { const k = p.grup || p.id; if (!g.has(k)) g.set(k, { ids: [], ce: [], cand: p.cand }); const x = g.get(k); x.ids.push(p.id); if (!x.ce.includes(p.ce)) x.ce.push(p.ce); x.cand = p.cand; });
+    return [...g.values()].reverse();
+  };
+  const pendingBar = () => {
+    if (!S.on) return '<div class="pending ro-mode"><span>Pe versiunea publicată panoul e doar pentru vizualizare. Editarea și publicarea se fac din panoul local.</span></div>';
+    const G = pendingGroups();
+    if (!G.length) return '';
+    const when = (c) => new Date(c).toLocaleString('ro-RO', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+    return `<div class="pending pending-list"><div class="pending-top"><b>${G.length} ${G.length === 1 ? 'modificare nepublicată' : 'modificări nepublicate'}</b>${G.length > 1 ? '<button class="primary" data-cms-publish="">Publică toate</button>' : ''}</div>
+      <ol>${G.map((x) => `<li><time>${esc(when(x.cand))}</time><span>${x.ce.map(esc).join('<br>')}</span><span class="pending-act"><button class="sm" data-cms-discard="${esc(x.ids.join(','))}" title="Anulează modificarea (local)">Renunță</button><button class="sm primary" data-cms-publish="${esc(x.ids.join(','))}">Publică</button></span></li>`).join('')}</ol></div>`;
+  };
   const addBtn = (key, label) => (S.on && T[key]?.one ? `<button class="primary" data-cms-new="${key}">${label || '+ Adaugă ' + esc(T[key].one)}</button>` : '');
   function rowHtml(key, x) {
     const ty = T[key], r = ty.row(x, x._i), off = hidden(ty.tip, x.id), nw = isNew(ty.tip, x.id);
@@ -762,7 +774,8 @@ const CMS = (() => {
 
   /* ---------- evenimente ---------- */
   document.addEventListener('click', async (e) => {
-    const t = e.target.closest('[data-cms-edit],[data-cms-new],[data-cms-close],[data-cms-save],[data-cms-del],[data-cms-dup],[data-cms-publish],[data-cms-pick],[data-cms-texte-save],[data-cms-texte-reset],[data-add-row],[data-del-row],[data-del-chip],[data-photo-clear],[data-bld-save],[data-bld-perioada],[data-bld-copy],[data-bld-tema],[data-bld-del],[data-bld-ben],[data-bld-vis],[data-cms-archive],[data-bld-padd],[data-bld-pclear],[data-bld-pick],[data-bld-prem],[data-bld-lead],.sg[data-href],.cat[data-href]');
+    newGroup();
+    const t = e.target.closest('[data-cms-edit],[data-cms-new],[data-cms-close],[data-cms-save],[data-cms-del],[data-cms-dup],[data-cms-publish],[data-cms-discard],[data-cms-pick],[data-cms-texte-save],[data-cms-texte-reset],[data-add-row],[data-del-row],[data-del-chip],[data-photo-clear],[data-bld-save],[data-bld-perioada],[data-bld-copy],[data-bld-tema],[data-bld-del],[data-bld-ben],[data-bld-vis],[data-cms-archive],[data-bld-padd],[data-bld-pclear],[data-bld-pick],[data-bld-prem],[data-bld-lead],.sg[data-href],.cat[data-href]');
     if (!t) { if (e.target.id === 'cms-scrim') close(); return; }
     if (t.matches('.sg[data-href],.cat[data-href]')) { if (e.target.closest('button,a')) return; e.preventDefault(); navigate(t.dataset.href); return; }
     e.preventDefault();
@@ -790,9 +803,22 @@ const CMS = (() => {
     if (d.cmsSave !== undefined) { save(t); return; }
     if (d.cmsDel !== undefined) { del(); return; }
     if (d.cmsPublish !== undefined) {
-      if (!confirm(`Publici ${S.pending.length} ${S.pending.length === 1 ? 'modificare' : 'modificări'} pe site-ul public? Se trimit pe git și apar online în ~1 minut.`)) return;
+      const ids = d.cmsPublish ? d.cmsPublish.split(',') : null;
+      const G = pendingGroups(), label = ids ? G.find((x) => x.ids.join(',') === d.cmsPublish)?.ce.join(', ') : `toate cele ${G.length} modificări`;
+      if (!confirm(`Publici pe site-ul public: ${label}?
+
+Se trimite pe git și apare online în ~1 minut.`)) return;
       t.disabled = true; t.textContent = 'Se publică…';
-      try { const r = await api.send('/api/publica', 'POST', {}); await refresh(); go(routeFromPath()); toast(r.mesaj); } catch (err) { toast(err.message); t.disabled = false; t.textContent = 'Publică pe site'; }
+      try { const r = await api.send('/api/publica', 'POST', ids ? { ids } : {}); await refresh(); go(routeFromPath()); toast(r.mesaj); } catch (err) { toast(err.message); t.disabled = false; t.textContent = 'Publică'; }
+      return;
+    }
+    if (d.cmsDiscard) {
+      const x = pendingGroups().find((y) => y.ids.join(',') === d.cmsDiscard);
+      if (!confirm(`Renunți la: ${x?.ce.join(', ')}?
+
+Modificarea dispare și din panou, și de pe site-ul local. Nu se poate reface.`)) return;
+      t.disabled = true;
+      try { await api.send('/api/renunta', 'POST', { ids: d.cmsDiscard.split(',') }); await refresh(); go(routeFromPath()); toast('Modificarea a fost anulată.'); } catch (err) { toast(err.message); t.disabled = false; }
       return;
     }
     if (d.cmsTexteSave !== undefined) {
@@ -819,6 +845,7 @@ const CMS = (() => {
   }
   document.addEventListener('input', (e) => { if (e.target.matches('#bld-pf [name=p_nume]')) { $('#bld-pf [name=p_id]').value = ''; $('#bld-pchosen').hidden = true; pdupShow(e.target.value); } });
   document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') newGroup();
     if (e.key === 'Escape' && cur) close();
     if (e.key === 'Enter' && e.target.matches('.rel-add')) { e.preventDefault(); addChip(e.target); }
     if (e.key === 'Enter' && e.target.matches('#bld-pf input')) { e.preventDefault(); pAdd($('[data-bld-padd]')); }
