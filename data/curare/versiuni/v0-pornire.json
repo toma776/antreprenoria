@@ -1,0 +1,40 @@
+{
+  "modificari": {
+    "oameni": {},
+    "organizatii": {},
+    "editii": {
+      "bucuresti-23": {
+        "serie": "București",
+        "numar": 23,
+        "an": 2027,
+        "sezon": "primăvară",
+        "perioada": "",
+        "status": "În pregătire",
+        "subtitlu": "",
+        "deschisa": false,
+        "link_inscriere": null,
+        "preturi": [],
+        "beneficii": [],
+        "valoare_estimata": null,
+        "titlu": "Antreprenoria #23",
+        "cheie": "bucuresti-23",
+        "_nou": true
+      }
+    },
+    "ateliere": {},
+    "locatii": {},
+    "teme": {},
+    "echipa": {}
+  },
+  "program": {},
+  "metodologie": null,
+  "cifre": null,
+  "agende": {},
+  "participanti": {},
+  "parteneri": {},
+  "ascunse": [
+    "editii:bucuresti-23"
+  ],
+  "texte": {},
+  "_despre": "Modificările făcute din panou (Entități). Se aplică peste datele preluate de pe site-ul vechi la fiecare npm run build; vezi scripts/editari.js."
+}

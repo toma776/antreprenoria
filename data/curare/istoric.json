@@ -1,0 +1,21 @@
+{
+  "_despre": "Versiunile publicate din panou (Modificări). Copiile stau în versiuni/. Se poate reveni la oricare.",
+  "versiuni": [
+    {
+      "id": "v0-pornire",
+      "cand": "2026-10-13T08:37:47.000Z",
+      "tip": "pornire",
+      "ce": [
+        "Starea de dinainte de istoric"
+      ]
+    },
+    {
+      "id": "v1-cluj",
+      "cand": "2026-10-13T08:39:18.000Z",
+      "tip": "publicare",
+      "ce": [
+        "organizație: Cluj Business Campus"
+      ]
+    }
+  ]
+}

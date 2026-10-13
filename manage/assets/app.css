@@ -643,3 +643,20 @@ aside nav a.active .n { background: rgba(250, 220, 58, .18); color: var(--yellow
   aside nav a.active::before { display: none; }
 }
 aside .logo-txt small { white-space: nowrap; letter-spacing: .08em; font-size: 10px; }
+
+/* pagina Modificări: de publicat și istoricul versiunilor */
+.mod-list { display: grid; gap: 8px; }
+.mod-row { display: grid; grid-template-columns: 110px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 12px 16px; background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--warn); border-radius: var(--radius); }
+.mod-tx { display: grid; gap: 3px; min-width: 0; }
+.mod-tx b { font-size: 14px; font-weight: 600; }
+.mod-tx small { color: var(--muted); font-size: 12px; }
+.mod-act { display: flex; gap: 8px; }
+.mod-hist { list-style: none; margin: 0; padding: 0; position: relative; display: grid; gap: 10px; }
+.mod-hist::before { content: ""; position: absolute; left: 9px; top: 12px; bottom: 12px; width: 2px; background: var(--line); }
+.mod-hist li { position: relative; display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 12px 16px 12px 0; }
+.mod-dot { width: 20px; height: 20px; border-radius: 50%; background: var(--panel); border: 2px solid var(--line); z-index: 1; }
+.mod-hist li.is-cur .mod-dot { border-color: var(--ok); background: var(--ok-soft); box-shadow: 0 0 0 4px var(--ok-soft); }
+.mod-hist li .mod-tx { padding: 12px 16px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
+.mod-hist li.is-cur .mod-tx { border-color: color-mix(in srgb, var(--ok) 40%, var(--line)); }
+.mod-meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+@media (max-width: 760px) { .mod-row { grid-template-columns: 1fr; } .mod-hist li { grid-template-columns: 20px minmax(0, 1fr); } .mod-hist li > button { grid-column: 2; justify-self: start; } }

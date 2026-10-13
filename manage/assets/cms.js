@@ -361,6 +361,7 @@ const CMS = (() => {
     $('#side-mode').textContent = S.on ? 'Panou local · editabil' : 'Versiunea publicată · doar vizualizare';
     const n = S.on ? pendingGroups().length : 0, p = $('#side-pending');
     p.hidden = !n;
+    const nm = $('#n-mod'); if (nm) nm.textContent = n || '';
     p.innerHTML = n ? `<span>${n} ${n === 1 ? 'modificare nepublicată' : 'modificări nepublicate'}</span><b>→</b>` : '';
   }
   function datalists() {
@@ -868,5 +869,5 @@ Modificarea dispare și din panou, și de pe site-ul local. Nu se poate reface.`
   document.addEventListener('dragover', (e) => { if (e.target.closest?.('[data-photo]')) e.preventDefault(); });
   document.addEventListener('drop', (e) => { const box = e.target.closest?.('[data-photo]'); if (box && e.dataTransfer.files[0]) { e.preventDefault(); upload(e.dataTransfer.files[0], box); } });
 
-  return { S, T, GROUP, CALC, SITE, builder, afterRender, archiveBanner, toArchive, archived, refresh, open, pickNew, pendingBar, addBtn, listHtml, rowHtml, sample, typeSite, textePage, texteCat, get on() { return S.on; } };
+  return { S, T, GROUP, CALC, SITE, builder, afterRender, pendingGroups, archiveBanner, toArchive, archived, refresh, open, pickNew, pendingBar, addBtn, listHtml, rowHtml, sample, typeSite, textePage, texteCat, get on() { return S.on; } };
 })();

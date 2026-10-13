@@ -89,6 +89,34 @@ const rebuild = () => require('child_process').execFileSync(process.execPath, [p
 const writeJson = (f, v) => fs.writeFileSync(f, JSON.stringify(v, null, 2) + '\n');
 // lista pentru panou: fiecare modificare nepublicată, cu eticheta și grupul ei (o salvare din panou poate avea mai multe)
 const pendingList = () => readJurnal().intrari.map(({ id, cand, ce, grup }) => ({ id, cand, ce, grup }));
+// istoricul publicărilor: după fiecare publicare se păstrează o copie a datelor publicate (o „versiune”),
+// ca site-ul să poată reveni la ea. data/curare/istoric.json = lista; data/curare/versiuni/<id>.json = copiile.
+const ISTORIC = path.join(DATA, 'curare', 'istoric.json');
+const VERSIUNI = path.join(DATA, 'curare', 'versiuni');
+const readIstoric = () => { const H = readJson(ISTORIC, null); return H && Array.isArray(H.versiuni) ? H : { versiuni: [] }; };
+function saveVersion(P, info) {
+  fs.mkdirSync(VERSIUNI, { recursive: true });
+  const H = readIstoric();
+  // prima dată: starea de dinainte devine „versiunea de pornire”, ca să existe mereu unde reveni
+  if (!H.versiuni.length && info.inainte) {
+    const id0 = 'v0-' + Date.now().toString(36);
+    writeJson(path.join(VERSIUNI, id0 + '.json'), info.inainte);
+    H.versiuni.push({ id: id0, cand: new Date(Date.now() - 1000).toISOString(), tip: 'pornire', ce: ['Starea de dinainte de istoric'] });
+  }
+  const id = 'v' + (H.versiuni.length) + '-' + Date.now().toString(36);
+  writeJson(path.join(VERSIUNI, id + '.json'), P);
+  H.versiuni.push({ id, cand: new Date().toISOString(), tip: info.tip, ce: info.ce, din: info.din || null });
+  writeJson(ISTORIC, H);
+  return id;
+}
+const gitPublish = (msg) => {
+  const { execFileSync } = require('child_process');
+  const git = (...a) => execFileSync('git', a, { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+  git('add', 'data/curare/editari.json', 'data/entitati.json', 'data/curare/istoric.json', 'data/curare/versiuni', ...(fs.existsSync(path.join(ROOT, 'site', 'assets', 'uploads')) ? ['site/assets/uploads'] : []));
+  git('commit', '-m', msg);
+  git('push', 'origin', 'main');
+};
+const PUB_NOTE = 'Modificările PUBLICATE din panou. Cele nepublicate stau în editari-local.json (doar local). Vezi scripts/editari.js.';
 // datele de lucru local, cele publicate pe Vercel
 const DATA_LOCAL = path.join(DATA, 'entitati-local.json');
 const dataFile = () => (!READ_ONLY && fs.existsSync(DATA_LOCAL) ? DATA_LOCAL : path.join(DATA, 'entitati.json'));
@@ -284,21 +312,39 @@ async function handler(req, res) {
       const J = readJurnal(), pick = Array.isArray(ids) ? new Set(ids) : null;
       const sel = J.intrari.filter((x) => !pick || pick.has(x.id));
       if (!sel.length) return sendJson(res, 200, { ok: true, mesaj: 'Nimic de publicat.', nepublicate: pendingList() });
-      const ED = script('editari'), P = readPublished();
+      const ED = script('editari'), P = readPublished(), inainte = JSON.parse(JSON.stringify(P));
       sel.forEach((x) => ED.patch(P, x.patch));
       J.intrari = J.intrari.filter((x) => !sel.includes(x));
-      writeJson(EDITARI, { _despre: 'Modificările PUBLICATE din panou. Cele nepublicate stau în editari-local.json (doar local). Vezi scripts/editari.js.', ...P });
+      writeJson(EDITARI, { _despre: PUB_NOTE, ...P });
       writeJson(JURNAL, J);
       rebuild();
       const n = new Set(sel.map((x) => x.grup)).size;
-      const { execFileSync } = require('child_process');
-      const git = (...a) => execFileSync('git', a, { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+      saveVersion(P, { tip: 'publicare', ce: [...new Set(sel.map((x) => x.ce))], inainte });
       try {
-        git('add', 'data/curare/editari.json', 'data/entitati.json', ...(fs.existsSync(path.join(ROOT, 'site', 'assets', 'uploads')) ? ['site/assets/uploads'] : []));
-        git('commit', '-m', `Panou: ${n === 1 ? 'publicat' : n + ' modificări publicate'}: ${[...new Set(sel.map((x) => x.ce))].slice(0, 6).join('; ')}`);
-        git('push', 'origin', 'main');
+        gitPublish(`Panou: ${n === 1 ? 'publicat' : n + ' modificări publicate'}: ${[...new Set(sel.map((x) => x.ce))].slice(0, 6).join('; ')}`);
       } catch (e) { return sendJson(res, 500, { error: 'Publicarea a eșuat: ' + String(e.stderr || e.message).slice(0, 300), nepublicate: pendingList() }); }
       return sendJson(res, 200, { ok: true, mesaj: `${n === 1 ? 'Modificarea a fost publicată' : n + ' modificări publicate'}. Site-ul se actualizează în ~1 minut.`, nepublicate: pendingList() });
+    }
+    // istoricul publicărilor (pentru pagina Modificări din panou)
+    if (url === '/api/istoric' && req.method === 'GET') {
+      const H = readIstoric();
+      return sendJson(res, 200, { editabil: !READ_ONLY, versiuni: H.versiuni.slice().reverse(), nepublicate: READ_ONLY ? [] : pendingList() });
+    }
+    // revenirea la o versiune: datele publicate devin cele din versiunea aleasă (modificările nepublicate rămân în jurnal)
+    if (url === '/api/restaureaza' && req.method === 'POST') {
+      const { versiune } = await body(req).catch(() => ({}));
+      const H = readIstoric(), v = H.versiuni.find((x) => x.id === versiune);
+      if (!v) return sendJson(res, 404, { error: 'Versiune inexistentă.' });
+      const snap = readJson(path.join(VERSIUNI, v.id + '.json'), null);
+      if (!snap) return sendJson(res, 500, { error: 'Copia versiunii lipsește.' });
+      const P = readPublished();
+      if (JSON.stringify(P) === JSON.stringify(snap)) return sendJson(res, 200, { ok: true, mesaj: 'Site-ul e deja la această versiune.' });
+      writeJson(EDITARI, { _despre: PUB_NOTE, ...snap });
+      rebuild();
+      const when = new Date(v.cand).toLocaleString('ro-RO', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+      saveVersion(snap, { tip: 'revenire', ce: [`Revenire la versiunea din ${when}`], din: v.id });
+      try { gitPublish(`Panou: revenire la versiunea din ${when}`); } catch (e) { return sendJson(res, 500, { error: 'Revenirea a eșuat la publicare: ' + String(e.stderr || e.message).slice(0, 300) }); }
+      return sendJson(res, 200, { ok: true, mesaj: `Site-ul a revenit la versiunea din ${when}. Se actualizează online în ~1 minut.` });
     }
     // renunțarea la modificări nepublicate: dispar din jurnal, iar starea locală revine la cea de dinainte
     if (url === '/api/renunta' && req.method === 'POST') {
