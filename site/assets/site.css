@@ -1431,3 +1431,8 @@ a.live:hover { color: var(--ink); text-decoration: underline; text-underline-off
 @media (max-width: 900px) { .pt-ways { grid-template-columns: 1fr; } }
 @media (max-width: 700px) { .pt-card { grid-template-columns: 1fr; gap: 14px; padding: 18px; } .pt-card .pt-logo { height: 90px; } .pt-way .btn { justify-self: stretch; text-align: center; } }
 .pt-themes .more { border: 0; color: var(--muted); padding-left: 2px; }
+/* „Implică-te”: butoanele celor trei carduri pe aceeași linie, la baza cardului */
+.pt-way { display: flex; flex-direction: column; align-items: flex-start; }
+.pt-way .btn { margin-top: auto; }
+.pt-way p { margin-bottom: 8px; }
+@media (max-width: 700px) { .pt-way { align-items: stretch; } }
