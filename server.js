@@ -56,7 +56,7 @@ function safe(base, rel) {
 }
 // modulele site-ului se reîncarcă la fiecare cerere, ca schimbările din data/ și site/ să apară fără repornire
 function fresh(mod) {
-  ['./site/render', './site/brand', './site/menu', './site/home', './site/util', './site/edition', './site/program', './site/despre', './site/teme', './site/aplica', './site/texte', './site/traineri', './site/alumni'].forEach((m) => delete require.cache[require.resolve(m)]);
+  ['./site/render', './site/brand', './site/menu', './site/home', './site/util', './site/edition', './site/program', './site/despre', './site/teme', './site/aplica', './site/texte', './site/traineri', './site/alumni', './site/parteneri'].forEach((m) => delete require.cache[require.resolve(m)]);
   return require(mod);
 }
 
@@ -294,6 +294,13 @@ async function handler(req, res) {
       const html = fresh('./site/render').renderTrainer({ id: tr[1], brand: new URLSearchParams(query).get('brand') || undefined });
       if (html) { res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' }); return res.end(html); }
     }
+    // /parteneri: în previzualizare, doar local până la aprobare; linkurile vechi din meniu duc la secțiunea lor
+    if (!READ_ONLY && (url === '/parteneri' || url === '/parteneri/')) {
+      res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' });
+      return res.end(fresh('./site/render').renderParteneri({ brand: new URLSearchParams(query).get('brand') || undefined }));
+    }
+    const PT = { '/parteneri/sponsorizare': 'sponsorizeaza', '/parteneri/gazda': 'gazduieste', '/parteneri/mentor': 'mentor' };
+    if (!READ_ONLY && PT[url]) { res.writeHead(301, { Location: '/parteneri#' + PT[url] }); return res.end(); }
     // /alumni: toți alumnii; /alumni/<id>: doar cu profil completat (previzualizarea pentru ceilalți merge doar local)
     if ((url === '/alumni' || url === '/alumni/')) {
       res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' });

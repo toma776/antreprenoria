@@ -112,9 +112,9 @@ function panels(ctx, F) {
         col('Parteneri', `<div class="mm-logos">${strategic.slice(0, 6).map((o) => `<a href="/parteneri#${esc(o.id)}" title="${esc(o.nume)}"><img src="${esc(o.logo)}" alt="${esc(o.nume)}" loading="lazy"></a>`).join('')}</div>
           <a class="mm-all" href="/parteneri">Toți partenerii și sponsorii →</a>`, 'wide'),
         col('Implică-te', [
-          link('/parteneri/sponsorizare', 'Sponsorizează un atelier', caute ? `${caute === 1 ? 'Un atelier' : `${caute} ateliere`} din ediția #${ong.numar} ${caute === 1 ? 'caută' : 'caută'} încă sponsor` : 'Vizibilitate în fața antreprenorilor selectați'),
-          link('/parteneri/gazda', 'Găzduiește o ediție', 'Atelierele s-au ținut la DWF și Zitec'),
-          link('/parteneri/mentor', 'Devino trainer sau mentor', 'Pro-bono, din comunitatea RBL'),
+          link('/parteneri#sponsorizeaza', 'Sponsorizează un atelier', caute ? `${caute === 1 ? 'Un atelier' : `${caute} ateliere`} din ediția #${ong.numar} ${caute === 1 ? 'caută' : 'caută'} încă sponsor` : 'Vizibilitate în fața antreprenorilor selectați'),
+          link('/parteneri#gazduieste', 'Găzduiește un atelier', 'Atelierele s-au ținut la DWF și Zitec'),
+          link('/parteneri#mentor', 'Devino trainer sau mentor', 'Pro-bono, din comunitatea RBL'),
         ].join('')),
       ],
       feature: `<a class="mm-feature" href="/alumni/din-alumni-parteneri">

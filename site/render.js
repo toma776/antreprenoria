@@ -15,6 +15,7 @@ const { despreBody } = require('./despre');
 const { temeBody, temaBody } = require('./teme');
 const { traineriBody, trainerBody, personData } = require('./traineri');
 const { alumniBody, alumnusBody, alumniData, hasPage } = require('./alumni');
+const { parteneriBody } = require('./parteneri');
 const { aplicaBody, options: aplicaOptions } = require('./aplica');
 
 
@@ -263,6 +264,18 @@ ${footer(F, ctx)}
 </body></html>`;
 }
 
+// ---------- PARTENERI ----------
+function renderParteneri(opt = {}) {
+  const ctx = load(opt.brand), F = facts(ctx);
+  return `${head('Parteneri și sponsori – Antreprenoria', 'Partenerii edițiilor, sponsorii atelierelor și gazdele programului Antreprenoria, plus cum poți susține următoarea ediție.', opt.brand)}
+${header(F, ctx)}
+<div class="gridlines" aria-hidden="true"></div>
+${parteneriBody(ctx, F)}
+${footer(F, ctx)}
+<script src="/assets/site.js"></script>
+</body></html>`;
+}
+
 // ---------- ALUMNI ----------
 function renderAlumni(opt = {}) {
   const ctx = load(opt.brand), F = facts(ctx);
@@ -317,4 +330,4 @@ ${footer(F, ctx, { mcta: false })}
 // edițiile la care se poate aplica acum (pentru validarea de pe server)
 const applyOptions = () => { const ctx = load(); return aplicaOptions(ctx, facts(ctx)); };
 
-module.exports = { renderHome, renderEdition, renderProgram, renderDespre, renderTeme, renderTema, renderTraineri, renderTrainer, renderAlumni, renderAlumnus, renderAplica, applyOptions };
+module.exports = { renderHome, renderEdition, renderProgram, renderDespre, renderTeme, renderTema, renderTraineri, renderTrainer, renderAlumni, renderAlumnus, renderParteneri, renderAplica, applyOptions };
