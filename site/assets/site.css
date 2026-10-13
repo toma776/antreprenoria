@@ -1461,17 +1461,3 @@ a.live:hover { color: var(--ink); text-decoration: underline; text-underline-off
 @media (max-width: 639px) { .al-cycle { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; } .al-cyc { padding: 12px; } .al-cyc .logo-cell { height: 60px; } }
 .al-cyc { align-content: start; }
 .al-cyc .logo-cell img { max-height: 46px; }
-
-/* /alumni: „Pe sectoare” și „Ediția următoare” într-o singură bandă, pe două coloane aerisite */
-.al-end-in { grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: clamp(48px, 7vw, 120px); align-items: start; }
-.al-end-sect { scroll-margin-top: 92px; }
-.al-end-sect h3 { font: var(--d-weight) clamp(24px, 2.6vw, 32px)/1.15 var(--f-display); font-stretch: var(--d-stretch); margin: 6px 0 26px; }
-.al-end .sectors { gap: 14px; }
-.al-end .sector { grid-template-columns: minmax(0, 200px) 1fr 30px; color: var(--dark-ink); }
-.al-end .sector i::after { background: var(--highlight); }
-.al-end .cta-band-copy { position: sticky; top: 110px; padding-left: clamp(0px, 3vw, 48px); border-left: 1px solid color-mix(in srgb, var(--dark-ink) 15%, transparent); }
-@media (max-width: 900px) {
-  .al-end-in { grid-template-columns: 1fr; gap: 48px; }
-  .al-end .cta-band-copy { position: static; padding: 40px 0 0; border-left: 0; border-top: 1px solid color-mix(in srgb, var(--dark-ink) 15%, transparent); }
-}
-@media (max-width: 639px) { .al-end .sector { grid-template-columns: minmax(0, 140px) 1fr 28px; font-size: 14px; } }
