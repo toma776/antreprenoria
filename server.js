@@ -294,16 +294,16 @@ async function handler(req, res) {
       const html = fresh('./site/render').renderTrainer({ id: tr[1], brand: new URLSearchParams(query).get('brand') || undefined });
       if (html) { res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' }); return res.end(html); }
     }
-    // /alumni și /alumni/<id>: în previzualizare, doar local până la aprobare
-    if (!READ_ONLY && (url === '/alumni' || url === '/alumni/')) {
+    // /alumni: toți alumnii; /alumni/<id>: doar cu profil completat (previzualizarea pentru ceilalți merge doar local)
+    if ((url === '/alumni' || url === '/alumni/')) {
       res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' });
       return res.end(fresh('./site/render').renderAlumni({ brand: new URLSearchParams(query).get('brand') || undefined }));
     }
-    if (!READ_ONLY && url === '/alumni/din-alumni-parteneri') { res.writeHead(301, { Location: '/alumni#din-alumni-parteneri' }); return res.end(); }
-    const al = !READ_ONLY && AL_RE.exec(url);
+    if (url === '/alumni/din-alumni-parteneri') { res.writeHead(301, { Location: '/alumni#din-alumni-parteneri' }); return res.end(); }
+    const al = AL_RE.exec(url);
     if (al) {
       const q2 = new URLSearchParams(query);
-      const html = fresh('./site/render').renderAlumnus({ id: al[1], brand: q2.get('brand') || undefined, preview: q2.has('previzualizare') });
+      const html = fresh('./site/render').renderAlumnus({ id: al[1], brand: q2.get('brand') || undefined, preview: !READ_ONLY && q2.has('previzualizare') });
       if (html) { res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' }); return res.end(html); }
     }
     // /teme/vanzari: pagină pentru temele full-day; cele de seară duc la secțiunea lor din /teme
