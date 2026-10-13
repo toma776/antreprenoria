@@ -10,6 +10,12 @@ const initials = (n) => n.split(/[\s-]+/).map((x) => x[0]).slice(0, 2).join('');
 // pentru adrese și filtre în URL: „Tech & software” -> tech-si-software
 const slug = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/&/g, 'si').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
+// logo-ul unei companii; dacă are site, e link spre el (în tab nou)
+const logoImg = (o) => {
+  const inner = o.logo ? `<img src="${esc(o.logo)}" alt="${esc(o.nume)}" loading="lazy">` : `<b>${esc(o.nume)}</b>`;
+  return o.url ? `<a class="logo-link" href="${esc(o.url)}" target="_blank" rel="noopener" title="${esc(o.nume)} · site ↗">${inner}</a>` : inner;
+};
+
 // pozele de pe antreprenoria.ro au până la 800px; pe Vercel le cerem redimensionate (și în WebP) prin optimizarea de imagini
 // (vercel.json › images); local rămân cum sunt. Lățimile trebuie să fie printre cele din vercel.json › images.sizes.
 const IMG_SIZES = [128, 256, 384, 640];
@@ -19,4 +25,4 @@ const img = (u, w = 384) => {
   return `/_vercel/image?url=${encodeURIComponent(u)}&w=${size}&q=75`;
 };
 
-module.exports = { esc, today, MONTHS, fmtDay, median, quantile, milLei, initials, slug, img };
+module.exports = { esc, today, MONTHS, fmtDay, median, quantile, milLei, initials, slug, img, logoImg };

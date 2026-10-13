@@ -1,6 +1,6 @@
 // /parteneri: partenerii edițiilor, sponsorii atelierelor, gazdele și cum te poți implica.
 // Totul vine din ediții: partenerii din antetul fiecărei ediții, sponsorii și gazdele din ateliere.
-const { esc, fmtDay, today } = require('./util');
+const { esc, fmtDay, today, logoImg } = require('./util');
 const { implicareDialog } = require('./implicare');
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : (n % 100 === 0 || n % 100 >= 20 ? 'de ' : '') + many}`;
@@ -10,7 +10,7 @@ const cleanTitle = (t) => String(t || '').replace(/^(Atelier de Seară|COCKTAIL 
 const chrono = (D) => D.editii.slice().sort((a, b) => a.an - b.an || (a.sezon === b.sezon ? (a.serie === 'Cluj') - (b.serie === 'Cluj') : a.sezon === 'primăvară' ? -1 : 1));
 const ROL = { 'partener strategic': 'Partener strategic', 'powered by': 'Powered by', 'partener ediție': 'Partener de ediție' };
 const FULL = ['viziune', 'model-de-business', 'marketing', 'vanzari', 'cultura'];
-const logo = (o, cls = '') => `<span class="logo-cell ${cls}">${o.logo ? `<img src="${esc(o.logo)}" alt="${esc(o.nume)}" loading="lazy">` : `<b>${esc(o.nume)}</b>`}</span>`;
+const logo = (o, cls = '') => `<span class="logo-cell ${cls}">${logoImg(o)}</span>`;
 // edițiile, compacte: #16–#18, #20, Cluj #1
 const span = (eds) => { const b = eds.filter((e) => e.serie === 'București').map((e) => e.numar).sort((x, y) => x - y), out = []; for (let i = 0; i < b.length; i++) { let j = i; while (b[j + 1] === b[j] + 1) j++; out.push(j - i >= 2 ? `#${b[i]}–#${b[j]}` : b.slice(i, j + 1).map((n) => `#${n}`).join(', ')); i = j; } return [...out, ...eds.filter((e) => e.serie === 'Cluj').map(edLabel)].join(', '); };
 

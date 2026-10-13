@@ -1,7 +1,7 @@
 // Homepage-ul: produs de date mai mult decât broșură. Hero cu întrebare interactivă (sugestii fixe -> răspuns din creier),
 // cifre în grilă, curriculum pe tab-uri, „Pulsul programului” (flux generat din date), agenda ediției în banda finală.
 // Cifrele de afaceri apar doar agregat.
-const { esc, initials, milLei, fmtDay, today, img } = require('./util');
+const { esc, initials, milLei, fmtDay, today, img, logoImg } = require('./util');
 const { tx } = require('./texte');
 
 // sugestiile din hero: problema antreprenorului -> tema din curriculum
@@ -261,7 +261,7 @@ function homeBody(ctx, F) {
     <div class="cycle">
       <div class="cycle-copy"><p class="eyebrow">Din alumni, parteneri</p><h3>Vii ca participant. Revii ca partener.</h3>
         <p>${F.ciclu.length} companii care au trecut prin program s-au întors să sponsorizeze ateliere, să le găzduiască sau să trimită speakeri.</p></div>
-      <div class="cycle-list">${F.ciclu.map((o) => `<div class="cycle-item">${o.logo ? `<img src="${esc(o.logo)}" alt="${esc(o.nume)}" loading="lazy">` : `<b>${esc(o.nume)}</b>`}
+      <div class="cycle-list">${F.ciclu.map((o) => `<div class="cycle-item">${logoImg(o)}
         <span>alumni #${esc(o.ciclu.alumni_din.split('-')[1])} → ${esc(o.ciclu.apoi.map((r) => r.replace(' atelier', '')).join(', '))}</span></div>`).join('')}</div>
     </div>
   </div></section>
@@ -296,7 +296,7 @@ function homeBody(ctx, F) {
 
   <section class="sec" id="parteneri"><div class="wrap">
     <div class="sec-head row"><div><p class="eyebrow">Parteneri</p><h2>${esc(tx(D, 'acasa.parteneri.titlu'))}</h2></div><a class="link-arrow" href="/parteneri">Sponsorizează un atelier →</a></div>
-    <div class="logos">${F.partners.slice(0, 14).map((o) => `<div class="logo-cell"><img src="${esc(o.logo)}" alt="${esc(o.nume)}" loading="lazy"></div>`).join('')}</div>
+    <div class="logos">${F.partners.slice(0, 14).map((o) => `<div class="logo-cell">${logoImg(o)}</div>`).join('')}</div>
   </div></section>
 
   <section class="cta-band"><div class="wrap cta-band-in">

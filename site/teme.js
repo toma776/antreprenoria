@@ -1,6 +1,6 @@
 // Curriculum-ul: /teme (matricea, temele principale, atelierele de seară) și /teme/<id> pentru cele 5 teme full-day.
 // Totul vine din atelierele edițiilor din creier: cine a predat tema, când, sub ce titlu, cu ce sponsor.
-const { esc, initials, fmtDay, today, img } = require('./util');
+const { esc, initials, fmtDay, today, img, logoImg } = require('./util');
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : (n % 100 === 0 || n % 100 >= 20 ? 'de ' : '') + many}`;
 const avatar = (p) => (p?.imagine ? `<img src="${esc(img(p.imagine))}" alt="" loading="lazy">` : `<span class="ph">${esc(initials(p?.nume || '?'))}</span>`);
@@ -101,7 +101,7 @@ function temaBody(ctx, F, id) {
 
   ${d.sponsors.length ? `<section class="sec" id="sustin"><div class="wrap">
     <div class="sec-head row"><div><p class="eyebrow">Cine o susține</p><h2>Companiile care au sponsorizat tema.</h2></div><a class="link-arrow" href="/parteneri">Sponsorizează un atelier →</a></div>
-    <div class="ed-logos">${d.sponsors.map((o) => `<div class="ed-logo"><div class="logo-cell">${o.logo ? `<img src="${esc(o.logo)}" alt="${esc(o.nume)}" loading="lazy">` : `<b>${esc(o.nume)}</b>`}</div><span>${d.ws.filter(({ a }) => a.sponsor === o.id).map(({ e }) => edLabel(e)).join(', ')}</span></div>`).join('')}</div>
+    <div class="ed-logos">${d.sponsors.map((o) => `<div class="ed-logo"><div class="logo-cell">${logoImg(o)}</div><span>${d.ws.filter(({ a }) => a.sponsor === o.id).map(({ e }) => edLabel(e)).join(', ')}</span></div>`).join('')}</div>
   </div></section>` : ''}
 
   <section class="cta-band"><div class="wrap cta-band-in">

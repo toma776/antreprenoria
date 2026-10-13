@@ -1,7 +1,7 @@
 // Pagina unei ediții (/editii/22, /editii/cluj-1): același limbaj vizual ca homepage-ul.
 // Hero cu progresul ediției, cifre, agenda pe ateliere (cu programul zilei), oamenii, colegii de ediție, ce include, parteneri.
 // Cifrele de afaceri ale participanților apar doar agregat (interval, mediană), niciodată per companie.
-const { esc, initials, milLei, fmtDay, today, median, quantile, img } = require('./util');
+const { esc, initials, milLei, fmtDay, today, median, quantile, img, logoImg } = require('./util');
 
 const DAY = 864e5;
 const days = (a, b) => Math.round((new Date(b + 'T12:00') - new Date(a + 'T12:00')) / DAY);
@@ -210,8 +210,8 @@ function editionBody(ctx, F, e) {
     <div class="sec-head row"><div><p class="eyebrow">Partenerii ediției</p><h2>Companiile care fac posibilă ediția ${esc(edLabel(e))}.</h2></div>
       <a class="link-arrow" href="/parteneri">Sponsorizează un atelier →</a></div>
     <div class="ed-partners">
-      ${strategic.map((o) => `<div class="ed-strategic"><span class="ask-kicker">Partener strategic</span>${o.logo ? `<img src="${esc(o.logo)}" alt="${esc(o.nume)}" loading="lazy">` : `<b>${esc(o.nume)}</b>`}<p>${esc(o.nume)} susține toată ediția${sponsorOf(o.id).length ? ` și atelierul „${esc(cleanTitle(sponsorOf(o.id)[0].titlu))}”` : ''}.</p></div>`).join('')}
-      <div class="ed-sponsors">${sponsors.filter((o) => !strategic.includes(o)).map((o) => `<div class="ed-sponsor"><div class="logo-cell">${o.logo ? `<img src="${esc(o.logo)}" alt="${esc(o.nume)}" loading="lazy">` : `<b>${esc(o.nume)}</b>`}</div>
+      ${strategic.map((o) => `<div class="ed-strategic"><span class="ask-kicker">Partener strategic</span>${logoImg(o)}<p>${esc(o.nume)} susține toată ediția${sponsorOf(o.id).length ? ` și atelierul „${esc(cleanTitle(sponsorOf(o.id)[0].titlu))}”` : ''}.</p></div>`).join('')}
+      <div class="ed-sponsors">${sponsors.filter((o) => !strategic.includes(o)).map((o) => `<div class="ed-sponsor"><div class="logo-cell">${logoImg(o)}</div>
         <span>${sponsorOf(o.id).map((a) => esc(cleanTitle(a.titlu))).join(' · ') || 'Sponsor'}</span></div>`).join('')}
         ${looking.map((a) => `<a class="ed-sponsor ed-sponsor-free" href="/parteneri"><div class="logo-cell">Locul tău aici</div><span>${esc(cleanTitle(a.titlu))} caută sponsor</span></a>`).join('')}
       </div>
@@ -285,7 +285,7 @@ function editionBody(ctx, F, e) {
       ['vorbitori', 'Traineri și invitați', people.length, `<div class="ed-chips">${people.map((x) => `<a class="ed-chip" href="/traineri/${esc(x.p.id)}">${avatar(x.p)}<span><b>${esc(x.p.nume)}</b><span>${esc(x.org)}</span><small>${x.rol === 'trainer' ? '<i>Trainer</i> ' : ''}${x.ateliere.map((a) => esc(cleanTitle(a.titlu))).join(' · ')}</small></span></a>`).join('')}</div>`],
       ['colegi', 'Colegii de ediție', part.length, `
         <div class="ed-chips">${part.map((p) => { const o = O[p.organizatie]; return `<div class="ed-chip">${avatar({ nume: p.nume, imagine: p.imagine })}<span><b>${esc(p.nume)}</b><span>${esc(o?.nume || '')}</span>${o?.sector ? `<small>${esc(o.sector)}</small>` : ''}</span></div>`; }).join('')}</div>`],
-      ['parteneri', 'Parteneri', allPartners.length, `<div class="ed-logos">${allPartners.map((o) => `<div class="ed-logo"><div class="logo-cell">${o.logo ? `<img src="${esc(o.logo)}" alt="${esc(o.nume)}" loading="lazy">` : `<b>${esc(o.nume)}</b>`}</div><span>${strategic.includes(o) ? 'Partener strategic' : sponsorOf(o.id).map((a) => esc(cleanTitle(a.titlu))).join(' · ') || 'Partener'}</span></div>`).join('')}</div>`],
+      ['parteneri', 'Parteneri', allPartners.length, `<div class="ed-logos">${allPartners.map((o) => `<div class="ed-logo"><div class="logo-cell">${logoImg(o)}</div><span>${strategic.includes(o) ? 'Partener strategic' : sponsorOf(o.id).map((a) => esc(cleanTitle(a.titlu))).join(' · ') || 'Partener'}</span></div>`).join('')}</div>`],
     ].filter((t) => t[2]);
     const peoplePast = TABS.length ? `<section class="sec sec-alt ed-past-sec" id="oameni"><div class="wrap">
       <div class="sec-head"><p class="eyebrow">Oamenii ediției</p><h2>Cine a fost în sală.</h2></div>

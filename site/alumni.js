@@ -1,7 +1,7 @@
 // Alumni: /alumni (toți participanții edițiilor încheiate, cu filtre) și /alumni/<id> (doar pentru profilurile completate).
 // Un participant devine alumnus când ediția lui se încheie; până atunci apare doar pe pagina ediției.
 // Cifrele de business apar numai agregat, niciodată pe om sau pe companie.
-const { esc, initials, img, milLei, slug } = require('./util');
+const { esc, initials, img, milLei, slug, logoImg } = require('./util');
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : (n % 100 === 0 || n % 100 >= 20 ? 'de ' : '') + many}`;
 const avatar = (src, nume, w) => (src ? `<img src="${esc(img(src, w))}" alt="" loading="lazy">` : `<span class="ph">${esc(initials(nume || '?'))}</span>`);
@@ -86,7 +86,7 @@ function alumniBody(ctx, F, sel = {}) {
   ${d.ciclu.length ? `<section class="sec sec-alt" id="din-alumni-parteneri"><div class="wrap">
     <div class="sec-head"><p class="eyebrow">Din alumni, parteneri</p><h2>Vii ca participant. Revii ca partener.</h2>
       <p class="lead">${plural(d.ciclu.length, 'companie care a trecut', 'companii care au trecut')} prin program s-au întors să sponsorizeze ateliere, să le găzduiască sau să trimită speakeri.</p></div>
-    <div class="al-cycle" style="--n:${d.ciclu.length}">${d.ciclu.map((o) => `<div class="al-cyc"><span class="logo-cell">${o.logo ? `<img src="${esc(o.logo)}" alt="${esc(o.nume)}" loading="lazy">` : `<b>${esc(o.nume)}</b>`}</span><b>${esc(o.nume)}</b><span>alumni ${esc(edLabel(ctx.D.editii.find((e) => e.id === o.ciclu.alumni_din) || { numar: '' }))} → ${esc(o.ciclu.apoi.map((r) => r.replace(' atelier', '')).join(', '))}</span></div>`).join('')}</div>
+    <div class="al-cycle" style="--n:${d.ciclu.length}">${d.ciclu.map((o) => `<div class="al-cyc"><span class="logo-cell">${logoImg(o)}</span><b>${esc(o.nume)}</b><span>alumni ${esc(edLabel(ctx.D.editii.find((e) => e.id === o.ciclu.alumni_din) || { numar: '' }))} → ${esc(o.ciclu.apoi.map((r) => r.replace(' atelier', '')).join(', '))}</span></div>`).join('')}</div>
   </div></section>` : ''}
 
   <section class="sec" id="sectoare"><div class="wrap">
@@ -138,7 +138,7 @@ function alumnusBody(ctx, F, id, opt = {}) {
 
   ${o?.descriere ? `<section class="sec" id="companie"><div class="wrap al-co">
     <div class="sec-head"><p class="eyebrow">Compania</p><h2>${esc(o.nume)}</h2></div>
-    <div>${o.logo ? `<span class="logo-cell">${`<img src="${esc(o.logo)}" alt="${esc(o.nume)}" loading="lazy">`}</span>` : ''}<p class="lead">${esc(o.descriere)}</p></div>
+    <div>${o.logo ? `<span class="logo-cell">${`${logoImg(o)}`}</span>` : ''}<p class="lead">${esc(o.descriere)}</p></div>
   </div></section>` : ''}
 
   ${colleagues.length ? `<section class="sec sec-alt" id="colegi"><div class="wrap">

@@ -1501,3 +1501,10 @@ a.live:hover { color: var(--ink); text-decoration: underline; text-underline-off
 .ex-themes i { font-style: normal; font-size: 12px; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
 @media (max-width: 900px) { .ex-actives { grid-template-columns: 1fr; } .ex-year { grid-template-columns: 1fr; gap: 12px; } }
 @media (max-width: 640px) { .ex-pasts { grid-template-columns: 1fr; } .ex-active { padding: 20px; } }
+
+/* logo-urile companiilor: link spre site-ul lor (toată caseta e clicabilă) */
+.logo-link { display: grid; place-items: center; width: 100%; height: 100%; color: inherit; text-decoration: none; }
+.logo-link img { transition: transform .2s; }
+.logo-link:hover img { transform: scale(1.04); }
+.logo-link:focus-visible { outline: 3px solid var(--highlight); outline-offset: 3px; border-radius: 6px; }
+.cycle-item .logo-link { width: auto; height: auto; }
