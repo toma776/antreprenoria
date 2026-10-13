@@ -199,7 +199,7 @@ async function handler(req, res) {
       const v = fresh('./site/implicare').validate(input);
       if (!v.ok) return sendJson(res, 422, { error: 'Verifică câmpurile marcate.', errors: v.errors });
       const d = v.data;
-      const rec = { tip: d.tip, nume: d.nume, companie: d.companie, email: d.email, telefon: d.telefon || null, mesaj: d.mesaj || null, acord: true, sursa_pagina: String(req.headers.referer || '').slice(0, 300) || null };
+      const rec = { tip: d.tip, nume: d.nume, companie: d.companie, functie: d.functie || null, email: d.email, telefon: d.telefon || null, mesaj: d.mesaj || null, acord: true, sursa_pagina: String(req.headers.referer || '').slice(0, 300) || null };
       const r = await fetch(`${SUPABASE.url}/rest/v1/implicari`, { method: 'POST', headers: { apikey: SUPABASE.key, 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify(rec) }).catch(() => null);
       if (!r || !r.ok) { console.error('implicare nesalvată', r && r.status, r && await r.text()); return sendJson(res, 503, { error: 'nedisponibil' }); }
       return sendJson(res, 200, { ok: true });

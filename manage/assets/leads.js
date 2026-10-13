@@ -73,10 +73,10 @@ async function renderSustinere(box) {
   const state = { tip: 'toate', q: '' };
   const draw = () => {
     const q = state.q.trim().toLowerCase();
-    const list = all.filter((a) => (state.tip === 'toate' || a.tip === state.tip) && (!q || [a.nume, a.email, a.companie, a.telefon, a.mesaj].join(' ').toLowerCase().includes(q)));
+    const list = all.filter((a) => (state.tip === 'toate' || a.tip === state.tip) && (!q || [a.nume, a.functie, a.email, a.companie, a.telefon, a.mesaj].join(' ').toLowerCase().includes(q)));
     $('#im-list').innerHTML = list.length ? `<div class="tbl"><table>
       <thead><tr><th>Primit</th><th>Ce vrea</th><th>Nume</th><th>Companie</th><th>Contact</th><th>Mesaj</th></tr></thead>
-      <tbody>${list.map((a) => `<tr><td class="small">${esc(dt(a.primit))}</td><td><span class="tag">${esc(TIP_LABEL[a.tip] || a.tip)}</span></td><td><b>${esc(a.nume)}</b></td><td>${esc(a.companie)}</td>
+      <tbody>${list.map((a) => `<tr><td class="small">${esc(dt(a.primit))}</td><td><span class="tag">${esc(TIP_LABEL[a.tip] || a.tip)}</span></td><td><b>${esc(a.nume)}</b>${a.functie ? `<div class="small muted">${esc(a.functie)}</div>` : ''}</td><td>${esc(a.companie)}</td>
         <td class="small"><a href="mailto:${esc(a.email)}">${esc(a.email)}</a>${a.telefon ? `<br><a href="tel:${esc(a.telefon.replace(/[^\d+]/g, ''))}">${esc(a.telefon)}</a>` : ''}</td>
         <td class="small">${esc(a.mesaj || '—')}</td></tr>`).join('')}</tbody></table></div>`
       : `<div class="card empty">${all.length ? 'Niciun mesaj nu se potrivește filtrului.' : 'Încă nu a venit niciun mesaj din formularul de pe /parteneri.'}</div>`;
@@ -87,7 +87,7 @@ async function renderSustinere(box) {
   $('#im-tips').onclick = (e) => { const b = e.target.closest('[data-tip]'); if (!b) return; state.tip = b.dataset.tip; $$('#im-tips button').forEach((x) => x.classList.toggle('on', x === b)); draw(); };
   $('#im-q').oninput = (e) => { state.q = e.target.value; draw(); };
   $('#im-csv').onclick = () => {
-    const cols = ['primit', 'tip', 'nume', 'companie', 'email', 'telefon', 'mesaj', 'stare'];
+    const cols = ['primit', 'tip', 'nume', 'functie', 'companie', 'email', 'telefon', 'mesaj', 'stare'];
     const cell = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
     download(`sustinere-${new Date().toISOString().slice(0, 10)}.csv`, '﻿' + [cols.join(','), ...all.map((a) => cols.map((c) => cell(a[c])).join(','))].join('\n'), 'text/csv;charset=utf-8');
   };
