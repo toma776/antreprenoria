@@ -410,11 +410,9 @@
 })();
 
 // /alumni: rândurile cu fotografii apar treptat la derulare (în fiecare rând, de la stânga la dreapta)
-// PREVIZUALIZARE: deocamdată doar local (localhost), până la aprobare
 (() => {
   const grid = document.querySelector('.al-grid');
   if (!grid || !document.documentElement.classList.contains('rv')) return;
-  if (!/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) return;
   grid.classList.add('al-rv');
   const io = new IntersectionObserver((es) => es.forEach((e) => {
     if (!e.isIntersecting) return;
