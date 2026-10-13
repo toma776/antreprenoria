@@ -89,6 +89,8 @@ function traineriBody(ctx, F) {
       <div class="tr-f" data-tr-group="rol"><button class="on" data-tr="">Toți · ${L.length}</button>${[['trainer', 'Traineri'], ['antreprenor invitat', 'Antreprenori invitați'], ['facilitator', 'Facilitatori']].map(([k, l]) => `<button data-tr="${esc(k)}">${l} · ${n(k)}</button>`).join('')}</div>
       <div class="tr-f tr-f-teme sx" data-tr-group="tema"><button class="on" data-tr="">Toate temele</button>${themes.map((t) => `<button data-tr="${esc(t.id)}">${esc(t.nume)}</button>`).join('')}</div>
     </div>
+    <div class="al-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><input id="tr-q" type="search" data-short="Caută după nume sau companie" placeholder="Caută printre traineri și invitați după nume sau companie" autocomplete="off" aria-label="Caută printre traineri și invitați după nume sau companie"></div>
+    <p class="al-q-note tr-q-note" hidden></p>
     <div class="tr-grid">${L.map((x) => `<a class="tr-card" href="/traineri/${esc(x.p.id)}" data-rol="${esc(x.roluri.join('|'))}" data-teme="${esc(x.themes.join(' '))}">
       <span class="tr-ph">${avatar(x.p, 384)}</span>
       <span class="tr-tx"><em>${esc(ROL[x.rol] || 'Invitat')}</em><b>${esc(x.p.nume)}</b><span>${esc(x.org)}</span>
