@@ -273,7 +273,7 @@
   const apply = () => {
     let n = 0;
     grid.querySelectorAll('.tr-card').forEach((c) => {
-      const ok = (!state.rol || c.dataset.rol === state.rol) && (!state.tema || c.dataset.teme.split(' ').includes(state.tema));
+      const ok = (!state.rol || c.dataset.rol.split('|').includes(state.rol)) && (!state.tema || c.dataset.teme.split(' ').includes(state.tema));
       c.hidden = !ok; if (ok) n++;
     });
     document.querySelector('.tr-empty').hidden = n > 0;

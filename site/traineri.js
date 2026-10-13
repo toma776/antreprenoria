@@ -51,7 +51,8 @@ function personData(ctx, id) {
 // toți oamenii programului (traineri, invitați, facilitatori), cu ce afișăm în listă
 function everyone(ctx) {
   return ctx.D.oameni.filter((p) => p.aparitii.length && p.tipuri.some((t) => SPEAKER.includes(t)))
-    .map((p) => ({ p, rol: mainRole(p), org: company(ctx, p), themes: [...new Set(p.aparitii.map((a) => a.tema).filter(Boolean))] }))
+    // rol = cel principal (pe card); roluri = toate rolurile avute vreodată (pentru filtre și numărători, ca în meniu)
+    .map((p) => ({ p, rol: mainRole(p), roluri: [...new Set(p.aparitii.map((a) => (a.rol === 'invitat' ? 'facilitator' : a.rol)))], org: company(ctx, p), themes: [...new Set(p.aparitii.map((a) => a.tema).filter(Boolean))] }))
     .sort((a, b) => b.p.editii.length - a.p.editii.length || b.p.aparitii.length - a.p.aparitii.length || a.p.nume.localeCompare(b.p.nume, 'ro'));
 }
 const span = (eds) => { const b = eds.filter((e) => e.serie === 'București'), c = eds.filter((e) => e.serie === 'Cluj'); return [b.length > 2 ? `${edLabel(b[0])}–${edLabel(b[b.length - 1])}` : b.map(edLabel).join(', '), ...c.map(edLabel)].filter(Boolean).join(', '); };
@@ -60,7 +61,7 @@ const span = (eds) => { const b = eds.filter((e) => e.serie === 'București'), c
 function traineriBody(ctx, F) {
   const { D, T } = ctx;
   const L = everyone(ctx);
-  const n = (r) => L.filter((x) => x.rol === r || (r === 'facilitator' && x.rol === 'invitat')).length;
+  const n = (r) => L.filter((x) => x.roluri.includes(r)).length;
   const themes = D.teme.filter((t) => L.some((x) => x.themes.includes(t.id)));
   const first = chrono(D).find((e) => e.ateliere.length);
   return `<main>
@@ -88,7 +89,7 @@ function traineriBody(ctx, F) {
       <div class="tr-f" data-tr-group="rol"><button class="on" data-tr="">Toți · ${L.length}</button>${[['trainer', 'Traineri'], ['antreprenor invitat', 'Antreprenori invitați'], ['facilitator', 'Facilitatori']].map(([k, l]) => `<button data-tr="${esc(k)}">${l} · ${n(k)}</button>`).join('')}</div>
       <div class="tr-f tr-f-teme sx" data-tr-group="tema"><button class="on" data-tr="">Toate temele</button>${themes.map((t) => `<button data-tr="${esc(t.id)}">${esc(t.nume)}</button>`).join('')}</div>
     </div>
-    <div class="tr-grid">${L.map((x) => `<a class="tr-card" href="/traineri/${esc(x.p.id)}" data-rol="${esc(x.rol === 'invitat' ? 'facilitator' : x.rol)}" data-teme="${esc(x.themes.join(' '))}">
+    <div class="tr-grid">${L.map((x) => `<a class="tr-card" href="/traineri/${esc(x.p.id)}" data-rol="${esc(x.roluri.join('|'))}" data-teme="${esc(x.themes.join(' '))}">
       <span class="tr-ph">${avatar(x.p, 384)}</span>
       <span class="tr-tx"><em>${esc(ROL[x.rol] || 'Invitat')}</em><b>${esc(x.p.nume)}</b><span>${esc(x.org)}</span>
         <small>${plural(x.p.editii.length, 'ediție', 'ediții')}${x.themes[0] && T[x.themes[0]] ? ` · ${esc(T[x.themes[0]].nume)}` : ''}</small></span></a>`).join('')}</div>
@@ -177,4 +178,4 @@ function trainerBody(ctx, F, id) {
 </main>`;
 }
 
-module.exports = { traineriBody, trainerBody, personData };
+module.exports = { traineriBody, trainerBody, personData, everyone };

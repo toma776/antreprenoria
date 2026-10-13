@@ -2,6 +2,7 @@
 // generat din creier. Pe desktop panourile se deschid la hover sau click; pe mobil devin acordeon într-un meniu lateral.
 const { img, slug } = require('./util');
 const { alumniData } = require('./alumni');
+const { everyone } = require('./traineri');
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const today = () => new Date().toISOString().slice(0, 10);
 const MONTHS = ['ian.', 'feb.', 'mar.', 'apr.', 'mai', 'iun.', 'iul.', 'aug.', 'sep.', 'oct.', 'nov.', 'dec.'];
@@ -20,6 +21,7 @@ function panels(ctx, F) {
   const fullDay = D.teme.filter((t) => t.format === 'full-day');
   // alumnii, ca pe pagina /alumni (aceleași numere în meniu și în filtre)
   const AL = alumniData(ctx);
+  const TR = everyone(ctx), nRol = (r) => TR.filter((x) => x.roluri.includes(r)).length;
   const evening = D.teme.filter((t) => t.format === 'seară');
   const ong = F.ongoing;
   const held = ong ? ong.ateliere.filter((a) => a.data && a.data < today() && a.data.startsWith(String(ong.an))).length : 0;
@@ -79,14 +81,14 @@ function panels(ctx, F) {
           <span class="mm-sub">${D.teme.length} teme × ${D.editii.length} ediții: cele 5 full-day sunt în toate edițiile, cele de seară s-au schimbat</span>
           <span class="mm-more">Vezi matricea →</span></a>` },
 
-    { id: 'traineri', title: 'Traineri', href: '/traineri', intro: `${F.speakers} traineri și antreprenori invitați; ${F.constanti} revin în cel puțin cinci ediții.`,
+    { id: 'traineri', title: 'Traineri', href: '/traineri', intro: `${TR.length} traineri și antreprenori invitați; ${F.constanti} revin în cel puțin cinci ediții.`,
       cols: [
         col('Cei mai prezenți', `<div class="mm-people-grid">${F.topTrainers.map((p) => `<a href="/traineri/${esc(p.id)}">${pic(p)}<b>${esc(p.nume)}</b><span>${esc(O[p.organizatii[0]]?.nume || p.functii[0] || '')} · ${p.editii.length} ediții</span></a>`).join('')}</div>`, 'wide'),
         col('După rol', [
-          link('/traineri?rol=trainer#lista', 'Traineri', `${D.oameni.filter((p) => p.tipuri.includes('trainer')).length} oameni care țin training-ul de dimineață`),
-          link('/traineri?rol=antreprenor-invitat#lista', 'Antreprenori invitați', `${D.oameni.filter((p) => p.tipuri.includes('antreprenor invitat')).length} antreprenori care își spun povestea`),
-          link('/traineri?rol=facilitator#lista', 'Facilitatori de seară', 'Mastermind, finanțare, board of advisors'),
-          `<a class="mm-all" href="/traineri">Toți cei ${F.speakers} →</a>`,
+          link('/traineri?rol=trainer#lista', 'Traineri', `${nRol('trainer')} oameni care țin training-ul de dimineață`),
+          link('/traineri?rol=antreprenor-invitat#lista', 'Antreprenori invitați', `${nRol('antreprenor invitat')} antreprenori care își spun povestea`),
+          link('/traineri?rol=facilitator#lista', 'Facilitatori de seară', `${nRol('facilitator')} oameni · mastermind, finanțare, board of advisors`),
+          `<a class="mm-all" href="/traineri#lista">Toți cei ${TR.length} →</a>`,
         ].join('')),
       ] },
 
