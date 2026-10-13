@@ -163,7 +163,7 @@ const CMS = (() => {
       (v) => `<div class="sp-num"><b>${esc(v.valoare || '0')}</b><span>${esc(v.ce || 'ce înseamnă cifra')}</span></div>`, () => [['/despre', 'cifrele de pe Despre'], ['/', 'cifrele de pe homepage']], { valoare: '', ce: '' }),
     echipa: { tip: 'echipa', label: 'Echipa', one: 'om în echipă', desc: 'Oamenii din echipa programului.',
       items: () => D.program.contact.echipa, row: (m) => ({ img: Pid(m.id)?.imagine, title: m.nume, meta: `${m.rol || ''}${m.email ? ' · ' + m.email : ''}` }), blank: () => ({}),
-      fields: (m) => fs_('Omul', `${inp('nume', 'Nume și prenume', m.nume, { req: true })}${photo('imagine', Pid(m.id)?.imagine)}${inp('rol', 'Rol în echipă', m.rol, { ph: 'ex. Project Manager' })}${f2(inp('email', 'Email', m.email, { type: 'email' }), inp('telefon', 'Telefon', m.telefon))}`) + visField('echipa', m.id),
+      fields: (m) => { const L = D.program.contact.echipa, i = L.findIndex((x) => x.id === m.id); return fs_('Omul', `${inp('nume', 'Nume și prenume', m.nume, { req: true })}${photo('imagine', Pid(m.id)?.imagine)}${inp('rol', 'Rol în echipă', m.rol, { ph: 'ex. Project Manager' })}${f2(inp('email', 'Email', m.email, { type: 'email' }), inp('telefon', 'Telefon', m.telefon))}${sel('_poz', 'Poziția în listă (pe /despre)', (i < 0 ? [...L, m] : L).map((_, k) => [String(k + 1), String(k + 1) + (k === 0 ? ' · primul' : '')]), String(i < 0 ? L.length + 1 : i + 1))}`) + visField('echipa', m.id); },
       values: (m) => ({ nume: m.nume, imagine: Pid(m.id)?.imagine, functie: m.rol, tipuri: ['echipă'] }),
       preview: personCard, where: () => [['/despre#echipa', 'echipa, pe pagina Despre'], ['/aplica', 'contactul de pe Aplică'], ['/', 'contactul din footer']],
       async save(f, m, nou) {
@@ -172,6 +172,10 @@ const CMS = (() => {
         const r = await put({ op: 'entitate', tip: 'echipa', id: m.id, nou, date: { nume: v.nume.trim(), rol: v.rol, email: v.email, telefon: v.telefon || null }, eticheta: `echipa: ${v.nume}` });
         const id = r.id || m.id, p = Pid(id);
         if (v.imagine !== (p?.imagine || '')) await put({ op: 'entitate', tip: 'oameni', id, nou: !p, date: { nume: v.nume.trim(), imagine: v.imagine || null, tipuri: [...new Set([...(p?.tipuri || []), 'echipă'])] }, eticheta: `fotografie: ${v.nume}` });
+        // poziția în listă: lista echipei, cu omul mutat pe locul ales
+        const L = D.program.contact.echipa.map((x) => x.id).filter((x) => x !== id), want = Math.max(1, Number(v._poz) || L.length + 1) - 1;
+        L.splice(Math.min(want, L.length), 0, id);
+        if (JSON.stringify(L) !== JSON.stringify(D.program.contact.echipa.map((x) => x.id))) await put({ op: 'ordine_echipa', lista: L, eticheta: `ordinea echipei: ${v.nume} pe locul ${want + 1}` });
         await visSave(f, 'echipa', id);
         return v.nume;
       } },

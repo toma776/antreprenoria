@@ -176,6 +176,8 @@ function cmsEdit(b) {
       break;
     }
     case 'texte': Object.assign(E.texte, b.texte || {}); break;
+    // ordinea echipei (pe /despre și în contacte)
+    case 'ordine_echipa': if (!Array.isArray(b.lista)) return { error: 'lipsește lista' }; E.ordine_echipa = b.lista.map(String); break;
     // constructorul de ediție: copiază structura altei ediții (atelierele cu temele și agenda, beneficiile, prețul)
     case 'copiaza': {
       const tinta = D.editii.find((e) => e.id === b.id), sursa = D.editii.find((e) => e.id === b.din);

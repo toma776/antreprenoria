@@ -9,7 +9,7 @@
 // se recalculează din ediții, ca datele să rămână consecvente.
 
 const LISTS = ['oameni', 'organizatii', 'editii', 'ateliere', 'locatii', 'teme', 'echipa'];
-const EMPTY = () => ({ modificari: Object.fromEntries(LISTS.map((t) => [t, {}])), program: {}, metodologie: null, cifre: null, agende: {}, participanti: {}, parteneri: {}, ascunse: [], texte: {}, nepublicate: [] });
+const EMPTY = () => ({ modificari: Object.fromEntries(LISTS.map((t) => [t, {}])), program: {}, metodologie: null, cifre: null, ordine_echipa: null, agende: {}, participanti: {}, parteneri: {}, ascunse: [], texte: {}, nepublicate: [] });
 const addTo = (arr, v) => { if (v && !arr.includes(v)) arr.push(v); };
 const SKELETON = {
   oameni: (id) => ({ id, nume: '', variante: [], tipuri: [], imagine: null, linkedin: null, companii: [], organizatii: [], functii: [], aparitii: [], editii: [], nr_aparitii: 0 }),
@@ -44,6 +44,8 @@ function apply(out, E) {
   Object.assign(out.program, fields(E.program || {}));
   if (Array.isArray(E.metodologie)) out.program.metodologie = E.metodologie;
   if (Array.isArray(E.cifre)) out.program.cifre = E.cifre;
+  // ordinea oamenilor din echipă (cum apar pe /despre și în contacte); cei nemenționați rămân la final, în ordinea lor
+  if (Array.isArray(E.ordine_echipa)) { const pos = (id) => { const i = E.ordine_echipa.indexOf(id); return i < 0 ? 999 : i; }; out.program.contact.echipa.sort((a, b) => pos(a.id) - pos(b.id)); }
 
   // 2. relațiile: agenda atelierelor, participanții și partenerii edițiilor
   for (const [aid, prog] of Object.entries(E.agende || {})) { const a = list('ateliere').find((x) => x.id === aid); if (a) a.program = prog; }
@@ -133,7 +135,7 @@ function relink(out, M) {
 const clone = (x) => JSON.parse(JSON.stringify(x));
 const isObj = (x) => x && typeof x === 'object' && !Array.isArray(x);
 // cât de adânc coborâm în fiecare parte, ca o schimbare să atingă cât mai puțin: câmpul unei entități, un text, lista unei ediții
-const DEPTH = { modificari: 3, program: 1, texte: 1, agende: 1, participanti: 1, parteneri: 1, metodologie: 0, cifre: 0 };
+const DEPTH = { modificari: 3, program: 1, texte: 1, agende: 1, participanti: 1, parteneri: 1, metodologie: 0, cifre: 0, ordine_echipa: 0 };
 function diff(before, after) {
   const out = [];
   const walk = (a, b, p, d) => {
