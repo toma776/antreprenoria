@@ -34,11 +34,24 @@
     "ateliere": {},
     "locatii": {},
     "teme": {},
-    "echipa": {}
+    "echipa": {
+      "iulian-rizea": {
+        "nume": "Iulian Rizea",
+        "rol": "Contact sponsorizări ateliere (iulian.rizea@rbls.ro) · facilitator Mastermind",
+        "email": "iulian.rizea@rbls.ro",
+        "telefon": null
+      }
+    }
   },
   "program": {},
   "metodologie": null,
   "cifre": null,
+  "ordine_echipa": [
+    "iulian-rizea",
+    "sorin-draghici",
+    "raluca-bedereag",
+    "larisa-slavenie"
+  ],
   "agende": {},
   "participanti": {},
   "parteneri": {},

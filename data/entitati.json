@@ -2,7 +2,7 @@
   "meta": {
     "sursa": "https://antreprenoria.ro",
     "extras_la": "2026-10-08",
-    "generat": "2026-10-13T08:39:18.026Z",
+    "generat": "2026-10-13T08:58:08.784Z",
     "pagini": 11,
     "metoda": "paginile edițiilor (/antreprenoria-16 … /antreprenoria-22, /antreprenoria-cluj) + /despre-noi + /contact; companii, organizații, aliasuri, parteneri și teme curate manual în data/curare/"
   },
@@ -150,6 +150,14 @@
       "adresa": "Calea Dorobanți, 42, etaj 3, ap. 5, Sector 1, București",
       "echipa": [
         {
+          "id": "iulian-rizea",
+          "nume": "Iulian Rizea",
+          "rol": "Contact sponsorizări ateliere (iulian.rizea@rbls.ro) · facilitator Mastermind",
+          "email": "iulian.rizea@rbls.ro",
+          "sursa": "/antreprenoria-22",
+          "telefon": null
+        },
+        {
           "id": "sorin-draghici",
           "nume": "Sorin Drăghici",
           "rol": "Project Leader Antreprenoria",
@@ -170,13 +178,6 @@
           "rol": "Contact parteneriate",
           "email": "larisa.slavenie@rbls.ro",
           "sursa": "/"
-        },
-        {
-          "id": "iulian-rizea",
-          "nume": "Iulian Rizea",
-          "rol": "Contact sponsorizări ateliere (iulian.rizea@rbls.ro) · facilitator Mastermind",
-          "email": "iulian.rizea@rbls.ro",
-          "sursa": "/antreprenoria-22"
         }
       ],
       "inscriere": [
