@@ -89,12 +89,12 @@ function alumniBody(ctx, F, sel = {}) {
     <div class="al-cycle" style="--n:${d.ciclu.length}">${d.ciclu.map((o) => `<div class="al-cyc"><span class="logo-cell">${o.logo ? `<img src="${esc(o.logo)}" alt="${esc(o.nume)}" loading="lazy">` : `<b>${esc(o.nume)}</b>`}</span><b>${esc(o.nume)}</b><span>alumni ${esc(edLabel(ctx.D.editii.find((e) => e.id === o.ciclu.alumni_din) || { numar: '' }))} → ${esc(o.ciclu.apoi.map((r) => r.replace(' atelier', '')).join(', '))}</span></div>`).join('')}</div>
   </div></section>` : ''}
 
-  <section class="sec" id="sectoare"><div class="wrap">
-    <div class="sec-head"><p class="eyebrow">Pe sectoare</p><h2>Din ce domenii vin.</h2></div>
-    <div class="sectors al-sectors">${d.sectors.map(([s, n]) => `<div class="sector"><span>${esc(s)}</span><i style="--w:${(n / maxS) * 100}%"></i><b>${n}</b></div>`).join('')}</div>
-  </div></section>
-
-  <section class="cta-band"><div class="wrap cta-band-in">
+  <!-- sectoarele și îndemnul spre ediția următoare, într-o singură bandă -->
+  <section class="cta-band al-end" id="sectoare"><div class="wrap cta-band-in al-end-in">
+    <div class="al-end-sect">
+      <p class="eyebrow">Pe sectoare</p><h3>Din ce domenii vin.</h3>
+      <div class="sectors">${d.sectors.map(([s, n]) => `<div class="sector"><span>${esc(s)}</span><i style="--w:${(n / maxS) * 100}%"></i><b>${n}</b></div>`).join('')}</div>
+    </div>
     <div class="cta-band-copy">
       <p class="eyebrow">Ediția următoare</p>
       <h2>Locul tău e pe lista asta.</h2>
