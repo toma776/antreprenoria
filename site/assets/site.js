@@ -294,35 +294,113 @@
   });
 })();
 
-// /alumni: filtrele după ediție și după sector (se combină)
+// /alumni: filtrele după ediție și după sector (se combină) și căutarea după nume sau companie
 (() => {
   const grid = document.querySelector('.al-grid');
   if (!grid) return;
+  const norm = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+  const cards = [...grid.querySelectorAll('.al-card')];
+  // pentru căutare: numele și compania fiecărui card, fără diacritice; ordinea inițială, ca s-o refacem după căutare
+  cards.forEach((c, i) => { c._i = i; c._n = norm(c.querySelector('b')?.textContent); c._c = norm(c.querySelector('.al-tx > span')?.textContent); });
+  const input = document.querySelector('#al-q'), note = document.querySelector('.al-q-note'), empty = document.querySelector('.tr-empty');
   // filtrul cerut prin adresă vine deja selectat din server (butonul .on)
-  const state = { ed: '', sector: '' };
+  const state = { ed: '', sector: '', q: '' };
   document.querySelectorAll('[data-al-group]').forEach((g) => { state[g.dataset.alGroup] = g.querySelector('.on')?.dataset.al || ''; const on = g.querySelector('.on'); if (on && g.scrollWidth > g.clientWidth) g.scrollLeft = on.offsetLeft - g.offsetLeft - 16; });
-  // adresa se actualizează la fiecare filtru, ca linkul să poată fi trimis mai departe
+  // adresa se actualizează la fiecare filtru sau căutare, ca linkul să poată fi trimis mai departe
   const syncUrl = () => {
     const u = new URL(location.href);
     document.querySelectorAll('[data-al-group]').forEach((g) => { const q = g.querySelector('.on')?.dataset.q; q ? u.searchParams.set(g.dataset.param, q) : u.searchParams.delete(g.dataset.param); });
+    state.q ? u.searchParams.set('q', state.q) : u.searchParams.delete('q');
     history.replaceState(null, '', u.pathname + u.search + u.hash);
   };
-  const apply = () => {
-    let n = 0;
-    grid.querySelectorAll('.al-card').forEach((c) => {
-      const ok = (!state.ed || c.dataset.ed.split(' ').includes(state.ed)) && (!state.sector || c.dataset.sector === state.sector);
-      c.hidden = !ok; if (ok) n++;
-    });
-    document.querySelector('.tr-empty').hidden = n > 0;
+  // distanța de editare (pentru greșeli de tastare în nume)
+  const lev = (a, b) => {
+    const d = Array.from({ length: a.length + 1 }, (_, i) => [i]);
+    for (let j = 1; j <= b.length; j++) d[0][j] = j;
+    for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    return d[a.length][b.length];
   };
+  // cât de bine se potrivește un nume: fiecare cuvânt căutat trebuie găsit; începutul de cuvânt contează mai mult
+  const nameScore = (n, words) => {
+    const parts = n.split(' ');
+    let s = 0;
+    for (const w of words) {
+      if (parts.some((p) => p === w)) s += 3;
+      else if (parts.some((p) => p.startsWith(w))) s += 2;
+      else if (n.includes(w)) s += 1;
+      else return 0;
+    }
+    return s;
+  };
+  const order = (list) => { list.forEach((c) => grid.append(c)); };
+  const apply = () => {
+    const q = norm(state.q);
+    let shown = [];
+    note.hidden = true;
+    if (!q) {
+      order(cards.slice().sort((a, b) => a._i - b._i));
+      cards.forEach((c) => { const ok = (!state.ed || c.dataset.ed.split(' ').includes(state.ed)) && (!state.sector || c.dataset.sector === state.sector); c.hidden = !ok; if (ok) shown.push(c); });
+    } else {
+      const words = q.split(' ');
+      // compania: toți oamenii din compania (sau companiile) care conțin textul căutat
+      // (fiecare cuvânt căutat începe un cuvânt din numele companiei: „domeniile”, „saftica”, „zitec”)
+      const byCo = cards.filter((c) => c._c && words.every((w) => c._c.split(' ').some((p) => p.startsWith(w))));
+      // numele: întâi cele care încep cu ce s-a scris (cuvânt cu cuvânt); doar dacă nu există, și cele care doar conțin textul
+      const scored = cards.map((c) => [c, nameScore(c._n, words)]).filter(([, s]) => s);
+      const strong = scored.filter(([, s]) => s >= words.length * 2);
+      const byName = (strong.length ? strong : scored).sort((a, b) => b[1] - a[1]).map(([c]) => c);
+      shown = [...new Set([...byName, ...byCo])];
+      // nicio potrivire: numele cele mai apropiate (greșeli de tastare); fiecare cuvânt trebuie să semene cu o parte din nume
+      if (!shown.length && q.length >= 3) {
+        const tol = (w) => (w.length >= 7 ? 2 : w.length >= 4 ? 1 : 0);
+        const fuzzy = cards.map((c) => {
+          const parts = c._n.split(' ');
+          let sum = 0;
+          for (const w of words) {
+            const d = Math.min(...parts.map((p) => Math.min(lev(w, p), p.length > w.length ? lev(w, p.slice(0, w.length)) : 99)));
+            if (d > tol(w)) return [c, 99];
+            sum += d;
+          }
+          return [c, sum];
+        }).filter(([, d]) => d < 99).sort((a, b) => a[1] - b[1]);
+        if (fuzzy.length) {
+          shown = fuzzy.filter(([, d]) => d === fuzzy[0][1]).slice(0, 4).map(([c]) => c);
+          note.textContent = `Nu am găsit exact „${state.q}”. Cel mai apropiat:`;
+          note.hidden = false;
+        }
+      }
+      cards.forEach((c) => { c.hidden = !shown.includes(c); });
+      order([...shown, ...cards.filter((c) => !shown.includes(c))]);
+    }
+    empty.hidden = shown.length > 0;
+    grid.dispatchEvent(new CustomEvent('al:change'));
+  };
+  const setFilter = (g, b) => { g.querySelectorAll('[data-al]').forEach((x) => x.classList.toggle('on', x === b)); state[g.dataset.alGroup] = b.dataset.al; };
   document.querySelectorAll('[data-al-group]').forEach((g) => g.addEventListener('click', (e) => {
     const b = e.target.closest('[data-al]');
     if (!b) return;
-    g.querySelectorAll('[data-al]').forEach((x) => x.classList.toggle('on', x === b));
-    state[g.dataset.alGroup] = b.dataset.al;
+    setFilter(g, b);
+    // un filtru ales golește căutarea
+    if (state.q) { state.q = ''; if (input) input.value = ''; }
     apply();
     syncUrl();
   }));
+  if (input) {
+    let t;
+    input.addEventListener('input', () => {
+      clearTimeout(t);
+      t = setTimeout(() => {
+        state.q = input.value.trim();
+        // căutarea se face în toți alumnii: filtrele revin la „Toate”
+        if (state.q) document.querySelectorAll('[data-al-group]').forEach((g) => setFilter(g, g.querySelector('[data-al=""]')));
+        apply();
+        syncUrl();
+      }, 120);
+    });
+    input.addEventListener('keydown', (e) => { if (e.key === 'Escape') { input.value = ''; input.dispatchEvent(new Event('input')); } });
+    const q0 = new URLSearchParams(location.search).get('q');
+    if (q0) { input.value = q0; state.q = q0; apply(); }
+  }
 })();
 
 // „Ce vrei să rezolvi?” pe mobil: contorul cu săgeți și o mică mișcare a rândului la prima vedere
@@ -431,12 +509,12 @@
     });
   };
   arm();
-  // la schimbarea filtrului, cardurile rămase intră din nou, rând cu rând
-  document.querySelectorAll('[data-al-group]').forEach((g) => g.addEventListener('click', (e) => { if (!e.target.closest('[data-al]')) return;
+  // la schimbarea filtrului sau a căutării, cardurile rămase intră din nou, rând cu rând
+  grid.addEventListener('al:change', () => {
     requestAnimationFrame(() => {
       arm();
       // lista filtrată e mai scurtă: dacă a rămas deasupra ecranului, urcăm la ea
       if (grid.getBoundingClientRect().top < 0) document.getElementById('lista')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
-  }));
+  });
 })();

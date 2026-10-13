@@ -77,6 +77,8 @@ function alumniBody(ctx, F, sel = {}) {
       <div class="tr-f sx" data-al-group="ed" data-param="editie"><button class="${selE ? '' : 'on'}" data-al="">Toate edițiile · ${d.L.length}</button>${d.eds.slice().reverse().map((e) => `<button class="${selE === e.id ? 'on' : ''}" data-al="${esc(e.id)}" data-q="${esc(String(e.numar))}">${esc(edLabel(e))} · ${e.participanti.length}</button>`).join('')}</div>
       <div class="tr-f tr-f-teme sx" data-al-group="sector" data-param="sector"><button class="${selS ? '' : 'on'}" data-al="">Toate sectoarele</button>${d.sectors.map(([s, n]) => `<button class="${selS === s ? 'on' : ''}" data-al="${esc(s)}" data-q="${esc(slug(s))}">${esc(s)} · ${n}</button>`).join('')}</div>
     </div>
+    <div class="al-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><input id="al-q" type="search" placeholder="Caută printre alumni după nume sau companie" autocomplete="off" aria-label="Caută printre alumni după nume sau companie"></div>
+    <p class="al-q-note" hidden></p>
     <div class="al-grid">${d.L.map(card).join('')}</div>
     <p class="tr-empty" ${d.L.some(shown) ? 'hidden' : ''}>Nimeni pentru combinația asta.</p>
   </div></section>
