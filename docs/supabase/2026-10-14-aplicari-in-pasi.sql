@@ -43,3 +43,10 @@ revoke all on function public.aplicare_salveaza(jsonb) from public;
 revoke all on function public.aplicare_reia(uuid) from public;
 grant execute on function public.aplicare_salveaza(jsonb) to anon, authenticated;
 grant execute on function public.aplicare_reia(uuid) to anon, authenticated;
+
+-- constrângerile vechi: starea „incompletă” și noile intervale ale cifrei de afaceri
+alter table public.aplicari drop constraint aplicari_cifra_afaceri_check, drop constraint aplicari_stare_check;
+alter table public.aplicari
+  add constraint aplicari_cifra_afaceri_check check (cifra_afaceri = any (array['sub-500k','500k-1m','1m-3m','3m-10m','10m-25m','peste-25m'])),
+  add constraint aplicari_stare_check check (stare = any (array['incompletă','nouă','contactat','acceptat','respins'])),
+  add constraint aplicari_raspunsuri_check check (pg_column_size(raspunsuri) <= 20000);
