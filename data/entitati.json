@@ -2,7 +2,7 @@
   "meta": {
     "sursa": "https://antreprenoria.ro",
     "extras_la": "2026-10-08",
-    "generat": "2026-10-14T08:32:11.529Z",
+    "generat": "2026-10-14T08:35:25.832Z",
     "pagini": 11,
     "metoda": "paginile edițiilor (/antreprenoria-16 … /antreprenoria-22, /antreprenoria-cluj) + /despre-noi + /contact; companii, organizații, aliasuri, parteneri și teme curate manual în data/curare/"
   },
@@ -369,7 +369,7 @@
               "activitate": "Training",
               "speakeri": [
                 {
-                  "persoana": "eusebiu-margasoiu",
+                  "persoana": "eusediu-margasoiu",
                   "rol": "trainer",
                   "companie": "Trainer - the-network",
                   "organizatie": "the-network"
@@ -4694,7 +4694,7 @@
               "activitate": "Training",
               "speakeri": [
                 {
-                  "persoana": "eusebiu-margasoiu",
+                  "persoana": "eusediu-margasoiu",
                   "rol": "trainer",
                   "companie": "The network",
                   "organizatie": "the-network"
@@ -5378,7 +5378,7 @@
               "activitate": "Training",
               "speakeri": [
                 {
-                  "persoana": "eusebiu-margasoiu",
+                  "persoana": "eusediu-margasoiu",
                   "rol": "trainer",
                   "companie": "The network",
                   "organizatie": "the-network"
@@ -6808,9 +6808,10 @@
       "nr_aparitii": 6
     },
     {
-      "id": "eusebiu-margasoiu",
-      "nume": "Eusebiu Mărgăsoiu",
+      "id": "eusediu-margasoiu",
+      "nume": "Eusediu Mărgăsoiu",
       "variante": [
+        "Eusebiu Mărgăsoiu",
         "Eusediu Margasoiu"
       ],
       "tipuri": [
@@ -21713,24 +21714,24 @@
           "editie": "bucuresti-16",
           "rol": "speaker",
           "atelier": 2,
-          "persoana": "eusebiu-margasoiu"
+          "persoana": "eusediu-margasoiu"
         },
         {
           "editie": "bucuresti-21",
           "rol": "speaker",
           "atelier": 7,
-          "persoana": "eusebiu-margasoiu"
+          "persoana": "eusediu-margasoiu"
         },
         {
           "editie": "bucuresti-22",
           "rol": "speaker",
           "atelier": 4,
-          "persoana": "eusebiu-margasoiu"
+          "persoana": "eusediu-margasoiu"
         }
       ],
       "participari": [],
       "oameni": [
-        "eusebiu-margasoiu"
+        "eusediu-margasoiu"
       ],
       "tipuri": [
         "speaker"
@@ -24727,8 +24728,8 @@
       "id": "o23",
       "nivel": "minor",
       "zona": "Conținut",
-      "text": "Numele „Eusebiu Mărgăsoiu” e scris diferit pe site: „Eusediu Margasoiu”.",
-      "persoana": "eusebiu-margasoiu"
+      "text": "Numele „Eusediu Mărgăsoiu” e scris diferit pe site: „Eusebiu Mărgăsoiu”, „Eusediu Margasoiu”.",
+      "persoana": "eusediu-margasoiu"
     },
     {
       "id": "o24",

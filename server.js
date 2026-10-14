@@ -440,6 +440,9 @@ async function handler(req, res) {
     if (tr) {
       const html = fresh('./site/render').renderTrainer({ id: tr[1], brand: new URLSearchParams(query).get('brand') || undefined });
       if (html) { res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' }); return res.end(html); }
+      // un nume scris altfel (alias din data/curare/oameni.json) duce la fișa corectă
+      const alias = readJson(path.join(DATA, 'curare', 'oameni.json'), {}).aliasuri?.[tr[1]];
+      if (alias) { res.writeHead(301, { Location: `/lideri/${alias}` }); return res.end(); }
     }
     // /editii: lista edițiilor (active sus, arhiva pe ani)
     if ((url === '/editii' || url === '/editii/')) {

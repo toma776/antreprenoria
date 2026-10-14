@@ -2,10 +2,10 @@
   "_despre": "Aliasuri pentru speakeri: slug-ul unei variante de nume -> id-ul persoanei. Variantele apar pentru că fiecare pagină de ediție e scrisă de mână. „ignora” = intrări care nu sunt persoane (placeholder-e).",
   "aliasuri": {
     "alex-lapusan": "alexandru-lapusan",
-    "eusediu-margasoiu": "eusebiu-margasoiu"
+    "eusebiu-margasoiu": "eusediu-margasoiu"
   },
   "nume_corect": {
-    "eusebiu-margasoiu": "Eusebiu Mărgăsoiu",
+    "eusediu-margasoiu": "Eusediu Mărgăsoiu",
     "alexandru-lapusan": "Alexandru Lăpușan",
     "cristian-logofatu": "Cristian Logofătu",
     "dan-stefan": "Dan Ștefan",
