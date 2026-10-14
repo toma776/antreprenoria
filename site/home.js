@@ -188,7 +188,7 @@ function homeBody(ctx, F) {
         <p class="eyebrow">Acceleratorul Romanian Business Leaders · din ${D.program.de_cand}</p>
         <h1>${esc(tx(D, 'acasa.titlu'))}</h1>
         <p class="lead">${esc(tx(D, 'acasa.lead'))}</p>
-        <div class="hero-actions"><a class="btn btn-primary btn-lg" href="/aplica">Aplică</a>${ong ? `<a class="btn btn-ghost btn-lg" href="${edUrl(ong)}"><i class="dot-live"></i>Ediția #${ong.numar}, acum</a>` : `<a class="btn btn-ghost btn-lg" href="/program">Cum funcționează</a>`}</div>
+        <div class="hero-actions"><a class="btn btn-primary btn-lg" href="/aplica">Aplică pentru un loc</a>${ong ? `<a class="btn btn-ghost btn-lg" href="${edUrl(ong)}"><i class="dot-live"></i>Ediția #${ong.numar}, acum</a>` : `<a class="btn btn-ghost btn-lg" href="/program">Cum funcționează</a>`}</div>
       </div>
       ${mosaic(ctx, F)}
     </div>

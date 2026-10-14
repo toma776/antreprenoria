@@ -335,7 +335,7 @@ ${footer(F, ctx)}
 // ---------- APLICĂ ----------
 function renderAplica(opt = {}) {
   const ctx = load(opt.brand), F = facts(ctx);
-  return `${head('Aplică la Antreprenoria', 'Formularul de înscriere la Atelierele Antreprenoria: ediția, datele tale și ale companiei. Durează două minute.', opt.brand)}
+  return `${head('Aplică la Antreprenoria', 'Aplică la Atelierele Antreprenoria: programul pentru antreprenorii cu afaceri de peste 500.000 € care vor să scaleze. Aplicările sunt analizate de comitetul de selecție.', opt.brand)}
 ${header(F, ctx)}
 <div class="gridlines" aria-hidden="true"></div>
 ${aplicaBody(ctx, F, opt)}

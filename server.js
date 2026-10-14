@@ -6,7 +6,7 @@
 //   GET /api/entitati   -> data/entitati.json (generat de npm run sync)
 //   GET /api/brand      -> data/brand.json        PUT /api/brand/activ {id} -> schimbă varianta folosită pe site
 //   PUT /api/brand/icon {activ?, culori?}         -> iconul de meniu pe mobil și modul lui de culoare
-//   POST /api/aplica    -> formularul /aplica, salvat în Supabase     GET /api/aplicari -> lista pentru panou (doar local)
+//   POST /api/aplica    -> aplicarea în pași de pe /aplica, salvată în Supabase (GET ?reia=<token> o reia)     GET /api/aplicari -> lista pentru panou (doar local)
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
@@ -245,23 +245,34 @@ async function handler(req, res) {
       const f = url === '/api/entitati' ? dataFile() : url === '/api/brand' && !READ_ONLY && fs.existsSync(BRAND_LOCAL) ? BRAND_LOCAL : path.join(DATA, JSON_FILES[url]);
       return fs.existsSync(f) ? sendJson(res, 200, fs.readFileSync(f, 'utf8')) : sendJson(res, 404, { error: 'lipsește ' + JSON_FILES[url] });
     }
-    // formularul de aplicare: validare pe server (aceleași reguli ca în pagină), apoi salvare
+    // aplicarea în pași: fiecare pas trimis se salvează (pasul 1 = contactul, pentru remindere); la final, finalizata = true
     if (url === '/api/aplica' && req.method === 'POST') {
       const input = await body(req).catch(() => null);
       if (!input) return sendJson(res, 400, { error: 'Cerere invalidă.' });
       if (input.website) return sendJson(res, 200, { ok: true }); // câmpul-capcană pentru roboți
       const ap = fresh('./site/aplica'), render = fresh('./site/render');
       const ids = render.applyOptions().map((o) => o.id);
-      const v = ap.validate(input, ids);
+      const finalizata = input.final === true;
+      const pas = finalizata ? ap.STEPS.length : Math.min(Math.max(parseInt(input.pas, 10) || 1, 1), ap.STEPS.length);
+      const v = ap.validate(input, ids, pas);
       if (!v.ok) return sendJson(res, 422, { error: 'Verifică câmpurile marcate.', errors: v.errors });
-      const d = v.data;
-      const rec = { editie: d.editie, nume: d.nume, email: d.email, telefon: d.telefon, companie: d.companie, cui: d.cui, cifra_afaceri: d.cifra_afaceri,
-        sursa: d.sursa || null, sursa_alta: d.sursa === 'Altceva' ? d.sursa_alta || null : null, acord: true, sursa_pagina: String(req.headers.referer || '').slice(0, 300) || null };
-      // aplicările merg în Supabase (tabelul aplicari; cheia publică poate doar adăuga, nu și citi)
-      const r = await fetch(`${SUPABASE.url}/rest/v1/aplicari`, { method: 'POST', headers: { apikey: SUPABASE.key, 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify(rec) }).catch(() => null);
+      const token = /^[0-9a-f-]{36}$/i.test(input.token || '') ? input.token : null;
+      const rec = ap.record(v.data, { token, pas, finalizata, pagina: String(req.headers.referer || '').slice(0, 300) });
+      // aplicările merg în Supabase prin funcția aplicare_salveaza (cheia publică nu poate citi tabelul)
+      const r = await fetch(`${SUPABASE.url}/rest/v1/rpc/aplicare_salveaza`, { method: 'POST', headers: { apikey: SUPABASE.key, 'Content-Type': 'application/json' }, body: JSON.stringify({ p: rec }) }).catch(() => null);
       if (!r || !r.ok) { console.error('aplicare nesalvată', r && r.status, r && await r.text()); return sendJson(res, 503, { error: 'nedisponibil' }); }
-      return sendJson(res, 200, { ok: true });
+      return sendJson(res, 200, { ok: true, token: await r.json().catch(() => null) });
     }
+    // reluarea unei aplicări neterminate din linkul de reminder (/aplica?reia=<token>)
+    if (url === '/api/aplica' && req.method === 'GET') {
+      const t = new URLSearchParams(query).get('reia') || '';
+      if (!/^[0-9a-f-]{36}$/i.test(t)) return sendJson(res, 400, { error: 'Link invalid.' });
+      const r = await fetch(`${SUPABASE.url}/rest/v1/rpc/aplicare_reia`, { method: 'POST', headers: { apikey: SUPABASE.key, 'Content-Type': 'application/json' }, body: JSON.stringify({ t }) }).catch(() => null);
+      const j = r && r.ok ? await r.json().catch(() => null) : null;
+      return j ? sendJson(res, 200, j) : sendJson(res, 404, { error: 'Aplicarea nu mai poate fi reluată.' });
+    }
+    // întrebările aplicării, pentru etichetele din panou (Leads)
+    if (url === '/api/aplica-model' && req.method === 'GET') return sendJson(res, 200, fresh('./site/aplica').STEPS);
     // formularul „Susține programul” (/parteneri): sponsorizare, găzduire, mentorat; salvat în Supabase (tabelul implicari)
     if (url === '/api/implicare' && req.method === 'POST') {
       const input = await body(req).catch(() => null);

@@ -54,7 +54,7 @@ function programBody(ctx, F) {
         <p class="eyebrow">Programul · din ${D.program.de_cand}</p>
         <h1>${esc(tx(D, 'program.titlu'))}</h1>
         <p class="lead">${esc(sentence(D.program.descriere || '').replace(/\s*–\s*/g, ': ').split('. ').slice(0, 2).join('. ').replace(/\.?$/, '.'))}</p>
-        <div class="hero-actions"><a class="btn btn-primary btn-lg" href="/aplica">Aplică</a><a class="btn btn-ghost btn-lg" href="#pentru-cine">Ești potrivit?</a></div>
+        <div class="hero-actions"><a class="btn btn-primary btn-lg" href="/aplica">Aplică pentru un loc</a><a class="btn btn-ghost btn-lg" href="#pentru-cine">Ești potrivit?</a></div>
       </div>
       <aside class="pg-glance" aria-label="Pe scurt">
         <div class="ed-live-top"><span>Pe scurt</span><span>o ediție</span></div>

@@ -25,9 +25,9 @@ const PAGINI = [
     ['zi.text', 'O zi de atelier · text', 'Fiecare atelier full-day are aceeași structură: dimineața un trainer lucrează aplicat cu grupa, după-amiaza doi antreprenori povestesc cum au rezolvat exact problema zilei, seara networking cu colegii.'],
   ] },
   { id: 'aplica', nume: 'Aplică', url: '/aplica', blocuri: [
-    ['titlu', 'Titlul mare', 'Locul tău la Antreprenoria.'],
-    ['lead', 'Textul de sub titlu', 'Durează două minute. Echipa programului verifică eligibilitatea companiei și te contactează. Nu plătești nimic acum.'],
-    ['acord', 'Textul acordului', 'Sunt de acord ca Fundația Romanian Business Leaders să folosească aceste date pentru selecția participanților și să mă contacteze despre program.'],
+    ['titlu', 'Titlul mare', 'Antreprenoria nu e pentru oricine.'],
+    ['lead', 'Textul de sub titlu', 'E un program pentru antreprenorii care vor să-și scaleze afacerea. Înainte să aplici, iată după ce alegem participanții.'],
+    ['acord', 'Textul acordului', 'Sunt de acord ca Fundația Romanian Business Leaders să folosească aceste date pentru selecția participanților și să mă contacteze despre program, inclusiv ca să reiau aplicarea dacă nu o termin.'],
   ] },
   { id: 'footer', nume: 'Footer', url: '/', blocuri: [
     ['mesaj', 'Mesajul mare (Enter = rând nou)', 'Cresc antreprenorii,\ncrește România.'],
