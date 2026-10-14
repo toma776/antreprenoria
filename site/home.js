@@ -87,7 +87,7 @@ function pulse(ctx, F) {
     // sponsorii ediției care au fost participanți
     ong.ateliere.filter((a) => a.sponsor && O[a.sponsor]?.ciclu).slice(0, 2).forEach((a) => {
       const o = O[a.sponsor];
-      out.push({ date: a.data, kind: 'cycle', title: `${o.nume} sponsorizează atelierul „${a.titlu}”`, text: `Alumni din ediția #${o.ciclu.alumni_din.split('-')[1]}, revenit ca partener`, href: `/alumni/din-alumni-parteneri` });
+      out.push({ date: a.data, kind: 'cycle', title: `${o.nume} sponsorizează atelierul „${a.titlu}”`, text: `Alumni din ediția #${o.ciclu.alumni_din.split('-')[1]}, revenit ca partener`, href: `/comunitate#din-alumni-parteneri` });
     });
     const host = ong.ateliere.map((a) => a.loc).find(Boolean);
     const hostOrg = host && D.locatii.find((l) => l.id === host);
@@ -239,7 +239,7 @@ function homeBody(ctx, F) {
   </div></section>
 
   <section class="sec" id="traineri"><div class="wrap">
-    <div class="sec-head row"><div><p class="eyebrow">Traineri și antreprenori invitați</p><h2>${esc(tx(D, 'acasa.oameni.titlu'))}</h2>
+    <div class="sec-head row"><div><p class="eyebrow">Liderii programului</p><h2>${esc(tx(D, 'acasa.oameni.titlu'))}</h2>
       <p class="lead">${F.constanti} dintre ei revin în cel puțin cinci ediții. Nu sunt invitați o dată, sunt parte din program.</p></div>
       <a class="link-arrow" href="/traineri">Toți cei ${F.speakers} →</a></div>
     <div class="people">

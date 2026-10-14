@@ -65,16 +65,16 @@ function traineriBody(ctx, F) {
   const themes = D.teme.filter((t) => L.some((x) => x.themes.includes(t.id)));
   return `<main>
   <section class="hero pg-hero tr-lhero"><div class="wrap">
-    <nav class="crumbs" aria-label="Unde ești"><a href="/">Acasă</a><span>/</span><b>Traineri</b></nav>
+    <nav class="crumbs" aria-label="Unde ești"><a href="/">Acasă</a><span>/</span><b>Lideri</b></nav>
     <div class="hero-split">
       <div class="hero-copy">
-        <p class="eyebrow">Traineri și antreprenori invitați</p>
+        <p class="eyebrow">Lideri · fondatori, CEO și traineri</p>
         <h1>Oameni care vorbesc din ce trăiesc.</h1>
         <p class="lead">Dimineața, un trainer lucrează aplicat cu grupa. După-amiaza, antreprenori care au trecut prin aceeași problemă povestesc cum au rezolvat-o. ${plural(L.filter((x) => x.p.editii.length >= 5).length, 'om revine', 'oameni revin')} în cel puțin cinci ediții.</p>
       </div>
       <dl class="tr-stats" aria-label="În cifre">
+        <div><dt>${n('antreprenor invitat')}</dt><dd>fondatori și CEO invitați, cu povestea lor</dd></div>
         <div><dt>${n('trainer')}</dt><dd>traineri, pentru partea aplicată a atelierelor</dd></div>
-        <div><dt>${n('antreprenor invitat')}</dt><dd>antreprenori invitați, cu povestea lor</dd></div>
         <div><dt>${n('facilitator')}</dt><dd>facilitatori pentru atelierele de seară</dd></div>
       </dl>
     </div>
@@ -82,7 +82,7 @@ function traineriBody(ctx, F) {
 
   <section class="sec tr-list-sec" id="lista"><div class="wrap">
     <div class="tr-bar" role="search">
-      <div class="tr-seg" data-tr-group="rol" role="group" aria-label="Rol"><button class="on" data-tr="">Toți <i>${L.length}</i></button>${[['trainer', 'Traineri'], ['antreprenor invitat', 'Antreprenori invitați'], ['facilitator', 'Facilitatori']].map(([k, l]) => `<button data-tr="${esc(k)}">${l} <i>${n(k)}</i></button>`).join('')}</div>
+      <div class="tr-seg" data-tr-group="rol" role="group" aria-label="Rol"><button class="on" data-tr="">Toți <i>${L.length}</i></button>${[['antreprenor invitat', 'Antreprenori invitați'], ['trainer', 'Traineri'], ['facilitator', 'Facilitatori']].map(([k, l]) => `<button data-tr="${esc(k)}">${l} <i>${n(k)}</i></button>`).join('')}</div>
       <label class="tr-sel"><span class="sr">Temă</span><select id="tr-tema"><option value="">Toate temele</option>${themes.map((t) => `<option value="${esc(t.id)}">${esc(t.nume)}</option>`).join('')}</select></label>
       <div class="tr-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><input id="tr-q" type="search" placeholder="Caută după nume sau companie" autocomplete="off" aria-label="Caută printre traineri și invitați după nume sau companie"></div>
     </div>
@@ -118,7 +118,7 @@ function trainerBody(ctx, F, id) {
   const lead = p.bio || `${ROL[d.rol] || 'Invitat'} Antreprenoria în ${plural(d.eds.length, 'ediție', 'ediții')}${d.themes.length ? `, la ${d.themes.length === 1 ? 'tema' : 'temele'} ${d.themes.map((t) => t.nume).join(', ')}` : ''}.`;
   return `<main>
   <section class="hero pg-hero tr-hero"><div class="wrap">
-    <nav class="crumbs" aria-label="Unde ești"><a href="/">Acasă</a><span>/</span><a href="/traineri">Traineri</a><span>/</span><b>${esc(p.nume)}</b></nav>
+    <nav class="crumbs" aria-label="Unde ești"><a href="/">Acasă</a><span>/</span><a href="/traineri">Lideri</a><span>/</span><b>${esc(p.nume)}</b></nav>
     <div class="tr-top">
       <div class="tr-portrait">${avatar(p, 640)}</div>
       <div class="hero-copy">
