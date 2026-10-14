@@ -285,7 +285,7 @@ ${footer(F, ctx)}
 // ---------- PARTENERI ----------
 function renderParteneri(opt = {}) {
   const ctx = load(opt.brand), F = facts(ctx);
-  return `${head('Parteneri și sponsori – Antreprenoria', 'Partenerii edițiilor, sponsorii atelierelor și gazdele programului Antreprenoria, plus cum poți susține următoarea ediție.', opt.brand)}
+  return `${head('Parteneriate CSR – Antreprenoria: cresc antreprenorii, crește România', 'Un program de CSR cu impact măsurabil: sponsorizează un atelier, o ediție sau un an din Antreprenoria. Vezi brandurile care au susținut programul din 2013 și construiește-ți parteneriatul.', opt.brand)}
 ${header(F, ctx)}
 <div class="gridlines" aria-hidden="true"></div>
 ${parteneriBody(ctx, F)}

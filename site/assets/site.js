@@ -501,15 +501,18 @@ const peopleSearch = (() => {
   const dlg = document.getElementById('implica');
   if (!dlg) return;
   const form = dlg.querySelector('#im-form'), done = dlg.querySelector('.im-done'), status = form.querySelector('.af-status');
-  const open = (tip) => {
+  // msg: mesajul precompletat (configuratorul și butoanele „Rezervă” de pe /parteneri)
+  const open = (tip, msg) => {
     form.hidden = false; done.hidden = true; status.textContent = ''; status.className = 'af-status';
+    if (msg) form.elements.mesaj.value = msg;
     // butonul fără opțiune („Devino partener”) deschide formularul fără nicio alegere bifată
     form.querySelectorAll('input[name="tip"]').forEach((r) => { r.checked = !!tip && r.value === tip; });
     dlg.showModal();
     // după alegerea opțiunii, primul câmp gol primește focusul
     setTimeout(() => (form.querySelector('input[name="tip"]:checked') ? form.querySelector('#im-nume') : form.querySelector('input[name="tip"]')).focus(), 50);
   };
-  document.querySelectorAll('[data-implica]').forEach((b) => b.addEventListener('click', (e) => { e.preventDefault(); open(b.dataset.implica); }));
+  document.querySelectorAll('[data-implica]').forEach((b) => b.addEventListener('click', (e) => { e.preventDefault(); open(b.dataset.implica, b.dataset.imMsg); }));
+  window.spImplica = open;
   dlg.querySelectorAll('[data-im-close]').forEach((b) => b.addEventListener('click', () => dlg.close()));
   dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); }); // click pe fundal
   // aceeași validare ca pe server (site/implicare.js)
@@ -694,4 +697,167 @@ const peopleSearch = (() => {
     if (o) open(cards.find((c) => c.dataset.id === o.dataset.open));
   });
   addEventListener('keydown', (e) => { if (e.key === 'Escape' && !dr.hidden) close(); });
+})();
+// /parteneri: roata din hero, configuratorul de parteneriat, calculatorul fiscal, inventarul brandurilor
+(() => {
+  const root = document.querySelector('main.sp');
+  if (!root) return;
+  const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fmt = (n, d = 0) => n.toLocaleString('ro-RO', { maximumFractionDigits: d, minimumFractionDigits: 0 });
+
+  // ---------- roata: antreprenori -> companii -> România -> branduri ----------
+  const fw = $('.sp-fw');
+  if (fw) {
+    const nodes = $$('.sp-fw-n', fw), vals = $$('.sp-fw-v', fw), prog = $('.sp-fw-prog', fw);
+    let i = 0, timer, visible = true;
+    const show = (k, wrap) => {
+      i = k;
+      nodes.forEach((n, j) => n.classList.toggle('on', j === k));
+      vals.forEach((v, j) => v.classList.toggle('on', j === k));
+      // arcul crește până la nodul activ; după ultimul nod se închide cercul și o ia de la capăt
+      if (wrap) {
+        prog.style.strokeDasharray = '100 100';
+        setTimeout(() => { prog.style.transition = 'none'; prog.style.strokeDasharray = '0 100'; prog.getBoundingClientRect(); prog.style.transition = ''; }, 1150);
+      } else prog.style.strokeDasharray = `${k * 25 + 0.01} 100`;
+    };
+    const next = () => { if (!visible || document.hidden) return; show((i + 1) % nodes.length, i === nodes.length - 1); };
+    const play = () => { clearInterval(timer); if (!calm) timer = setInterval(next, 3200); };
+    nodes.forEach((n, k) => {
+      n.addEventListener('click', () => { show(k); play(); });
+      n.addEventListener('mouseenter', () => { clearInterval(timer); show(k); });
+      n.addEventListener('mouseleave', play);
+    });
+    if ('IntersectionObserver' in window) new IntersectionObserver((e) => { visible = e[0].isIntersecting; }).observe(fw);
+    show(0); play();
+  }
+
+  // cifrele din hero numără până la valoare
+  if (!calm) $$('.sp-hero-figs dt[data-to]').forEach((el) => {
+    const to = Number(el.dataset.to), t0 = performance.now() + 200, dur = 1300;
+    const tick = (now) => { const p = Math.min(1, Math.max(0, (now - t0) / dur)); el.textContent = fmt(Math.round(to * (1 - Math.pow(1 - p, 3)))); if (p < 1) requestAnimationFrame(tick); };
+    requestAnimationFrame(tick);
+    setTimeout(() => { el.textContent = fmt(to); }, 200 + dur + 300);
+  });
+
+  // ---------- configuratorul ----------
+  const cfgEl = $('.sp-cfg');
+  if (cfgEl) {
+    const C = JSON.parse(cfgEl.dataset.cfg);
+    const out = (k) => $(`[data-o="${k}"]`, cfgEl);
+    const cta = $('.sp-out-cta', cfgEl);
+    // cifrele animate: de la valoarea afișată la cea nouă
+    const tween = (el, to, render) => {
+      const from = Number(el.dataset.v || 0), t0 = performance.now(), dur = calm ? 0 : 600;
+      el.dataset.v = to;
+      const tick = (now) => { const p = dur ? Math.min(1, (now - t0) / dur) : 1; el.innerHTML = render(from + (to - from) * (1 - Math.pow(1 - p, 3))); if (p < 1) requestAnimationFrame(tick); };
+      requestAnimationFrame(tick);
+    };
+    const money = (v) => (v >= 1e9 ? `${fmt(v / 1e9, 1)}<small> mld. lei</small>` : `${fmt(v / 1e6, 0)}<small> mil. lei</small>`);
+    function update() {
+      const f = $('input[name="sp-fmt"]:checked', cfgEl).value;
+      const tema = $('input[name="sp-tema"]:checked', cfgEl);
+      const team = $$('input[name="sp-echipa"]:checked', cfgEl).map((x) => x.value);
+      $$('[data-only]', cfgEl).forEach((s) => { s.hidden = s.dataset.only !== f; });
+      $('.sp-step-n', cfgEl).textContent = f === 'atelier' ? '3' : '2';
+      const groups = f === 'an' ? (C.wsCluj ? 3 : 2) : 1;
+      const h = f === 'atelier' ? (C.H[tema.dataset.f] || 8) : f === 'editie' ? C.hEd : C.hEd * 2 + C.hCluj;
+      tween(out('ant'), C.g * groups, (v) => fmt(Math.round(v)));
+      tween(out('ore'), C.g * h, (v) => fmt(Math.round(v / 5) * 5));
+      tween(out('ca'), C.g * groups * C.avgCa, money);
+      tween(out('ang'), C.g * groups * C.avgAng, (v) => fmt(Math.round(v / 10) * 10));
+      $('.sp-out-rol', cfgEl).textContent = C.fmt[f].rol;
+      const ben = C.fmt[f].ben.map((b) => b.replace('{tema}', tema ? tema.dataset.n : ''));
+      $('.sp-out-ben', cfgEl).innerHTML = [...ben.map((b) => `<li>${b}</li>`), ...team.map((t) => `<li class="add">${C.echipa[t]}</li>`)].map((li, k) => li.replace('<li', `<li style="animation-delay:${k * 40}ms"`)).join('');
+      const what = f === 'atelier' ? `sponsor al unui atelier (tema: ${tema.dataset.n})` : f === 'editie' ? 'partener al unei ediții întregi' : 'partener strategic pentru un an';
+      const extra = team.map((t) => C.msg[t]);
+      cta.dataset.imMsg = `Vreau să fiu ${what}.${extra.length ? ` Mi-ar plăcea și: ${extra.join('; ')}.` : ''}`;
+    }
+    cfgEl.addEventListener('change', update);
+    update();
+  }
+
+  // ---------- calculatorul fiscal ----------
+  const calc = $('.sp-calc');
+  if (calc) {
+    let mode = 'profit';
+    const ca = $('#sp-ca'), imp = $('#sp-imp'), v = $('#sp-tax-v'), why = $('#sp-tax-why');
+    const num = (el) => Number(String(el.value).replace(/\D/g, '')) || 0;
+    // separatorul de mii, păstrând poziția cursorului
+    const pretty = (el) => { const n = num(el), end = el.value.length - el.selectionStart; el.value = n ? fmt(n) : ''; const p = Math.max(0, el.value.length - end); el.setSelectionRange?.(p, p); };
+    function update() {
+      const i = num(imp), c = num(ca);
+      let r, txt;
+      if (mode === 'micro') { r = i * 0.2; txt = '20% din impozitul pe venit al microîntreprinderii.'; }
+      else { const a = c * 0.0075, b = i * 0.2; r = Math.min(a, b); txt = a < b ? 'Limita: 0,75% din cifra de afaceri (mai mică decât 20% din impozit).' : 'Limita: 20% din impozitul pe profit (mai mică decât 0,75% din cifra de afaceri).'; }
+      v.textContent = `${fmt(Math.round(r))} lei`;
+      why.textContent = r ? `${txt} Bani care altfel ajung la buget.` : 'Completează cifrele companiei tale.';
+    }
+    $$('.sp-calc-seg button', calc).forEach((b) => b.addEventListener('click', () => {
+      mode = b.dataset.m;
+      $$('.sp-calc-seg button', calc).forEach((x) => { x.classList.toggle('on', x === b); x.setAttribute('aria-selected', String(x === b)); });
+      $('.sp-calc-f[data-m="profit"]', calc).hidden = mode !== 'profit';
+      $('[data-lbl]', calc).textContent = mode === 'micro' ? 'Impozitul pe venit anual (micro)' : 'Impozitul pe profit anual';
+      update();
+    }));
+    [ca, imp].forEach((el) => el.addEventListener('input', () => { pretty(el); update(); }));
+    update();
+  }
+
+  // ---------- inventarul brandurilor ----------
+  const inv = $('.sp-inv');
+  if (inv) {
+    const cards = $$('.sp-br', inv), q = $('#sp-q'), count = $('.sp-inv-count'), empty = $('.sp-inv-empty');
+    const st = { k: '', y: '', q: '' };
+    const norm = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+    function apply() {
+      let n = 0;
+      cards.forEach((c) => {
+        const ok = (!st.k || c.dataset.k.split(' ').includes(st.k)) && (!st.y || c.dataset.y.split(' ').includes(st.y)) && (!st.q || norm(c.dataset.q).includes(st.q));
+        c.hidden = !ok; if (ok) n++;
+      });
+      count.textContent = st.k || st.y || st.q ? `${n} din ${cards.length} branduri` : `${cards.length} branduri, de la cele mai implicate`;
+      empty.hidden = n > 0;
+    }
+    const group = (sel, key) => $$(sel).forEach((b) => b.addEventListener('click', () => { $$(sel).forEach((x) => x.classList.toggle('on', x === b)); st[key] = b.dataset[key]; apply(); }));
+    group('.sp-seg button', 'k');
+    group('.sp-years button', 'y');
+    q?.addEventListener('input', () => { st.q = norm(q.value); apply(); });
+    apply();
+
+    // detaliile unui brand, în fereastră
+    const dlg = $('#sp-br-dlg'), box = $('.sp-dlg-in', dlg);
+    const open = (id, push) => {
+      const t = document.querySelector(`template[data-br="${CSS.escape(id)}"]`);
+      if (!t) return;
+      box.replaceChildren(t.content.cloneNode(true));
+      // butonul „Vreau și eu” din fereastră deschide formularul
+      $$('[data-implica]', box).forEach((b) => b.addEventListener('click', (e) => { e.preventDefault(); dlg.close(); window.spImplica?.(b.dataset.implica, `Am văzut pe site partenerii Antreprenoria și vreau să fiu și eu alături de program.`); }));
+      dlg.showModal(); dlg.scrollTop = 0;
+      if (push) history.replaceState(null, '', '#' + id);
+    };
+    cards.forEach((c) => c.addEventListener('click', () => open(c.id, true)));
+    $('[data-close]', dlg).addEventListener('click', () => dlg.close());
+    dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+    dlg.addEventListener('close', () => { if (cards.some((c) => '#' + c.id === location.hash)) history.replaceState(null, '', location.pathname + location.search); });
+    // din banda de logo-uri sau din adresă (/parteneri#dwf): cardul se evidențiază și se deschide
+    const fromHash = () => {
+      const c = cards.find((x) => '#' + x.id === location.hash);
+      if (!c) return;
+      c.hidden = false; c.scrollIntoView({ block: 'center', behavior: calm ? 'auto' : 'smooth' });
+      c.classList.remove('hit'); void c.offsetWidth; c.classList.add('hit');
+      setTimeout(() => open(c.id), calm ? 0 : 650);
+    };
+    $$('.sp-marq-it').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); history.replaceState(null, '', a.getAttribute('href')); fromHash(); }));
+    if (location.hash) setTimeout(fromHash, 300);
+  }
+
+  // ---------- butonul „Vreau și eu” fix, pe mobil ----------
+  const fab = $('.sp-fab'), hero = $('.sp-hero'), fin = $('#vreau');
+  if (fab && 'IntersectionObserver' in window) {
+    const seen = new Map();
+    const io = new IntersectionObserver((es) => { es.forEach((e) => seen.set(e.target, e.isIntersecting)); fab.classList.toggle('show', !seen.get(hero) && !seen.get(fin)); });
+    io.observe(hero); io.observe(fin);
+  }
 })();
