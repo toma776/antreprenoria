@@ -36,11 +36,11 @@ const STEPS = [
   { id: 'ambitie', titlu: 'Ambiția', sub: 'Partea cea mai importantă pentru noi. Fii cât de concret poți.', fields: [
     { k: 'tinta', t: 'one', ui: 'seg', label: 'În 3 ani, unde vrei să fie cifra de afaceri?', req: true, opts: [['x1.5', 'Cu 50% mai mare'], ['x2', 'Dublă'], ['x3-5', 'De 3–5 ori mai mare'], ['x5+', 'De peste 5 ori mai mare']] },
     { k: 'directii', t: 'many', ui: 'chips', max: 3, label: 'Pe unde crești?', hint: 'Alege până la 3.', req: true, opts: [['externe', 'Piețe externe'], ['produse', 'Produse sau servicii noi'], ['regiuni', 'Alte regiuni din țară'], ['clienti', 'Clienți mai mari'], ['achizitii', 'Achiziții'], ['investitori', 'Investitori sau finanțare'], ['francize', 'Francize sau parteneriate'], ['eficienta', 'Eficiență și automatizare']] },
-    { k: 'ambitie', t: 'area', min: 60, label: 'Unde vrei să duci compania?', req: true, ph: 'ex. Să devenim cel mai mare distribuitor din regiune și să intrăm în Ungaria și Bulgaria până în 2028, cu o echipă de management care conduce fără mine.', hint: '2–3 fraze despre ce vrei să construiești.' },
+    { k: 'ambitie', t: 'area', label: 'Unde vrei să duci compania?', ph: 'ex. Să devenim cel mai mare distribuitor din regiune și să intrăm în Ungaria și Bulgaria până în 2028, cu o echipă de management care conduce fără mine.', hint: '2–3 fraze despre ce vrei să construiești.' },
   ] },
   { id: 'drum', titlu: 'Drumul până acolo', sub: 'Ce stă azi între compania ta și ambiția ta.', fields: [
     { k: 'blocaje', t: 'many', ui: 'chips', max: 3, label: 'Ce te oprește acum cel mai mult?', hint: 'Alege până la 3.', req: true, opts: [['oameni', 'Oamenii potriviți'], ['management', 'Echipa de management'], ['procese', 'Procese și sisteme'], ['vanzari', 'Vânzări și marketing'], ['finantare', 'Finanțarea'], ['timp', 'Timpul meu: sunt prins în operațional'], ['strategie', 'O strategie clară'], ['cultura', 'Cultura organizațională']] },
-    { k: 'schimbare', t: 'area', min: 30, label: 'Ce vrei să fie diferit în companie după cele 3 luni de program?', req: true, ph: 'ex. Să am un plan de creștere pe 3 ani asumat de echipă și doi directori care preiau vânzările și operațiunile.' },
+    { k: 'schimbare', t: 'area', label: 'Ce vrei să fie diferit în companie după cele 3 luni de program?', ph: 'ex. Să am un plan de creștere pe 3 ani asumat de echipă și doi directori care preiau vânzările și operațiunile.' },
     { k: 'angajament', t: 'one', ui: 'cards', label: 'Poți fi prezent la toate atelierele, timp de 3 luni?', req: true, opts: [['da', 'Da, îmi blochez zilele de acum', 'Atelierele full-day și serile de networking.'], ['probabil', 'Cel mai probabil', 'Pot lipsi cel mult o dată.'], ['nesigur', 'Nu sunt sigur încă', 'Depinde de perioadă.']] },
   ] },
   { id: 'final', titlu: 'Ultimul pas', sub: 'Alege ediția și verifică-ți răspunsurile înainte să trimiți.', fields: [
@@ -129,9 +129,9 @@ function fieldHtml(f, D, opts, pre) {
       <input id="${id}" name="${f.k}" ${attrs}${f.auto ? ` autocomplete="${f.auto}"` : ''}${f.ph ? ` placeholder="${esc(f.ph)}"` : ''}${f.hint ? ` aria-describedby="h-${f.k}"` : ''} maxlength="200">${hint}${err}</div>`;
   }
   if (f.t === 'area') {
-    return `<div class="af-field" data-f="${f.k}"><label for="${id}">${esc(f.label)}</label>
-      <textarea id="${id}" name="${f.k}" rows="4" maxlength="2000" data-min="${f.min}" placeholder="${esc(f.ph || '')}"${f.hint ? ` aria-describedby="h-${f.k}"` : ''}></textarea>
-      <div class="ax-meta">${hint}<small class="ax-count" data-for="${f.k}" aria-hidden="true"></small></div>${err}</div>`;
+    return `<div class="af-field" data-f="${f.k}"><label for="${id}">${esc(f.label)}${f.req ? '' : ' <span class="af-opt">opțional</span>'}</label>
+      <textarea id="${id}" name="${f.k}" rows="4" maxlength="2000"${f.min ? ` data-min="${f.min}"` : ''} placeholder="${esc(f.ph || '')}"${f.hint ? ` aria-describedby="h-${f.k}"` : ''}></textarea>
+      <div class="ax-meta">${hint}${f.min ? `<small class="ax-count" data-for="${f.k}" aria-hidden="true"></small>` : ''}</div>${err}</div>`;
   }
   if (f.t === 'one' || f.t === 'many') {
     const type = f.t === 'one' ? 'radio' : 'checkbox';
