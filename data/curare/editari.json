@@ -1,7 +1,631 @@
 {
   "_despre": "Modificările făcute din panou (Entități). Se aplică peste datele preluate de pe site-ul vechi la fiecare npm run build; vezi scripts/editari.js.",
   "modificari": {
-    "oameni": {},
+    "oameni": {
+      "silviu-hotaran": {
+        "bio": "Este cofondator Hansen Beck și coordonează activitatea companiei în România, ca Managing Director al Semper Human Training. Business trainer, coach și practician licențiat Insights Discovery, a condus Microsoft România și Europa de Sud-Est între 1996 și 2008, după ce a fost General Manager la Ciel România.",
+        "expertiza": [
+          "leadership",
+          "dezvoltarea echipelor",
+          "comunicare și negociere",
+          "coaching",
+          "management în IT"
+        ],
+        "functii": [
+          "Trainer",
+          "Cofondator și Managing Director"
+        ]
+      },
+      "dan-berteanu": {
+        "bio": "Este cofondator Exit by Choice, program înființat la finalul lui 2022 care pregătește antreprenorii pentru vânzarea afacerii sau atragerea de investiții, pe baza metodologiei The Value Builder System. A vândut mai multe afaceri, printre care ON Pharma și Equatorial, preluată de Bittnet Group.",
+        "expertiza": [
+          "exit și vânzarea afacerii",
+          "evaluarea și creșterea valorii companiei",
+          "modele de business",
+          "antreprenoriat"
+        ],
+        "functii": [
+          "Cofondator"
+        ]
+      },
+      "florin-talpes": {
+        "bio": "Este cofondator și CEO al Bitdefender, companie de securitate cibernetică cu sediul la București și produse distribuite în peste 170 de țări. Împreună cu Mariuca Talpeș a fondat în anii '90 una dintre primele firme private de software din România, din care s-a dezvoltat Bitdefender. Este și cofondator al ANIS.",
+        "expertiza": [
+          "securitate cibernetică",
+          "software",
+          "scalare internațională",
+          "construirea unei companii de produs"
+        ],
+        "functii": [
+          "Cofondator și CEO"
+        ]
+      },
+      "iuliana-stan": {
+        "bio": "Este Managing Partner al Human Synergistics România, firmă de consultanță în cultură organizațională activă în România de aproximativ 20 de ani. Lucrează cu companii antreprenoriale și corporații pe măsurarea și dezvoltarea culturii organizaționale, cu accent pe o cultură constructivă și pe implementare.",
+        "expertiza": [
+          "cultură organizațională",
+          "dezvoltare organizațională",
+          "leadership"
+        ]
+      },
+      "iulian-nedea": {
+        "bio": "Este cofondator Simtel Team, companie de inginerie și tehnologie listată la Bursa de Valori București, pornită în 2000 ca service de telefoane mobile. Președinte al Consiliului de Administrație, a preluat în septembrie 2026 funcția de director general al Simtel Team, coordonând activitățile EPC și de operare și mentenanță.",
+        "expertiza": [
+          "energie regenerabilă",
+          "inginerie și EPC",
+          "telecomunicații",
+          "listare la bursă",
+          "diversificarea afacerii"
+        ],
+        "functii": [
+          "Președinte CA și director general"
+        ]
+      },
+      "anca-rarau": {
+        "bio": "A fondat Brandocracy, consultanță de branding și marketing strategic cu sediul la Cluj-Napoca, lansată în 2018. Anterior a condus echipele de marketing ale Băncii Transilvania, timp de aproximativ 17 ani, și ale BCR. Campaniile coordonate de ea au primit mai multe premii Effie.",
+        "expertiza": [
+          "branding",
+          "marketing strategic",
+          "employer branding",
+          "experiența clientului",
+          "poziționare de brand"
+        ],
+        "functii": [
+          "Founder",
+          "Fondator"
+        ]
+      },
+      "andreea-pipernea": {
+        "bio": "Este Managing Partner la APlus Advisory, firmă de consultanță în M&A și finanțare corporativă, și membru independent în Consiliul de Supraveghere al maib. Între 2018 și 2023 a condus NN Pensii, cel mai mare fond de pensii private din România, după roluri la Citi, Erste Group și ABN AMRO. Este și business angel.",
+        "expertiza": [
+          "fuziuni și achiziții",
+          "atragere de finanțare",
+          "guvernanță corporativă",
+          "servicii financiare",
+          "activitate de board"
+        ],
+        "functii": [
+          "Managing Partner"
+        ]
+      },
+      "adrian-dragomir": {
+        "bio": "A fondat în 2014 Termene.ro, platformă de business intelligence cu date despre firmele din România, care a depășit 2 milioane de euro cifră de afaceri în 2022. Din 2023 compania are un CEO separat, iar el s-a orientat spre investiții și proiecte de inteligență artificială. A fondat și startAI.ro și este partener la TBF Accelerator.",
+        "expertiza": [
+          "inteligență artificială",
+          "business intelligence",
+          "date despre firme",
+          "investiții în startup-uri"
+        ],
+        "functii": [
+          "Fondator"
+        ]
+      },
+      "ionut-corniciuc": {
+        "bio": "A fondat în 2006 Instore Power Provider (IPP), pe care l-a condus 15 ani până la numirea unui CEO în 2022, și este proprietarul IPP Holding Group. Grupul oferă servicii de retail marketing și, prin agenția Retail Media Hub, servicii de retail media. Este și investitor și membru în board la TOKINOMO.",
+        "expertiza": [
+          "retail marketing",
+          "retail media",
+          "FMCG",
+          "investiții",
+          "separarea managementului de acționariat"
+        ],
+        "functii": [
+          "Fondator IPP Holding Group"
+        ]
+      },
+      "mihai-patrascu": {
+        "bio": "Este fondator și CEO al evoMAG, magazin online de electronice și electrocasnice lansat în 2005, cu vânzări de aproximativ 42 de milioane de euro în 2023. În 2022 fondul Catalyst România a preluat 25% din companie, iar în 2024 evoMAG a anunțat extinderea în Grecia.",
+        "expertiza": [
+          "comerț online",
+          "retail de electronice",
+          "atragere de investiții",
+          "extindere internațională"
+        ],
+        "functii": [
+          "Fondator și CEO"
+        ]
+      },
+      "mihai-vinatoru": {
+        "bio": "Este cofondator și CEO al DWF (Digital Workforce), agenție de marketing digital din București care lucrează cu branduri din 2013 și are peste 100 de specialiști. Sub conducerea sa, DWF a devenit cea mai mare agenție de SEO din România. Este membru al juriului GPeC.",
+        "expertiza": [
+          "SEO",
+          "paid media",
+          "marketing digital",
+          "eCommerce",
+          "lead generation"
+        ],
+        "functii": [
+          "Cofondator și CEO"
+        ]
+      },
+      "karoly-nagy": {
+        "bio": "Este președintele Consiliului de Administrație al Promelek XXI SA, distribuitor clujean de echipamente electrice din grupul spaniol Elektra. Are peste 30 de ani de experiență în managementul vânzărilor, negociere și strategie de marketing și conduce din 2022 Societatea Economiștilor Maghiari din România.",
+        "expertiza": [
+          "managementul vânzărilor",
+          "negociere",
+          "strategie de marketing",
+          "distribuție"
+        ],
+        "functii": [
+          "Președinte al Consiliului de Administrație"
+        ]
+      },
+      "calin-biris": {
+        "bio": "Este trainer și consultant de marketing și fondatorul platformei de cursuri Online Mastery, lansată în 2016. A fost director de marketing la Trilulilu și Zonga și partener timp de 7 ani la agenția Loopaa. A susținut peste 240 de workshopuri și a lucrat cu peste 150 de companii, între care Banca Transilvania și DHL.",
+        "expertiza": [
+          "marketing online",
+          "strategie de marketing",
+          "training",
+          "social media"
+        ]
+      },
+      "dan-pitic": {
+        "bio": "Conduce Scala Development, dezvoltator imobiliar din Cluj-Napoca listat la Bursa de Valori București. Prin Scala Development și firmele asociate a dezvoltat proiecte precum Scala Center, Scala Frunzișului și Scala Sopor, ansamblu de 376 de apartamente finanțat de Libra Internet Bank.",
+        "expertiza": [
+          "dezvoltare imobiliară",
+          "finanțarea proiectelor",
+          "construcții rezidențiale"
+        ],
+        "functii": [
+          "President & CEO",
+          "Director general"
+        ]
+      },
+      "flavia-bucerzan": {
+        "bio": "Este Country Manager Employer Branding Communications la Bosch România, unde coordonează comunicarea de employer branding, inclusiv programele de feedback și dezvoltare a angajaților. Bosch s-a clasat pe locul 5 în topul celor mai dorite locuri de muncă din România în 2024.",
+        "expertiza": [
+          "employer branding",
+          "comunicare internă",
+          "cultură organizațională"
+        ],
+        "functii": [
+          "Country Manager Employer Branding Communications"
+        ]
+      },
+      "wargha-enayati": {
+        "bio": "Medic și antreprenor, a fondat rețeaua privată de sănătate Regina Maria. În 2021 a deschis în nordul Bucureștiului Enayati Medical City, o investiție de 60 de milioane de euro, iar din 2026 grupul operează direct și Spitalul Băneasa.",
+        "expertiza": [
+          "servicii medicale private",
+          "dezvoltarea de rețele medicale",
+          "investiții în infrastructură medicală"
+        ],
+        "functii": [
+          "Fondator"
+        ]
+      },
+      "andrei-gemeneanu": {
+        "bio": "Este cofondator și managing partner al Morphosis Capital, fond de private equity înființat în 2018 de patru antreprenori români, care investește în IMM-uri din România și Europa Centrală. Al doilea fond al firmei s-a închis în 2025 la 130 de milioane de euro, peste ținta inițială de 100 de milioane.",
+        "expertiza": [
+          "private equity",
+          "investiții în IMM-uri",
+          "finanțarea creșterii companiilor",
+          "atragere de capital"
+        ],
+        "functii": [
+          "Cofondator și Managing Partner"
+        ]
+      },
+      "dan-cantaragiu": {
+        "bio": "A fondat în 2011 Leadder, companie de dezvoltare organizațională pentru firme antreprenoriale, pe care o conduce ca managing partner. Înainte a ocupat funcții de management în companii antreprenoriale și multinaționale.",
+        "expertiza": [
+          "vânzări B2B și B2C",
+          "dezvoltare organizațională",
+          "leadership și management",
+          "negociere"
+        ],
+        "functii": [
+          "Fondator și Managing Partner"
+        ]
+      },
+      "bogdan-tudor": {
+        "bio": "A fondat în 2001 Class IT, devenită StarTech Team, companie de suport și outsourcing IT pe care o conduce din 2005. Anterior a lucrat la proiecte de infrastructură internet din România, precum Ronix, prima rețea locală de interconectare, și instalarea unui root name server în București.",
+        "expertiza": [
+          "servicii și suport IT",
+          "outsourcing IT",
+          "cultură organizațională",
+          "infrastructură internet"
+        ],
+        "functii": [
+          "Fondator"
+        ]
+      },
+      "andrei-cionca": {
+        "bio": "Este cofondator și CEO al Impetum Group, care reunește CITR, ROCA Investments, ROCA X și AGISTA. În 2000 a lansat, alături de alți avocați și economiști, CITR, firmă de insolvență și restructurare devenită lider de piață. Lucrează de peste două decenii în restructurarea companiilor.",
+        "expertiza": [
+          "restructurare și insolvență",
+          "redresarea companiilor în dificultate",
+          "private equity",
+          "investiții în startupuri"
+        ],
+        "functii": [
+          "Cofondator și CEO"
+        ]
+      },
+      "iulian-rizea": {
+        "bio": "A fondat Mentorizator, prin care organizează și facilitează grupuri de tip Board of Founders și Board of Directors pentru antreprenori. Anterior a condus Antreprenoria, programul educațional antreprenorial din București.",
+        "expertiza": [
+          "mentorat antreprenorial",
+          "facilitarea de board-uri consultative",
+          "programe educaționale pentru antreprenori"
+        ]
+      },
+      "angela-rosca": {
+        "bio": "A fondat TaxHouse, firmă independentă de consultanță fiscală și membră Taxand în România, pe care o conduce ca managing partner. Are peste 25 de ani de experiență în fiscalitate, după roluri la EY, Arthur Andersen și P&G. Face parte din boardul Romanian Business Leaders, unde coordonează grupul de lucru pe fiscalitate.",
+        "expertiza": [
+          "fiscalitate",
+          "prețuri de transfer",
+          "fiscalitatea tranzacțiilor M&A",
+          "politici fiscale"
+        ],
+        "functii": [
+          "Managing Partner",
+          "Fondator și Managing Partner"
+        ]
+      },
+      "dana-nae-popa": {
+        "bio": "A cofondat agenția de comunicare pastel în timpul studenției și o conduce ca director general. Agenția are peste 30 de specialiști în strategie, creație, PR, CSR și social media. Are două mandate la conducerea Uniunii Agențiilor de Publicitate din România (UAPR).",
+        "expertiza": [
+          "comunicare integrată",
+          "strategie de brand",
+          "PR și CSR",
+          "conducerea unei agenții de comunicare"
+        ],
+        "functii": [
+          "Cofondator și director general"
+        ]
+      },
+      "corneliu-bodea": {
+        "bio": "A cofondat ADREM, grup de servicii pentru sectorul energetic, pe care îl conduce ca CEO din 2016. Sub conducerea fondatorilor, compania a cumpărat firme în Elveția și SUA. Din 2014 conduce Centrul Român al Energiei (CRE) și este implicat în Romanian Business Leaders.",
+        "expertiza": [
+          "sectorul energetic",
+          "digitalizarea rețelelor electrice",
+          "afaceri de familie",
+          "expansiune internațională"
+        ],
+        "functii": [
+          "Cofondator și CEO"
+        ]
+      },
+      "cristian-logofatu": {
+        "bio": "Este cofondator al Bittnet Group, alături de Mihai Logofătu, și CFO al Bittnet Systems din 2007. În 2015 a coordonat listarea Bittnet pe piața AeRO, prima companie IT listată la Bursa de Valori București. Face parte din Consiliul de Administrație al grupului.",
+        "expertiza": [
+          "finanțe corporative",
+          "piața de capital",
+          "listare la bursă",
+          "training IT"
+        ],
+        "functii": [
+          "Cofondator și CFO"
+        ]
+      },
+      "alina-donici": {
+        "bio": "A cofondat Artesana, producător de lactate al cărui proiect a pornit în 2007 cu importul de brânză de capră din Spania. Fabrica din Tecuci produce din 2012, iar produsele se vând în peste 2.500 de magazine din România și în peste 12 țări europene. Fondatorii au atras ca investitori ROCA Investments și Booster Capital.",
+        "expertiza": [
+          "producție alimentară",
+          "dezvoltare de brand",
+          "vânzări în retail",
+          "export"
+        ],
+        "functii": [
+          "Cofondator"
+        ]
+      },
+      "bianca-muntean": {
+        "bio": "Coordonează din 2017 European Digital Innovation Hub Transilvania (TEDIHT), pe care l-a cofondat, și este cofondator și cluster manager al Transilvania IT Cluster din 2013. Lucrează din 1999 în proiecte europene de inovare și sprijin pentru IMM-uri și este consul onorific al Estoniei la Cluj-Napoca.",
+        "expertiza": [
+          "managementul clusterelor",
+          "transformare digitală",
+          "proiecte cu finanțare europeană",
+          "ecosisteme de inovare"
+        ],
+        "functii": [
+          "Co-Founder & Coordinator",
+          "Cofondator și coordonator"
+        ]
+      },
+      "voicu-oprean": {
+        "bio": "A fondat AROBS în 1998 la Cluj-Napoca și conduce compania ca CEO. AROBS are circa 1.200 de ingineri, este listată la Bursa de Valori București și a făcut 14 achiziții de la listare. Investește în startupuri și predă la universități din Cluj.",
+        "expertiza": [
+          "dezvoltare software",
+          "fuziuni și achiziții",
+          "piața de capital",
+          "investiții în startupuri"
+        ],
+        "functii": [
+          "CEO & Founder",
+          "Fondator și CEO"
+        ]
+      },
+      "lucia-costea": {
+        "bio": "A cofondat Secom Healthcare Group, companie de suplimente și produse naturale, pe care o conduce ca CEO. Sub conducerea sa, cifra de afaceri a crescut de la 54,8 milioane lei în 2015 la 218,6 milioane lei în 2025, iar brandul propriu Good Routine este prezent în 8 țări.",
+        "expertiza": [
+          "sănătate și suplimente",
+          "construire de brand propriu",
+          "retail omnichannel",
+          "cultură organizațională"
+        ],
+        "functii": [
+          "Cofondator și CEO"
+        ]
+      },
+      "mihaela-muresan": {
+        "bio": "A fondat în 2016 Brand Essence, companie de strategie de marketing, branding și mentorat pentru companii în creștere. Are 25 de ani de experiență în marketing, dintre care 11 ani la IKEA, unde a condus proiecte în România și Croația, inclusiv magazinul online. Anterior a lucrat la LG Electronics și Radio Contact și a lansat Media Galaxy în România.",
+        "expertiza": [
+          "strategie de marketing",
+          "branding",
+          "employer branding",
+          "personal branding",
+          "mentorat în marketing"
+        ],
+        "functii": [
+          "Fondator, Marketing Strategist și Brand Architect"
+        ]
+      },
+      "sergiu-negut": {
+        "bio": "Este cofondator al FintechOS, companie românească de software pentru bănci și asigurători, și membru în board-ul acesteia. În 2022 compania a anunțat o rundă de finanțare de 60 de milioane de dolari, condusă de Draper Esprit. Este președintele Romanian Business Leaders pentru mandatul aprilie 2025 – aprilie 2027.",
+        "expertiza": [
+          "software B2B pentru servicii financiare",
+          "atragere de investiții",
+          "scalare internațională",
+          "strategie și guvernanță corporativă"
+        ],
+        "functii": [
+          "Cofondator și membru în board"
+        ]
+      },
+      "ovidiu-toader": {
+        "bio": "Este business coach pentru antreprenori, cu o companie de coaching activă din 2014, axată pe procese, delegare și leadership. A început în afaceri în anii '90 și a vândut către o multinațională, pentru câteva milioane de euro, o afacere cu accesorii pentru mobilă. Este autorul cărții „Bani și Libertate. Ghid de bunăstare”.",
+        "expertiza": [
+          "coaching pentru antreprenori",
+          "delegare și procese",
+          "leadership",
+          "vânzarea unei afaceri",
+          "vânzări"
+        ],
+        "functii": [
+          "Business Coach",
+          "Antrenor de antreprenori",
+          "Business coach"
+        ]
+      },
+      "serban-roman": {
+        "bio": "Este unul dintre cei patru parteneri fondatori ai Booster Capital, fond de private equity pentru companii din Europa Centrală și de Est, lansat în 2024. Anterior a fost Country Director pentru România și Vice President la Enterprise Investors, fondul care a vândut în 2016 rețeaua Profi către Mid Europa Partners pentru 533 de milioane de euro.",
+        "expertiza": [
+          "private equity",
+          "evaluarea și structurarea investițiilor",
+          "creștere prin capital de dezvoltare",
+          "exituri și tranzacții M&A"
+        ],
+        "functii": [
+          "Partener fondator"
+        ]
+      },
+      "dan-stefan": {
+        "bio": "A cofondat Autonom împreună cu fratele său, Marius Ștefan, grup românesc de rent-a-car, leasing operațional și management de flotă. Compania a finanțat creșterea și prin emisiuni de obligațiuni pe Bursa de Valori București. În 2020 frații Ștefan au înființat vehiculul de investiții ATM Ventures.",
+        "expertiza": [
+          "rent-a-car și leasing operațional",
+          "cultură organizațională și autonomie în echipe",
+          "finanțare prin piața de capital",
+          "investiții în startup-uri"
+        ],
+        "functii": [
+          "Cofondator"
+        ]
+      },
+      "laura-iane": {
+        "bio": "Este Executive Creative Director la agenția de comunicare pastel și cofondator, alături de Dana Nae Popa, al COPERA Branding, companie de branding participativ dedicată antreprenorilor români. Are aproape 20 de ani în publicitate, inclusiv la Saatchi & Saatchi, și a făcut parte din echipa internațională premiată cu șapte lei la Cannes pentru campania „Days of Hope”.",
+        "expertiza": [
+          "direcție creativă",
+          "branding",
+          "campanii integrate",
+          "design grafic",
+          "coaching"
+        ],
+        "functii": [
+          "Executive Creative Director"
+        ]
+      },
+      "andreea-strugaru": {
+        "bio": "A cofondat KADRA la Cluj, la începutul anilor '90, companie care a adus ușile automate în România și s-a extins apoi la sisteme de acces automatizate. A condus marketingul companiei, iar în 2023 KADRA a raportat afaceri de 62,5 milioane lei. Compania a fost preluată ulterior de grupul EMI.",
+        "expertiza": [
+          "marketing B2B",
+          "dezvoltare de business",
+          "sisteme de acces automatizate",
+          "construirea unei afaceri pe termen lung"
+        ],
+        "functii": [
+          "Cofondator"
+        ]
+      },
+      "mircea-capatina": {
+        "bio": "A cofondat SmartBill la Sibiu, alături de Ioana și Radu Hasan, și a fost directorul de marketing al companiei. SmartBill a fost preluată integral de grupul norvegian Visma în 2025, când fondatorii și-au vândut acțiunile rămase. A fost jurat în emisiunea „Imperiul Leilor”.",
+        "expertiza": [
+          "SaaS B2B",
+          "marketing",
+          "scalarea unui produs software",
+          "vânzarea către un investitor strategic"
+        ],
+        "functii": [
+          "Cofondator"
+        ]
+      },
+      "ruslan-cojocaru": {
+        "bio": "A fondat Tucano Coffee, rețea de cafenele pornită în 2011 la Chișinău și dezvoltată prin francizare. Conceptul de franciză îi aparține, iar rețeaua are peste 60 de cafenele în 5 țări, cele mai multe în România.",
+        "expertiza": [
+          "francizare",
+          "HoReCa",
+          "construire de brand",
+          "expansiune internațională"
+        ],
+        "functii": [
+          "Fondator"
+        ]
+      },
+      "adrian-florea": {
+        "bio": "A cofondat în 2000 Trend Consult, companie românească de training și consultanță în vânzări, leadership și transformare culturală. Este autorul metodologiei STELL*R, folosită în proiecte de transformare culturală, și fondatorul SoNexy, rețea socială dedicată învățării. Înainte de Trend a lucrat șapte ani în vânzări la Reuters.",
+        "expertiza": [
+          "transformare culturală",
+          "leadership",
+          "training în vânzări",
+          "învățare experiențială"
+        ],
+        "functii": [
+          "Founder, autorul metodologiei STELL*R",
+          "Fondator, autorul metodologiei STELL*R"
+        ]
+      },
+      "eusediu-margasoiu": {
+        "bio": "Este Managing Partner la The Network, firmă de consultanță în strategie și marketing pe care a cofondat-o în 2008. Înainte a condus timp de nouă ani marketingul Pepsi Americas în România. A fost primul român certificat ca trainer Blue Ocean Strategy Simulation.",
+        "expertiza": [
+          "strategie de business",
+          "planificare strategică",
+          "marketing strategic",
+          "blue ocean strategy",
+          "branding"
+        ],
+        "functii": [
+          "Trainer",
+          "Managing Partner"
+        ]
+      },
+      "radu-savopol": {
+        "bio": "A cofondat în 2015, împreună cu Lucian Bădilă, lanțul de cafenele 5 to go, pornit cu o investiție de 10.000 de euro și un preț unic pentru toate produsele. Rețeaua funcționează în franciză și a depășit 500 de cafenele, cu o cifră de afaceri de 40 de milioane de euro în 2023.",
+        "expertiza": [
+          "francizare",
+          "retail de cafea",
+          "dezvoltare de rețea",
+          "branding",
+          "horeca"
+        ],
+        "functii": [
+          "Cofondator"
+        ]
+      },
+      "raluca-radu": {
+        "bio": "A fondat și conduce MTH Digital, agenție de marketing digital din București care a încheiat 2023 cu o cifră de afaceri de 1,3 milioane de euro. A contribuit la lansarea OLX.ro și a Answear în România și predă marketing digital și e-commerce la GPeC, SNSPA și Harbour Space.",
+        "expertiza": [
+          "marketing digital",
+          "e-commerce",
+          "publicitate PPC",
+          "lansare de produse online",
+          "training"
+        ],
+        "functii": [
+          "Fondator și CEO"
+        ]
+      },
+      "marinela-mihalcea": {
+        "expertiza": [
+          "finanțare IMM",
+          "produse de creditare"
+        ]
+      },
+      "aliz-kosza": {
+        "bio": "Lucrează ca business mentor și strateg, după o carieră de 46 de ani, din care 25 la conducerea unor companii mari, de patru ori în rolul de CEO. A condus, printre altele, producătorul de vopsele Fabryo Corporation, deținut atunci de fondul suedez Oresa Ventures.",
+        "expertiza": [
+          "leadership",
+          "management general",
+          "strategie de business",
+          "mentorat antreprenorial"
+        ]
+      },
+      "alexandru-lapusan": {
+        "bio": "Este CEO și cofondator al Zitec, companie de software și transformare digitală pornită în 2003 împreună cu Simona Lăpușan. Zitec a ajuns la câteva sute de angajați și deține certificarea B Corp.",
+        "expertiza": [
+          "software B2B",
+          "transformare digitală",
+          "construirea culturii organizaționale",
+          "scalarea unei companii de servicii IT"
+        ],
+        "functii": [
+          "CEO și cofondator"
+        ]
+      },
+      "dragos-petrescu": {
+        "bio": "A fondat în 2004, împreună cu Daniel Mischie, City Grill Group, grup cu branduri precum City Grill, Caru' cu Bere, Hanu' lui Manuc și Buongiorno. A început în afaceri în anii '90, în aprilie 2021 a preluat președinția Romanian Business Leaders și a fost investitor în emisiunea Imperiul Leilor.",
+        "expertiza": [
+          "horeca",
+          "dezvoltarea unui lanț de restaurante",
+          "achiziții de afaceri",
+          "leadership antreprenorial"
+        ],
+        "functii": [
+          "Fondator și președinte"
+        ]
+      },
+      "adrian-tuluca": {
+        "bio": "Este Managing Partner la Propaganda, una dintre cele mai mari agenții de publicitate independente din România, pe care a condus-o anterior ca director general. Agenția oferă servicii integrate, de la strategie de brand și creație la producție, PR și media, și construiește branduri locale de la zero.",
+        "expertiza": [
+          "publicitate",
+          "strategie de brand",
+          "comunicare integrată",
+          "construire de branduri locale"
+        ],
+        "functii": [
+          "Managing Partner"
+        ]
+      },
+      "iulian-circiumaru": {
+        "bio": "Este fondator și Managing Partner al V7 Capital, holding de investiții care finanțează startupuri și IMM-uri românești. În 2011 a fondat 7card, startup vândut în 2019 unei multinaționale franceze, după șapte ani în consultanță de management la A.T. Kearney și PwC.",
+        "expertiza": [
+          "investiții în startupuri",
+          "atragere de investiții",
+          "exit și vânzarea unei afaceri",
+          "consultanță de management",
+          "piața de capital"
+        ],
+        "functii": [
+          "Fondator și Managing Partner"
+        ]
+      },
+      "marius-nicolae": {
+        "bio": "Este director regional la Garanti BBVA România. În această calitate a primit, în 2023, premiul băncii la Gala Companii de elită a revistei Capital.",
+        "expertiza": [
+          "finanțare bancară",
+          "relația cu clienții IMM"
+        ],
+        "functii": [
+          "Director regional"
+        ]
+      },
+      "alina-negru": {
+        "bio": "Conduce Emerson Cluj ca director general, după 15 ani în companie, unde a ocupat și rolul de Vice President și General Manager Global Business Services. Centrul din Cluj are peste 3.400 de angajați și acoperă cercetare-dezvoltare, inginerie și servicii globale de IT, finanțe și resurse umane.",
+        "expertiza": [
+          "centre de servicii globale",
+          "management operațional",
+          "leadership în multinațională",
+          "dezvoltare organizațională"
+        ],
+        "functii": [
+          "Director general"
+        ]
+      },
+      "stefan-viju": {
+        "bio": "Este CEO al TelePaws, platformă românească de telemedicină veterinară lansată în iunie 2024, care conectează proprietarii de animale cu medici veterinari autorizați. În primele luni, platforma a generat circa 15.000 de euro venituri și a atras un investitor strategic în 2025.",
+        "expertiza": [
+          "startup tech",
+          "telemedicină",
+          "aplicații mobile",
+          "atragere de investiții"
+        ],
+        "functii": [
+          "Co-Founder & CEO",
+          "CEO"
+        ]
+      },
+      "carmen-petcu": {
+        "bio": "Este General Manager al De'Longhi România, filiala de producție a grupului italian, cu fabrici în Cluj, Bihor și Satu Mare. Sub conducerea sa a fost deschisă fabrica din Satu Mare, o investiție de 40 de milioane de euro, gândită ca cel mai mare hub de producție de mașini de cafea al grupului.",
+        "expertiza": [
+          "producție industrială",
+          "management operațional",
+          "investiții greenfield",
+          "leadership în multinațională"
+        ],
+        "functii": [
+          "General Manager"
+        ]
+      }
+    },
     "organizatii": {
       "cluj-business-campus": {
         "nume": "Cluj Business Campus",
@@ -10,6 +634,227 @@
         "sector": null,
         "url": "https://www.cbcampus.ro/",
         "descriere": null
+      },
+      "hansen-beck": {
+        "descriere": "Companie internațională de training care oferă programe de dezvoltare în vânzări, leadership, echipe, experiența clientului și management al schimbării. Prezentă în 22 de țări; în România activează prin Semper Human Training.",
+        "url": "https://hansenbeck.com/ro/",
+        "sector": "Educație & HR"
+      },
+      "exit-by-choice": {
+        "descriere": "Program care ajută proprietarii de afaceri cu cifra de afaceri între 1 și 15 milioane de euro să reducă dependența firmei de fondator și să o pregătească pentru investiții sau exit. Înființat la finalul lui 2022.",
+        "sector": "Consultanță & servicii financiare"
+      },
+      "bitdefender": {
+        "descriere": "Companie românească de securitate cibernetică, cu soluții pentru consumatori și companii (inclusiv platforma GravityZone). Fondată în 2001, cu sediul la București, peste 2.000 de angajați și produse distribuite în peste 170 de țări.",
+        "url": "https://www.bitdefender.com/",
+        "sector": "Tech & software"
+      },
+      "human-synergistics": {
+        "descriere": "Firmă de consultanță în cultură organizațională, care măsoară și dezvoltă cultura, leadershipul și echipele pe baza modelului Circumplex. Activă în România de circa 20 de ani; grupul internațional a fost fondat în 1971.",
+        "sector": "Educație & HR"
+      },
+      "simtel": {
+        "descriere": "Grup românesc de inginerie și tehnologie listat la Bursa de Valori București: construiește și întreține parcuri fotovoltaice și sisteme de stocare, furnizează energie și lucrează în telecom. Pornit în 2000 ca service de telefoane.",
+        "url": "https://www.simtel.ro/",
+        "sector": "Energie & mediu"
+      },
+      "brandocracy": {
+        "descriere": "Consultanță de branding și marketing strategic din Cluj-Napoca: employer branding, construcție de brand, experiența clientului și training pentru echipe de marketing. Lansată în 2018, cu clienți precum Regina Maria și TeraPlast.",
+        "url": "https://brandocracy.ro/",
+        "sector": "Marketing & comunicare"
+      },
+      "aplus-advisory": {
+        "descriere": "Firmă de consultanță în fuziuni și achiziții și finanțare corporativă din București, care lucrează cu companii antreprenoriale locale pe tranzacții, atragere de finanțare și strategie financiară.",
+        "sector": "Consultanță & servicii financiare"
+      },
+      "termene-ro": {
+        "descriere": "Platformă de business intelligence pentru verificarea și monitorizarea firmelor din România, cu date financiare, juridice, dosare de instanță și scoruri de risc. Fondată în 2014, folosită de peste 120.000 de companii.",
+        "sector": "Tech & software"
+      },
+      "retail-media-hub": {
+        "descriere": "Agenție românească integrată de retail media, care conectează brandurile cu cumpărătorii în magazine și online. Fondată în 2021 la București, parte din IPP Grup; din 2025 are un parteneriat exclusiv cu Schwarz Media (Kaufland).",
+        "url": "https://www.rmh.agency/",
+        "sector": "Marketing & comunicare"
+      },
+      "evomag": {
+        "descriere": "Magazin online românesc de electronice și electrocasnice, lansat în 2005, cu vânzări de aproximativ 42 de milioane de euro în 2023. Fondul Catalyst România a devenit acționar în 2022.",
+        "url": "https://www.evomag.ro/",
+        "sector": "Retail & distribuție"
+      },
+      "digital-workforce": {
+        "descriere": "DWF (Digital Workforce SRL) este o agenție de marketing digital din București, specializată în SEO, GEO, paid media, data analytics și social media. Lucrează cu branduri din 2013 și are peste 100 de specialiști.",
+        "url": "https://www.dwf.ro/",
+        "sector": "Marketing & comunicare"
+      },
+      "promelek-xxi": {
+        "descriere": "Distribuitor clujean de echipamente electrice, care produce și tablouri electrice de automatizare. Pornit în 1996 ca Promod, parte din grupul spaniol Elektra din 2011, cu afaceri de aproximativ 44 de milioane de euro în 2023.",
+        "url": "https://www.promelek.ro/",
+        "sector": "Retail & distribuție"
+      },
+      "scala-development": {
+        "descriere": "Dezvoltator imobiliar din Cluj-Napoca, activ din 2015 și listat pe piața AeRO a Bursei de Valori București (simbol NCHI). Face parte din grupul Ax Perpetuum și a dezvoltat proiecte rezidențiale precum Scala Sopor.",
+        "sector": "Construcții & inginerie"
+      },
+      "bosch": {
+        "descriere": "Grup german de tehnologie și inginerie, prezent în România din 1994, cu aproximativ 9.900 de angajați și locații la București, Cluj, Blaj și Timișoara, în mobilitate, tehnologie industrială, bunuri de consum și energie.",
+        "url": "https://www.bosch.ro/",
+        "sector": "Producție"
+      },
+      "enayati-medical-city": {
+        "descriere": "Complex medical din nordul Bucureștiului, deschis în 2021 printr-o investiție de 60 de milioane de euro, cu spitale, policlinici, recuperare, îngrijire pe termen lung și centru rezidențial pentru seniori.",
+        "sector": "Sănătate"
+      },
+      "morphosis-capital": {
+        "descriere": "Fond de private equity înființat în 2018 de patru antreprenori români, care investește 10-15 milioane de euro în IMM-uri din România și Europa Centrală. Gestionează peste 180 de milioane de euro prin două fonduri.",
+        "url": "https://www.morphosiscapital.com/",
+        "sector": "Consultanță & servicii financiare"
+      },
+      "leadder": {
+        "descriere": "Companie de dezvoltare organizațională fondată în 2011, cu programe de training în vânzări, negociere, leadership și management pentru organizații antreprenoriale, în grupuri deschise sau personalizate.",
+        "sector": "Educație & HR"
+      },
+      "startech-team": {
+        "descriere": "Companie din București care oferă suport și outsourcing IT pentru firme, inclusiv suport 24/7. A fost fondată în 2001 sub numele Class IT.",
+        "url": "https://www.starteam.ro/",
+        "sector": "Tech & software"
+      },
+      "impetum-group": {
+        "descriere": "Grup românesc format în 2020 care reunește CITR (insolvență și restructurare), ROCA Investments (private equity), ROCA X (investiții în startupuri tech) și AGISTA (fond de creștere pentru piața AeRO).",
+        "sector": "Consultanță & servicii financiare"
+      },
+      "mentorizator": {
+        "descriere": "Serviciu de suport de tip board pentru antreprenori și companii cu cifra de afaceri anuală între 0,6 și 6 milioane de euro, aflate într-o etapă de tranziție sau stagnare.",
+        "sector": "Educație & HR"
+      },
+      "taxhouse": {
+        "descriere": "Firmă independentă de consultanță fiscală înființată în 2006, membră exclusivă Taxand în România. Oferă consultanță fiscală, prețuri de transfer, asistență în tranzacții și M&A, inspecții și litigii fiscale.",
+        "sector": "Consultanță & servicii financiare"
+      },
+      "pastel": {
+        "descriere": "pastel este o agenție independentă de comunicare integrată: strategie, creație, PR, CSR, social media și employer branding. Fondată de Dana Nae Popa acum aproape 20 de ani, are peste 30 de specialiști și certificare B Corp.",
+        "url": "https://www.pastel.ro/",
+        "sector": "Marketing & comunicare"
+      },
+      "adrem": {
+        "descriere": "Grup românesc de servicii pentru sectorul energetic, activ de peste 30 de ani, format din Adrem Invest, Adrem Engineering și Adrem Link. Cifra de afaceri a fost de circa 70 de milioane de euro în 2024.",
+        "url": "https://www.adrem.ro/",
+        "sector": "Energie & mediu"
+      },
+      "bittnet-group": {
+        "descriere": "Grup de companii IT listat la Bursa de Valori București (BNET) din 2015, primul din industria IT. Activează în training IT, integrare de soluții IT prin Dendrio, dezvoltare software și securitate cibernetică.",
+        "url": "https://www.bittnet.ro/",
+        "sector": "Tech & software"
+      },
+      "artesana": {
+        "descriere": "Producător românesc de lactate cu procesare minimă (lapte neomogenizat, iaurt, kefir, sana, brânzeturi), cu fabrică la Tecuci din 2012. Produsele se vând în peste 2.500 de magazine din România și în peste 12 țări europene.",
+        "url": "https://artesana.ro/",
+        "sector": "HoReCa & food"
+      },
+      "european-digital-innovation-hub-transilvania": {
+        "descriere": "Hub european de inovare digitală din Cluj-Napoca, coordonat de Transilvania IT Cluster, care oferă IMM-urilor și instituțiilor publice din Nord-Vest servicii de transformare digitală, cu accent pe inteligență artificială și HPC.",
+        "sector": "Tech & software"
+      },
+      "arobs": {
+        "descriere": "Companie de dezvoltare software fondată în 1998 la Cluj-Napoca, cu produse proprii (TrackGPS, Optimall) și servicii pentru automotive, aerospațial, medtech și finanțe. Este listată la BVB și are circa 1.200 de ingineri.",
+        "url": "https://arobs.com/",
+        "sector": "Tech & software"
+      },
+      "secom": {
+        "descriere": "Secom Healthcare Group distribuie suplimente și produse naturale premium prin magazinele Secom Health Store și secom.ro și dezvoltă brandul propriu Good Routine. A avut afaceri de 218,6 milioane lei în 2025.",
+        "url": "https://www.secom.ro/",
+        "sector": "Sănătate"
+      },
+      "brand-essence": {
+        "descriere": "Brand Essence oferă strategie de marketing, branding, workshopuri, cursuri și programe de mentorat pentru companii în creștere, inclusiv academia online Brand Essence. A fost înființată în 2016.",
+        "url": "https://www.brandessence.ro/",
+        "sector": "Marketing & comunicare"
+      },
+      "fintechos": {
+        "descriere": "FintechOS dezvoltă o platformă AI prin care bănci și asigurători configurează, lansează și administrează produse financiare. Fondată la București, a atras în 2022 o rundă de 60 de milioane de dolari; clienți includ BRD și Admiral.",
+        "url": "https://www.fintechos.com/",
+        "sector": "Tech & software"
+      },
+      "booster-capital": {
+        "descriere": "Booster Capital este un fond de private equity, lansat în 2024, care investește 5–15 milioane de euro per tranzacție în companii în creștere din Europa Centrală și de Est, cu focus pe România și Ungaria. Ținta fondului este de 100 de milioane de euro.",
+        "url": "https://boostercapital.eu/",
+        "sector": "Consultanță & servicii financiare"
+      },
+      "autonom": {
+        "descriere": "Autonom oferă rent-a-car, leasing operațional și management de flotă pentru persoane fizice și companii în România, Ungaria și Serbia. Are o flotă de circa 18.000 de mașini și 587 de angajați.",
+        "url": "https://www.autonom.ro/",
+        "sector": "Auto"
+      },
+      "kadra": {
+        "descriere": "KADRA proiectează, instalează și întreține sisteme de acces automatizate (uși automate, porți, bariere, turnicheți) pentru clădiri comerciale, industriale și medicale. Fondată la Cluj la începutul anilor '90, face parte din EMI Group.",
+        "url": "https://www.kadra.ro/",
+        "sector": "Construcții & inginerie"
+      },
+      "smartbill": {
+        "descriere": "SmartBill este un program online de facturare, gestiune și contabilitate pentru firme mici și mijlocii și contabili din România. Are circa 170.000 de clienți și aparține grupului norvegian Visma.",
+        "url": "https://www.smartbill.ro/",
+        "sector": "Tech & software"
+      },
+      "tucano-coffee": {
+        "descriere": "Tucano Coffee este o rețea de cafenele în franciză, cu cafea Arabica prăjită în sistem propriu. Pornită în 2011 la Chișinău, are peste 60 de cafenele în 5 țări.",
+        "url": "https://tucanofranchise.com/",
+        "sector": "HoReCa & food"
+      },
+      "trend-consult": {
+        "descriere": "Trend Consult este o companie românească de training și consultanță în leadership, vânzări și transformare culturală pentru companii mari. A fost fondată în 2000 și a împlinit 25 de ani de activitate în 2025.",
+        "sector": "Educație & HR"
+      },
+      "the-network": {
+        "descriere": "Firmă de consultanță în strategie și marketing, înființată în 2008 de Cristina Gheorghe și Eusediu Mărgăsoiu, ca rețea de foști directori din multinaționale. A consiliat, printre altele, ministerul de resort pentru promovarea brandului turistic al României.",
+        "sector": "Consultanță & servicii financiare"
+      },
+      "5-to-go": {
+        "descriere": "Lanț românesc de cafenele to go în franciză, fondat în 2015, cunoscut pentru prețurile accesibile. Rețeaua are peste 700 de locații și a raportat 40 de milioane de euro cifră de afaceri în 2023.",
+        "url": "https://fivetogo.ro/",
+        "sector": "HoReCa & food"
+      },
+      "mth-digital": {
+        "descriere": "Agenție full-service de marketing digital din București, axată pe e-commerce și generare de lead-uri, care lucrează ca departament de marketing externalizat din 2016. A încheiat 2023 cu o cifră de afaceri de 1,3 milioane de euro.",
+        "url": "https://www.mth.digital/",
+        "sector": "Marketing & comunicare"
+      },
+      "unicredit": {
+        "descriere": "Banca din România a grupului italian UniCredit, care a absorbit Alpha Bank România în 2025. Tranzacția a creat al treilea grup bancar din țară după active, cu o cotă de piață de circa 12%.",
+        "sector": "Consultanță & servicii financiare"
+      },
+      "city-grill-group": {
+        "descriere": "Grup românesc de restaurante fondat în 2004 la București, cu branduri precum City Grill, Caru' cu Bere, Hanu' lui Manuc, Hanu' Berarilor și Buongiorno. În 2025 avea 42 de restaurante, plus lanțul clujean Marty, preluat de grup.",
+        "url": "https://www.citygrill.ro/",
+        "sector": "HoReCa & food"
+      },
+      "propaganda": {
+        "descriere": "Agenție de publicitate independentă din România, cu servicii integrate: strategie de brand, creație, producție audio-video, PR, media și digital. Construiește branduri locale de la zero, inclusiv naming și ambalaj.",
+        "sector": "Marketing & comunicare"
+      },
+      "v7-capital": {
+        "descriere": "Holding de investiții din București, cu capital permanent (evergreen), care investește în startupuri și IMM-uri românești. Portofoliul include 2Performant, Holde Agri Invest și Lăptăria cu Caimac, iar printre exituri se numără 7card și SeedBlink.",
+        "url": "https://v7capital.ro/",
+        "sector": "Consultanță & servicii financiare"
+      },
+      "garanti-bbva": {
+        "descriere": "Bancă din grupul BBVA, prezentă în România din 1998, cu servicii pentru persoane fizice, IMM-uri, PFA și corporații. În 2022 a avut cel mai profitabil an de la intrarea pe piața românească.",
+        "sector": "Consultanță & servicii financiare"
+      },
+      "emerson": {
+        "descriere": "Companie americană de tehnologie și inginerie pentru automatizări industriale. Centrul din Cluj, prezent de 20 de ani, are peste 3.400 de angajați și acoperă cercetare-dezvoltare, inginerie și servicii globale de IT, finanțe și HR.",
+        "url": "https://www.emerson.com/",
+        "sector": "Producție"
+      },
+      "telepaws": {
+        "descriere": "Platformă românească de telemedicină veterinară, lansată în iunie 2024, care conectează prin aplicație mobilă proprietarii de animale cu medici veterinari autorizați. În aprilie 2025 avea peste 20 de medici activi și aproape 1.500 de utilizatori.",
+        "sector": "Sănătate"
+      },
+      "de-longhi-romania": {
+        "descriere": "Filiala de producție a grupului italian De'Longhi, cu fabrici în Cluj, Bihor și Satu Mare, unde se produc espressoare și blendere. Fabrica din Satu Mare, o investiție de 40 de milioane de euro deschisă în 2024, este cel mai mare hub de mașini de cafea automate al grupului.",
+        "url": "https://www.delonghi.com/ro-ro",
+        "sector": "Producție"
+      },
+      "zitec": {
+        "descriere": "Companie românească de software și transformare digitală, fondată în 2003, care dezvoltă platforme pentru servicii financiare, logistică, retail, sănătate și sector public. Are câteva sute de angajați și certificare B Corp."
       }
     },
     "editii": {
