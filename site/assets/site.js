@@ -335,6 +335,7 @@ const peopleSearch = (() => {
   const cards = [...grid.querySelectorAll('.tr-card')];
   peopleSearch.prep(cards, '.tr-tx b', '.tr-tx > span');
   const input = document.querySelector('#tr-q'), note = document.querySelector('.tr-q-note'), empty = document.querySelector('.tr-empty');
+  const tema = document.querySelector('#tr-tema'), count = document.querySelector('.tr-count');
   const state = { rol: '', tema: '', q: '' };
   const key = (v) => String(v || '').replace(/\s+/g, '-');
   // adresa se actualizează la fiecare filtru sau căutare (?rol=, ?tema=, ?q=)
@@ -359,6 +360,7 @@ const peopleSearch = (() => {
       [...shown, ...cards.filter((c) => !shown.includes(c))].forEach((c) => grid.append(c));
     }
     empty.hidden = shown.length > 0;
+    if (count) count.innerHTML = shown.length === cards.length ? `<b>${cards.length}</b> oameni care au predat în program` : `<b>${shown.length}</b> din ${cards.length}`;
   };
   const setFilter = (g, b) => { g.querySelectorAll('[data-tr]').forEach((x) => x.classList.toggle('on', x === b)); state[g.dataset.trGroup] = b.dataset.tr; };
   document.querySelectorAll('[data-tr-group]').forEach((g) => g.addEventListener('click', (e) => {
@@ -372,7 +374,12 @@ const peopleSearch = (() => {
   }));
   // filtrele din adresă: ?rol=antreprenor-invitat, ?tema=vanzari
   const q = new URLSearchParams(location.search);
-  [['rol', 'rol'], ['tema', 'tema']].forEach(([p, gname]) => {
+  if (tema) {
+    tema.addEventListener('change', () => { state.tema = tema.value; if (state.q) { state.q = ''; if (input) input.value = ''; } apply(); syncUrl(); });
+    const t0 = q.get('tema');
+    if (t0 && [...tema.options].some((o) => o.value === t0)) { tema.value = t0; state.tema = t0; }
+  }
+  [['rol', 'rol']].forEach(([p, gname]) => {
     const v = q.get(p), g = document.querySelector(`[data-tr-group="${gname}"]`);
     const b = v && g && [...g.querySelectorAll('[data-tr]')].find((x) => x.dataset.tr && key(x.dataset.tr) === v);
     if (b) { setFilter(g, b); if (g.scrollWidth > g.clientWidth) g.scrollLeft = b.offsetLeft - g.offsetLeft - 16; }
@@ -381,7 +388,7 @@ const peopleSearch = (() => {
   // căutarea se face în toți oamenii: filtrele revin la „Toți” / „Toate temele”
   peopleSearch.bind(input, (v) => {
     state.q = v;
-    if (v) document.querySelectorAll('[data-tr-group]').forEach((g) => setFilter(g, g.querySelector('[data-tr=""]')));
+    if (v) { document.querySelectorAll('[data-tr-group]').forEach((g) => setFilter(g, g.querySelector('[data-tr=""]'))); if (tema) { tema.value = ''; state.tema = ''; } }
     apply();
     syncUrl();
   });

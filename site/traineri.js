@@ -63,9 +63,8 @@ function traineriBody(ctx, F) {
   const L = everyone(ctx);
   const n = (r) => L.filter((x) => x.roluri.includes(r)).length;
   const themes = D.teme.filter((t) => L.some((x) => x.themes.includes(t.id)));
-  const first = chrono(D).find((e) => e.ateliere.length);
   return `<main>
-  <section class="hero pg-hero"><div class="wrap">
+  <section class="hero pg-hero tr-lhero"><div class="wrap">
     <nav class="crumbs" aria-label="Unde ești"><a href="/">Acasă</a><span>/</span><b>Traineri</b></nav>
     <div class="hero-split">
       <div class="hero-copy">
@@ -73,28 +72,24 @@ function traineriBody(ctx, F) {
         <h1>Oameni care vorbesc din ce trăiesc.</h1>
         <p class="lead">Dimineața, un trainer lucrează aplicat cu grupa. După-amiaza, antreprenori care au trecut prin aceeași problemă povestesc cum au rezolvat-o. ${plural(L.filter((x) => x.p.editii.length >= 5).length, 'om revine', 'oameni revin')} în cel puțin cinci ediții.</p>
       </div>
-      <aside class="pg-glance" aria-label="În cifre">
-        <div class="ed-live-top"><span>În cifre</span><span>${first ? `din ${first.an}` : ''}</span></div>
-        <dl>
-          <div><dt>${plural(n('trainer'), 'trainer', 'traineri')}</dt><dd>pentru partea aplicată a atelierelor full-day</dd></div>
-          <div><dt>${plural(n('antreprenor invitat'), 'antreprenor invitat', 'antreprenori invitați')}</dt><dd>care povestesc cum au rezolvat problema zilei</dd></div>
-          <div><dt>${plural(n('facilitator'), 'facilitator', 'facilitatori')}</dt><dd>pentru atelierele de seară</dd></div>
-        </dl>
-      </aside>
+      <dl class="tr-stats" aria-label="În cifre">
+        <div><dt>${n('trainer')}</dt><dd>traineri, pentru partea aplicată a atelierelor</dd></div>
+        <div><dt>${n('antreprenor invitat')}</dt><dd>antreprenori invitați, cu povestea lor</dd></div>
+        <div><dt>${n('facilitator')}</dt><dd>facilitatori pentru atelierele de seară</dd></div>
+      </dl>
     </div>
   </div></section>
 
   <section class="sec tr-list-sec" id="lista"><div class="wrap">
-    <div class="tr-filters" role="group" aria-label="Filtrează">
-      <div class="tr-f" data-tr-group="rol"><button class="on" data-tr="">Toți · ${L.length}</button>${[['trainer', 'Traineri'], ['antreprenor invitat', 'Antreprenori invitați'], ['facilitator', 'Facilitatori']].map(([k, l]) => `<button data-tr="${esc(k)}">${l} · ${n(k)}</button>`).join('')}</div>
-      <div class="tr-f tr-f-teme sx" data-tr-group="tema"><button class="on" data-tr="">Toate temele</button>${themes.map((t) => `<button data-tr="${esc(t.id)}">${esc(t.nume)}</button>`).join('')}</div>
+    <div class="tr-bar" role="search">
+      <div class="tr-seg" data-tr-group="rol" role="group" aria-label="Rol"><button class="on" data-tr="">Toți <i>${L.length}</i></button>${[['trainer', 'Traineri'], ['antreprenor invitat', 'Antreprenori invitați'], ['facilitator', 'Facilitatori']].map(([k, l]) => `<button data-tr="${esc(k)}">${l} <i>${n(k)}</i></button>`).join('')}</div>
+      <label class="tr-sel"><span class="sr">Temă</span><select id="tr-tema"><option value="">Toate temele</option>${themes.map((t) => `<option value="${esc(t.id)}">${esc(t.nume)}</option>`).join('')}</select></label>
+      <div class="tr-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><input id="tr-q" type="search" placeholder="Caută după nume sau companie" autocomplete="off" aria-label="Caută printre traineri și invitați după nume sau companie"></div>
     </div>
-    <div class="al-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><input id="tr-q" type="search" data-short="Caută după nume sau companie" placeholder="Caută printre traineri și invitați după nume sau companie" autocomplete="off" aria-label="Caută printre traineri și invitați după nume sau companie"></div>
-    <p class="al-q-note tr-q-note" hidden></p>
+    <div class="tr-meta"><p class="tr-count" aria-live="polite"></p><p class="al-q-note tr-q-note" hidden></p></div>
     <div class="tr-grid">${L.map((x) => `<a class="tr-card" href="/traineri/${esc(x.p.id)}" data-rol="${esc(x.roluri.join('|'))}" data-teme="${esc(x.themes.join(' '))}">
-      <span class="tr-ph">${avatar(x.p, 384)}</span>
-      <span class="tr-tx"><em>${esc(ROL[x.rol] || 'Invitat')}</em><b>${esc(x.p.nume)}</b><span>${esc(x.org)}</span>
-        <small>${plural(x.p.editii.length, 'ediție', 'ediții')}${x.themes[0] && T[x.themes[0]] ? ` · ${esc(T[x.themes[0]].nume)}` : ''}</small></span></a>`).join('')}</div>
+      <span class="tr-ph">${avatar(x.p, 384)}</span>${x.p.editii.length > 1 ? `<i class="tr-n">${plural(x.p.editii.length, 'ediție', 'ediții')}</i>` : ''}
+      <span class="tr-tx"><em>${x.rol === 'antreprenor invitat' ? 'Antreprenor<span class="tr-long"> invitat</span>' : esc(ROL[x.rol] || 'Invitat')}</em><b>${esc(x.p.nume)}</b><span>${esc(x.org)}</span></span></a>`).join('')}</div>
     <p class="tr-empty" hidden>Nimeni pentru combinația asta.</p>
   </div></section>
 
