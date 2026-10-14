@@ -86,7 +86,7 @@ function alumniBody(ctx, F, sel = {}) {
     </article>`;
   };
   const tile = (key, label, n, members, extra = '') => `<button class="cm-tile" type="button" data-pick="${esc(key)}" data-val="${esc(label)}" ${extra}>
-      <span class="cm-tile-n">${n}</span><b>${esc(label)}</b>
+      <span class="cm-tile-n">${n}<small>${plural(n, 'membru', 'membri').slice(String(n).length + 1)}</small></span><b>${esc(label)}</b>
       <span class="cm-stack">${members.slice(0, 4).map((a) => `<span>${avatar(a.imagine, a.nume, 128)}</span>`).join('')}</span>
       <i class="cm-tile-go">${I.arrow}</i></button>`;
   return `<main class="cm">
