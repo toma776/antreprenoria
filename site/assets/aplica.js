@@ -12,6 +12,7 @@
   const status = $('#af-status'), nav = $('.ax-nav', form), next = $('.ax-next', form);
   const KEY = 'antreprenoria-aplica-v2';
   const qs = new URLSearchParams(location.search);
+  const TEST = qs.has('test'); // /aplica?test=1: CUI-ul nu se mai verifică, aplicarea e marcată ca test
   let cur = 0, maxSeen = 0, token = null, saving = null;
 
   // ---------- reguli (aceleași ca pe server) ----------
@@ -33,7 +34,7 @@
     if (f.k === 'nume' && String(v).split(/\s+/).filter(Boolean).length < 2) return 'Scrie numele și prenumele.';
     if (f.t === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) return 'Adresa de email nu pare corectă.';
     if (f.t === 'tel' && String(v).replace(/\D/g, '').length < 9) return 'Numărul de telefon pare prea scurt.';
-    if (f.t === 'cui' && !validCUI(v)) return 'CUI-ul nu e valid. Verifică cifrele (cu sau fără RO).';
+    if (f.t === 'cui' && !TEST && !validCUI(v)) return 'CUI-ul nu e valid. Verifică cifrele (cu sau fără RO).';
     if (f.t === 'many' && v.length > f.max) return `Alege cel mult ${f.max}.`;
     if (f.t === 'area' && String(v).trim().length < f.min) return `Mai scrie puțin (măcar ${f.min} de caractere).`;
     if (f.t === 'editie' && !ids.includes(v)) return 'Alege ediția.';
@@ -140,7 +141,7 @@
 
   // ---------- salvarea ----------
   function push(pas, final = false) {
-    const body = JSON.stringify({ ...read(), token, pas, final, website: form.elements.website.value });
+    const body = JSON.stringify({ ...read(), token, pas, final, website: form.elements.website.value, ...(TEST ? { test: true } : {}) });
     saving = fetch('/api/aplica', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body })
       .then(async (r) => { const j = await r.json().catch(() => ({})); if (r.ok && j.token) { token = j.token; save(); } return { r, j }; })
       .catch(() => ({ r: null, j: {} }));

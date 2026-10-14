@@ -254,10 +254,11 @@ async function handler(req, res) {
       const ids = render.applyOptions().map((o) => o.id);
       const finalizata = input.final === true;
       const pas = finalizata ? ap.STEPS.length : Math.min(Math.max(parseInt(input.pas, 10) || 1, 1), ap.STEPS.length);
-      const v = ap.validate(input, ids, pas);
+      const test = input.test === true;
+      const v = ap.validate(input, ids, pas, test);
       if (!v.ok) return sendJson(res, 422, { error: 'Verifică câmpurile marcate.', errors: v.errors });
       const token = /^[0-9a-f-]{36}$/i.test(input.token || '') ? input.token : null;
-      const rec = ap.record(v.data, { token, pas, finalizata, pagina: String(req.headers.referer || '').slice(0, 300) });
+      const rec = ap.record(v.data, { token, pas, finalizata, pagina: String(req.headers.referer || '').slice(0, 300), test });
       // aplicările merg în Supabase prin funcția aplicare_salveaza (cheia publică nu poate citi tabelul)
       const r = await fetch(`${SUPABASE.url}/rest/v1/rpc/aplicare_salveaza`, { method: 'POST', headers: { apikey: SUPABASE.key, 'Content-Type': 'application/json' }, body: JSON.stringify({ p: rec }) }).catch(() => null);
       if (!r || !r.ok) { console.error('aplicare nesalvată', r && r.status, r && await r.text()); return sendJson(res, 503, { error: 'nedisponibil' }); }
