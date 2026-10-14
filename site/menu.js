@@ -44,7 +44,7 @@ function community(ctx, AL) {
       <div class="mmc-ideas"><span>Căutate des</span>${ideas(AL.L).map((w) => `<a href="/comunitate?q=${encodeURIComponent(w)}#lista" data-idea="${esc(w)}">${esc(w)}</a>`).join('')}</div>
       <div class="mmc-res" id="mmc-res" role="listbox" aria-label="Rezultate" hidden></div>
       <div class="mmc-new"><h3 class="mm-h">Nou în comunitate · ${esc(edLabel(lastEd))}, ${esc(lastEd.sezon)} ${lastEd.an}</h3>
-        <div>${fresh.map((a) => `<a href="/comunitate?membru=${esc(a.id)}#lista"><span class="mmc-av">${pic(a)}</span><span><b>${esc(a.nume)}</b><span>${esc(a.org?.nume || '')}</span></span></a>`).join('')}</div></div>
+        <div>${fresh.map((a) => `<a href="${esc(a.page ? `/comunitate/${a.id}` : `/comunitate?membru=${a.id}#lista`)}"><span class="mmc-av">${pic(a)}</span><span><b>${esc(a.nume)}</b><span>${esc(a.org?.nume || '')}</span></span></a>`).join('')}</div></div>
     </div>
     <div class="mmc-explore">
       <h3 class="mm-h">Pe industrii</h3>

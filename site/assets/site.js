@@ -919,7 +919,7 @@ const cmEngine = (() => {
       res.innerHTML = `<div class="mmc-none"><b>Nimic încă pentru „${escH(q)}”.</b><span>Spune-ne ce cauți: echipa întreabă în comunitate și revine cu un om potrivit.</span>${mail ? `<a href="mailto:${escH(mail)}?subject=${encodeURIComponent(`Caut în comunitate: ${q}`)}">Cere o recomandare →</a>` : ''}</div>`;
       active = -1; return;
     }
-    res.innerHTML = `${r.partial ? '<p class="mmc-note">Potriviri parțiale:</p>' : ''}${L.slice(0, 5).map((x, i) => `<a class="mmc-r" id="mmc-r${i}" role="option" aria-selected="false" href="/comunitate?q=${encodeURIComponent(q)}&membru=${encodeURIComponent(x.id)}#lista">
+    res.innerHTML = `${r.partial ? '<p class="mmc-note">Potriviri parțiale:</p>' : ''}${L.slice(0, 5).map((x, i) => `<a class="mmc-r" id="mmc-r${i}" role="option" aria-selected="false" href="${x.h ? escH(x.h) : `/comunitate?q=${encodeURIComponent(q)}&membru=${encodeURIComponent(x.id)}#lista`}">
         <span class="mmc-av">${x.img ? `<img src="${escH(x.img)}" alt="" loading="lazy">` : `<span class="ph">${escH(x.n.split(' ').map((w) => w[0]).join('').slice(0, 2))}</span>`}</span>
         <span class="mmc-r-tx"><span class="mmc-r-top"><b>${escH(x.n)}</b><span>${escH(x.co)}</span></span>${x.d ? `<span class="mmc-r-d">${cmEngine.marked(x, r.terms, 4)}</span>` : ''}</span>
         <span class="mmc-r-meta">${x.s ? `<em>${escH(x.s)}</em>` : ''}<small>${escH(x.ed)}</small></span></a>`).join('')}
@@ -952,5 +952,18 @@ const cmEngine = (() => {
     const nav = document.getElementById('nav'), btn = document.querySelector('.menu-btn');
     if (btn && getComputedStyle(btn).display !== 'none' && !nav.classList.contains('open')) btn.click();
     setTimeout(() => { input.focus(); input.select(); }, 60);
+  });
+})();
+
+// pagina unui membru: „Copiază linkul”
+(() => {
+  const b = document.querySelector('.mp [data-share]');
+  if (!b) return;
+  b.addEventListener('click', async () => {
+    const url = location.origin + location.pathname;
+    try { if (navigator.share && matchMedia('(pointer: coarse)').matches) { await navigator.share({ title: document.title, url }); return; } await navigator.clipboard.writeText(url); } catch { return; }
+    const t = b.querySelector('span'), was = t.textContent;
+    t.textContent = 'Link copiat'; b.classList.add('done');
+    setTimeout(() => { t.textContent = was; b.classList.remove('done'); }, 1800);
   });
 })();

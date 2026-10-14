@@ -309,7 +309,7 @@ ${footer(F, ctx)}
 function renderAlumnus(opt = {}) {
   const ctx = load(opt.brand), F = facts(ctx), a = alumniData(ctx).L.find((x) => x.id === opt.id);
   if (!a || (!a.page && !opt.preview)) return null;
-  return `${head(`${a.nume} – comunitatea Antreprenoria`, `${a.nume}${a.org ? ', ' + a.org.nume : ''}: alumni Antreprenoria ${a.eds.map((e) => '#' + e.numar).join(', ')}.`, opt.brand)}
+  return `${head(`${a.nume} – comunitatea Antreprenoria`, `${a.nume}${a.org ? ', ' + a.org.nume : ''} · alumni Antreprenoria ${a.eds.map((e) => '#' + e.numar).join(', ')}. ${(a.desc || '').slice(0, 150)}`, opt.brand)}
 ${a.page ? '' : '<meta name="robots" content="noindex">'}
 ${header(F, ctx)}
 <div class="gridlines" aria-hidden="true"></div>
