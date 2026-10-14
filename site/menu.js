@@ -83,6 +83,11 @@ function panels(ctx, F) {
   const editii = D.editii.slice().sort((a, b) => (b.an - a.an) || (a.sezon === b.sezon ? (a.serie === 'Cluj') - (b.serie === 'Cluj') : a.sezon === 'toamnă' ? -1 : 1));
   const strategic = D.organizatii.filter((o) => o.logo && o.roluri.some((r) => ['partener strategic', 'powered by', 'partener ediție'].includes(r.rol)));
   const team = D.program.contact.echipa;
+  // cifrele declarate ale programului (550+, 500+, 600+), după ce descriu
+  const cifra = (k) => (D.program.cifre.find((c) => c.ce.includes(k)) || {}).valoare || '';
+  // cui scrii, după întrebare
+  const byId = Object.fromEntries(team.map((x) => [x.id, x]));
+  const CONTACT = [['Despre program', byId['raluca-bedereag']], ['Parteneriate', byId['larisa-slavenie']], ['Sponsorizări ateliere', byId['iulian-rizea']]].filter(([, x]) => x && x.email);
   const PD = partnersData(ctx), deN = (n) => `${n}${n % 100 === 0 || n % 100 >= 20 ? ' de' : ''}`;
 
   return [
@@ -161,7 +166,7 @@ function panels(ctx, F) {
           link('/parteneri?format=editie#construieste', 'O ediție', 'Partener de ediție · 3 luni'),
           link('/parteneri?format=an#construieste', 'Un an', 'Partener strategic · tot anul'),
           link('/parteneri#cost-real', 'Costul real', 'Din impozitul plătit oricum'),
-        ].join('')),
+        ].join(''), 'mm-tiles'),
         col('Alături de noi', `<div class="mm-logos">${PD.all.filter((x) => x.o.logo).slice(0, 6).map((x) => `<a href="/parteneri#${esc(x.o.id)}" title="${esc(x.o.nume)}"><img src="${esc(x.o.logo)}" alt="${esc(x.o.nume)}" loading="lazy"></a>`).join('')}</div>
           <a class="mm-all" href="/parteneri#branduri">Toate cele ${deN(PD.all.length)} branduri →</a>
           <p class="mm-alt">Sau implică-te altfel: <a href="/parteneri?implicare=gazduire#vreau">găzduiește un atelier</a> · <a href="/parteneri?implicare=mentorat#vreau">devino mentor</a></p>`, 'wide mm-hide-m'),
@@ -176,19 +181,22 @@ function panels(ctx, F) {
           <span class="mm-sub">Propunerea și contractul vin pe email; ne vedem doar dacă vrei.</span>
           <span class="mm-more">Scrie-ne →</span></a>` },
 
-    { id: 'despre', title: 'Despre', href: '/despre', intro: `Un program al Fundației Romanian Business Leaders, din ${D.program.de_cand}.`,
+    // despre: încrederea (cine organizează, de când, cine e în spate) și un om de contact pentru fiecare întrebare
+    { id: 'despre', title: 'Despre', href: '/despre', intro: `Un program al Fundației Romanian Business Leaders, din ${D.program.de_cand}. ${F.maxNr} de ediții până acum, cu sprijinul liderilor din comunitatea RBL.`,
       cols: [
-        col('Despre noi', [
-          link('/despre', 'Despre Antreprenoria', 'Cresc antreprenorii, crește România!'),
-          link('/despre#rbl', 'Fundația Romanian Business Leaders', 'Organizatorul, cu o comunitate de peste 600 de membri'),
-          link('/despre#istoric', 'Istoricul programului', `Din ${D.program.de_cand} până la ediția #${F.maxNr}`),
-        ].join('')),
-        col('Echipa', `<div class="mm-team">${team.map((m) => `<a href="/despre#${esc(m.id)}">${P[m.id] ? pic(P[m.id]) : ''}<b>${esc(m.nume)}</b><span>${esc(m.rol.split(' · ')[0].replace(/\s*\(.*\)$/, ''))}</span></a>`).join('')}</div>`),
-        col('Contact', [
-          link('/despre#contact', 'Scrie-ne', 'Întrebări despre program sau parteneriate'),
-          link('/despre#contact', 'Calea Dorobanți 42', 'Sector 1, București'),
-        ].join('')),
-      ] },
+        col('Cunoaște-ne', [
+          link('/despre#program', 'Programul', 'Ce primești și cine a crescut cu noi'),
+          link('/despre#istoric', 'Istoricul', `Din ${D.program.de_cand} până la ediția #${F.maxNr}`),
+          link('/despre#rbl', 'Organizatorul', `Fundația RBL · ${cifra('membri')} de membri`),
+          link('/despre#echipa', 'Echipa', `${team.length} oameni care țin programul`),
+        ].join(''), 'mm-tiles'),
+        col('În cifre', `<dl class="mm-figs">${D.program.cifre.filter((c) => c.sursa === '/despre-noi').map((c) => `<div><dt>${esc(c.valoare)}</dt><dd>${esc(c.ce.replace(/ din \d{4}$/, ''))}</dd></div>`).join('')}</dl>`, 'mm-hide-m'),
+      ],
+      feature: `<div class="mm-feature mm-ct">
+          <span class="mm-kicker">Vorbește cu noi</span>
+          <b>Un om pentru fiecare întrebare.</b>
+          <span class="mm-ct-list">${CONTACT.map(([l, m]) => `<a href="mailto:${esc(m.email)}">${P[m.id] ? pic(P[m.id]) : `<span class="ph">${esc(m.nume.split(' ').map((x) => x[0]).join(''))}</span>`}<i>${l}</i><b>${esc(m.nume)}</b><span>${esc(m.email)}</span></a>`).join('')}</span>
+          <a class="mm-more" href="/despre#contact">${esc(D.program.contact.adresa.split(',').slice(0, 2).join(''))} · toate datele →</a></div>` },
   ];
 }
 
