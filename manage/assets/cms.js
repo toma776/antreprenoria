@@ -68,8 +68,8 @@ const CMS = (() => {
     if (!parts.length) return '';
     const isAlum = parts.some(edEnded), full = (p.bio || '').trim().length > 20;
     const msg = !isAlum ? 'Devine alumnus când ediția e arhivată. Pagina lui de alumni apare atunci, dacă textul de mai sus e completat.'
-      : full ? `Are pagină de alumni pe site: <a href="/alumni/${esc(p.id)}" target="_blank" rel="noopener">/alumni/${esc(p.id)} ↗</a>`
-      : `Nu are încă pagină de alumni. Apare când completezi textul de mai sus (cel puțin o frază). <a href="/alumni/${esc(p.id)}?previzualizare" target="_blank" rel="noopener">Previzualizează ↗</a>`;
+      : full ? `Are pagină de alumni pe site: <a href="/comunitate/${esc(p.id)}" target="_blank" rel="noopener">/comunitate/${esc(p.id)} ↗</a>`
+      : `Nu are încă pagină de alumni. Apare când completezi textul de mai sus (cel puțin o frază). <a href="/comunitate/${esc(p.id)}?previzualizare" target="_blank" rel="noopener">Previzualizează ↗</a>`;
     return `<div class="al-status ${full && isAlum ? 'ok' : ''}">${msg}</div>`;
   }
   // compania curentă a omului (ultima din fișă) și adresa de site scrisă fără „https://”

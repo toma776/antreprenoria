@@ -59,7 +59,7 @@ function personWhere(v, kind) {
   const w = [], t = [].concat(v.tipuri || []);
   if (kind === 'echipă' || t.includes('echipă')) w.push(['/despre#echipa', 'echipa, pe pagina Despre'], ['/aplica', 'contactul de pe Aplică'], ['/', 'footerul tuturor paginilor']);
   if (t.some((x) => ['trainer', 'antreprenor invitat', 'facilitator'].includes(x))) w.push(['/traineri', 'lista trainerilor și invitaților'], [`/traineri/${v.id || 'nume-nou'}`, 'fișa proprie']);
-  if (t.includes('participant')) w.push(['/alumni', 'lista alumnilor']);
+  if (t.includes('participant')) w.push(['/comunitate', 'comunitatea (alumni)']);
   (v.editii || []).slice(-3).forEach((e) => w.push([edUrl(e), `ediția ${edLabel(e)}`]));
   [...new Set((v.aparitii || []).map((a) => a.tema))].filter((x) => FULL.includes(x)).slice(0, 2).forEach((x) => w.push([`/teme/${x}`, `tema ${T[x]?.nume || x}`]));
   return w;
@@ -147,7 +147,7 @@ const TYPES = {
       + vis(o.id),
     values: (o) => ({ nume: o.nume, logo: o.logo, tip: o.tip, tipuri: o.tipuri }),
     preview: (v) => `<div class="sp-logo">${v.logo ? `<img src="${esc(v.logo)}" alt="">` : `<b>${esc(v.nume || 'Logo')}</b>`}</div>`,
-    where: (v) => [...(k === 'parteneri' ? [['/parteneri', 'pagina Parteneri'], ['/', 'banda de parteneri de pe homepage']] : []), ...(k === 'alumni' ? [['/alumni', 'companiile alumni']] : []), ...(v.editii || []).slice(-3).map((e) => [edUrl(e), `ediția ${edLabel(e)}`])],
+    where: (v) => [...(k === 'parteneri' ? [['/parteneri', 'pagina Parteneri'], ['/', 'banda de parteneri de pe homepage']] : []), ...(k === 'alumni' ? [['/comunitate', 'companiile din comunitate']] : []), ...(v.editii || []).slice(-3).map((e) => [edUrl(e), `ediția ${edLabel(e)}`])],
     dup: (q) => D.organizatii.filter((o) => norm(o.nume).includes(norm(q))),
   }])),
 
@@ -187,7 +187,7 @@ function vTexte(k) {
 const CATS = [
   { t: 'Program', ic: 'program', d: 'Identitatea programului, metodologia, cifrele și echipa.', site: ['/despre', '/program'], lists: ['identitate', 'metodologie', 'cifre', 'echipa'] },
   { t: 'Ediții', ic: 'editii', d: 'Fiecare ediție cu atelierele, participanții și partenerii ei.', site: ['/editii/…', '/aplica'], lists: ['editii', 'ateliere', 'locatii'] },
-  { t: 'Oameni', ic: 'oameni', d: 'O singură fișă pe om, chiar dacă are mai multe roluri.', site: ['/traineri', '/alumni'], lists: ['traineri', 'invitati', 'facilitatori', 'participanti', 'echipa'] },
+  { t: 'Oameni', ic: 'oameni', d: 'O singură fișă pe om, chiar dacă are mai multe roluri.', site: ['/traineri', '/comunitate'], lists: ['traineri', 'invitati', 'facilitatori', 'participanti', 'echipa'] },
   { t: 'Organizații', ic: 'companii', d: 'O singură fișă pe companie, cu toate rolurile ei.', site: ['/parteneri'], lists: ['alumni', 'parteneri', 'speakeri'], views: () => [['Din alumni, parteneri', D.organizatii.filter((o) => o.ciclu).length], ['Cu mai multe roluri', D.organizatii.filter((o) => o.tipuri.filter((t) => t !== 'organizator').length > 1).length]] },
   { t: 'Curriculum', ic: 'teme', d: 'Temele atelierelor, refolosite de la o ediție la alta.', site: ['/teme', '/teme/…'], lists: ['full-day', 'seara', 'networking'], views: () => [['Matricea pe ediții', null]] },
   { t: 'Texte de pe site', ic: 'texte', d: 'Titlurile și frazele paginilor, care nu țin de o entitate anume.', site: ['/', '/despre', '/program', '/aplica'], texte: true },

@@ -62,7 +62,7 @@ function fresh(mod) {
 
 // pe Vercel fișierele sunt doar pentru citire: modificările din panou se fac local și ajung pe site prin git push
 const READ_ONLY = !!process.env.VERCEL;
-const AL_RE = /^\/alumni\/([a-z0-9-]+)\/?$/;
+const AL_RE = /^\/comunitate\/([a-z0-9-]+)\/?$/;
 
 // ---------- CMS: modificările din panou ----------
 // data/curare/editari.json       = ce e PUBLICAT (pe git; Vercel construiește site-ul din el)
@@ -439,13 +439,16 @@ async function handler(req, res) {
     }
     const PT = { '/parteneri/sponsorizare': 'sponsorizeaza', '/parteneri/gazda': 'gazduieste', '/parteneri/mentor': 'mentor' };
     if (PT[url]) { res.writeHead(301, { Location: '/parteneri#' + PT[url] }); return res.end(); }
-    // /alumni: toți alumnii; /alumni/<id>: doar cu profil completat (previzualizarea pentru ceilalți merge doar local)
-    if ((url === '/alumni' || url === '/alumni/')) {
+    // /comunitate: toți alumnii (căutare, explorare, director); /comunitate/<id>: doar cu profil completat (previzualizarea pentru ceilalți merge doar local)
+    // adresele vechi /alumni... duc la /comunitate...
+    if (url === '/alumni/din-alumni-parteneri') { res.writeHead(301, { Location: '/comunitate#din-alumni-parteneri' }); return res.end(); }
+    const old = /^\/alumni(\/.*)?$/.exec(url);
+    if (old) { res.writeHead(301, { Location: '/comunitate' + (old[1] && old[1] !== '/' ? old[1] : '') + (query ? '?' + query : '') }); return res.end(); }
+    if ((url === '/comunitate' || url === '/comunitate/')) {
       res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' });
       const q1 = new URLSearchParams(query);
-      return res.end(fresh('./site/render').renderAlumni({ brand: q1.get('brand') || undefined, sector: q1.get('sector') || undefined, editie: q1.get('editie') || undefined }));
+      return res.end(fresh('./site/render').renderAlumni({ brand: q1.get('brand') || undefined, sector: q1.get('sector') || undefined, editie: q1.get('editie') || undefined, q: q1.get('q') || undefined }));
     }
-    if (url === '/alumni/din-alumni-parteneri') { res.writeHead(301, { Location: '/alumni#din-alumni-parteneri' }); return res.end(); }
     const al = AL_RE.exec(url);
     if (al) {
       const q2 = new URLSearchParams(query);

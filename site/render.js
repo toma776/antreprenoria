@@ -74,7 +74,7 @@ function facts({ D, P }) {
 }
 
 // ---------- bucăți comune ----------
-const NAV = [['Program', '/program'], ['Ediții', '/editii'], ['Teme', '/teme'], ['Lideri', '/traineri'], ['Alumni', '/alumni'], ['Parteneri', '/parteneri'], ['Despre', '/despre']];
+const NAV = [['Program', '/program'], ['Ediții', '/editii'], ['Teme', '/teme'], ['Lideri', '/traineri'], ['Comunitate', '/comunitate'], ['Parteneri', '/parteneri'], ['Despre', '/despre']];
 // varianta de brand vine din data/brand.json (activă sau cerută pentru previzualizare cu ?brand=)
 function head(title, desc, brandId) {
   const v = brand.pick(brand.load(), brandId);
@@ -297,10 +297,10 @@ ${footer(F, ctx)}
 // ---------- ALUMNI ----------
 function renderAlumni(opt = {}) {
   const ctx = load(opt.brand), F = facts(ctx);
-  return `${head('Alumni Antreprenoria – antreprenorii care au trecut prin program', 'Alumnii Antreprenoria: antreprenori și manageri din toate edițiile încheiate, pe ediții și sectoare, și companiile care au revenit ca parteneri.', opt.brand)}
+  return `${head('Comunitatea Antreprenoria – antreprenorii care au trecut prin program', 'Comunitatea Antreprenoria: alumnii tuturor edițiilor, fiecare cu ce face și ce oferă. Caută după ce ai nevoie, explorează pe industrii și cere o conectare.', opt.brand)}
 ${header(F, ctx)}
 <div class="gridlines" aria-hidden="true"></div>
-${alumniBody(ctx, F, { sector: opt.sector, editie: opt.editie })}
+${alumniBody(ctx, F, { sector: opt.sector, editie: opt.editie, q: opt.q })}
 ${footer(F, ctx)}
 <script src="/assets/site.js"></script>
 </body></html>`;
@@ -309,7 +309,7 @@ ${footer(F, ctx)}
 function renderAlumnus(opt = {}) {
   const ctx = load(opt.brand), F = facts(ctx), a = alumniData(ctx).L.find((x) => x.id === opt.id);
   if (!a || (!a.page && !opt.preview)) return null;
-  return `${head(`${a.nume} – alumni Antreprenoria`, `${a.nume}${a.org ? ', ' + a.org.nume : ''}: alumni Antreprenoria ${a.eds.map((e) => '#' + e.numar).join(', ')}.`, opt.brand)}
+  return `${head(`${a.nume} – comunitatea Antreprenoria`, `${a.nume}${a.org ? ', ' + a.org.nume : ''}: alumni Antreprenoria ${a.eds.map((e) => '#' + e.numar).join(', ')}.`, opt.brand)}
 ${a.page ? '' : '<meta name="robots" content="noindex">'}
 ${header(F, ctx)}
 <div class="gridlines" aria-hidden="true"></div>

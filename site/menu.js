@@ -19,7 +19,7 @@ function panels(ctx, F) {
   const { D, P, O, T } = ctx;
   const themePeople = (t) => new Set(D.editii.flatMap((e) => e.ateliere.filter((a) => a.tema === t.id).flatMap((a) => a.program.flatMap((x) => x.speakeri.map((s) => s.persoana))))).size;
   const fullDay = D.teme.filter((t) => t.format === 'full-day');
-  // alumnii, ca pe pagina /alumni (aceleași numere în meniu și în filtre)
+  // alumnii, ca pe pagina /comunitate (aceleași numere în meniu și în filtre)
   const AL = alumniData(ctx);
   const TR = everyone(ctx), nRol = (r) => TR.filter((x) => x.roluri.includes(r)).length;
   // companiile liderilor: întâi ale antreprenorilor invitați, apoi ale celorlalți (fără duplicate)
@@ -100,16 +100,16 @@ function panels(ctx, F) {
           <span class="mm-cos">${COS.slice(0, 18).map((c) => `<i>${esc(c)}</i>`).join('')}</span>
           <span class="mm-more">Antreprenorii invitați →</span></a>` },
 
-    { id: 'alumni', title: 'Alumni', href: '/alumni', intro: `${AL.L.length} de antreprenori din ${AL.eds.length} ediții încheiate, din ${AL.sectors.length} sectoare.`,
+    { id: 'alumni', title: 'Comunitate', href: '/comunitate', intro: `${AL.L.length} de antreprenori din ${AL.eds.length} ediții încheiate, din ${AL.sectors.length} industrii. Caută după ce ai nevoie.`,
       cols: [
-        col('Pe sectoare', `<div class="mm-sectors">${AL.sectors.map(([s, n]) => `<a href="/alumni?sector=${esc(slug(s))}#lista"><span>${esc(s)}</span><b>${n}</b></a>`).join('')}</div>`, 'wide'),
+        col('Pe industrii', `<div class="mm-sectors">${AL.sectors.map(([s, n]) => `<a href="/comunitate?sector=${esc(slug(s))}#lista"><span>${esc(s)}</span><b>${n}</b></a>`).join('')}</div>`, 'wide'),
         col('Comunitatea', [
-          link('/alumni/din-alumni-parteneri', 'Din alumni, parteneri', `${F.ciclu.length} companii revenite ca sponsori, gazde sau cu speakeri`),
-          link('/alumni#cifre', 'Cine participă, în cifre', 'Mediane și intervale, fără date individuale'),
-          link('/alumni#lista', 'Directorul alumni', 'Filtrabil după sector și ediție'),
+          link('/comunitate#lista', 'Caută în comunitate', 'După nevoie: un serviciu, un produs, o problemă de rezolvat'),
+          link('/comunitate#din-alumni-parteneri', 'Din comunitate, parteneri', `${F.ciclu.length} companii revenite ca sponsori, gazde sau cu speakeri`),
+          link('/comunitate#cifre', 'Mărimea companiilor', 'Mediane și distribuții, fără date individuale'),
         ].join('')),
       ],
-      feature: `<a class="mm-feature" href="/alumni#cifre">
+      feature: `<a class="mm-feature" href="/comunitate#cifre">
           <span class="mm-kicker">Participantul tipic</span>
           <b>${(F.medianCa / 1e6).toLocaleString('ro-RO', { maximumFractionDigits: 1 })} mil. lei</b>
           <span class="mm-sub">cifra de afaceri mediană · ${F.medianAng} angajați la mediană</span>
@@ -125,7 +125,7 @@ function panels(ctx, F) {
           link('/parteneri#mentor', 'Devino trainer sau mentor', 'Pro-bono, din comunitatea RBL'),
         ].join('')),
       ],
-      feature: `<a class="mm-feature" href="/alumni/din-alumni-parteneri">
+      feature: `<a class="mm-feature" href="/comunitate#din-alumni-parteneri">
           <span class="mm-kicker">Din alumni, parteneri</span>
           <b>Vii ca participant. Revii ca partener.</b>
           <span class="mm-sub">${F.ciclu.map((o) => esc(o.nume)).join(', ')}</span>
