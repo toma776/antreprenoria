@@ -328,7 +328,26 @@ const peopleSearch = (() => {
   return { prep, find, bind };
 })();
 
-// /traineri: filtrele după rol și după temă (se combină) și căutarea după nume sau companie
+// /lideri/<id>: întrebările, filtrate după temă, și copierea uneia (de pus în notițe înainte de atelier)
+(() => {
+  const box = document.querySelector('.ld-qs');
+  if (!box) return;
+  const items = [...box.querySelectorAll('.ld-q-list li')];
+  box.querySelectorAll('[data-ld-q]').forEach((b) => b.addEventListener('click', () => {
+    box.querySelectorAll('[data-ld-q]').forEach((x) => x.classList.toggle('on', x === b));
+    items.forEach((li) => { li.hidden = b.dataset.ldQ ? li.dataset.tema !== b.dataset.ldQ : !('top' in li.dataset); });
+    const more = box.querySelector('.ld-q-more'); if (more) more.hidden = !!b.dataset.ldQ;
+  }));
+  box.addEventListener('click', async (ev) => {
+    const b = ev.target.closest('.ld-copy');
+    if (!b) return;
+    try { await navigator.clipboard.writeText(b.dataset.copy); } catch { return; }
+    b.classList.add('done');
+    setTimeout(() => b.classList.remove('done'), 1400);
+  });
+})();
+
+// /lideri: filtrele după rol și după temă (se combină) și căutarea după nume sau companie
 (() => {
   const grid = document.querySelector('.tr-grid');
   if (!grid) return;

@@ -78,7 +78,7 @@ function programBody(ctx, F) {
       <div class="day-bar" aria-hidden="true">${blocks.map((x) => `<i class="${kind(x)}" style="flex:${x.len}"></i>`).join('')}</div>
       <ol class="day-list" style="grid-template-columns:${blocks.map((x) => (kind(x) === 'break' ? 'minmax(84px, .6fr)' : 'minmax(150px, 1.4fr)')).join(' ')}">${blocks.map((x) => { const ppl = x.speakeri.map((s) => ({ p: P[s.persoana], s })).filter((y) => y.p);
         return `<li class="${kind(x)}" style="--w:${Math.max(x.len / total, 0.06)}"><time>${esc(x.from)}</time><b>${esc(kind(x) === 'break' ? x.activitate : KIND_LABEL[kind(x)])}</b>
-          ${ppl.map(({ p, s }) => `<a class="day-person" href="/traineri/${esc(p.id)}">${avatar(p)}<span><b>${esc(p.nume)}</b><small>${esc(O[s.organizatie]?.nume || (s.companie !== 'Trainer' ? s.companie : '') || ROLE[s.rol] || '')}</small></span></a>`).join('')}</li>`; }).join('')}</ol>
+          ${ppl.map(({ p, s }) => `<a class="day-person" href="/lideri/${esc(p.id)}">${avatar(p)}<span><b>${esc(p.nume)}</b><small>${esc(O[s.organizatie]?.nume || (s.companie !== 'Trainer' ? s.companie : '') || ROLE[s.rol] || '')}</small></span></a>`).join('')}</li>`; }).join('')}</ol>
       <p class="day-note">Exemplu real: atelierul „${esc(cleanTitle(day.titlu))}”, ediția #${ong.numar}. <a href="${edUrl(ong)}#agenda">Toată agenda ediției →</a></p>
     </div>
   </div></section>` : ''}

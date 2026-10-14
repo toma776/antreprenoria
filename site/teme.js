@@ -40,7 +40,7 @@ function themeData(ctx, id) {
   return { t, ws, people: list, trainers: list.filter((x) => x.rol === 'trainer'), invited: list.filter((x) => x.rol !== 'trainer'), sponsors, desc: t.descriere || cap(normCase(latest?.a.descriere || '')), next, titles };
 }
 
-const chip = (x, extra = '') => `<a class="ed-chip" href="/traineri/${esc(x.p.id)}">${avatar(x.p)}<span><b>${esc(x.p.nume)}</b><span>${esc(x.org)}</span>${extra}</span></a>`;
+const chip = (x, extra = '') => `<a class="ed-chip" href="/lideri/${esc(x.p.id)}">${avatar(x.p)}<span><b>${esc(x.p.nume)}</b><span>${esc(x.org)}</span>${extra}</span></a>`;
 const faces = (list, max = 5) => `<span class="faces">${list.slice(0, max).map((x) => avatar(x.p || x)).join('')}</span>`;
 
 // ---------- /teme/<id> ----------
@@ -89,7 +89,7 @@ function temaBody(ctx, F, id) {
       return `<div class="tm-row ${up ? 'up' : ''}">
         <a class="tm-ed" href="${edUrl(e)}"><b>${edLabel(e)}</b><span>${a.data && a.data.startsWith(String(e.an)) ? fmtDay(a.data) : `${esc(e.sezon)} ${e.an}`}</span>${up ? '<em>urmează</em>' : ''}</a>
         <div class="tm-main"><b>${esc(cleanTitle(a.titlu))}</b>
-          <div class="tm-people">${tr.map((p) => `<a href="/traineri/${esc(p.id)}" class="tm-p tr">${avatar(p)}<span>${esc(p.nume)}<small>trainer</small></span></a>`).join('')}${inv.map((p) => `<a href="/traineri/${esc(p.id)}" class="tm-p">${avatar(p)}<span>${esc(p.nume)}<small>invitat</small></span></a>`).join('')}</div></div>
+          <div class="tm-people">${tr.map((p) => `<a href="/lideri/${esc(p.id)}" class="tm-p tr">${avatar(p)}<span>${esc(p.nume)}<small>trainer</small></span></a>`).join('')}${inv.map((p) => `<a href="/lideri/${esc(p.id)}" class="tm-p">${avatar(p)}<span>${esc(p.nume)}<small>invitat</small></span></a>`).join('')}</div></div>
         <div class="tm-sp">${sp ? (sp.logo ? `<img src="${esc(sp.logo)}" alt="${esc(sp.nume)}" title="Susținut de ${esc(sp.nume)}" loading="lazy">` : `<span>${esc(sp.nume)}</span>`) : ''}</div>
       </div>`; }).join('')}</div>
   </div></section>
@@ -171,7 +171,7 @@ function temeBody(ctx, F) {
       return `<div class="tm-ev" id="${esc(t.id)}"><div class="tm-ev-h"><h3>${esc(t.nume)}</h3><span>${plural(t.editii.length, 'ediție', 'ediții')}</span></div>
         ${d.desc ? `<p>${esc(firstSentence(d.desc))}</p>` : ''}
         <div class="tm-ev-eds">${d.ws.map(({ e }) => `<a href="${edUrl(e)}">${edLabel(e)}</a>`).join('')}</div>
-        ${d.people.length ? `<div class="tm-ev-p">${d.people.map((x) => `<a href="/traineri/${esc(x.p.id)}" title="${esc(x.p.nume)}">${avatar(x.p)}<span>${esc(x.p.nume)}</span></a>`).join('')}</div>` : ''}
+        ${d.people.length ? `<div class="tm-ev-p">${d.people.map((x) => `<a href="/lideri/${esc(x.p.id)}" title="${esc(x.p.nume)}">${avatar(x.p)}<span>${esc(x.p.nume)}</span></a>`).join('')}</div>` : ''}
       </div>`; }).join('')}</div>
   </div></section>
 

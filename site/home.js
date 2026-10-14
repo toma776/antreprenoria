@@ -60,7 +60,7 @@ function askHtml(ctx, F) {
           <p>${esc(desc)}</p>
           <span class="ask-meta">${plural(eds, 'ediție', 'ediții')} · ${plural(people.length, 'om a', 'oameni au')} susținut tema</span>
         </div>
-        <div class="ask-people">${people.slice(0, 4).map(({ p, n }) => `<a href="/traineri/${esc(p.id)}">${avatar(p)}<span><b>${esc(p.nume)}</b><small>${esc(ctx.O[p.organizatii[0]]?.nume || p.functii[0] || '')} · ${n}×</small></span></a>`).join('')}</div>
+        <div class="ask-people">${people.slice(0, 4).map(({ p, n }) => `<a href="/lideri/${esc(p.id)}">${avatar(p)}<span><b>${esc(p.nume)}</b><small>${esc(ctx.O[p.organizatii[0]]?.nume || p.functii[0] || '')} · ${n}×</small></span></a>`).join('')}</div>
         <div class="ask-next">
           ${next ? `<span class="ask-kicker"><i class="dot-live"></i>Următorul atelier</span><b>${fmtDay(next.a.data)}</b><span>Ediția ${esc(edLabel(next.e))} · ${esc(next.a.locatie || '')}</span>`
             : cluj ? `<span class="ask-kicker">Următorul atelier</span><b>${esc(edLabel(cluj.e))}</b><span>${esc(cluj.e.perioada)}</span>`
@@ -119,7 +119,7 @@ function curriculumTabs(ctx, F) {
         ${x.next ? `<p class="cur-next"><i class="dot-live"></i>Următorul: <b>${fmtDay(x.next.a.data)}</b>, ediția #${x.next.e.numar}</p>` : ''}
         <a class="link-arrow" href="/teme/${esc(x.t.id)}">Despre temă →</a>
       </div>
-      <div class="cur-people">${x.people.slice(0, 6).map(({ p, n }) => `<a href="/traineri/${esc(p.id)}">${avatar(p)}<b>${esc(p.nume)}</b><small>${esc(ctx.O[p.organizatii[0]]?.nume || p.functii[0] || '')} · ${n}×</small></a>`).join('')}</div>
+      <div class="cur-people">${x.people.slice(0, 6).map(({ p, n }) => `<a href="/lideri/${esc(p.id)}">${avatar(p)}<b>${esc(p.nume)}</b><small>${esc(ctx.O[p.organizatii[0]]?.nume || p.functii[0] || '')} · ${n}×</small></a>`).join('')}</div>
     </div>`).join('')}
     <div class="cur-panel" role="tabpanel" id="cur-seara" data-panel="seara" hidden>
       <div class="cur-main"><h3>Ateliere de seară</h3><p>Sesiuni scurte, după program, pe subiecte practice. S-au schimbat de la o ediție la alta, după ce au cerut participanții.</p></div>
@@ -241,9 +241,9 @@ function homeBody(ctx, F) {
   <section class="sec" id="traineri"><div class="wrap">
     <div class="sec-head row"><div><p class="eyebrow">Liderii programului</p><h2>${esc(tx(D, 'acasa.oameni.titlu'))}</h2>
       <p class="lead">${F.constanti} dintre ei revin în cel puțin cinci ediții. Nu sunt invitați o dată, sunt parte din program.</p></div>
-      <a class="link-arrow" href="/traineri">Toți cei ${F.speakers} →</a></div>
+      <a class="link-arrow" href="/lideri">Toți cei ${F.speakers} →</a></div>
     <div class="people">
-      ${F.topTrainers.map((p) => `<a class="person" href="/traineri/${p.id}">${avatar(p)}<b>${esc(p.nume)}</b><span>${esc(ctx.O[p.organizatii[0]]?.nume || p.functii[0] || '')}</span>
+      ${F.topTrainers.map((p) => `<a class="person" href="/lideri/${p.id}">${avatar(p)}<b>${esc(p.nume)}</b><span>${esc(ctx.O[p.organizatii[0]]?.nume || p.functii[0] || '')}</span>
         <span class="person-ed">${p.editii.length} ediții · ${esc([...new Set(p.aparitii.map((a) => T[a.tema]?.nume).filter(Boolean))][0] || '')}</span></a>`).join('')}
     </div>
   </div></section>

@@ -417,12 +417,15 @@ async function handler(req, res) {
       const html = fresh('./site/render').renderEdition({ key: ed[1], brand: new URLSearchParams(query).get('brand') || undefined, preview: !READ_ONLY && new URLSearchParams(query).has('previzualizare') });
       if (html) { res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' }); return res.end(html); }
     }
-    // /traineri: trainerii, antreprenorii invitați și facilitatorii; /traineri/<id>: pagina fiecăruia
-    if ((url === '/traineri' || url === '/traineri/')) {
+    // /lideri: trainerii, antreprenorii invitați și facilitatorii; /lideri/<id>: fișa fiecăruia
+    // adresele vechi /traineri... duc la /lideri...
+    const oldTr = /^\/traineri(\/.*)?$/.exec(url);
+    if (oldTr) { res.writeHead(301, { Location: '/lideri' + (oldTr[1] && oldTr[1] !== '/' ? oldTr[1] : '') + (query ? '?' + query : '') }); return res.end(); }
+    if ((url === '/lideri' || url === '/lideri/')) {
       res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' });
       return res.end(fresh('./site/render').renderTraineri({ brand: new URLSearchParams(query).get('brand') || undefined }));
     }
-    const tr = /^\/traineri\/([a-z0-9-]+)\/?$/.exec(url);
+    const tr = /^\/lideri\/([a-z0-9-]+)\/?$/.exec(url);
     if (tr) {
       const html = fresh('./site/render').renderTrainer({ id: tr[1], brand: new URLSearchParams(query).get('brand') || undefined });
       if (html) { res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' }); return res.end(html); }

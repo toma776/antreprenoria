@@ -56,7 +56,7 @@ const CMS = (() => {
   function personWhere(v) {
     const w = [], t = [].concat(v.tipuri || []);
     if (t.includes('echipă')) w.push(['/despre#echipa', 'echipa, pe pagina Despre']);
-    if (t.some((x) => ['trainer', 'antreprenor invitat', 'facilitator', 'invitat'].includes(x))) w.push(['/', 'traineri pe homepage'], ['/traineri', 'lista trainerilor (în lucru)']);
+    if (t.some((x) => ['trainer', 'antreprenor invitat', 'facilitator', 'invitat'].includes(x))) w.push(['/', 'traineri pe homepage'], ['/lideri', 'lista liderilor']);
     (v.editii || []).slice(-3).forEach((e) => w.push([eUrl(e), `ediția ${eLab(e)}`]));
     if (v.id && partsOf(v.id).length) w.push(['/', 'cifrele agregate ale edițiilor (fără nume)']);
     [...new Set((v.aparitii || []).map((a) => a.tema))].filter((x) => FULL.includes(x)).slice(0, 2).forEach((x) => w.push([`/teme/${x}`, 'pagina temei']));
@@ -93,6 +93,7 @@ const CMS = (() => {
           <div class="f"><label>Adaugă manual</label>${checks('tipuri', ROLE_MANUAL, manualOn)}<small>Pentru cine nu e încă în agenda unui atelier (de ex. un trainer nou) sau face parte din echipă.</small></div>`)
         + fs_('Companie și funcție', f2(inp('companie', 'Companie', p.companii?.[p.companii.length - 1], { list: 'cms-orgs', ph: 'Caută sau scrie una nouă', hint: 'Dacă nu există, se adaugă și în Organizații.' }), inp('functie', 'Funcția afișată', p.functii?.[p.functii.length - 1], { ph: 'ex. Fondator & CEO' })) + inp('site', 'Site-ul companiei', orgOf(p)?.url, { ph: 'https://…', hint: 'Se salvează la companie și apare pe pagina de alumni („Site-ul companiei”).' }))
         + fs_('Prezentare', area('bio', 'Câteva rânduri despre el/ea', p.bio, { ph: kind === 'participant' ? '2–3 fraze. Apare pe pagina lui de alumni.' : '2–3 fraze. Apare pe fișa de pe site.' }) + alumniPage(p))
+        + (kind !== 'participant' ? fs_('Fișa de lider (/lideri)', inp('expertiza', 'Arii de expertiză', (p.expertiza || []).join(', '), { ph: 'ex. fintech, scalare internațională, atragere de investiții', hint: 'Separate prin virgulă. Apar deasupra temelor ținute în program.' }) + area('intrebari', 'Întrebări pe care i le pot pune antreprenorii', (p.intrebari || []).join('\n'), { ph: 'Câte una pe rând. Apar primele; dacă lipsesc, fișa propune întrebări după temele ținute.' }) + area('org_descriere', 'Ce face compania', orgOf(p)?.descriere, { ph: 'Ce face compania, pentru cine, în 1–2 fraze. Se salvează la companie.' })) : '')
         + (p.aparitii?.length ? fs_('Unde apare în program', `<ul class="ro">${p.aparitii.slice(-6).reverse().map((a) => `<li><b>${eLab(a.editie)}</b> · ${esc(a.titlu || '')} · ${esc(a.rol)}</li>`).join('')}</ul><small class="ro">Aparițiile se schimbă din atelier: Ediții › ediția › Construiește › Traineri și invitați.</small>`) : '')
         + visField('oameni', p.id);
     },
@@ -118,6 +119,9 @@ const CMS = (() => {
       // rolurile bifate de mână; participarea și aparițiile din agende se adaugă singure la reconstruire
       const date = { nume: v.nume.trim(), imagine: v.imagine || null, linkedin: v.linkedin || null, companii: comp, functii: fn, tipuri: v.tipuri, organizatii: [...new Set([...(p.organizatii || []), orgId].filter(Boolean))] };
       if (v.bio !== undefined) date.bio = v.bio.trim() || null;
+      if (v.expertiza !== undefined) date.expertiza = v.expertiza.split(',').map((x) => x.trim()).filter(Boolean);
+      if (v.intrebari !== undefined) date.intrebari = v.intrebari.split('\n').map((x) => x.trim()).filter(Boolean);
+      if (orgId && v.org_descriere !== undefined && (v.org_descriere.trim() || null) !== (Oid(orgId)?.descriere || null)) await put({ op: 'entitate', tip: 'organizatii', id: orgId, date: { descriere: v.org_descriere.trim() || null }, eticheta: `descriere: ${v.companie.trim()}` });
       const r = await put({ op: 'entitate', tip: 'oameni', id: p.id, nou, date, eticheta: `${nou ? 'om nou' : 'om'}: ${date.nume}` });
       const id = r.id || p.id;
       if ($('[data-rows="participari"]', f)) {

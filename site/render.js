@@ -74,7 +74,7 @@ function facts({ D, P }) {
 }
 
 // ---------- bucăți comune ----------
-const NAV = [['Program', '/program'], ['Ediții', '/editii'], ['Teme', '/teme'], ['Lideri', '/traineri'], ['Comunitate', '/comunitate'], ['Parteneri', '/parteneri'], ['Despre', '/despre']];
+const NAV = [['Program', '/program'], ['Ediții', '/editii'], ['Teme', '/teme'], ['Lideri', '/lideri'], ['Comunitate', '/comunitate'], ['Parteneri', '/parteneri'], ['Despre', '/despre']];
 // varianta de brand vine din data/brand.json (activă sau cerută pentru previzualizare cu ?brand=)
 function head(title, desc, brandId) {
   const v = brand.pick(brand.load(), brandId);
@@ -260,7 +260,7 @@ ${footer(F, ctx)}
 function renderTrainer(opt = {}) {
   const ctx = load(opt.brand), F = facts(ctx), d = personData(ctx, opt.id);
   if (!d) return null;
-  const desc = `${d.p.nume}${d.org ? ', ' + d.org : ''}: atelierele ținute la Antreprenoria, temele și edițiile.`;
+  const desc = `${d.p.nume}${d.org ? ', ' + d.org : ''}: ariile de expertiză, atelierele ținute la Antreprenoria și întrebări pe care i le poți pune.`;
   return `${head(`${d.p.nume} – Antreprenoria`, desc, opt.brand)}
 ${header(F, ctx)}
 <div class="gridlines" aria-hidden="true"></div>

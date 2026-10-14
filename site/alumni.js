@@ -45,7 +45,7 @@ function alumniData(ctx) {
     q1: quantile(parts.map((x) => x.cifra_afaceri), 0.25), q3: quantile(parts.map((x) => x.cifra_afaceri), 0.75), medianCa: median(parts.map((x) => x.cifra_afaceri)), medianAng: median(parts.map((x) => x.angajati)),
     ciclu: D.organizatii.filter((o) => o.ciclu) };
 }
-const href = (a) => (a.speaker ? `/traineri/${a.id}` : a.page ? `/comunitate/${a.id}` : '');
+const href = (a) => (a.speaker ? `/lideri/${a.id}` : a.page ? `/comunitate/${a.id}` : '');
 
 // sugestiile de căutare: doar cuvintele care chiar găsesc ceva în comunitate
 const IDEAS = ['SEO', 'software', 'marketing', 'construcții', 'logistică', 'consultanță', 'evenimente', 'energie', 'producție', 'recrutare', 'contabilitate', 'design', 'instalații', 'medical', 'turism', 'e-commerce', 'automatizări', 'mobilier', 'ambalaje', 'imobiliare', 'catering', 'educație'];

@@ -84,17 +84,17 @@ function panels(ctx, F) {
           <span class="mm-more">Vezi matricea →</span></a>` },
 
     // liderii: antreprenorii invitați în față (fondatori și CEO), apoi trainerii și facilitatorii; companiile din spatele lor dau greutatea
-    { id: 'traineri', title: 'Lideri', href: '/traineri', intro: `${TR.length} de fondatori, CEO și traineri care predau din ce au construit. ${F.constanti} dintre ei revin în cel puțin cinci ediții.`,
+    { id: 'traineri', title: 'Lideri', href: '/lideri', intro: `${TR.length} de fondatori, CEO și traineri care predau din ce au construit. ${F.constanti} dintre ei revin în cel puțin cinci ediții.`,
       cols: [
-        col('Fondatori și CEO invitați', `<div class="mm-people-grid">${TR.filter((x) => x.roluri.includes('antreprenor invitat')).slice(0, 8).map((x) => `<a href="/traineri/${esc(x.p.id)}">${pic(x.p)}<b>${esc(x.p.nume)}</b><span>${esc(x.org)}${x.p.editii.length > 1 ? ` · ${x.p.editii.length} ediții` : ''}</span></a>`).join('')}</div>`, 'wide'),
+        col('Fondatori și CEO invitați', `<div class="mm-people-grid">${TR.filter((x) => x.roluri.includes('antreprenor invitat')).slice(0, 8).map((x) => `<a href="/lideri/${esc(x.p.id)}">${pic(x.p)}<b>${esc(x.p.nume)}</b><span>${esc(x.org)}${x.p.editii.length > 1 ? ` · ${x.p.editii.length} ediții` : ''}</span></a>`).join('')}</div>`, 'wide'),
         col('Cine predă', [
-          link('/traineri?rol=antreprenor-invitat#lista', 'Antreprenori invitați', `${nRol('antreprenor invitat')} fondatori și CEO care povestesc cum au rezolvat problema zilei`),
-          link('/traineri?rol=trainer#lista', 'Traineri', `${nRol('trainer')} specialiști pentru partea aplicată, dimineața`),
-          link('/traineri?rol=facilitator#lista', 'Facilitatori', `${nRol('facilitator')} pentru mastermind, finanțare și board of advisors`),
-          `<a class="mm-all" href="/traineri#lista">Toți cei ${TR.length} →</a>`,
+          link('/lideri?rol=antreprenor-invitat#lista', 'Antreprenori invitați', `${nRol('antreprenor invitat')} fondatori și CEO care povestesc cum au rezolvat problema zilei`),
+          link('/lideri?rol=trainer#lista', 'Traineri', `${nRol('trainer')} specialiști pentru partea aplicată, dimineața`),
+          link('/lideri?rol=facilitator#lista', 'Facilitatori', `${nRol('facilitator')} pentru mastermind, finanțare și board of advisors`),
+          `<a class="mm-all" href="/lideri#lista">Toți cei ${TR.length} →</a>`,
         ].join('')),
       ],
-      feature: `<a class="mm-feature" href="/traineri?rol=antreprenor-invitat#lista">
+      feature: `<a class="mm-feature" href="/lideri?rol=antreprenor-invitat#lista">
           <span class="mm-kicker">Companiile din spatele lor</span>
           <b>${COS.length} de companii</b>
           <span class="mm-cos">${COS.slice(0, 18).map((c) => `<i>${esc(c)}</i>`).join('')}</span>

@@ -158,7 +158,7 @@ function editionBody(ctx, F, e) {
           </div>
           ${a.program.length ? `<ol class="ag-program">${a.program.map((x) => `<li class="${x.speakeri.length ? 'has-people' : ''}">
             <time>${esc(x.interval)}</time>
-            <div><b>${esc(x.activitate)}</b>${x.speakeri.map((s) => { const p = P[s.persoana]; return p ? `<a class="ag-speaker" href="/traineri/${esc(p.id)}">${avatar(p)}<span><b>${esc(p.nume)}</b><small>${esc(s.rol === 'trainer' ? 'Trainer' : 'Antreprenor invitat')}${s.companie && s.companie !== 'Trainer' ? ' · ' + esc(O[s.organizatie]?.nume || s.companie) : ''}</small></span></a>` : ''; }).join('')}</div>
+            <div><b>${esc(x.activitate)}</b>${x.speakeri.map((s) => { const p = P[s.persoana]; return p ? `<a class="ag-speaker" href="/lideri/${esc(p.id)}">${avatar(p)}<span><b>${esc(p.nume)}</b><small>${esc(s.rol === 'trainer' ? 'Trainer' : 'Antreprenor invitat')}${s.companie && s.companie !== 'Trainer' ? ' · ' + esc(O[s.organizatie]?.nume || s.companie) : ''}</small></span></a>` : ''; }).join('')}</div>
           </li>`).join('')}</ol>` : ''}
         </div>
       </details>`;
@@ -169,10 +169,10 @@ function editionBody(ctx, F, e) {
   const peopleSec = people.length ? `<section class="sec sec-alt" id="oameni"><div class="wrap">
     <div class="sec-head row"><div><p class="eyebrow">Traineri și antreprenori invitați</p><h2>${plural(people.length, 'om', 'oameni')} care vorbesc din ce au trăit.</h2>
       <p class="lead">${plural(trainers, 'trainer', 'traineri')} pentru partea aplicată și ${plural(people.length - trainers, 'antreprenor invitat', 'antreprenori invitați')} care povestesc cum au rezolvat exact problema zilei.</p></div>
-      <a class="link-arrow" href="/traineri">Toți trainerii →</a></div>
+      <a class="link-arrow" href="/lideri">Toți trainerii →</a></div>
     ${[['Traineri', people.filter((x) => x.rol === 'trainer')], ['Antreprenori invitați', people.filter((x) => x.rol !== 'trainer')]].filter(([, l]) => l.length).map(([h, list]) => `
     <h3 class="ed-people-h">${h} <span>${list.length}</span></h3>
-    <div class="ed-people" style="--n:${cols(list.length)}">${list.map((x) => `<a class="ed-person" href="/traineri/${esc(x.p.id)}">
+    <div class="ed-people" style="--n:${cols(list.length)}">${list.map((x) => `<a class="ed-person" href="/lideri/${esc(x.p.id)}">
       ${avatar(x.p)}
       <span class="ed-role ${x.rol === 'trainer' ? 'tr' : ''}">${x.rol === 'trainer' ? 'Trainer' : 'Invitat'}</span>
       <b>${esc(x.p.nume)}</b><span>${esc(x.org)}</span>
@@ -282,7 +282,7 @@ function editionBody(ctx, F, e) {
 
     const allPartners = [...strategic, ...sponsors.filter((o) => !strategic.includes(o))];
     const TABS = [
-      ['vorbitori', 'Traineri și invitați', people.length, `<div class="ed-chips">${people.map((x) => `<a class="ed-chip" href="/traineri/${esc(x.p.id)}">${avatar(x.p)}<span><b>${esc(x.p.nume)}</b><span>${esc(x.org)}</span><small>${x.rol === 'trainer' ? '<i>Trainer</i> ' : ''}${x.ateliere.map((a) => esc(cleanTitle(a.titlu))).join(' · ')}</small></span></a>`).join('')}</div>`],
+      ['vorbitori', 'Traineri și invitați', people.length, `<div class="ed-chips">${people.map((x) => `<a class="ed-chip" href="/lideri/${esc(x.p.id)}">${avatar(x.p)}<span><b>${esc(x.p.nume)}</b><span>${esc(x.org)}</span><small>${x.rol === 'trainer' ? '<i>Trainer</i> ' : ''}${x.ateliere.map((a) => esc(cleanTitle(a.titlu))).join(' · ')}</small></span></a>`).join('')}</div>`],
       ['colegi', 'Colegii de ediție', part.length, `
         <div class="ed-chips">${part.map((p) => { const o = O[p.organizatie]; return `<div class="ed-chip">${avatar({ nume: p.nume, imagine: p.imagine })}<span><b>${esc(p.nume)}</b><span>${esc(o?.nume || '')}</span>${o?.sector ? `<small>${esc(o.sector)}</small>` : ''}</span></div>`; }).join('')}</div>`],
       ['parteneri', 'Parteneri', allPartners.length, `<div class="ed-logos">${allPartners.map((o) => `<div class="ed-logo"><div class="logo-cell">${logoImg(o)}</div><span>${strategic.includes(o) ? 'Partener strategic' : sponsorOf(o.id).map((a) => esc(cleanTitle(a.titlu))).join(' · ') || 'Partener'}</span></div>`).join('')}</div>`],
