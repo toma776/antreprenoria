@@ -181,7 +181,7 @@ function aplicaBody(ctx, F, opt = {}) {
           <ul class="ax-crit">
             <li><i>01</i><div><b>O afacere care crește</b><span>O cifră de afaceri de cel puțin <strong>500.000 €</strong> pe an și dorința de a duce compania la nivelul următor.</span></div></li>
             <li><i>02</i><div><b>Ambiția ta contează cel mai mult</b><span>Poți veni din orice industrie, cu orice model de business. Ne interesează cât de departe vrei să duci compania și cât de deschis ești să lucrezi la ea.</span></div></li>
-            <li><i>03</i><div><b>Fiecare aplicare, citită cu atenție</b><span><strong>Comitetul de selecție</strong> se uită la cifre, la echipă, la ambiția și la disponibilitatea ta, ca să formeze o grupă în care toți au de câștigat.</span></div></li>
+            <li><i>03</i><div><b>Fiecare aplicare, citită cu atenție</b><span><strong>Comitetul de selecție</strong> se uită la cifre, la echipă, la ambiția și la disponibilitatea ta, ca să formeze o grupă în care toți au de câștigat. Primești răspunsul în cel mult <strong>10 zile lucrătoare</strong>.</span></div></li>
           </ul>
           <p class="ax-why">Când în sală sunt antreprenori cu ambiții pe măsură, fiecare învață și de la ceilalți. De asta alegem grupa cu grijă.</p>
           <div class="ax-start">
