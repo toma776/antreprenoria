@@ -1,7 +1,7 @@
 // Meniul principal (mega-meniu): fiecare secțiune a site-ului deschide un panou cu tot ce conține,
 // generat din creier. Pe desktop panourile se deschid la hover sau click; pe mobil devin acordeon într-un meniu lateral.
 const { img, slug } = require('./util');
-const { alumniData } = require('./alumni');
+const { alumniData, ideas, connectMail } = require('./alumni');
 const { everyone } = require('./traineri');
 const { partnersData } = require('./parteneri');
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -15,6 +15,55 @@ const pic = (p) => (p.imagine ? `<img src="${esc(img(p.imagine, 256))}" alt="" l
 // o legătură din panou: titlu + descriere scurtă
 const link = (href, title, desc, extra = '') => `<a class="mm-link" href="${esc(href)}"><b>${title}</b>${desc ? `<span>${desc}</span>` : ''}${extra}</a>`;
 const col = (title, body, cls = '') => `<div class="mm-col ${cls}"><h3 class="mm-h">${esc(title)}</h3>${body}</div>`;
+
+// fețele din peretele comunității: câte una din fiecare industrie, pe rând, ca să se vadă cât de diversă e
+function faces(L, n) {
+  const by = new Map();
+  L.filter((a) => a.imagine).forEach((a) => { const k = a.sector || ''; if (!by.has(k)) by.set(k, []); by.get(k).push(a); });
+  const out = [], lists = [...by.values()];
+  for (let i = 0; out.length < n && lists.some((l) => l[i]); i++) lists.forEach((l) => { if (l[i] && out.length < n) out.push(l[i]); });
+  return out;
+}
+
+function community(ctx, AL) {
+  const sec = AL.sectors.slice(0, 8), max = AL.sectors[0]?.[1] || 1, mail = connectMail(ctx.D);
+  const wall = faces(AL.L, 18);
+  // cei mai noi membri: din ultima ediție încheiată, alții decât cei din perete
+  const lastEd = AL.eds[AL.eds.length - 1];
+  const fresh = AL.L.filter((a) => a.eds.includes(lastEd) && a.desc && !wall.includes(a)).slice(0, 4);
+  return `<div class="wrap mm-in mmc" data-mail="${esc(mail)}">
+    <div class="mmc-main">
+      <p class="mmc-kicker"><i class="dot-live"></i>Comunitatea Antreprenoria · ${AL.L.length} de antreprenori</p>
+      <a class="mmc-title" href="/comunitate">Ce cauți? Cineva din comunitate face asta.</a>
+      <form class="mmc-search" action="/comunitate" role="search">
+        <svg class="mmc-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input name="q" type="search" placeholder="Un serviciu, un produs, o companie…" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="false" aria-controls="mmc-res" aria-autocomplete="list" aria-label="Caută în comunitate">
+        <kbd class="mmc-kbd" aria-hidden="true">Ctrl K</kbd>
+        <button type="submit" aria-label="Caută în comunitate"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </form>
+      <div class="mmc-ideas"><span>Căutate des</span>${ideas(AL.L).map((w) => `<a href="/comunitate?q=${encodeURIComponent(w)}#lista" data-idea="${esc(w)}">${esc(w)}</a>`).join('')}</div>
+      <div class="mmc-res" id="mmc-res" role="listbox" aria-label="Rezultate" hidden></div>
+      <div class="mmc-new"><h3 class="mm-h">Nou în comunitate · ${esc(edLabel(lastEd))}, ${esc(lastEd.sezon)} ${lastEd.an}</h3>
+        <div>${fresh.map((a) => `<a href="/comunitate?membru=${esc(a.id)}#lista"><span class="mmc-av">${pic(a)}</span><span><b>${esc(a.nume)}</b><span>${esc(a.org?.nume || '')}</span></span></a>`).join('')}</div></div>
+    </div>
+    <div class="mmc-explore">
+      <h3 class="mm-h">Pe industrii</h3>
+      <div class="mmc-sectors">${sec.map(([s, n]) => `<a href="/comunitate?sector=${esc(slug(s))}#lista"><span>${esc(s)}</span><i style="--w:${Math.round((n / max) * 100)}%"></i><b>${n}</b></a>`).join('')}</div>
+      <a class="mm-all" href="/comunitate#exploreaza">Toate cele ${AL.sectors.length} industrii →</a>
+      <h3 class="mm-h mmc-h2">Pe ediții</h3>
+      <div class="mmc-eds">${AL.eds.slice().reverse().map((e) => `<a href="/comunitate?editie=${e.numar}#lista"><b>${esc(edLabel(e))}</b><span>${e.participanti.length}</span></a>`).join('')}</div>
+    </div>
+    <a class="mmc-wall" href="/comunitate">
+      <span class="mmc-faces" aria-hidden="true">${wall.map((a) => `<span>${pic(a)}</span>`).join('')}</span>
+      <span class="mmc-wall-tx">
+        <span class="mm-kicker">Toată comunitatea</span>
+        <b>${AL.L.length} de antreprenori, ${AL.companies} de companii</b>
+        <span class="mm-sub">din ${AL.sectors.length} industrii și ${AL.eds.length} ediții încheiate, fiecare cu ce face și ce oferă</span>
+        <span class="mm-more">Intră în comunitate →</span>
+      </span>
+    </a>
+  </div>`;
+}
 
 function panels(ctx, F) {
   const { D, P, O, T } = ctx;
@@ -102,20 +151,7 @@ function panels(ctx, F) {
           <span class="mm-cos">${COS.slice(0, 18).map((c) => `<i>${esc(c)}</i>`).join('')}</span>
           <span class="mm-more">Antreprenorii invitați →</span></a>` },
 
-    { id: 'alumni', title: 'Comunitate', href: '/comunitate', intro: `${AL.L.length} de antreprenori din ${AL.eds.length} ediții încheiate, din ${AL.sectors.length} industrii. Caută după ce ai nevoie.`,
-      cols: [
-        col('Pe industrii', `<div class="mm-sectors">${AL.sectors.map(([s, n]) => `<a href="/comunitate?sector=${esc(slug(s))}#lista"><span>${esc(s)}</span><b>${n}</b></a>`).join('')}</div>`, 'wide'),
-        col('Comunitatea', [
-          link('/comunitate#lista', 'Caută în comunitate', 'După nevoie: un serviciu, un produs, o problemă de rezolvat'),
-          link('/comunitate#din-alumni-parteneri', 'Din comunitate, parteneri', `${F.ciclu.length} companii revenite ca sponsori, gazde sau cu speakeri`),
-          link('/comunitate#cifre', 'Mărimea companiilor', 'Mediane și distribuții, fără date individuale'),
-        ].join('')),
-      ],
-      feature: `<a class="mm-feature" href="/comunitate#cifre">
-          <span class="mm-kicker">Participantul tipic</span>
-          <b>${(F.medianCa / 1e6).toLocaleString('ro-RO', { maximumFractionDigits: 1 })} mil. lei</b>
-          <span class="mm-sub">cifra de afaceri mediană · ${F.medianAng} angajați la mediană</span>
-          <span class="mm-more">Toate cifrele →</span></a>` },
+    { id: 'alumni', title: 'Comunitate', href: '/comunitate', body: community(ctx, AL) },
 
     // parteneri: pentru brandurile care caută un CSR cu impact; aceeași ordine ca pagina (formatul, costul real, brandurile, ce e liber acum)
     { id: 'parteneri', title: 'Parteneri', href: '/parteneri', intro: `CSR cu impact: brandul tău, o zi întreagă cu fondatorii care angajează și investesc în România. ${deN(PD.all.length)} branduri au fost deja alături de noi.`,
@@ -161,11 +197,11 @@ function megaMenu(ctx, F) {
     <div class="mm-item" data-mm="${p.id}">
       <button class="mm-trigger" type="button" aria-expanded="false" aria-controls="mm-${p.id}">${esc(p.title)}<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5 6 7.5 9 4.5"/></svg></button>
       <div class="mm-panel" id="mm-${p.id}" role="region" aria-label="${esc(p.title)}">
-        <div class="wrap mm-in${p.feature ? '' : ' no-aside'}">
+        ${p.body || `<div class="wrap mm-in${p.feature ? '' : ' no-aside'}">
           <div class="mm-intro"><a class="mm-title" href="${esc(p.href)}">${esc(p.title)} <span>→</span></a><p>${p.intro}</p></div>
           <div class="mm-cols" style="--cols:${p.cols.reduce((n, c) => n + (c.includes('mm-col wide') ? 2 : 1), 0)}">${p.cols.join('')}</div>
           ${p.feature ? `<div class="mm-aside">${p.feature}</div>` : ''}
-        </div>
+        </div>`}
       </div>
     </div>`).join('');
 }

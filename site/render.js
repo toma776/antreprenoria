@@ -16,7 +16,7 @@ const { programBody } = require('./program');
 const { despreBody } = require('./despre');
 const { temeBody, temaBody } = require('./teme');
 const { traineriBody, trainerBody, personData } = require('./traineri');
-const { alumniBody, alumnusBody, alumniData, hasPage } = require('./alumni');
+const { alumniBody, alumnusBody, alumniData, hasPage, communityIndex } = require('./alumni');
 const { parteneriBody } = require('./parteneri');
 const { editiiBody } = require('./editii');
 const { aplicaBody, options: aplicaOptions } = require('./aplica');
@@ -348,4 +348,7 @@ ${footer(F, ctx, { mcta: false })}
 // edițiile la care se poate aplica acum (pentru validarea de pe server)
 const applyOptions = () => { const ctx = load(); return aplicaOptions(ctx, facts(ctx)); };
 
-module.exports = { renderHome, renderEdition, renderProgram, renderDespre, renderTeme, renderTema, renderTraineri, renderTrainer, renderAlumni, renderAlumnus, renderParteneri, renderEditii, renderAplica, applyOptions };
+// indexul comunității pentru căutarea din meniu
+const renderCommunityIndex = (opt = {}) => JSON.stringify(communityIndex(load(opt.brand)));
+
+module.exports = { renderCommunityIndex, renderHome, renderEdition, renderProgram, renderDespre, renderTeme, renderTema, renderTraineri, renderTrainer, renderAlumni, renderAlumnus, renderParteneri, renderEditii, renderAplica, applyOptions };

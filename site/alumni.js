@@ -241,4 +241,9 @@ function alumnusBody(ctx, F, id, opt = {}) {
 </main>`;
 }
 
-module.exports = { alumniBody, alumnusBody, alumniData, hasPage };
+// indexul pentru căutarea din meniu (/comunitate.json): doar ce apare deja public pe /comunitate
+function communityIndex(ctx) {
+  return alumniData(ctx).L.map((a) => ({ id: a.id, n: a.nume, co: a.org?.nume || '', s: a.sector || '', d: a.desc, img: a.imagine ? img(a.imagine, 128) : '', ed: a.eds.map(edLabel).join(' · ') }));
+}
+
+module.exports = { alumniBody, alumnusBody, alumniData, hasPage, communityIndex, ideas, connectMail };

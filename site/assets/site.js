@@ -22,7 +22,8 @@
   items.forEach((item) => {
     const trigger = $('.mm-trigger', item);
     item.addEventListener('mouseenter', () => { if (!desktop.matches) return; clearTimeout(timer); timer = setTimeout(() => openOnly(item), 90); });
-    item.addEventListener('mouseleave', () => { if (!desktop.matches) return; clearTimeout(timer); timer = setTimeout(closeAll, 160); });
+    // panoul rămâne deschis cât timp cineva scrie în el (căutarea din Comunitate), chiar dacă mouse-ul pleacă
+    item.addEventListener('mouseleave', () => { if (!desktop.matches) return; clearTimeout(timer); if (item.contains(document.activeElement) && document.activeElement.matches('input')) return; timer = setTimeout(closeAll, 160); });
     trigger.addEventListener('click', () => {
       clearTimeout(timer);
       if (item.classList.contains('open')) { setOpen(item, false); if (scrim) scrim.hidden = true; } else openOnly(item);
@@ -557,14 +558,12 @@ const peopleSearch = (() => {
 })();
 
 
-// /comunitate: căutarea după nevoie, explorarea pe felii, filtrele directorului și profilul rapid
-(() => {
-  const grid = document.querySelector('.cm-grid');
-  if (!grid) return;
-  const cards = [...grid.querySelectorAll('.cm-card')];
+// motorul de căutare al comunității, comun pentru pagina /comunitate și pentru căutarea din meniu
+// fiecare element (card sau rând din index) primește prin prep() câmpurile normalizate: nume, companie, sector, descriere
+const cmEngine = (() => {
   const norm = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
   const words = (s) => norm(s).split(/[^a-z0-9]+/).filter(Boolean);
-  const escH = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  const escH = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
   // cuvintele din întrebare care nu spun ce cauți
   const STOP = new Set('am as avem caut cautam cineva ceva care ce cu de din doresc este eu in la ma mi nevoie o pe pentru sa se si un una unei unui vreau vrem imi trebuie servicii serviciu firma companie solutii'.split(' '));
   // câteva sinonime: cum ar căuta cineva vs cum scrie compania despre ea
@@ -573,33 +572,43 @@ const peopleSearch = (() => {
     casa: ['casa', 'locuinte', 'rezidential', 'constructii'], mancare: ['mancare', 'food', 'catering', 'alimentar', 'restaurant'], eveniment: ['eveniment', 'evenimente', 'conferinte'] };
   // rădăcina unui cuvânt (fără terminațiile românești): turbină, turbine, turbinei -> turbin
   const stem = (w) => (w.length > 5 ? w.slice(0, Math.max(4, w.length - 2)) : w);
-  const hit = (ws, term) => { const t = term.split(' '); return t.length > 1 ? ws.join(' ').includes(term) : ws.some((w) => (t[0].length <= 3 ? w === t[0] : w.startsWith(stem(t[0])))); };
-  cards.forEach((c, i) => {
-    c._i = i;
-    c._d = c.querySelector('.cm-d:not(.cm-d-empty)')?.textContent || '';
-    c._f = { n: words(c.querySelector('.cm-n').textContent), co: words(c.querySelector('.cm-co').textContent), s: words(c.dataset.sector), d: words(c._d) };
-  });
+  const same = (w, x) => (x.length <= 3 ? w === x : w.startsWith(stem(x)));
+  const hit = (ws, term) => { const t = term.split(' '); return t.length > 1 ? ws.join(' ').includes(term) : ws.some((w) => same(w, t[0])); };
   const W = { n: 6, co: 6, s: 3, d: 2 };
-  // scorul unui card pentru un termen (cu sinonimele lui): cel mai bun câmp în care apare
-  const termScore = (c, alts) => Math.max(0, ...Object.keys(W).map((k) => (alts.some((a) => hit(c._f[k], a)) ? W[k] : 0)));
-  const search = (raw) => {
+  const prep = (it, f) => { it._d = f.d || ''; it._f = { n: words(f.n), co: words(f.co), s: words(f.s), d: words(f.d) }; return it; };
+  // scorul unui element pentru un termen (cu sinonimele lui): cel mai bun câmp în care apare
+  const termScore = (it, alts) => Math.max(0, ...Object.keys(W).map((k) => (alts.some((a) => hit(it._f[k], a)) ? W[k] : 0)));
+  // toate cuvintele trebuie găsite; dacă nu iese nimic, potrivirile parțiale (marcate ca atare)
+  const search = (items, raw) => {
     const terms = words(raw).filter((w) => !STOP.has(w));
     if (!terms.length) return { list: null, terms: [] };
     const alts = terms.map((t) => SYN[t] || SYN[stem(t)] || [t]);
-    const scored = cards.map((c) => { const s = alts.map((a) => termScore(c, a)); return [c, s.filter(Boolean).length, s.reduce((x, y) => x + y, 0)]; });
+    const scored = items.map((it) => { const s = alts.map((a) => termScore(it, a)); return [it, s.filter(Boolean).length, s.reduce((x, y) => x + y, 0)]; });
     let list = scored.filter(([, n]) => n === terms.length), partial = false;
     if (!list.length && terms.length > 1) { list = scored.filter(([, n]) => n > 0); partial = list.length > 0; }
     list.sort((a, b) => b[1] - a[1] || b[2] - a[2]);
-    return { list: list.map(([c]) => c), terms: alts.flat(), partial };
+    return { list: list.map(([it]) => it), terms: alts.flat(), partial };
   };
-  // cuvintele găsite apar marcate în descriere; pe card, textul pornește cu puțin înaintea primei potriviri
-  const marked = (c, terms, from = 0) => {
+  // cuvintele găsite apar marcate; cu `from`, textul pornește cu câteva cuvinte înaintea primei potriviri
+  const marked = (it, terms, from = 0) => {
     const tw = terms.flatMap((t) => t.split(' '));
-    const parts = c._d.split(/(\s+)/);
-    const ok = parts.map((w) => { const n = words(w)[0]; return !!n && tw.some((x) => (x.length <= 3 ? n === x : n.startsWith(stem(x)))); });
+    const parts = it._d.split(/(\s+)/);
+    const ok = parts.map((w) => { const n = words(w)[0]; return !!n && tw.some((x) => same(n, x)); });
     const start = from ? Math.max(0, ok.indexOf(true) - from * 2) : 0;
     return (start > 0 ? '… ' : '') + parts.slice(start).map((w, i) => (ok[i + start] ? `<mark>${escH(w)}</mark>` : escH(w))).join('');
   };
+  return { prep, search, marked, escH };
+})();
+
+// /comunitate: căutarea după nevoie, explorarea pe felii, filtrele directorului și profilul rapid
+(() => {
+  const grid = document.querySelector('.cm-grid');
+  if (!grid) return;
+  const cards = [...grid.querySelectorAll('.cm-card')];
+  const { escH } = cmEngine;
+  const search = (raw) => cmEngine.search(cards, raw);
+  const marked = cmEngine.marked;
+  cards.forEach((c, i) => { c._i = i; cmEngine.prep(c, { n: c.querySelector('.cm-n').textContent, co: c.querySelector('.cm-co').textContent, s: c.dataset.sector, d: c.querySelector('.cm-d:not(.cm-d-empty)')?.textContent || '' }); });
   const mark = (c, terms) => {
     const p = c.querySelector('.cm-d:not(.cm-d-empty)');
     if (!p) return;
@@ -687,6 +696,7 @@ const peopleSearch = (() => {
     dr.classList.remove('on');
     document.documentElement.classList.remove('cm-lock');
     document.documentElement.style.paddingRight = '';
+    const u = new URL(location.href); if (u.searchParams.has('membru')) { u.searchParams.delete('membru'); history.replaceState(null, '', u.pathname + u.search + u.hash); }
     setTimeout(() => { dr.hidden = true; }, 260);
     back?.focus({ preventScroll: true });
   };
@@ -697,6 +707,9 @@ const peopleSearch = (() => {
     if (o) open(cards.find((c) => c.dataset.id === o.dataset.open));
   });
   addEventListener('keydown', (e) => { if (e.key === 'Escape' && !dr.hidden) close(); });
+  // ?membru=<id> (rezultatele din căutarea din meniu) deschide direct profilul rapid
+  const m0 = cards.find((c) => c.dataset.id === new URLSearchParams(location.search).get('membru'));
+  if (m0) open(m0);
 })();
 // /parteneri: roata din hero, configuratorul de parteneriat, calculatorul fiscal, inventarul brandurilor
 (() => {
@@ -862,4 +875,82 @@ const peopleSearch = (() => {
     const io = new IntersectionObserver((es) => { es.forEach((e) => seen.set(e.target, e.isIntersecting)); fab.classList.toggle('show', !seen.get(hero) && !seen.get(fin)); });
     io.observe(hero); io.observe(fin);
   }
+})();
+
+// meniul Comunitate: căutarea cu rezultate live (indexul /comunitate.json se încarcă la prima deschidere), săgeți + Enter, Ctrl/⌘ K
+(() => {
+  const box = document.querySelector('.mmc');
+  if (!box) return;
+  const item = box.closest('.mm-item'), form = box.querySelector('.mmc-search'), input = form.querySelector('input'), res = box.querySelector('.mmc-res'), ideas = box.querySelector('.mmc-ideas');
+  const { escH } = cmEngine;
+  const mac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+  box.querySelector('.mmc-kbd').textContent = mac ? '⌘ K' : 'Ctrl K';
+  if (matchMedia('(max-width: 480px)').matches) input.placeholder = 'Un serviciu, o companie…';
+  const go = (q, id) => { location.href = `/comunitate?q=${encodeURIComponent(q)}${id ? `&membru=${encodeURIComponent(id)}` : ''}#lista`; };
+
+  // indexul: din /comunitate.json; dacă ruta lipsește (server vechi), din cardurile paginii /comunitate
+  let index = null, loading = null;
+  const load = () => loading || (loading = fetch('/comunitate.json').then((r) => (r.ok ? r.json() : Promise.reject())).catch(() =>
+    fetch('/comunitate').then((r) => r.text()).then((h) => [...new DOMParser().parseFromString(h, 'text/html').querySelectorAll('.cm-card')].map((c) => ({
+      id: c.dataset.id, n: c.querySelector('.cm-n').textContent, co: c.querySelector('.cm-co').textContent, s: c.dataset.sector,
+      d: c.querySelector('.cm-d:not(.cm-d-empty)')?.textContent || '', img: c.querySelector('.cm-av img')?.getAttribute('src') || '', ed: (c.querySelector('.cm-eds')?.textContent || '').trim() }))))
+    .then((L) => { index = L.map((x) => cmEngine.prep(x, x)); return index; }));
+  item.addEventListener('mouseenter', load, { once: true });
+  input.addEventListener('focus', load, { once: true });
+
+  let active = -1, last = '';
+  const opts = () => [...res.querySelectorAll('.mmc-r')];
+  const setActive = (i) => {
+    const o = opts();
+    active = o.length ? (i + o.length) % o.length : -1;
+    o.forEach((x, k) => x.setAttribute('aria-selected', String(k === active)));
+    if (active >= 0) { o[active].scrollIntoView({ block: 'nearest' }); input.setAttribute('aria-activedescendant', o[active].id); } else input.removeAttribute('aria-activedescendant');
+  };
+  const render = (q) => {
+    last = q;
+    const empty = !q;
+    res.hidden = empty; ideas.hidden = !empty; box.querySelector('.mmc-new').hidden = !empty; box.classList.toggle('typing', !empty);
+    input.setAttribute('aria-expanded', String(!empty));
+    if (empty) { res.innerHTML = ''; active = -1; return; }
+    if (!index) { res.innerHTML = '<p class="mmc-wait">Se încarcă comunitatea…</p>'; load().then(() => { if (last === q) render(q); }); return; }
+    const r = cmEngine.search(index, q), L = r.list || [];
+    const mail = box.dataset.mail;
+    if (!L.length) {
+      res.innerHTML = `<div class="mmc-none"><b>Nimic încă pentru „${escH(q)}”.</b><span>Spune-ne ce cauți: echipa întreabă în comunitate și revine cu un om potrivit.</span>${mail ? `<a href="mailto:${escH(mail)}?subject=${encodeURIComponent(`Caut în comunitate: ${q}`)}">Cere o recomandare →</a>` : ''}</div>`;
+      active = -1; return;
+    }
+    res.innerHTML = `${r.partial ? '<p class="mmc-note">Potriviri parțiale:</p>' : ''}${L.slice(0, 5).map((x, i) => `<a class="mmc-r" id="mmc-r${i}" role="option" aria-selected="false" href="/comunitate?q=${encodeURIComponent(q)}&membru=${encodeURIComponent(x.id)}#lista">
+        <span class="mmc-av">${x.img ? `<img src="${escH(x.img)}" alt="" loading="lazy">` : `<span class="ph">${escH(x.n.split(' ').map((w) => w[0]).join('').slice(0, 2))}</span>`}</span>
+        <span class="mmc-r-tx"><span class="mmc-r-top"><b>${escH(x.n)}</b><span>${escH(x.co)}</span></span>${x.d ? `<span class="mmc-r-d">${cmEngine.marked(x, r.terms, 4)}</span>` : ''}</span>
+        <span class="mmc-r-meta">${x.s ? `<em>${escH(x.s)}</em>` : ''}<small>${escH(x.ed)}</small></span></a>`).join('')}
+      <a class="mmc-all" href="/comunitate?q=${encodeURIComponent(q)}#lista"><span>${L.length > 5 ? `Toate cele ${L.length} rezultate` : L.length === 1 ? 'Vezi rezultatul' : `Vezi cele ${L.length} rezultate`} pentru „${escH(q)}”</span><kbd>Enter</kbd></a>`;
+    active = -1;
+  };
+  let t;
+  input.addEventListener('input', () => { clearTimeout(t); t = setTimeout(() => render(input.value.trim()), 90); });
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown') { e.preventDefault(); setActive(active + 1); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); setActive(active - 1); }
+    else if (e.key === 'Escape' && input.value) { e.stopPropagation(); input.value = ''; render(''); }
+  });
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const q = input.value.trim();
+    if (active >= 0) { opts()[active].click(); return; }
+    if (q) go(q); else input.focus();
+  });
+  res.addEventListener('mousemove', (e) => { const o = e.target.closest('.mmc-r'); if (o) setActive(opts().indexOf(o)); });
+  // sugestiile completează căutarea în loc să plece de pe pagină
+  ideas.addEventListener('click', (e) => { const a = e.target.closest('[data-idea]'); if (!a) return; e.preventDefault(); input.value = a.dataset.idea; input.focus(); render(a.dataset.idea); });
+
+  // Ctrl/⌘ K deschide căutarea din orice pagină
+  addEventListener('keydown', (e) => {
+    if (!(e.key === 'k' || e.key === 'K') || !(e.ctrlKey || e.metaKey) || e.altKey) return;
+    e.preventDefault();
+    const trigger = item.querySelector('.mm-trigger');
+    if (!item.classList.contains('open')) trigger.click();
+    const nav = document.getElementById('nav'), btn = document.querySelector('.menu-btn');
+    if (btn && getComputedStyle(btn).display !== 'none' && !nav.classList.contains('open')) btn.click();
+    setTimeout(() => { input.focus(); input.select(); }, 60);
+  });
 })();

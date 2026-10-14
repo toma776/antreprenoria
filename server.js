@@ -447,6 +447,11 @@ async function handler(req, res) {
     if (url === '/alumni/din-alumni-parteneri') { res.writeHead(301, { Location: '/comunitate#din-alumni-parteneri' }); return res.end(); }
     const old = /^\/alumni(\/.*)?$/.exec(url);
     if (old) { res.writeHead(301, { Location: '/comunitate' + (old[1] && old[1] !== '/' ? old[1] : '') + (query ? '?' + query : '') }); return res.end(); }
+    // indexul pentru căutarea din meniu (se încarcă doar când cineva caută)
+    if (url === '/comunitate.json') {
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+      return res.end(fresh('./site/render').renderCommunityIndex());
+    }
     if ((url === '/comunitate' || url === '/comunitate/')) {
       res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' });
       const q1 = new URLSearchParams(query);
