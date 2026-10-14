@@ -31,7 +31,7 @@ function alumniData(ctx) {
     const last = a.parts[a.parts.length - 1], o = O[last.organizatie];
     // ce face: descrierea companiei din înscriere, altfel cea din registrul de companii
     const desc = (last.descriere || o?.descriere || '').trim();
-    return { ...a, nume: a.p?.nume || a.nume, imagine: a.p?.imagine || last.imagine, org: o, sector: o?.sector || null, oras: o?.oras || null, desc,
+    return { ...a, nume: a.p?.nume || a.nume, imagine: a.p?.imagine || last.imagine, org: o, sector: o?.sector || null, oras: o?.oras || null, desc, oferta: (a.p?.oferta || []).filter(Boolean), pentru: (a.p?.pentru_cine || []).filter(Boolean),
       fn: (a.p?.functii || []).filter((f) => f && f !== 'Trainer').slice(-1)[0] || '', page: hasPage(a.p) || desc.length > 40, speaker: !!a.p?.aparitii?.length };
   }).sort((x, y) => eds.indexOf(y.eds[y.eds.length - 1]) - eds.indexOf(x.eds[x.eds.length - 1]) || x.nume.localeCompare(y.nume, 'ro'));
   const parts = eds.flatMap((e) => e.participanti);
@@ -74,7 +74,7 @@ function alumniBody(ctx, F, sel = {}) {
   const maxBand = Math.max(...d.bands.map((b) => b.n), 1);
   const card = (a) => {
     const h = href(a);
-    return `<article class="cm-card" ${shown(a) ? '' : 'hidden'} data-id="${esc(a.id)}" data-ed="${esc(a.eds.map((e) => e.id).join(' '))}" data-sector="${esc(a.sector || '')}" data-city="${esc(a.oras || '')}"
+    return `<article class="cm-card" ${shown(a) ? '' : 'hidden'} data-id="${esc(a.id)}" data-ed="${esc(a.eds.map((e) => e.id).join(' '))}" data-sector="${esc(a.sector || '')}" data-city="${esc(a.oras || '')}" data-of="${esc([...a.oferta, ...a.pentru].join(' · '))}"
       data-eds="${esc(a.eds.map((e) => `${edLabel(e)}, ${e.sezon} ${e.an}`).join(' · '))}" data-fn="${esc(a.fn)}" data-li="${esc(a.p?.linkedin || '')}" data-url="${esc(a.org?.url || '')}" data-href="${esc(h)}" data-logo="${esc(a.org?.logo || '')}">
       <button class="cm-hit" type="button" aria-haspopup="dialog" aria-label="Profilul lui ${esc(a.nume)}"></button>
       <div class="cm-card-top">
@@ -313,7 +313,7 @@ function alumnusBody(ctx, F, id, opt = {}) {
 
 // indexul pentru căutarea din meniu (/comunitate.json): doar ce apare deja public pe /comunitate
 function communityIndex(ctx) {
-  return alumniData(ctx).L.map((a) => ({ id: a.id, n: a.nume, co: a.org?.nume || '', s: a.sector || '', d: a.desc, img: a.imagine ? img(a.imagine, 128) : '', ed: a.eds.map(edLabel).join(' · '), h: href(a) }));
+  return alumniData(ctx).L.map((a) => ({ id: a.id, n: a.nume, co: a.org?.nume || '', s: a.sector || '', d: a.desc, img: a.imagine ? img(a.imagine, 128) : '', ed: a.eds.map(edLabel).join(' · '), h: href(a), o: [...a.oferta, ...a.pentru].join(' · ') }));
 }
 
 module.exports = { alumniBody, alumnusBody, alumniData, hasPage, communityIndex, ideas, connectMail };

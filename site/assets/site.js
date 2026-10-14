@@ -574,8 +574,8 @@ const cmEngine = (() => {
   const stem = (w) => (w.length > 5 ? w.slice(0, Math.max(4, w.length - 2)) : w);
   const same = (w, x) => (x.length <= 3 ? w === x : w.startsWith(stem(x)));
   const hit = (ws, term) => { const t = term.split(' '); return t.length > 1 ? ws.join(' ').includes(term) : ws.some((w) => same(w, t[0])); };
-  const W = { n: 6, co: 6, s: 3, d: 2 };
-  const prep = (it, f) => { it._d = f.d || ''; it._f = { n: words(f.n), co: words(f.co), s: words(f.s), d: words(f.d) }; return it; };
+  const W = { n: 6, co: 6, o: 5, s: 3, d: 2 };
+  const prep = (it, f) => { it._d = f.d || ''; it._f = { n: words(f.n), co: words(f.co), o: words(f.o), s: words(f.s), d: words(f.d) }; return it; };
   // scorul unui element pentru un termen (cu sinonimele lui): cel mai bun câmp în care apare
   const termScore = (it, alts) => Math.max(0, ...Object.keys(W).map((k) => (alts.some((a) => hit(it._f[k], a)) ? W[k] : 0)));
   // toate cuvintele trebuie găsite; dacă nu iese nimic, potrivirile parțiale (marcate ca atare)
@@ -608,7 +608,7 @@ const cmEngine = (() => {
   const { escH } = cmEngine;
   const search = (raw) => cmEngine.search(cards, raw);
   const marked = cmEngine.marked;
-  cards.forEach((c, i) => { c._i = i; cmEngine.prep(c, { n: c.querySelector('.cm-n').textContent, co: c.querySelector('.cm-co').textContent, s: c.dataset.sector, d: c.querySelector('.cm-d:not(.cm-d-empty)')?.textContent || '' }); });
+  cards.forEach((c, i) => { c._i = i; cmEngine.prep(c, { n: c.querySelector('.cm-n').textContent, co: c.querySelector('.cm-co').textContent, s: c.dataset.sector, o: c.dataset.of, d: c.querySelector('.cm-d:not(.cm-d-empty)')?.textContent || '' }); });
   const mark = (c, terms) => {
     const p = c.querySelector('.cm-d:not(.cm-d-empty)');
     if (!p) return;
