@@ -774,6 +774,8 @@ const peopleSearch = (() => {
       const extra = team.map((t) => C.msg[t]);
       cta.dataset.imMsg = `Vreau să fiu ${what}.${extra.length ? ` Mi-ar plăcea și: ${extra.join('; ')}.` : ''}`;
     }
+    const f0 = new URLSearchParams(location.search).get('format'), r0 = f0 && $(`input[name="sp-fmt"][value="${f0}"]`, cfgEl);
+    if (r0) r0.checked = true;
     cfgEl.addEventListener('change', update);
     update();
   }

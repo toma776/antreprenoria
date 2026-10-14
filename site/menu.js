@@ -3,6 +3,7 @@
 const { img, slug } = require('./util');
 const { alumniData } = require('./alumni');
 const { everyone } = require('./traineri');
+const { partnersData } = require('./parteneri');
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const today = () => new Date().toISOString().slice(0, 10);
 const MONTHS = ['ian.', 'feb.', 'mar.', 'apr.', 'mai', 'iun.', 'iul.', 'aug.', 'sep.', 'oct.', 'nov.', 'dec.'];
@@ -33,6 +34,7 @@ function panels(ctx, F) {
   const editii = D.editii.slice().sort((a, b) => (b.an - a.an) || (a.sezon === b.sezon ? (a.serie === 'Cluj') - (b.serie === 'Cluj') : a.sezon === 'toamnă' ? -1 : 1));
   const strategic = D.organizatii.filter((o) => o.logo && o.roluri.some((r) => ['partener strategic', 'powered by', 'partener ediție'].includes(r.rol)));
   const team = D.program.contact.echipa;
+  const PD = partnersData(ctx), deN = (n) => `${n}${n % 100 === 0 || n % 100 >= 20 ? ' de' : ''}`;
 
   return [
     { id: 'program', title: 'Program', href: '/program', intro: 'Ce primești, pentru cine e și cum intri.',
@@ -115,21 +117,28 @@ function panels(ctx, F) {
           <span class="mm-sub">cifra de afaceri mediană · ${F.medianAng} angajați la mediană</span>
           <span class="mm-more">Toate cifrele →</span></a>` },
 
-    { id: 'parteneri', title: 'Parteneri', href: '/parteneri', intro: 'Companiile care fac posibil programul și cum li te poți alătura.',
+    // parteneri: pentru brandurile care caută un CSR cu impact; aceeași ordine ca pagina (formatul, costul real, brandurile, ce e liber acum)
+    { id: 'parteneri', title: 'Parteneri', href: '/parteneri', intro: `CSR cu impact: brandul tău, o zi întreagă cu fondatorii care angajează și investesc în România. ${deN(PD.all.length)} branduri au fost deja alături de noi.`,
       cols: [
-        col('Parteneri', `<div class="mm-logos">${strategic.slice(0, 6).map((o) => `<a href="/parteneri#${esc(o.id)}" title="${esc(o.nume)}"><img src="${esc(o.logo)}" alt="${esc(o.nume)}" loading="lazy"></a>`).join('')}</div>
-          <a class="mm-all" href="/parteneri">Toți partenerii și sponsorii →</a>`, 'wide'),
-        col('Implică-te', [
-          link('/parteneri#sponsorizeaza', 'Sponsorizează un atelier', caute ? `${caute === 1 ? 'Un atelier' : `${caute} ateliere`} din ediția #${ong.numar} ${caute === 1 ? 'caută' : 'caută'} încă sponsor` : 'Vizibilitate în fața antreprenorilor selectați'),
-          link('/parteneri#gazduieste', 'Găzduiește un atelier', 'Atelierele s-au ținut la DWF și Zitec'),
-          link('/parteneri#mentor', 'Devino trainer sau mentor', 'Pro-bono, din comunitatea RBL'),
+        col('Alege formatul', [
+          link('/parteneri?format=atelier#construieste', 'Un atelier', 'Sponsor de atelier · o zi'),
+          link('/parteneri?format=editie#construieste', 'O ediție', 'Partener de ediție · 3 luni'),
+          link('/parteneri?format=an#construieste', 'Un an', 'Partener strategic · tot anul'),
+          link('/parteneri#cost-real', 'Costul real', 'Din impozitul plătit oricum'),
         ].join('')),
+        col('Alături de noi', `<div class="mm-logos">${PD.all.filter((x) => x.o.logo).slice(0, 6).map((x) => `<a href="/parteneri#${esc(x.o.id)}" title="${esc(x.o.nume)}"><img src="${esc(x.o.logo)}" alt="${esc(x.o.nume)}" loading="lazy"></a>`).join('')}</div>
+          <a class="mm-all" href="/parteneri#branduri">Toate cele ${deN(PD.all.length)} branduri →</a>
+          <p class="mm-alt">Sau implică-te altfel: <a href="/parteneri?implicare=gazduire#vreau">găzduiește un atelier</a> · <a href="/parteneri?implicare=mentorat#vreau">devino mentor</a></p>`, 'wide mm-hide-m'),
       ],
-      feature: `<a class="mm-feature" href="/comunitate#din-alumni-parteneri">
-          <span class="mm-kicker">Din alumni, parteneri</span>
-          <b>Vii ca participant. Revii ca partener.</b>
-          <span class="mm-sub">${F.ciclu.map((o) => esc(o.nume)).join(', ')}</span>
-          <span class="mm-more">Poveștile lor →</span></a>` },
+      feature: PD.open.length ? `<a class="mm-feature" href="/parteneri#vreau">
+          <span class="mm-kicker"><i class="dot-live"></i>Disponibile acum</span>
+          <b>${PD.open.length === 1 ? 'Un atelier caută' : `${PD.open.length} ateliere caută`} sponsor</b>
+          <span class="mm-upcoming">${PD.open.slice(0, 3).map(({ e, a }) => `<span><i>${a.data ? shortDay(a.data) : edLabel(e)}</i>${esc(a.titlu.replace(/^(Atelier de Seară|COCKTAIL NETWORKING)\s*[-:]\s*/i, ''))}</span>`).join('')}</span>
+          <span class="mm-more">Rezervă un atelier →</span></a>` : `<a class="mm-feature" href="/parteneri#vreau">
+          <span class="mm-kicker">Vreau și eu</span>
+          <b>Un click acum. Antreprenori mai puternici la anul.</b>
+          <span class="mm-sub">Propunerea și contractul vin pe email; ne vedem doar dacă vrei.</span>
+          <span class="mm-more">Scrie-ne →</span></a>` },
 
     { id: 'despre', title: 'Despre', href: '/despre', intro: `Un program al Fundației Romanian Business Leaders, din ${D.program.de_cand}.`,
       cols: [
