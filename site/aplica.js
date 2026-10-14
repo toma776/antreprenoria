@@ -179,11 +179,11 @@ function aplicaBody(ctx, F, opt = {}) {
           <h1>${esc(tx(D, 'aplica.titlu'))}</h1>
           <p class="lead">${esc(tx(D, 'aplica.lead'))}</p>
           <ul class="ax-crit">
-            <li><i>01</i><div><b>O afacere în plină creștere</b><span>Cifră de afaceri de minimum <strong>500.000 €</strong> pe an și o companie pregătită să treacă la nivelul următor.</span></div></li>
-            <li><i>02</i><div><b>Ambiția contează cel mai mult</b><span>Industria și modelul de business nu contează. Contează cât de departe vrei să duci compania și cât ești dispus să schimbi pentru asta.</span></div></li>
-            <li><i>03</i><div><b>Selecție, nu înscriere</b><span>Fiecare aplicare e analizată de <strong>comitetul de selecție</strong>: cifrele, echipa, ambiția și disponibilitatea ta. Unele aplicări sunt acceptate, altele nu.</span></div></li>
+            <li><i>01</i><div><b>O afacere care crește</b><span>O cifră de afaceri de cel puțin <strong>500.000 €</strong> pe an și dorința de a duce compania la nivelul următor.</span></div></li>
+            <li><i>02</i><div><b>Ambiția ta contează cel mai mult</b><span>Poți veni din orice industrie, cu orice model de business. Ne interesează cât de departe vrei să duci compania și cât de deschis ești să lucrezi la ea.</span></div></li>
+            <li><i>03</i><div><b>Fiecare aplicare, citită cu atenție</b><span><strong>Comitetul de selecție</strong> se uită la cifre, la echipă, la ambiția și la disponibilitatea ta, ca să formeze o grupă în care toți au de câștigat.</span></div></li>
           </ul>
-          <p class="ax-why">Vrem în sală antreprenori cu ambiții mari, care vor să-și scaleze afacerile. Așa rămâne grupul valoros pentru fiecare participant.</p>
+          <p class="ax-why">Când în sală sunt antreprenori cu ambiții pe măsură, fiecare învață și de la ceilalți. De asta alegem grupa cu grijă.</p>
           <div class="ax-start">
             <button class="btn btn-primary btn-lg" type="button" data-go="1">Încep aplicarea ${ARROW}</button>
             <span class="ax-facts"><span>${N} pași</span><span>aproximativ 6 minute</span><span>se salvează pe parcurs</span></span>
