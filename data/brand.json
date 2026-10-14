@@ -214,7 +214,7 @@
   "icon_meniu": {
     "_despre": "Iconul butonului de meniu pe mobil și tabletă: trei cercuri pline înscrise într-un pătrat imaginar. Fiecare variantă are o așezare cu meniul închis și o mișcare la deschidere. Se schimbă din panou (Branding).",
     "activ": "mare-si-doua-mici",
-    "culori": "mono",
+    "culori": "brand",
     "moduri_culoare": [
       {
         "id": "mono",
