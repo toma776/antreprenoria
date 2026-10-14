@@ -2337,7 +2337,8 @@ body:has(main.sp) .mcta { display: none !important; }
 .mm-contrib span { font-size: 13.5px; margin-top: 4px; }
 .mm-contrib i { position: absolute; right: 16px; top: 50%; translate: 0 -50%; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--primary); color: #fff; font-style: normal; font-size: 15px; transition: transform .2s; }
 .mm-contrib:hover i { transform: translateX(3px); }
-@media (max-width: 1180px) { .mm-hide-m { display: none; } }
+.mm-show-m { display: none; }
+@media (max-width: 1180px) { .mm-hide-m { display: none; } .mm-show-m { display: block; } .mm-show-m .mm-contrib { margin: 0; } }
 @media (max-width: 1180px) {
   .mm-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
   .mm-tiles .mm-h { grid-column: 1 / -1; margin-bottom: 0; }
