@@ -497,62 +497,62 @@ const peopleSearch = (() => {
   document.fonts?.ready.then(again);
   addEventListener('load', again);
 })();
-// /parteneri: formularul „Susține programul” (sponsorizare, găzduire, mentorat), deschis cu opțiunea butonului deja bifată
+// /parteneri: formularul „Susține programul”, cu pașii din „Construiește parteneriatul” (formatul, tema, echipa), apoi datele de contact.
+// Orice buton îl deschide precompletat: configuratorul cu alegerile lui, „Propune un spațiu” / „Scrie-ne” cu echipa bifată, „Rezervă” cu formatul și tema.
 (() => {
   const dlg = document.getElementById('implica');
   if (!dlg) return;
   const form = dlg.querySelector('#im-form'), done = dlg.querySelector('.im-done'), status = form.querySelector('.af-status');
-  // msg: mesajul precompletat (configuratorul și butoanele „Rezervă” de pe /parteneri)
-  const sum = dlg.querySelector('.im-sum'), title = dlg.querySelector('#im-title');
-  let cerere = null; // alegerile din configurator, când fereastra e o cerere de sponsorizare
-  const mode = (c) => {
-    cerere = c;
-    title.textContent = c ? 'Cerere de sponsorizare' : title.dataset.t;
-    sum.hidden = !c;
-    if (c) sum.querySelector('dl').innerHTML = c.map(([k, v]) => `<div><dt>${k}</dt><dd>${v.replace(/[&<>"]/g, (x) => `&#${x.charCodeAt(0)};`)}</dd></div>`).join('');
-    form.querySelectorAll('.im-tip, [data-f="telefon"], [data-f="mesaj"]').forEach((el) => { el.hidden = !!c; });
-    dlg.querySelector('.im-l-fn').textContent = c ? 'Poziția în companie' : 'Funcția';
-    dlg.querySelector('[data-f="functie"] .af-opt').hidden = !!c;
+  const $$f = (sel) => [...form.querySelectorAll(sel)];
+  // tema apare doar la „Un atelier”; numerotarea pașilor urmează
+  const sync = () => {
+    const f = form.querySelector('input[name="format"]:checked')?.value;
+    form.querySelector('[data-only="atelier"]').hidden = f !== 'atelier';
+    $$f('.im-n').forEach((n, i) => { n.textContent = String(i + (f === 'atelier' ? 3 : 2)); });
   };
-  // cererea de sponsorizare din configurator (/parteneri#construieste): nume, companie, poziție, email + ce a ales
-  window.spCerere = (c) => {
-    mode(c);
+  form.addEventListener('change', sync);
+  // p: { format, tema, echipa: [..], msg }
+  const open = (p = {}) => {
     form.hidden = false; done.hidden = true; status.textContent = ''; status.className = 'af-status';
+    $$f('input[name="format"]').forEach((r) => { r.checked = r.value === (p.format || 'atelier'); });
+    if (p.tema) $$f('input[name="tema"]').forEach((r) => { r.checked = r.value === p.tema; });
+    $$f('input[name="echipa"]').forEach((c) => { c.checked = (p.echipa || []).includes(c.value); });
+    form.elements.mesaj.value = p.msg || '';
+    sync();
     dlg.showModal();
-    setTimeout(() => form.querySelector('#im-nume').focus(), 50);
+    setTimeout(() => form.querySelector('#im-nume').focus({ preventScroll: true }), 50);
   };
-  const open = (tip, msg) => {
-    mode(null);
-    form.hidden = false; done.hidden = true; status.textContent = ''; status.className = 'af-status';
-    if (msg) form.elements.mesaj.value = msg;
-    // butonul fără opțiune („Devino partener”) deschide formularul fără nicio alegere bifată
-    form.querySelectorAll('input[name="tip"]').forEach((r) => { r.checked = !!tip && r.value === tip; });
-    dlg.showModal();
-    // după alegerea opțiunii, primul câmp gol primește focusul
-    setTimeout(() => (form.querySelector('input[name="tip"]:checked') ? form.querySelector('#im-nume') : form.querySelector('input[name="tip"]')).focus(), 50);
-  };
-  document.querySelectorAll('[data-implica]').forEach((b) => b.addEventListener('click', (e) => { e.preventDefault(); open(b.dataset.implica, b.dataset.imMsg); }));
-  window.spImplica = open;
+  // butoanele de pe pagină: sponsorizare / găzduire / mentorat, plus formatul și tema la „Rezervă”
+  const fromButton = (tip, b = {}) => ({ format: b.imFmt, tema: b.imTema, msg: b.imMsg, echipa: tip === 'gazduire' ? ['gazda'] : tip === 'mentorat' ? ['mentori'] : [] });
+  document.querySelectorAll('[data-implica]').forEach((b) => b.addEventListener('click', (e) => { e.preventDefault(); open(fromButton(b.dataset.implica, b.dataset)); }));
+  window.spImplica = (tip, msg) => open({ ...fromButton(tip), msg });
+  window.spCerere = open;
   dlg.querySelectorAll('[data-im-close]').forEach((b) => b.addEventListener('click', () => dlg.close()));
   dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); }); // click pe fundal
   // aceeași validare ca pe server (site/implicare.js)
   const check = () => {
     const v = (k) => (form.elements[k]?.value || '').trim(), errs = {};
-    if (!cerere && !form.querySelector('input[name="tip"]:checked')) errs.tip = 'Alege cum vrei să te implici.';
+    if (!form.querySelector('input[name="format"]:checked')) errs.format = 'Alege formatul.';
     if (v('nume').split(/\s+/).filter(Boolean).length < 2) errs.nume = 'Scrie numele și prenumele.';
     if (v('companie').length < 2) errs.companie = 'Scrie numele companiei.';
-    if (cerere && v('functie').length < 2) errs.functie = 'Scrie poziția ta în companie.';
+    if (v('functie').length < 2) errs.functie = 'Scrie poziția ta în companie.';
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v('email'))) errs.email = 'Adresa de email nu pare corectă.';
-    if (v('telefon') && v('telefon').replace(/\D/g, '').length < 9) errs.telefon = 'Numărul de telefon pare prea scurt.';
     if (!form.elements.acord.checked) errs.acord = 'Avem nevoie de acordul tău ca să te putem contacta.';
     return errs;
   };
+  const boxes = () => $$f('.af-field[data-f], .af-group[data-f], .af-consent[data-f]');
   const show = (errs) => {
-    form.querySelectorAll('[data-f]').forEach((f) => { const m = errs[f.dataset.f]; f.classList.toggle('bad', !!m); const e = f.querySelector('.af-err'); if (e) e.textContent = m || ''; });
+    boxes().forEach((f) => { const m = errs[f.dataset.f]; f.classList.toggle('bad', !!m); const e = f.querySelector(':scope > .af-err'); if (e) e.textContent = m || ''; });
     const first = form.querySelector('.bad input, .bad textarea');
     if (first) first.focus();
   };
   form.addEventListener('input', (e) => { const f = e.target.closest('[data-f]'); if (f?.classList.contains('bad')) show(Object.fromEntries(Object.entries(check()).filter(([k]) => form.querySelector(`[data-f="${k}"]`).classList.contains('bad')))); });
+  // alegerile, ca rânduri citibile în lead
+  const summary = () => {
+    const f = form.querySelector('input[name="format"]:checked'), t = form.querySelector('input[name="tema"]:checked');
+    const team = $$f('input[name="echipa"]:checked').map((c) => c.dataset.t);
+    return [['Format', `${f.dataset.t} · ${f.dataset.rol}`], ...(f.value === 'atelier' && t ? [['Tema', `${t.value} (${t.dataset.f === 'seară' ? 'seară' : 'o zi'})`]] : []), ...(team.length ? [['Echipa ta', team.join(', ')]] : [])];
+  };
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const errs = check();
@@ -560,22 +560,22 @@ const peopleSearch = (() => {
     if (Object.keys(errs).length) return;
     const btn = form.querySelector('[type="submit"]');
     btn.disabled = true; btn.textContent = 'Se trimite…';
-    const data = Object.fromEntries(new FormData(form));
-    data.acord = form.elements.acord.checked;
-    if (cerere) { data.tip = 'cerere-sponsorizare'; data.telefon = ''; data.mesaj = cerere.map(([k, v]) => `${k}: ${v}`).join('\n'); }
+    const v = (k) => form.elements[k].value.trim(), extra = v('mesaj');
+    const data = { tip: 'cerere-sponsorizare', format: form.querySelector('input[name="format"]:checked').value, nume: v('nume'), companie: v('companie'), functie: v('functie'), email: v('email'), acord: true, website: form.elements.website.value,
+      mesaj: summary().map(([k, x]) => `${k}: ${x}`).join('\n') + (extra ? `\n\nMesaj: ${extra}` : '') };
     try {
       const r = await fetch('/api/implicare', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
       const j = await r.json().catch(() => ({}));
       if (r.status === 422 && j.errors) { show(j.errors); throw new Error(j.error); }
-      if (!r.ok) throw new Error('Nu am putut trimite mesajul acum. Încearcă din nou sau scrie-ne pe email.');
+      if (!r.ok) throw new Error('Nu am putut trimite cererea acum. Încearcă din nou sau scrie-ne pe email.');
       form.reset(); form.hidden = true; done.hidden = false; done.focus();
     } catch (err) {
-      status.textContent = err.message || 'Nu am putut trimite mesajul.'; status.className = 'af-status err';
+      status.textContent = err.message || 'Nu am putut trimite cererea.'; status.className = 'af-status err';
     } finally { btn.disabled = false; btn.textContent = 'Trimite'; }
   });
-  // deschis din adresă: /parteneri?implicare=sponsorizare
+  // deschis din adresă: /parteneri?implicare=sponsorizare (sau gazduire, mentorat)
   const q = new URLSearchParams(location.search).get('implicare');
-  if (q !== null) open(q);
+  if (q !== null) open(fromButton(q));
 })();
 
 
@@ -807,12 +807,11 @@ const cmEngine = (() => {
       const what = f === 'atelier' ? `sponsor al unui atelier (tema: ${tema.dataset.n})` : f === 'editie' ? 'partener al unei ediții întregi' : 'partener strategic pentru un an';
       const extra = team.map((t) => C.msg[t]);
       cta.dataset.imMsg = `Vreau să fiu ${what}.${extra.length ? ` Mi-ar plăcea și: ${extra.join('; ')}.` : ''}`;
-      cta.dataset.sum = JSON.stringify([['Format', `${C.titlu[f]} · ${C.fmt[f].rol}`], ...(f === 'atelier' ? [['Tema', `${tema.dataset.n} (${tema.dataset.f === 'seară' ? 'seară' : 'o zi'})`]] : []), ...(team.length ? [['Echipa ta', team.map((t) => C.echt[t]).join(', ')]] : [])]);
     }
     const f0 = new URLSearchParams(location.search).get('format'), r0 = f0 && $(`input[name="sp-fmt"][value="${f0}"]`, cfgEl);
     if (r0) r0.checked = true;
     cfgEl.addEventListener('change', update);
-    cta.addEventListener('click', (e) => { if (!window.spCerere) return; e.preventDefault(); window.spCerere(JSON.parse(cta.dataset.sum || '[]')); });
+    cta.addEventListener('click', (e) => { if (!window.spCerere) return; e.preventDefault(); window.spCerere({ format: $('input[name="sp-fmt"]:checked', cfgEl).value, tema: $('input[name="sp-tema"]:checked', cfgEl)?.dataset.n, echipa: $$('input[name="sp-echipa"]:checked', cfgEl).map((x) => x.value) }); });
     update();
   }
 

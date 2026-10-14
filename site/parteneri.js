@@ -261,15 +261,15 @@ function parteneriBody(ctx, F) {
       </div>
       ${openBy.size || d.prep.length ? `<div class="sp-avail">
         <div class="sp-avail-top"><span class="tag-live"><i></i>Disponibile acum</span><b>${plural(d.open.length, 'atelier caută', 'ateliere caută')} sponsor</b></div>
-        ${[...openBy].map(([e, ws]) => `<div class="sp-avail-ed"><p><a href="${edUrl(e)}">Ediția ${esc(edLabel(e))}</a><span>${esc(e.sezon || '')} ${esc(e.an)}</span></p><ul>${ws.map((a) => `<li><span><b>${esc(cleanTitle(a.titlu))}</b><small>${a.data ? fmtDay(a.data) : 'data se anunță'} · ${a.format === 'seară' ? 'atelier de seară' : 'o zi întreagă'}</small></span><a class="sp-res" href="?implicare=sponsorizare#vreau" data-implica="sponsorizare" data-im-msg="${esc(`Vreau să sponsorizez atelierul „${cleanTitle(a.titlu)}” din ediția ${edLabel(e)}.`)}">Rezervă</a></li>`).join('')}</ul></div>`).join('')}
-        ${d.prep.map((e) => `<div class="sp-avail-ed"><p><a href="${edUrl(e)}">Ediția ${esc(edLabel(e))}</a><span>${esc(e.sezon || '')} ${esc(e.an)} · în pregătire</span></p><ul><li><span><b>Partener de ediție</b><small>locul e liber · toate atelierele ediției</small></span><a class="sp-res" href="?implicare=sponsorizare#vreau" data-implica="sponsorizare" data-im-msg="${esc(`Vreau să fiu partener al ediției ${edLabel(e)} (${e.sezon || ''} ${e.an}).`)}">Rezervă</a></li></ul></div>`).join('')}
+        ${[...openBy].map(([e, ws]) => `<div class="sp-avail-ed"><p><a href="${edUrl(e)}">Ediția ${esc(edLabel(e))}</a><span>${esc(e.sezon || '')} ${esc(e.an)}</span></p><ul>${ws.map((a) => `<li><span><b>${esc(cleanTitle(a.titlu))}</b><small>${a.data ? fmtDay(a.data) : 'data se anunță'} · ${a.format === 'seară' ? 'atelier de seară' : 'o zi întreagă'}</small></span><a class="sp-res" href="?implicare=sponsorizare#vreau" data-implica="sponsorizare" data-im-fmt="atelier" data-im-tema="${esc(T[a.tema]?.nume || '')}" data-im-msg="${esc(`Vreau să sponsorizez atelierul „${cleanTitle(a.titlu)}” din ediția ${edLabel(e)}.`)}">Rezervă</a></li>`).join('')}</ul></div>`).join('')}
+        ${d.prep.map((e) => `<div class="sp-avail-ed"><p><a href="${edUrl(e)}">Ediția ${esc(edLabel(e))}</a><span>${esc(e.sezon || '')} ${esc(e.an)} · în pregătire</span></p><ul><li><span><b>Partener de ediție</b><small>locul e liber · toate atelierele ediției</small></span><a class="sp-res" href="?implicare=sponsorizare#vreau" data-implica="sponsorizare" data-im-fmt="editie" data-im-msg="${esc(`Vreau să fiu partener al ediției ${edLabel(e)} (${e.sezon || ''} ${e.an}).`)}">Rezervă</a></li></ul></div>`).join('')}
       </div>` : ''}
     </div>
   </div></section>
   <a class="btn btn-primary sp-fab" href="?implicare=sponsorizare#vreau" data-implica="sponsorizare">Vreau și eu <span aria-hidden="true">→</span></a>
 </main>
 <dialog class="sp-dlg" id="sp-br-dlg" aria-label="Brand"><button type="button" class="im-x" data-close aria-label="Închide">✕</button><div class="sp-dlg-in"></div></dialog>
-${implicareDialog()}`;
+${implicareDialog({ formate: FORMATE, echipa: ECHIPA, themes, cluj: clujTxt })}`;
 }
 
 module.exports = { parteneriBody, partnersData };
