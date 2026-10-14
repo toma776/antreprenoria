@@ -44,7 +44,7 @@ routes.leads = async function renderLeads() {
       <tbody>${list.map((a) => `<tr${a.cifra_afaceri === 'sub-500k' ? ' class="warn-row"' : ''}>
         <td class="small">${esc(dt(a.actualizat || a.primit))}</td>
         <td>${done(a) ? '<span class="tag ok">trimisă</span>' : `<span class="tag warn">pasul ${a.pas || 1} din ${N}</span>`}</td>
-        <td><b>${esc(a.nume)}</b>${a.raspunsuri?.test ? ' <span class="tag" title="Aplicare de test (/aplica?test=1), fără verificarea CUI-ului">test</span>' : ''}<div class="small">${esc(a.companie)}${a.cui ? ` · <a href="https://www.termene.ro/firma/${esc(a.cui.replace(/^RO/i, ''))}" target="_blank" rel="noopener" title="Verifică firma">${esc(a.cui)}</a>` : ''}</div></td>
+        <td><b>${esc(a.nume)}</b><div class="small">${esc(a.companie)}${a.cui ? ` · <a href="https://www.termene.ro/firma/${esc(a.cui.replace(/^RO/i, ''))}" target="_blank" rel="noopener" title="Verifică firma">${esc(a.cui)}</a>` : ''}</div></td>
         <td class="small">${a.cifra_afaceri ? esc(label('cifra_afaceri', a.cifra_afaceri)) : '—'}${a.cifra_afaceri === 'sub-500k' ? ' <span class="tag bad">sub prag</span>' : ''}</td>
         <td>${a.editie ? `<span class="tag">${esc(edName(a.editie))}</span>` : '<span class="muted">—</span>'}</td>
         <td class="small"><a href="mailto:${esc(a.email)}">${esc(a.email)}</a><br><a href="tel:${esc(String(a.telefon || '').replace(/[^\d+]/g, ''))}">${esc(a.telefon)}</a></td>

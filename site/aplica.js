@@ -75,7 +75,7 @@ function options(ctx, F) {
 }
 
 // regula unui câmp (aceeași în browser, în assets/aplica.js); întoarce mesajul de eroare sau ''
-function fieldError(f, d, ids, test = false) {
+function fieldError(f, d, ids) {
   const v = d[f.k];
   if (f.showIf && d[f.showIf[0]] !== f.showIf[1]) return '';
   const empty = Array.isArray(v) ? !v.length : f.t === 'consent' ? !v : !String(v ?? '').trim();
@@ -83,7 +83,7 @@ function fieldError(f, d, ids, test = false) {
   if (f.k === 'nume' && String(v).split(/\s+/).filter(Boolean).length < 2) return 'Scrie numele și prenumele.';
   if (f.t === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) return 'Adresa de email nu pare corectă.';
   if (f.t === 'tel' && String(v).replace(/\D/g, '').length < 9) return 'Numărul de telefon pare prea scurt.';
-  if (f.t === 'cui' && !test && !validCUI(v)) return 'CUI-ul nu e valid. Verifică cifrele (cu sau fără RO).';
+  if (f.t === 'cui' && !validCUI(v)) return 'CUI-ul nu e valid. Verifică cifrele (cu sau fără RO).';
   if (f.t === 'one' && !f.opts.some(([k]) => k === v)) return 'Alege o variantă.';
   if (f.t === 'many' && v.some((x) => !f.opts.some(([k]) => k === x))) return 'Alege dintre variantele de mai sus.';
   if (f.t === 'many' && v.length > f.max) return `Alege cel mult ${f.max}.`;
@@ -93,7 +93,7 @@ function fieldError(f, d, ids, test = false) {
 }
 
 // validarea pașilor 1..pas; întoarce { ok, errors, data }
-function validate(input, ids, pas = STEPS.length, test = false) {
+function validate(input, ids, pas = STEPS.length) {
   const data = {};
   FIELDS.forEach((f) => {
     const v = input?.[f.k];
@@ -102,17 +102,16 @@ function validate(input, ids, pas = STEPS.length, test = false) {
   data.email = data.email.toLowerCase();
   data.cui = data.cui.toUpperCase().replace(/\s+/g, '');
   const errors = {};
-  FIELDS.filter((f) => f.pas <= pas).forEach((f) => { const m = fieldError(f, data, ids, test); if (m) errors[f.k] = m; });
+  FIELDS.filter((f) => f.pas <= pas).forEach((f) => { const m = fieldError(f, data, ids); if (m) errors[f.k] = m; });
   return { ok: !Object.keys(errors).length, errors, data };
 }
 
 // rândul pentru Supabase: coloanele cunoscute + celelalte răspunsuri
-function record(d, { token, pas, finalizata, pagina, test = false }) {
+function record(d, { token, pas, finalizata, pagina }) {
   const rec = { token: token || null, pas, finalizata, sursa_pagina: pagina || null, raspunsuri: {} };
   COLS.forEach((k) => { rec[k] = d[k] || null; });
   if (rec.sursa !== 'Altceva') rec.sursa_alta = null;
   FIELDS.forEach((f) => { if (!COLS.includes(f.k) && f.t !== 'consent' && (Array.isArray(d[f.k]) ? d[f.k].length : d[f.k])) rec.raspunsuri[f.k] = d[f.k]; });
-  if (test) rec.raspunsuri.test = true; // aplicare de test (/aplica?test=1), fără verificarea CUI-ului
   return rec;
 }
 
