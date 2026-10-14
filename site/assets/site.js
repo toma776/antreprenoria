@@ -503,7 +503,26 @@ const peopleSearch = (() => {
   if (!dlg) return;
   const form = dlg.querySelector('#im-form'), done = dlg.querySelector('.im-done'), status = form.querySelector('.af-status');
   // msg: mesajul precompletat (configuratorul și butoanele „Rezervă” de pe /parteneri)
+  const sum = dlg.querySelector('.im-sum'), title = dlg.querySelector('#im-title');
+  let cerere = null; // alegerile din configurator, când fereastra e o cerere de sponsorizare
+  const mode = (c) => {
+    cerere = c;
+    title.textContent = c ? 'Cerere de sponsorizare' : title.dataset.t;
+    sum.hidden = !c;
+    if (c) sum.querySelector('dl').innerHTML = c.map(([k, v]) => `<div><dt>${k}</dt><dd>${v.replace(/[&<>"]/g, (x) => `&#${x.charCodeAt(0)};`)}</dd></div>`).join('');
+    form.querySelectorAll('.im-tip, [data-f="telefon"], [data-f="mesaj"]').forEach((el) => { el.hidden = !!c; });
+    dlg.querySelector('.im-l-fn').textContent = c ? 'Poziția în companie' : 'Funcția';
+    dlg.querySelector('[data-f="functie"] .af-opt').hidden = !!c;
+  };
+  // cererea de sponsorizare din configurator (/parteneri#construieste): nume, companie, poziție, email + ce a ales
+  window.spCerere = (c) => {
+    mode(c);
+    form.hidden = false; done.hidden = true; status.textContent = ''; status.className = 'af-status';
+    dlg.showModal();
+    setTimeout(() => form.querySelector('#im-nume').focus(), 50);
+  };
   const open = (tip, msg) => {
+    mode(null);
     form.hidden = false; done.hidden = true; status.textContent = ''; status.className = 'af-status';
     if (msg) form.elements.mesaj.value = msg;
     // butonul fără opțiune („Devino partener”) deschide formularul fără nicio alegere bifată
@@ -519,9 +538,10 @@ const peopleSearch = (() => {
   // aceeași validare ca pe server (site/implicare.js)
   const check = () => {
     const v = (k) => (form.elements[k]?.value || '').trim(), errs = {};
-    if (!form.querySelector('input[name="tip"]:checked')) errs.tip = 'Alege cum vrei să te implici.';
+    if (!cerere && !form.querySelector('input[name="tip"]:checked')) errs.tip = 'Alege cum vrei să te implici.';
     if (v('nume').split(/\s+/).filter(Boolean).length < 2) errs.nume = 'Scrie numele și prenumele.';
     if (v('companie').length < 2) errs.companie = 'Scrie numele companiei.';
+    if (cerere && v('functie').length < 2) errs.functie = 'Scrie poziția ta în companie.';
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v('email'))) errs.email = 'Adresa de email nu pare corectă.';
     if (v('telefon') && v('telefon').replace(/\D/g, '').length < 9) errs.telefon = 'Numărul de telefon pare prea scurt.';
     if (!form.elements.acord.checked) errs.acord = 'Avem nevoie de acordul tău ca să te putem contacta.';
@@ -542,6 +562,7 @@ const peopleSearch = (() => {
     btn.disabled = true; btn.textContent = 'Se trimite…';
     const data = Object.fromEntries(new FormData(form));
     data.acord = form.elements.acord.checked;
+    if (cerere) { data.tip = 'cerere-sponsorizare'; data.telefon = ''; data.mesaj = cerere.map(([k, v]) => `${k}: ${v}`).join('\n'); }
     try {
       const r = await fetch('/api/implicare', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
       const j = await r.json().catch(() => ({}));
@@ -786,10 +807,12 @@ const cmEngine = (() => {
       const what = f === 'atelier' ? `sponsor al unui atelier (tema: ${tema.dataset.n})` : f === 'editie' ? 'partener al unei ediții întregi' : 'partener strategic pentru un an';
       const extra = team.map((t) => C.msg[t]);
       cta.dataset.imMsg = `Vreau să fiu ${what}.${extra.length ? ` Mi-ar plăcea și: ${extra.join('; ')}.` : ''}`;
+      cta.dataset.sum = JSON.stringify([['Format', `${C.titlu[f]} · ${C.fmt[f].rol}`], ...(f === 'atelier' ? [['Tema', `${tema.dataset.n} (${tema.dataset.f === 'seară' ? 'seară' : 'o zi'})`]] : []), ...(team.length ? [['Echipa ta', team.map((t) => C.echt[t]).join(', ')]] : [])]);
     }
     const f0 = new URLSearchParams(location.search).get('format'), r0 = f0 && $(`input[name="sp-fmt"][value="${f0}"]`, cfgEl);
     if (r0) r0.checked = true;
     cfgEl.addEventListener('change', update);
+    cta.addEventListener('click', (e) => { if (!window.spCerere) return; e.preventDefault(); window.spCerere(JSON.parse(cta.dataset.sum || '[]')); });
     update();
   }
 

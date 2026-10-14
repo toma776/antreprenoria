@@ -1,4 +1,5 @@
 // Formularul „Susține programul” de pe /parteneri: sponsorizare, găzduire, mentorat.
+// „Vreau asta” din configurator îl deschide ca cerere de sponsorizare (tip = cerere-sponsorizare): alegerile lui ajung în mesaj, poziția e obligatorie.
 // Aceeași validare în pagină (site.js) și pe server; mesajele ajung în Supabase (tabelul implicari) și în panou › Leads.
 const { esc } = require('./util');
 
@@ -13,10 +14,12 @@ function validate(input) {
   const v = (k) => String(input?.[k] ?? '').trim();
   const data = { tip: v('tip'), nume: v('nume'), companie: v('companie'), functie: v('functie'), email: v('email').toLowerCase(), telefon: v('telefon'), mesaj: v('mesaj'), acord: input?.acord === true || input?.acord === 'on' };
   const errors = {};
-  if (!TIPURI.some(([k]) => k === data.tip)) errors.tip = 'Alege cum vrei să te implici.';
+  const cerere = data.tip === 'cerere-sponsorizare';
+  if (!cerere && !TIPURI.some(([k]) => k === data.tip)) errors.tip = 'Alege cum vrei să te implici.';
   if (data.nume.split(/\s+/).filter(Boolean).length < 2) errors.nume = 'Scrie numele și prenumele.';
   if (data.companie.length < 2) errors.companie = 'Scrie numele companiei.';
   if (data.functie.length > 120) errors.functie = 'Funcția e prea lungă.';
+  else if (cerere && data.functie.length < 2) errors.functie = 'Scrie poziția ta în companie.';
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(data.email)) errors.email = 'Adresa de email nu pare corectă.';
   if (data.telefon && data.telefon.replace(/\D/g, '').length < 9) errors.telefon = 'Numărul de telefon pare prea scurt.';
   if (data.mesaj.length > 3000) errors.mesaj = 'Mesajul e prea lung (maxim 3.000 de caractere).';
@@ -32,7 +35,8 @@ function implicareDialog() {
       </div>`;
   return `<dialog class="im-dlg" id="implica" aria-labelledby="im-title">
   <form class="af im-form" id="im-form" novalidate method="dialog">
-    <div class="im-head"><h2 id="im-title">Susține programul</h2><button type="button" class="im-x" data-im-close aria-label="Închide">✕</button></div>
+    <div class="im-head"><h2 id="im-title" data-t="Susține programul">Susține programul</h2><button type="button" class="im-x" data-im-close aria-label="Închide">✕</button></div>
+    <div class="im-sum" hidden><p>Ce ai ales</p><dl></dl></div>
     <fieldset class="af-group im-tip" data-f="tip">
       <legend>Cum vrei să te implici?</legend>
       <div class="af-eds">${TIPURI.map(([k, t, s]) => `<label class="af-ed"><input type="radio" name="tip" value="${k}"><span><b>${esc(t)}</b><small>${esc(s)}</small></span></label>`).join('')}</div>
@@ -41,7 +45,7 @@ function implicareDialog() {
     <fieldset class="af-group">
       ${field('nume', 'Nume și prenume', 'type="text" autocomplete="name" autocapitalize="words" required')}
       ${field('companie', 'Companie', 'type="text" autocomplete="organization" required')}
-      ${field('functie', 'Funcția <span class="af-opt">opțional</span>', 'type="text" autocomplete="organization-title" maxlength="120" placeholder="ex. CEO, Director de marketing"')}
+      ${field('functie', '<span class="im-l-fn">Funcția</span> <span class="af-opt">opțional</span>', 'type="text" autocomplete="organization-title" maxlength="120" placeholder="ex. CEO, Director de marketing"')}
       ${field('email', 'Email', 'type="email" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" required')}
       ${field('telefon', 'Telefon <span class="af-opt">opțional</span>', 'type="tel" autocomplete="tel" inputmode="tel"')}
       <div class="af-field" data-f="mesaj"><label for="im-mesaj">Mesaj <span class="af-opt">opțional</span></label><textarea id="im-mesaj" name="mesaj" rows="4" maxlength="3000" placeholder="Ce ai avea în minte? De exemplu, tema atelierului sau spațiul pe care îl propui."></textarea><small class="af-err" role="alert"></small></div>

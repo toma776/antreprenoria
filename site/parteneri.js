@@ -115,7 +115,7 @@ function parteneriBody(ctx, F) {
   const cfg = {
     g: GRUPA, avgCa: I.avgCa, avgAng: I.avgAng, H: I.H, wsEd: I.wsEd, hEd: I.hEd, wsCluj: I.wsCluj, hCluj: I.hCluj,
     fmt: Object.fromEntries(FORMATE.map((f) => [f.id, { rol: f.rol, ben: f.ben.map((b) => b.replace('{g}', GRUPA).replace('{ws}', I.wsEd).replace('{cluj2}', I.hasCluj ? ': București și Cluj' : '')) }])),
-    echipa: Object.fromEntries(ECHIPA.map(([k, , , b]) => [k, b])), msg: Object.fromEntries(ECHIPA.map(([k, , , , m]) => [k, m])),
+    echipa: Object.fromEntries(ECHIPA.map(([k, , , b]) => [k, b])), echt: Object.fromEntries(ECHIPA.map(([k, t]) => [k, t])), titlu: Object.fromEntries(FORMATE.map((f) => [f.id, f.titlu])), msg: Object.fromEntries(ECHIPA.map(([k, , , , m]) => [k, m])),
   };
 
   const brandCard = (x) => { const o = x.o, first = x.years[0], last = x.years[x.years.length - 1];
@@ -211,7 +211,7 @@ function parteneriBody(ctx, F) {
         </div>
         <p class="sp-out-h">Ce primește brandul tău</p>
         <ul class="sp-out-ben"></ul>
-        <a class="btn btn-light btn-lg sp-out-cta" href="?implicare=sponsorizare#vreau" data-implica="sponsorizare">Vreau asta <span aria-hidden="true">→</span></a>
+        <a class="btn btn-light btn-lg sp-out-cta" href="?implicare=sponsorizare#vreau">Vreau asta <span aria-hidden="true">→</span></a>
         <p class="sp-out-note">Estimare pe media companiilor din ultimele ${I.nDocEds} ediții. Primești propunerea și contractul pe email; ne vedem doar dacă vrei.</p>
       </aside>
     </div>

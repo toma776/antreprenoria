@@ -92,7 +92,7 @@ Promise.all(['/api/aplicari', '/api/implicari'].map((u) => fetch(u, { cache: 'no
 });
 
 /* LEADS › Susținere: mesajele din formularul „Susține programul” de pe /parteneri (Supabase, tabelul implicari) */
-const TIP_LABEL = { sponsorizare: 'Sponsorizare atelier', gazduire: 'Găzduire atelier', mentorat: 'Trainer / mentor' };
+const TIP_LABEL = { sponsorizare: 'Sponsorizare atelier', gazduire: 'Găzduire atelier', mentorat: 'Trainer / mentor', 'cerere-sponsorizare': 'Cerere sponsorizare' };
 async function renderSustinere(box) {
   box.innerHTML = '<div class="card empty">Se încarcă…</div>';
   const r = await fetch('/api/implicari', { cache: 'no-store' });
