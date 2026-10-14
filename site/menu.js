@@ -169,7 +169,7 @@ function panels(ctx, F) {
         ].join(''), 'mm-tiles'),
         col('Alături de noi', `<div class="mm-logos">${PD.all.filter((x) => x.o.logo).slice(0, 6).map((x) => `<a href="/parteneri#${esc(x.o.id)}" title="${esc(x.o.nume)}"><img src="${esc(x.o.logo)}" alt="${esc(x.o.nume)}" loading="lazy"></a>`).join('')}</div>
           <a class="mm-all" href="/parteneri#branduri">Toate cele ${deN(PD.all.length)} branduri →</a>
-          <p class="mm-alt"><a href="/parteneri#construieste">Contribuie la program</a></p>`, 'wide mm-hide-m'),
+          <a class="mm-link mm-contrib" href="/parteneri#construieste"><b>Contribuie la program</b><span>Sponsorizează, găzduiește un atelier sau devino mentor</span><i aria-hidden="true">→</i></a>`, 'wide mm-hide-m'),
       ],
       feature: PD.open.length ? `<a class="mm-feature" href="/parteneri#vreau">
           <span class="mm-kicker"><i class="dot-live"></i>Disponibile acum</span>

@@ -2331,9 +2331,12 @@ body:has(main.sp) .mcta { display: none !important; }
 }
 
 /* meniul Parteneri: celelalte moduri de implicare, discret sub logo-uri */
-.mm-alt { margin: 12px 0 0; font-size: 12.5px; color: var(--muted); line-height: 1.5; }
-.mm-alt a { color: var(--ink); font-weight: 600; text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 3px; }
-.mm-alt a:hover { color: var(--primary); text-decoration-color: currentColor; }
+.mm-contrib { margin: 16px 0 0; padding: 16px 52px 16px 18px; border: 1px solid color-mix(in srgb, var(--primary) 30%, var(--line)); border-radius: 14px; background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 9%, var(--surface)), var(--surface) 70%); transition: border-color .2s, box-shadow .2s, transform .2s; }
+.mm-contrib:hover { background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 14%, var(--surface)), var(--surface) 70%); border-color: var(--primary); box-shadow: 0 14px 30px -20px color-mix(in srgb, var(--primary) 70%, transparent); transform: translateY(-1px); }
+.mm-contrib b { font: var(--d-weight) 18px/1.2 var(--f-display); font-stretch: var(--d-stretch); letter-spacing: var(--d-track); color: var(--ink); }
+.mm-contrib span { font-size: 13.5px; margin-top: 4px; }
+.mm-contrib i { position: absolute; right: 16px; top: 50%; translate: 0 -50%; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--primary); color: #fff; font-style: normal; font-size: 15px; transition: transform .2s; }
+.mm-contrib:hover i { transform: translateX(3px); }
 @media (max-width: 1180px) { .mm-hide-m { display: none; } }
 @media (max-width: 1180px) {
   .mm-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
