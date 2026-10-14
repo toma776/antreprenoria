@@ -1337,7 +1337,7 @@ section[id] { scroll-margin-top: 88px; }
 .ax-h { font: var(--d-weight) clamp(26px, 3.2vw, 38px)/1.1 var(--f-display); font-stretch: var(--d-stretch); letter-spacing: var(--d-track); outline: none; }
 .ax-sub { margin: 10px 0 4px; color: var(--muted); font-size: 15.5px; line-height: 1.5; max-width: 58ch; }
 .ax-fields { display: grid; gap: 22px; }
-.ax-fields .af-field { gap: 8px; }
+.ax-fields .af-field { gap: 8px; align-content: start; }
 .ax-hint-top { margin-top: -4px; }
 .ax-nota { margin: 0; display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 10px; background: var(--surface-2); font-size: 13.5px; line-height: 1.45; color: var(--muted); }
 .ax-nota::before { content: ""; flex: none; width: 15px; height: 15px; margin-top: 2px; background: var(--primary); -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 10V7a5 5 0 0 1 10 0v3h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h1zm2 0h6V7a3 3 0 0 0-6 0v3z'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 10V7a5 5 0 0 1 10 0v3h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h1zm2 0h6V7a3 3 0 0 0-6 0v3z'/%3E%3C/svg%3E") center / contain no-repeat; }
@@ -2335,11 +2335,11 @@ body:has(main.sp) .mcta { display: none !important; }
 .mm-alt a:hover { color: var(--primary); text-decoration-color: currentColor; }
 @media (max-width: 1180px) { .mm-hide-m { display: none; } }
 @media (max-width: 1180px) {
-  #mm-parteneri .mm-col:first-child { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-  #mm-parteneri .mm-col:first-child .mm-h { grid-column: 1 / -1; margin-bottom: 0; }
-  #mm-parteneri .mm-col:first-child .mm-link { margin: 0; min-width: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
-  #mm-parteneri .mm-col:first-child .mm-link span { font-size: 12.5px; }
-  #mm-parteneri .mm-feature { min-height: 0; }
+  .mm-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .mm-tiles .mm-h { grid-column: 1 / -1; margin-bottom: 0; }
+  .mm-tiles .mm-link { margin: 0; min-width: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+  .mm-tiles .mm-link span { font-size: 12.5px; }
+  #mm-parteneri .mm-feature, #mm-despre .mm-feature { min-height: 0; }
 }
 
 /* ---------- meniul Comunitate: căutarea cu rezultate live, explorarea și peretele de fețe ---------- */
@@ -2463,3 +2463,22 @@ body:has(main.sp) .mcta { display: none !important; }
 .mmc-new b { font-size: 13.5px; line-height: 1.25; }
 .mmc-new b + span { font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 @media (max-width: 1180px) { .mmc-new > div { grid-template-columns: 1fr; } }
+
+/* meniul Despre: contactul, un om pentru fiecare întrebare */
+.mm-ct:hover { transform: none; }
+.mm-ct-list { display: grid; gap: 2px; margin: 6px 0 0; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, .12); }
+.mm-ct-list a { display: grid; grid-template-columns: 34px minmax(0, 1fr); column-gap: 12px; align-items: center; padding: 8px 10px; margin: 0 -10px; border-radius: 8px; color: var(--dark-ink); text-decoration: none; transition: background .15s; }
+.mm-ct-list a:hover { background: rgba(255, 255, 255, .07); }
+.mm-ct-list img, .mm-ct-list .ph { grid-row: 1 / span 3; width: 34px; height: 34px; border-radius: 50%; object-fit: cover; display: grid; place-items: center; background: rgba(255, 255, 255, .1); color: var(--dark-ink); font: 700 12px/1 var(--f-body); }
+.mm-ct-list i { grid-column: 2; font: 600 10.5px/1.2 var(--eyebrow-font); font-style: normal; letter-spacing: .08em; text-transform: uppercase; color: var(--highlight); }
+.mm-ct-list b { font: 600 14px/1.35 var(--f-body); letter-spacing: 0; }
+.mm-ct-list span { overflow: hidden; font-size: 12px; line-height: 1.6; color: var(--dark-muted); white-space: nowrap; text-overflow: ellipsis; }
+.mm-ct .mm-more { color: var(--highlight); text-decoration: none; }
+.mm-ct .mm-more:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* meniul Despre: cifrele declarate ale programului */
+.mm-figs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0; }
+.mm-figs div { padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.mm-figs dt { font: var(--d-weight) 24px/1.05 var(--f-display); font-stretch: var(--d-stretch); letter-spacing: -.01em; color: var(--primary); }
+.mm-figs dd { margin: 4px 0 0; font-size: 12px; line-height: 1.35; color: var(--muted); }
+@media (max-width: 1180px) { .mm-figs { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; } .mm-figs div { padding: 8px; } .mm-figs dt { font-size: 18px; } .mm-figs dd { font-size: 10.5px; } }
