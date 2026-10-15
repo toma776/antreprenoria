@@ -2,6 +2,7 @@
 // Un centru de comandă viu în loc de broșură: cohorta în desfășurare și numărătoarea până la următorul atelier,
 // navigatorul „ce vrei să rezolvi”, verificarea potrivirii cu cohorta (doar cifre agregate), lideri, comunitate, parteneri.
 // Totul vine din creier; cifrele de afaceri apar doar agregat (mediană, intervale, distribuție).
+const fs = require('fs'), path = require('path');
 const { esc, initials, fmtDay, today, img, de } = require('./util');
 const { tx } = require('./texte');
 const { themeInfo, pulse, NEEDS } = require('./home');
@@ -31,6 +32,9 @@ function home2Body(ctx, F) {
   const TR = everyone(ctx), AL = alumniData(ctx);
   const invited = TR.filter((x) => x.roluri.includes('antreprenor invitat'));
   const COS = [...new Set([...invited, ...TR].map((x) => x.org).filter((n) => n && D.organizatii.some((o) => o.nume === n)))];
+  // banda din hero: logo-urile companiilor liderilor (fișierele din site/assets/logos, după id-ul organizației), în ordinea liderilor
+  const LOGO_FILES = Object.fromEntries((() => { try { return fs.readdirSync(path.join(__dirname, 'assets', 'logos')); } catch { return []; } })().map((f) => [f.replace(/\.[a-z]+$/, ''), f]));
+  const LOGOS = COS.map((n) => D.organizatii.find((o) => o.nume === n)).filter((o) => o && LOGO_FILES[o.id]).map((o) => [o, LOGO_FILES[o.id]]);
   const partners = F.partners.filter((o) => o.logo).slice(0, 6);
   const feed = pulse(ctx, F).slice(0, 3);
   const needs = NEEDS.map(([id, label]) => ({ id, label, info: themeInfo(ctx, F, id) })).filter((x) => x.info);
@@ -88,7 +92,7 @@ function home2Body(ctx, F) {
         <div class="x-cc-track" aria-label="Agenda cohortei">${ws.map((a) => `<i class="${a.data && a.data < t0 ? 'done' : nx && a.id === nx.id ? 'next' : ''}" title="${esc(cleanTitle(a.titlu))}${a.data ? ' · ' + fmtDay(a.data) : ''}"></i>`).join('')}</div>
       </aside>` : ''}
     </div>
-    <div class="x-marq" aria-label="Companiile liderilor care predau"><div class="x-marq-in">${[0, 1].map((k) => `<div${k ? ' aria-hidden="true"' : ''}>${COS.map((c) => `<span>${esc(c)}</span>`).join('<i>✦</i>')}<i>✦</i></div>`).join('')}</div></div>
+    <div class="x-marq x-marq-logos" aria-label="Companiile liderilor care predau"><div class="x-marq-in">${[0, 1].map((k) => `<div${k ? ' aria-hidden="true"' : ''}>${LOGOS.map(([o, f]) => `<span class="x-lg x-lg-${esc(o.id)}"><img src="/assets/logos/${esc(f)}" alt="${k ? '' : esc(o.nume)}" loading="lazy"></span>`).join('')}</div>`).join('')}</div></div>
   </section>
 
   <!-- 02 · navigatorul: problema ta -> tema, oamenii care o predau, următorul atelier -->

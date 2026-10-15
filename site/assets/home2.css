@@ -269,3 +269,25 @@ a.x-tile:hover { transform: translateY(-3px); box-shadow: 0 24px 50px -30px rgba
 @media (prefers-reduced-motion: reduce) {
   .x-aurora i, .x-marq-in, .x-rail-in, .x-btn-glow::after, .x-cc-track i.next, .x-steps li.next > i { animation: none !important; }
 }
+
+/* banda din hero: logo-urile companiilor liderilor, albe și de aceeași înălțime */
+.x-marq-logos { padding: 20px 0; }
+.x-marq-logos .x-marq-in > div { gap: clamp(36px, 4vw, 56px); padding-right: clamp(36px, 4vw, 56px); }
+.x-lg { display: grid; place-items: center; height: 30px; }
+.x-lg img { display: block; height: 26px; width: auto; max-width: 150px; object-fit: contain; filter: brightness(0) invert(1); opacity: .82; transition: opacity .2s; }
+.x-marq-logos:hover .x-lg img { opacity: .6; }
+.x-marq-logos .x-lg:hover img { opacity: 1; }
+/* echilibrul vizual: unele fișiere au margini mari sau forme pătrate */
+.x-lg-booster-capital img { height: 34px; }
+.x-lg-kadra img, .x-lg-morphosis-capital img, .x-lg-arobs img { height: 30px; }
+.x-lg-taxhouse img { max-width: 170px; height: 22px; }
+.x-lg-bosch img, .x-lg-unicredit img { height: 24px; }
+@media (max-width: 720px) { .x-lg img { height: 20px; max-width: 120px; } .x-lg-booster-capital img { height: 26px; } }
+.x-lg-zitec img { height: 17px; }
+.x-lg-secom img { height: 46px; max-width: 120px; margin-block: -8px; }
+.x-lg-bittnet-group img { height: 32px; }
+.x-lg-emerson img { height: 34px; }
+.x-lg-simtel img { height: 20px; }
+.x-lg-adrem img { height: 22px; }
+.x-lg-smartbill img { height: 28px; }
+@media (max-width: 720px) { .x-lg-zitec img { height: 13px; } .x-lg-secom img { height: 36px; } .x-lg-emerson img, .x-lg-bittnet-group img { height: 26px; } }
