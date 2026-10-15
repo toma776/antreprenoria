@@ -381,3 +381,8 @@ a.x-tile:hover { transform: translateY(-3px); box-shadow: 0 24px 50px -30px rgba
 .x-page .mm-feature { --dark: var(--x-night); --dark-ink: #F2F6FC; --dark-muted: #A9B8D0; }
 .x-page .mm-feature::after { background: radial-gradient(circle, color-mix(in srgb, var(--primary) 55%, transparent), transparent 70%); }
 .x-page .nav-foot .btn-primary { border-radius: 999px; padding-inline: 26px; box-shadow: 0 8px 26px -10px color-mix(in srgb, var(--primary) 85%, transparent); }
+/* logo-ul nu se comprimă niciodată; spațiul se recuperează din linkuri */
+.x-page .hdr .logo { flex: none; }
+.x-page .hdr .logo img { width: auto; object-fit: contain; }
+@media (min-width: 1181px) { .x-page .mm-trigger { padding: 9px 11px; } .x-page .hdr-in { gap: 20px; } }
+@media (min-width: 1181px) and (max-width: 1320px) { .x-page .hdr-cta .live { font-size: 0; gap: 0; padding: 9px; } }
