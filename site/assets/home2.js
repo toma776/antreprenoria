@@ -88,4 +88,8 @@
       t.style.setProperty('--mx', `${e.clientX - r.left}px`); t.style.setProperty('--my', `${e.clientY - r.top}px`);
     }));
   }
+
+  // ---------- header-ul: mai compact și mai opac după primul scroll ----------
+  const hdr = $('.hdr');
+  if (hdr) { const on = () => hdr.classList.toggle('is-scrolled', scrollY > 12); addEventListener('scroll', on, { passive: true }); on(); }
 })();

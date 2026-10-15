@@ -233,7 +233,7 @@ ${footer(F, ctx)}
 function renderHome2(opt = {}) {
   const ctx = load(opt.brand), F = facts(ctx);
   const { home2Body, home2Footer } = require('./home2');
-  return `${head('Antreprenoria – acceleratorul antreprenorilor Romanian Business Leaders', 'Previzualizare: varianta nouă a homepage-ului.', opt.brand).replace('</head>', '<link rel="stylesheet" href="/assets/home2.css"><meta name="robots" content="noindex"></head>')}
+  return `${head('Antreprenoria – acceleratorul antreprenorilor Romanian Business Leaders', 'Previzualizare: varianta nouă a homepage-ului.', opt.brand).replace('</head>', '<link rel="stylesheet" href="/assets/home2.css"><meta name="robots" content="noindex"></head>').replace('<body>', '<body class="x-page">')}
 ${header(F, ctx)}
 ${home2Body(ctx, F)}
 ${home2Footer(ctx, F, { logo: logo('footer', ctx.brandId), nav: NAV })}

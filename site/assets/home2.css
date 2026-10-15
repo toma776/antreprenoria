@@ -356,3 +356,28 @@ a.x-tile:hover { transform: translateY(-3px); box-shadow: 0 24px 50px -30px rgba
   .xf-col > a { padding: 8px 0; }
   .xf-legal { flex-direction: column; padding-bottom: 96px; }
 }
+
+/* ---------- header „2029” (doar pe pagina de previzualizare: body.x-page) ---------- */
+.x-page { --x-night: color-mix(in srgb, var(--dark) 78%, #000); }
+.x-page .hdr { --h-ink: #fff; --h-muted: rgba(255, 255, 255, .66); --h-line: rgba(255, 255, 255, .1); border-bottom: 0; transition: box-shadow .3s; }
+.x-page .hdr::before { background: linear-gradient(180deg, color-mix(in srgb, var(--x-night) 96%, var(--primary)), var(--x-night)); -webkit-backdrop-filter: blur(18px) saturate(1.4); backdrop-filter: blur(18px) saturate(1.4); transition: background .3s; }
+.x-page .hdr::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--primary) 70%, transparent) 25%, rgba(255, 255, 255, .22) 55%, color-mix(in srgb, var(--highlight) 55%, transparent) 80%, transparent); pointer-events: none; }
+.x-page .hdr-in { transition: height .3s; }
+.x-page .hdr.is-scrolled::before { background: color-mix(in srgb, var(--x-night) 88%, transparent); }
+.x-page .hdr.is-scrolled { box-shadow: 0 14px 40px -24px rgba(0, 0, 0, .7); }
+.x-page .hdr .logo img { transition: height .3s; }
+@media (min-width: 1181px) {
+  .x-page .hdr.is-scrolled .hdr-in { height: 62px; }
+  .x-page .mm-trigger { color: rgba(255, 255, 255, .88); border-radius: 999px; padding: 9px 14px; font-weight: 500; }
+  .x-page .mm-trigger:hover, .x-page .mm-item.open .mm-trigger { background: rgba(255, 255, 255, .09); color: #fff; box-shadow: 0 0 0 1px rgba(255, 255, 255, .1) inset; }
+  .x-page .mm-panel { border-radius: 0 0 calc(var(--radius) * 3) calc(var(--radius) * 3); border-bottom: 0; box-shadow: 0 40px 80px -30px rgba(5, 10, 20, .55); }
+}
+.x-page .hdr-cta .live { gap: 8px; padding: 7px 13px 7px 11px; border: 1px solid rgba(255, 255, 255, .12); border-radius: 999px; background: rgba(255, 255, 255, .05); color: rgba(255, 255, 255, .85); font-size: 12.5px; transition: background .2s, border-color .2s; }
+.x-page .hdr-cta a.live:hover { background: rgba(255, 255, 255, .1); border-color: rgba(255, 255, 255, .22); color: #fff; text-decoration: none; }
+.x-page .hdr-cta .btn-primary { position: relative; border-radius: 999px; padding-inline: 20px; box-shadow: 0 0 0 1px rgba(255, 255, 255, .14) inset, 0 8px 26px -8px color-mix(in srgb, var(--primary) 85%, transparent); transition: transform .2s, box-shadow .2s; }
+.x-page .hdr-cta .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 0 0 1px rgba(255, 255, 255, .2) inset, 0 12px 32px -8px color-mix(in srgb, var(--primary) 95%, transparent); }
+.x-page .menu-btn { background: rgba(255, 255, 255, .06); border-color: rgba(255, 255, 255, .14); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+.x-page .mm-scrim { background: rgba(5, 10, 20, .4); backdrop-filter: blur(4px); }
+.x-page .mm-feature { --dark: var(--x-night); --dark-ink: #F2F6FC; --dark-muted: #A9B8D0; }
+.x-page .mm-feature::after { background: radial-gradient(circle, color-mix(in srgb, var(--primary) 55%, transparent), transparent 70%); }
+.x-page .nav-foot .btn-primary { border-radius: 999px; padding-inline: 26px; box-shadow: 0 8px 26px -10px color-mix(in srgb, var(--primary) 85%, transparent); }
