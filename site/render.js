@@ -89,6 +89,7 @@ function head(title, desc, brandId) {
 <link href="${esc(brand.fontsHref(v))}" rel="stylesheet">
 <link rel="stylesheet" href="/assets/brand.css"><link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/menu-icon.css"><link rel="stylesheet" href="/assets/home2.css">
 <script>/* animațiile de la scroll pornesc doar cu JS și fără „reduce motion” */if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('rv')</script>${favicons(v)}
+<meta name="robots" content="noindex, nofollow"><!-- tot site-ul e deocamdată neindexat (și antetul X-Robots-Tag din vercel.json) -->
 </head><body class="x-page">`;
 }
 // logo-ul: varianta potrivită fundalului din fiecare loc (data/brand.json › variante › logo › pe_site);
@@ -229,7 +230,7 @@ ${footer(F, ctx)}
 function render404(opt = {}) {
   const ctx = load(opt.brand), F = facts(ctx);
   const LINKS = [['/editii', 'Cohortele', 'în desfășurare, înscrieri și arhivă'], ['/lideri', 'Liderii', 'fondatori, CEO și traineri'], ['/comunitate', 'Comunitatea', 'antreprenorii care au trecut prin program'], ['/parteneri', 'Parteneri', 'parteneriate CSR'], ['/despre', 'Despre', 'organizatorul, echipa și contactul']];
-  return `${head('Pagina nu există – Antreprenoria', 'Pagina căutată nu există sau s-a mutat.', opt.brand).replace('</head>', '<meta name="robots" content="noindex"></head>')}
+  return `${head('Pagina nu există – Antreprenoria', 'Pagina căutată nu există sau s-a mutat.', opt.brand)}
 ${header(F, ctx)}
 <div class="gridlines" aria-hidden="true"></div>
 <main>
@@ -339,7 +340,6 @@ function cmPage(opt, title, desc, body) {
   const html = typeof b === 'string' ? b : b.html;
   const t = typeof b === 'string' ? title : title.replace('%s', b.title);
   return `${head(t, desc.replace('%s', b.title || ''), opt.brand).replace('</head>', '<link rel="stylesheet" href="/assets/cm2.css"></head>')}
-${opt.noindex ? '<meta name="robots" content="noindex">' : ''}
 ${header(F, ctx)}
 ${html}
 ${footer(F, ctx)}
@@ -359,7 +359,6 @@ function renderAlumnus(opt = {}) {
   const ctx = load(opt.brand), F = facts(ctx), a = alumniData(ctx).L.find((x) => x.id === opt.id);
   if (!a || (!a.page && !opt.preview)) return null;
   return `${head(`${a.nume} – comunitatea Antreprenoria`, `${a.nume}${a.org ? ', ' + a.org.nume : ''} · alumni Antreprenoria ${a.eds.map((e) => '#' + e.numar).join(', ')}. ${(a.desc || '').slice(0, 150)}`, opt.brand)}
-${a.page ? '' : '<meta name="robots" content="noindex">'}
 ${header(F, ctx)}
 <div class="gridlines" aria-hidden="true"></div>
 ${alumnusBody(ctx, F, opt.id, { preview: !a.page })}
