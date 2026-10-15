@@ -58,6 +58,10 @@ function despre2Body(ctx, F) {
   const arhiva = D.editii.filter((e) => e.serie === 'București' && (e.ateliere.length || e.participanti.length)).sort((a, b) => a.numar - b.numar);
   const first = arhiva[0];
   const speakers = D.oameni.filter((p) => p.aparitii.length).length;
+  // casetele din linia cohortelor: aceeași structură pentru toate (orașul, doar la Cluj; numărul; sezonul; starea)
+  const lastB = D.editii.filter((e) => e.serie === 'București').sort((x, y) => y.numar - x.numar)[0];
+  const nextSez = lastB ? (lastB.sezon === 'toamnă' ? `primăvară ${lastB.an + 1}` : `toamnă ${lastB.an}`) : 'în curând';
+  const histBox = (href, oras, nr, sezon, stare, cls) => `<a class="hist-ed ${cls}" href="${esc(href)}"><em>${esc(oras)}</em><b>${esc(nr)}</b><span>${esc(sezon)}</span><small>${esc(stare)}</small></a>`;
   const rblLogo = (prog.logouri || []).find((l) => l.id === 'rbl-logo-oficial');
   const team = Object.fromEntries(prog.contact.echipa.map((p) => [p.id, p]));
   const raluca = team['raluca-bedereag'];
@@ -165,11 +169,11 @@ function despre2Body(ctx, F) {
       <div><b>${F.ateliere}</b><span>${de(F.ateliere)}ateliere în arhivă</span></div>
       <div><b>${F.ciclu.length}</b><span>${de(F.ciclu.length)}companii revenite ca parteneri</span></div>
     </div>
-    <div class="hist">
+    <div class="hist dx-hist">
       <div class="hist-start"><b>${prog.de_cand}</b><span>Prima cohortă</span><small>cohortele #1–#${first.numar - 1}</small></div>
-      ${arhiva.map((e) => `<a class="hist-ed ${F.ongoing && e.id === F.ongoing.id ? 'live' : ''}" href="${edUrl(e)}"><b>#${e.numar}</b><span>${esc(e.sezon)} ${e.an}</span><small>${F.ongoing && e.id === F.ongoing.id ? 'în desfășurare' : plural(e.participanti.length, 'participant', 'participanți')}</small></a>`).join('')}
-      ${F.cluj ? `<a class="hist-ed cluj" href="${edUrl(F.cluj)}"><b>Cluj #${F.cluj.numar}</b><span>${esc(F.cluj.sezon)} ${F.cluj.an}</span><small>înscrieri deschise</small></a>` : ''}
-      <a class="hist-ed next" href="/aplica"><b>#${F.maxNr + 1}</b><span>următoarea</span><small>listă de așteptare</small></a>
+      ${arhiva.map((e) => histBox(edUrl(e), '', `#${e.numar}`, `${e.sezon} ${e.an}`, F.ongoing && e.id === F.ongoing.id ? 'în desfășurare' : plural(e.participanti.length, 'participant', 'participanți'), F.ongoing && e.id === F.ongoing.id ? 'is-live' : '')).join('')}
+      ${F.cluj ? histBox(edUrl(F.cluj), 'Cluj', `#${F.cluj.numar}`, `${F.cluj.sezon} ${F.cluj.an}`, 'înscrieri deschise', 'cluj') : ''}
+      ${histBox('/aplica', '', `#${F.maxNr + 1}`, nextSez, 'listă de așteptare', 'next')}
     </div>
   </div></section>
 
