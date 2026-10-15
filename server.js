@@ -428,6 +428,13 @@ async function handler(req, res) {
         .replace('</head>', '<link rel="stylesheet" href="/assets/inst.css"><link rel="stylesheet" href="/assets/home3.css"><meta name="robots" content="noindex"></head>')
         .replace('<body class="x-page">', '<body class="x-page inst">'));
     }
+    // previzualizare (doar local): același homepage de recrutare, în stilul IBM Carbon (site/assets/carbon.css, activ cu body.cb)
+    if (url === '/previzualizare/carbon' && !READ_ONLY) {
+      res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' });
+      return res.end(fresh('./site/render').renderHome3({ brand: new URLSearchParams(query).get('brand') || undefined })
+        .replace('</head>', '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;600&display=swap"><link rel="stylesheet" href="/assets/inst.css"><link rel="stylesheet" href="/assets/home3.css"><link rel="stylesheet" href="/assets/carbon.css"><meta name="robots" content="noindex"></head>')
+        .replace('<body class="x-page">', '<body class="x-page inst cb">'));
+    }
     // Despre nouă e acum /despre; paginile vechi Despre și Program rămân doar local, pentru comparație
     if (url === '/previzualizare/despre') { res.writeHead(301, { Location: '/despre' }); return res.end(); }
     if ((url === '/previzualizare/despre-veche' || url === '/previzualizare/program-vechi') && !READ_ONLY) {
