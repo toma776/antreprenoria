@@ -97,7 +97,7 @@ function despre2Body(ctx, F) {
   <nav class="pg-nav" aria-label="Secțiunile paginii"><div class="wrap">${NAV.map(([id, t], i) => `<a href="#${id}"><i>0${i + 1}</i>${t}</a>`).join('')}</div></nav>
 
   <!-- 01 ce primești: metodologia, o singură dată -->
-  <section class="sec" id="de-ce"><div class="wrap">
+  <section class="sec" id="de-ce"><span class="dx-anchor" id="program"></span><span class="dx-anchor" id="metodologie"></span><div class="wrap">
     <div class="sec-head"><p class="eyebrow">Ce primești</p><h2>Nu doar cursuri: cinci lucruri care îți schimbă compania.</h2></div>
     <ol class="dx-get">${prog.metodologie.map((m, k) => `<li><span class="step-n">0${k + 1}</span><h3>${esc(lower(m.titlu))}</h3><p>${esc(String(m.puncte[0] || '').replace(/;$/, '.').replace(/\bANTREPRENORI\b/g, 'antreprenori').replace(/provocarile/g, 'provocările'))}</p></li>`).join('')}</ol>
   </div></section>
@@ -113,7 +113,7 @@ function despre2Body(ctx, F) {
           ${ppl.map(({ p, s }) => `<a class="day-person" href="/lideri/${esc(p.id)}">${avatar(p)}<span><b>${esc(p.nume)}</b><small>${esc(O[s.organizatie]?.nume || (s.companie !== 'Trainer' ? s.companie : '') || ROLE[s.rol] || '')}</small></span></a>`).join('')}</li>`; }).join('')}</ol>
       <p class="day-note">Exemplu real: atelierul „${esc(cleanTitle(day.titlu))}”, cohorta #${ong.numar}.</p>
     </div>
-    <div class="fmt dx-fmt">
+    <div class="fmt dx-fmt" id="format">
       <div class="fmt-card big"><b>${fullDay.length}</b><h3>Ateliere full-day</h3><ul>${fullDay.map((a) => `<li>${esc(T[a.tema]?.nume || cleanTitle(a.titlu))}</li>`).join('')}</ul></div>
       ${eveningOther.length ? `<div class="fmt-card"><b>${eveningOther.length}</b><h3>Ateliere de seară</h3><ul>${eveningOther.map((a) => `<li>${esc(cleanTitle(a.titlu))}</li>`).join('')}</ul></div>` : ''}
       ${mastermind.length ? `<div class="fmt-card"><b>${mastermind.length}</b><h3>Mastermind</h3><p>${esc(firstSentence(mastermind[0].descriere))}</p></div>` : ''}
@@ -178,7 +178,7 @@ function despre2Body(ctx, F) {
   </div></section>
 
   <!-- 06 cine e în spate: organizatorul și echipa, împreună -->
-  <section class="sec sec-dark dx-night" id="echipa"><div class="wrap ab-rbl">
+  <section class="sec sec-dark dx-night" id="echipa"><span class="dx-anchor" id="rbl"></span><div class="wrap ab-rbl">
     <div>
       <p class="eyebrow">Cine e în spate</p>
       <h2>${esc(prog.organizator.nume)}</h2>

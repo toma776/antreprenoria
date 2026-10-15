@@ -197,13 +197,15 @@ function panels(ctx, F) {
           <span class="mm-more">Scrie-ne →</span></a>` },
 
     // despre: încrederea (cine organizează, de când, cine e în spate) și un om de contact pentru fiecare întrebare
-    { id: 'despre', title: 'Despre', href: '/despre', intro: `Un program al Fundației Romanian Business Leaders, din ${D.program.de_cand}. ${F.maxNr} de cohorte până acum, cu sprijinul liderilor din comunitatea RBL.`,
+    { id: 'despre', title: 'Despre', href: '/despre', intro: `Ce primești, cum funcționează, pentru cine e și cine e în spate. Un program al Fundației Romanian Business Leaders, din ${D.program.de_cand}. ${F.maxNr} de cohorte până acum, cu sprijinul liderilor din comunitatea RBL.`,
       cols: [
         col('Cunoaște-ne', [
-          link('/despre#program', 'Programul', 'Ce primești și cine a crescut cu noi'),
-          link('/despre#istoric', 'Istoricul', `Din ${D.program.de_cand} până la cohorta #${F.maxNr}`),
-          link('/despre#rbl', 'Organizatorul', `Fundația RBL · ${cifra('membri')} de membri`),
-          link('/despre#echipa', 'Echipa', `${team.length} ${de(team.length)}oameni care țin programul`),
+          link('/despre#de-ce', 'Ce primești', 'Cinci lucruri, nu doar cursuri'),
+          link('/despre#cum', 'Cum funcționează', 'O zi de atelier și formatul cohortei'),
+          link('/despre#pentru-cine', 'Ești potrivit?', 'Criteriile și cine a mai participat'),
+          link('/despre#investitie', 'Investiția', 'Taxa și ce include o cohortă'),
+          link('/despre#istoric', 'Din ' + D.program.de_cand, `${F.maxNr} ${de(F.maxNr)}cohorte până acum`),
+          link('/despre#echipa', 'Cine e în spate', `Fundația RBL · ${cifra('membri')} de membri`),
         ].join(''), 'mm-tiles'),
         col('În cifre', `<dl class="mm-figs">${D.program.cifre.filter((c) => c.sursa === '/despre-noi').map((c) => `<div><dt>${esc(c.valoare)}</dt><dd>${esc(c.ce.replace(/ din \d{4}$/, ''))}</dd></div>`).join('')}</dl>`, 'mm-hide-m'),
       ],
@@ -216,7 +218,7 @@ function panels(ctx, F) {
 }
 
 function megaMenu(ctx, F) {
-  return panels(ctx, F).filter((p) => TEME || p.id !== 'teme').map((p) => `
+  return panels(ctx, F).filter((p) => p.id !== 'program' && (TEME || p.id !== 'teme')).sort((a, b) => (b.id === 'despre') - (a.id === 'despre')).map((p) => `
     <div class="mm-item" data-mm="${p.id}">
       <button class="mm-trigger" type="button" aria-expanded="false" aria-controls="mm-${p.id}">${esc(p.title)}<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5 6 7.5 9 4.5"/></svg></button>
       <div class="mm-panel" id="mm-${p.id}" role="region" aria-label="${esc(p.title)}">

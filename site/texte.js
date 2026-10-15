@@ -19,7 +19,7 @@ const PAGINI = [
     ['echipa.titlu', 'Echipa · titlu', 'Oamenii din spatele programului.'],
     ['contact.titlu', 'Contact · titlu', 'Scrie-ne sau treci pe la noi.'],
   ] },
-  { id: 'program', nume: 'Program', url: '/program', blocuri: [
+  { id: 'program', nume: 'Despre · programul', url: '/despre', blocuri: [
     ['titlu', 'Titlul mare', 'Trei luni în care te uiți strategic la compania ta.'],
     ['zi.titlu', 'O zi de atelier · titlu', 'O zi de atelier, de la cafea la networking.'],
     ['zi.text', 'O zi de atelier · text', 'Fiecare atelier full-day are aceeași structură: dimineața un trainer lucrează aplicat cu grupa, după-amiaza doi antreprenori povestesc cum au rezolvat exact problema zilei, seara networking cu colegii.'],

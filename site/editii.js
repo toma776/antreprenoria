@@ -92,7 +92,7 @@ function editiiBody(ctx, F) {
       <p class="eyebrow">Cohorta următoare</p>
       <h2>Vrei în următoarea cohortă?</h2>
       <p>Lasă-ne datele și te anunțăm primul când se deschid înscrierile.</p>
-      <div class="hero-actions"><a class="btn btn-light btn-lg" href="/aplica">Aplică</a><a class="btn btn-outline-light btn-lg" href="/program">Cum funcționează</a></div>
+      <div class="hero-actions"><a class="btn btn-light btn-lg" href="/aplica">Aplică</a><a class="btn btn-outline-light btn-lg" href="/despre#cum">Cum funcționează</a></div>
     </div>
   </div></section>
 </main>`;

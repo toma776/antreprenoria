@@ -414,16 +414,19 @@ async function handler(req, res) {
     if (url.startsWith('/assets/')) return sendFile(res, safe(path.join(ROOT, 'site', 'assets'), url.slice('/assets/'.length)) || '');
     // paginile site-ului se generează la fiecare cerere din data/entitati.json și data/brand.json
     // pagina Teme e ascunsă (site/util.js › TEME): adresele ei duc la /program
-    if (!fresh('./site/util').TEME && /^\/teme(\/|$)/.test(url)) { res.writeHead(301, { Location: '/program' }); return res.end(); }
-    const PAGES = { '/': 'renderHome', '/program': 'renderProgram', '/despre': 'renderDespre', '/teme': 'renderTeme' };
+    if (!fresh('./site/util').TEME && /^\/teme(\/|$)/.test(url)) { res.writeHead(301, { Location: '/despre' }); return res.end(); }
+    // Program e acum parte din Despre: adresa veche (și ancorele ei) duce acolo
+    if (url === '/program') { res.writeHead(301, { Location: '/despre' }); return res.end(); }
+    const PAGES = { '/': 'renderHome', '/despre': 'renderDespre', '/teme': 'renderTeme' };
     // adresa veche de contact duce la secțiunea de contact din /despre
     if (url === '/contact') { res.writeHead(301, { Location: '/despre#contact' }); return res.end(); }
     // varianta nouă a homepage-ului e acum „/”; cea veche rămâne doar local, pentru comparație
     if (url === '/previzualizare/acasa') { res.writeHead(301, { Location: '/' }); return res.end(); }
-    // previzualizare (doar local): Despre, unită cu Program
-    if (url === '/previzualizare/despre' && !READ_ONLY) {
+    // Despre nouă e acum /despre; paginile vechi Despre și Program rămân doar local, pentru comparație
+    if (url === '/previzualizare/despre') { res.writeHead(301, { Location: '/despre' }); return res.end(); }
+    if ((url === '/previzualizare/despre-veche' || url === '/previzualizare/program-vechi') && !READ_ONLY) {
       res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' });
-      return res.end(fresh('./site/render').renderDespre2({ brand: new URLSearchParams(query).get('brand') || undefined }));
+      return res.end(fresh('./site/render')[url.endsWith('program-vechi') ? 'renderProgram' : 'renderDespreOld']({ brand: new URLSearchParams(query).get('brand') || undefined }));
     }
     if (url === '/previzualizare/acasa-veche' && !READ_ONLY) {
       res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' });

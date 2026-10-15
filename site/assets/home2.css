@@ -505,3 +505,7 @@ a.x-tile:hover { transform: translateY(-3px); box-shadow: 0 24px 50px -30px rgba
   .x-marq-label { max-width: none; padding: 16px 16px 0; }
   .x-marq-row .x-marq-logos { padding-top: 12px; }
 }
+
+/* ancorele vechi de pe Program/Despre, în pagina unită */
+.dx-anchor { display: block; height: 0; scroll-margin-top: 140px; }
+#format { scroll-margin-top: 140px; }

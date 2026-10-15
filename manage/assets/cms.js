@@ -159,13 +159,13 @@ const CMS = (() => {
         + fs_('Descriere', area('descriere', 'Ce este Antreprenoria', x.descriere, { tall: true }) + area('audienta', 'Cui se adresează', x.audienta)),
       values: (x) => ({ slogan: x.slogan, descriere: x.descriere }),
       preview: (v) => `<div class="sp-hero"><small>Despre Antreprenoria</small><b>${esc(cap(v.slogan || ''))}</b><p>${esc(String(v.descriere || '').slice(0, 220))}…</p></div>`,
-      where: () => [['/despre', 'pagina Despre'], ['/program', 'introducerea din Program']],
+      where: () => [['/despre', 'pagina Despre'], ['/despre', 'introducerea din Despre']],
       async save(f) { const v = form(f); await put({ op: 'entitate', tip: 'program', date: { nume: v.nume, slogan: v.slogan, de_cand: num(v.de_cand) || v.de_cand, descriere: v.descriere, audienta: v.audienta }, eticheta: 'identitatea programului' }); return 'identitatea programului'; } },
     metodologie: listType('metodologie', 'Metodologie', 'pas de metodologie', 'Pașii metodei, cu punctele fiecăruia.',
       (m, i) => ({ num: i + 1, title: cap(String(m.titlu).toLowerCase()), meta: `${m.puncte.length} puncte` }),
       (m) => fs_('Pasul', inp('titlu', 'Titlu', cap(String(m.titlu || '').toLowerCase()), { ph: 'ex. Ateliere aplicate', req: true }) + rows('puncte', 'Puncte', (m.puncte || []).map((p) => ({ p })), [['p', 'Un punct, o frază']])),
       (f) => { const v = form(f); return { titlu: v.titlu.toUpperCase(), puncte: rowsVal(f, 'puncte').map((r) => r.p).filter(Boolean) }; },
-      (v) => `<div class="sp-box"><b>${esc(v.titlu || 'Titlul pasului')}</b></div>`, () => [['/program#metodologie', 'Metodologia, pe pagina Program']], { titlu: '', puncte: [] }),
+      (v) => `<div class="sp-box"><b>${esc(v.titlu || 'Titlul pasului')}</b></div>`, () => [['/despre#de-ce', 'Ce primești, pe pagina Despre']], { titlu: '', puncte: [] }),
     cifre: listType('cifre', 'Cifre', 'cifră', 'Cifrele declarate ale programului.',
       (c) => ({ num: c.valoare, title: c.ce, meta: c.sursa ? `sursa: ${c.sursa}` : '' }),
       (c) => fs_('Cifra', f2(inp('valoare', 'Valoare', c.valoare, { ph: 'ex. 550+', req: true }), inp('ce', 'Ce înseamnă', c.ce, { ph: 'ex. IMM-uri care au trecut prin program' })) + inp('sursa', 'Sursa (pentru echipă)', c.sursa, { hint: 'Nu apare pe site.' })),
@@ -245,7 +245,7 @@ const CMS = (() => {
         + fs_('Agenda zilei', rows('program', 'Momentele zilei și oamenii lor', (a.program || []).map((m) => ({ interval: m.interval, activitate: m.activitate, speakeri: m.speakeri })), [['interval', '09:00 - 09:30', .7], ['activitate', 'ex. Training', 1.1], ['speakeri', '+ om', 1.4, 'chips']], '+ moment în agendă') + '<small class="ro">Oamenii se aleg din Oameni. Un nume nou primește automat fișă.</small>'),
       values: (a) => ({ titlu: a.titlu, data: a.data, format: a.format, editie: a.editie, loc: a.loc, tema: a.tema }),
       preview: (v) => `<div class="sp-ag"><span>${esc(dayRo(v.data) || 'Data')}</span><b>${esc(v.titlu || D.teme.find((t) => t.id === v.tema)?.nume || 'Titlul atelierului')}</b><small>${esc(cap(v.format || ''))}${v.loc ? ' · ' + esc(D.locatii.find((l) => l.id === v.loc)?.nume || '') : ''}</small></div>`,
-      where: (v) => [[eUrl(v.editie) + '#agenda', 'agenda cohortei'], ...(FULL.includes(v.tema) ? [[`/teme/${v.tema}`, 'pagina temei']] : []), ['/', 'pulsul de pe homepage'], ['/program', 'calendarul din Program']],
+      where: (v) => [[eUrl(v.editie) + '#agenda', 'agenda cohortei'], ...(FULL.includes(v.tema) ? [[`/teme/${v.tema}`, 'pagina temei']] : []), ['/', 'pulsul de pe homepage'], ['/despre#cum', 'calendarul din Despre']],
       async save(f, a, nou) {
         const v = form(f), tema = D.teme.find((t) => t.id === v.tema), loc = D.locatii.find((l) => l.id === v.loc);
         const titlu = v.titlu.trim() || tema?.nume || '';
@@ -274,7 +274,7 @@ const CMS = (() => {
       fields: (l) => fs_('Locația', inp('nume', 'Nume', l.nume, { ph: 'ex. Sediul Zitec', req: true }) + f2(inp('oras', 'Oraș', l.oras), inp('tip', 'Tip', l.tip, { ph: 'ex. sediu partener, hotel' })) + inp('adresa', 'Adresa', l.adresa, { ph: 'Strada, număr' }) + inp('gazda', 'Gazda (din Organizații)', Oid(l.organizatie)?.nume, { list: 'cms-orgs' })) + visField('locatii', l.id),
       values: (l) => ({ nume: l.nume, oras: l.oras }),
       preview: (v) => `<div class="sp-ag"><span>Locația</span><b>${esc(v.nume || 'Numele locației')}</b><small>${esc(v.oras || '')}</small></div>`,
-      where: () => [['/editii/22#agenda', 'agenda cohortelor'], ['/program', 'calendarul din Program']],
+      where: () => [['/editii/22#agenda', 'agenda cohortelor'], ['/despre#cum', 'calendarul din Despre']],
       async save(f, l, nou) { const v = form(f); if (!v.nume.trim()) throw new Error('Scrie numele.'); const o = D.organizatii.find((x) => nrm(x.nume) === nrm(v.gazda)); const r = await put({ op: 'entitate', tip: 'locatii', id: l.id, nou, date: { nume: v.nume.trim(), oras: v.oras, tip: v.tip, adresa: v.adresa || null, organizatie: o?.id || null }, eticheta: `locație: ${v.nume}` }); await visSave(f, 'locatii', r.id || l.id); return v.nume; } },
 
   };
@@ -328,7 +328,7 @@ const CMS = (() => {
   // grupurile din panou (entityCategories) -> tipul editabil
   const GROUP = { program: { identitate: 'identitate', metodologie: 'metodologie', cifre: 'cifre', contact: 'echipa' }, oameni: { traineri: 'traineri', invitati: 'invitati', facilitatori: 'facilitatori', participanti: 'participanti', echipa: 'echipa' }, organizatii: { alumni: 'alumni', parteneri: 'parteneri', speakeri: 'speakeri', locatii: 'locatii' }, teme: { 'full-day': 'full-day', seara: 'seara', networking: 'networking' } };
   const CALC = { organizatii: ['ciclu', 'multirol'], teme: ['matrice'] };
-  const SITE = { program: ['/despre', '/program'], editii: ['/editii/…', '/aplica'], oameni: ['/', '/editii/…', '/teme/…'], organizatii: ['/', '/editii/…'], teme: ['/teme', '/teme/…'], texte: ['/', '/despre', '/program', '/aplica'] };
+  const SITE = { program: ['/despre'], editii: ['/editii/…', '/aplica'], oameni: ['/', '/editii/…', '/teme/…'], organizatii: ['/', '/editii/…'], teme: ['/teme', '/teme/…'], texte: ['/', '/despre', '/program', '/aplica'] };
 
   /* ---------- formular: citire ---------- */
   function form(f) {

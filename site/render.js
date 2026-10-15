@@ -78,7 +78,7 @@ function facts({ D, P }) {
 }
 
 // ---------- bucăți comune ----------
-const NAV = [['Program', '/program'], ['Cohorte', '/editii'], ...(TEME ? [['Teme', '/teme']] : []), ['Lideri', '/lideri'], ['Comunitate', '/comunitate'], ['Parteneri', '/parteneri'], ['Despre', '/despre']];
+const NAV = [['Despre', '/despre'], ['Cohorte', '/editii'], ...(TEME ? [['Teme', '/teme']] : []), ['Lideri', '/lideri'], ['Comunitate', '/comunitate'], ['Parteneri', '/parteneri']];
 // varianta de brand vine din data/brand.json (activă sau cerută pentru previzualizare cu ?brand=)
 function head(title, desc, brandId) {
   const v = brand.pick(brand.load(), brandId);
@@ -200,11 +200,11 @@ ${footer(F, ctx)}
 </body></html>`;
 }
 
-// ---------- DESPRE, unită cu Program (previzualizare, doar local) ----------
-function renderDespre2(opt = {}) {
+// ---------- DESPRE (unită cu Program): ce primești, cum funcționează, pentru cine e, investiția, istoricul, echipa ----------
+function renderDespre(opt = {}) {
   const ctx = load(opt.brand), F = facts(ctx);
   const { despre2Body } = require('./despre2');
-  return `${head('Despre Antreprenoria – programul, pentru cine e, investiția, echipa', 'Acceleratorul Romanian Business Leaders, din 2013: ce primești, cum arată o zi de atelier, pentru cine e, cât costă și cine e în spate.', opt.brand).replace('</head>', '<meta name="robots" content="noindex"></head>')}
+  return `${head('Despre Antreprenoria – programul, pentru cine e, investiția, echipa', 'Acceleratorul Romanian Business Leaders, din 2013: ce primești, cum arată o zi de atelier, pentru cine e, cât costă și cine e în spate.', opt.brand)}
 ${header(F, ctx)}
 ${despre2Body(ctx, F)}
 ${footer(F, ctx)}
@@ -235,7 +235,7 @@ ${footer(F, ctx)}
 }
 
 // ---------- DESPRE ----------
-function renderDespre(opt = {}) {
+function renderDespreOld(opt = {}) {
   const ctx = load(opt.brand), F = facts(ctx);
   return `${head('Despre Antreprenoria – programul, istoricul, Romanian Business Leaders, echipa', 'Antreprenoria este programul de accelerare al Fundației Romanian Business Leaders, din 2013: istoricul cohortelor, organizatorul, echipa și contactul.', opt.brand)}
 ${header(F, ctx)}
@@ -365,4 +365,4 @@ const applyOptions = () => { const ctx = load(); return aplicaOptions(ctx, facts
 // indexul comunității pentru căutarea din meniu
 const renderCommunityIndex = (opt = {}) => JSON.stringify(communityIndex(load(opt.brand)));
 
-module.exports = { renderDespre2, renderHomeOld, render404, renderCommunityIndex, renderHome, renderEdition, renderProgram, renderDespre, renderTeme, renderTema, renderTraineri, renderTrainer, renderAlumni, renderAlumnus, renderParteneri, renderEditii, renderAplica, applyOptions };
+module.exports = { renderDespreOld, renderHomeOld, render404, renderCommunityIndex, renderHome, renderEdition, renderProgram, renderDespre, renderTeme, renderTema, renderTraineri, renderTrainer, renderAlumni, renderAlumnus, renderParteneri, renderEditii, renderAplica, applyOptions };

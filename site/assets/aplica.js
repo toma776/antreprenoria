@@ -187,7 +187,7 @@
         <li><b>O discuție scurtă</b><span>Dacă avem întrebări, te sunăm pentru câteva minute.</span></li>
         <li><b>Decizia, în cel mult 10 zile lucrătoare</b><span>Primești răspunsul pe email, la ${esc(d.email)}.</span></li>
       </ol>
-      <a class="btn btn-ghost" href="/program">Între timp, vezi cum arată programul</a>
+      <a class="btn btn-ghost" href="/despre">Între timp, vezi cum arată programul</a>
     </div>`;
     const box = $('.ax-done', form); focusStep(); box.focus({ preventScroll: true });
   }
