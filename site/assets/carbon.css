@@ -134,3 +134,64 @@
 .cb .x-person em, .cb .x-person small { font-family: var(--f-body); font-weight: 400; letter-spacing: .32px; text-transform: none; }
 .cb .x-person b { font-weight: 400; }
 .cb .h3-trust b { font-size: 28px; }
+
+/* ---------- varianta deschisă (tema albă Carbon): header și hero albe, panoul din dreapta gri 10 ---------- */
+/* header */
+.cb.inst .hdr::before { background: rgba(255, 255, 255, .96) !important; -webkit-backdrop-filter: saturate(1.4) blur(12px); backdrop-filter: saturate(1.4) blur(12px); }
+.cb .hdr { border-bottom: 1px solid var(--cb-g20); }
+.cb.inst .hdr::after { background: var(--cb-g20); }
+.cb.x-page .mm-trigger, .cb.x-page .mm-trigger svg { color: var(--cb-g100); }
+@media (min-width: 1181px) {
+  .cb.x-page .mm-trigger { color: var(--cb-g100); }
+  .cb.inst .mm-trigger:hover, .cb.inst .mm-item.open .mm-trigger { background: var(--cb-g10); color: var(--cb-g100); }
+  .cb.inst .mm-panel { border-top: 1px solid var(--cb-g20); }
+}
+.cb.inst .hdr-cta .live { border-color: var(--cb-g20); background: #fff; color: var(--cb-g100); }
+.cb.inst .menu-btn { color: var(--cb-g100); border-color: var(--cb-g20); }
+
+/* hero */
+.cb.inst .x-hero { --dark-ink: var(--cb-g100); --dark-muted: var(--cb-g70); background: #fff; color: var(--cb-g100); border-bottom: 1px solid var(--cb-g20); }
+.cb.inst .x-hero h1 { color: var(--cb-g100); }
+.cb.inst .x-hero h1 em, .cb.inst .x-hero h1 span { color: var(--cb-blue); }
+.cb.inst .x-hero .x-eyebrow { color: var(--cb-g70); }
+.cb.inst .x-chip { background: var(--cb-g10); color: var(--cb-g100); }
+.cb .h3-crit li { color: var(--cb-g70); }
+.cb .h3-crit b { color: var(--cb-g100); }
+.cb .h3-crit svg { color: #24a148; }
+.cb .h3-note { color: var(--cb-g70); }
+.cb.inst .x-btn-glass { border-color: var(--cb-blue); color: var(--cb-blue); background: transparent; }
+.cb.inst .x-btn-glass:hover { background: var(--cb-blue); border-color: var(--cb-blue); color: #fff; }
+
+/* „Ce te aduce aici?” */
+.cb.inst .x-hero .x-glass { background: var(--cb-g10); border-top: 3px solid var(--cb-blue); }
+.cb .h3-paths > .x-k, .cb .h3-panel-t, .cb .h3-now .x-k { color: var(--cb-g70); }
+.cb .h3-tabs { border-bottom-color: var(--cb-g20); }
+.cb .h3-tabs button { color: var(--cb-g70); }
+.cb .h3-tabs button:hover { background: var(--cb-g10h); color: var(--cb-g100); }
+.cb .h3-tabs button[aria-selected="true"] { color: var(--cb-g100); }
+.cb .h3-seat { background: #fff; color: var(--cb-g100); }
+.cb .h3-seat:hover { background: var(--cb-g10h); }
+.cb .h3-seat > span:not(.h3-seat-tag) { color: var(--cb-g70); }
+.cb .h3-seat i { color: var(--cb-blue); }
+.cb .h3-seat-tag { background: var(--cb-g20); color: var(--cb-g100) !important; }
+.cb .h3-seat-tag.open { background: #a7f0ba; color: #0e6027 !important; }
+.cb.inst .x-hero .x-ring-bg { stroke: var(--cb-g20); }
+.cb.inst .x-hero .x-ring b, .cb.inst .x-hero .x-clock b { color: var(--cb-g100); }
+.cb.inst .x-hero .x-clock div { background: #fff; border-color: var(--cb-g20); color: var(--cb-g70); }
+.cb .h3-next { border-top-color: var(--cb-g20); }
+.cb .h3-next b { color: var(--cb-g100); }
+.cb .h3-next span { color: var(--cb-g70); }
+.cb .h3-links a { color: var(--cb-blue); }
+.cb .h3-links-col a { border-bottom-color: var(--cb-g20); }
+
+/* banda de încredere și logo-urile */
+.cb .h3-trust { border-top-color: var(--cb-g20); }
+.cb .h3-trust > div + div { border-left-color: var(--cb-g20); }
+.cb .h3-trust b { color: var(--cb-g100); }
+.cb .h3-trust span { color: var(--cb-g70); }
+.cb.inst .x-hero .x-marq-row { border-top-color: var(--cb-g20); background: var(--cb-g10); }
+.cb.inst .x-hero .x-marq-label { color: var(--cb-g70); }
+.cb .x-hero .x-lg img { filter: grayscale(1) brightness(.35); opacity: .7; }
+.cb .x-hero .x-marq-logos .x-lg:hover img { opacity: 1; }
+.cb.inst .x-hero .x-marq-row::before, .cb.inst .x-hero .x-marq-row::after, .cb.inst .x-hero .x-marq::before, .cb.inst .x-hero .x-marq::after { display: none; }
+.cb .h3-trust .h3-rbl b { font-size: 20px; font-weight: 400; }
