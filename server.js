@@ -416,10 +416,11 @@ async function handler(req, res) {
     const PAGES = { '/': 'renderHome', '/program': 'renderProgram', '/despre': 'renderDespre', '/teme': 'renderTeme' };
     // adresa veche de contact duce la secțiunea de contact din /despre
     if (url === '/contact') { res.writeHead(301, { Location: '/despre#contact' }); return res.end(); }
-    // previzualizare (doar local): varianta nouă a homepage-ului
-    if (url === '/previzualizare/acasa' && !READ_ONLY) {
+    // varianta nouă a homepage-ului e acum „/”; cea veche rămâne doar local, pentru comparație
+    if (url === '/previzualizare/acasa') { res.writeHead(301, { Location: '/' }); return res.end(); }
+    if (url === '/previzualizare/acasa-veche' && !READ_ONLY) {
       res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' });
-      return res.end(fresh('./site/render').renderHome2({ brand: new URLSearchParams(query).get('brand') || undefined }));
+      return res.end(fresh('./site/render').renderHomeOld({ brand: new URLSearchParams(query).get('brand') || undefined }));
     }
     if (PAGES[url]) {
       const brand = new URLSearchParams(query).get('brand') || undefined;

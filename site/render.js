@@ -87,9 +87,9 @@ function head(title, desc, brandId) {
 <title>${esc(title)}</title><meta name="description" content="${esc(desc)}">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="${esc(brand.fontsHref(v))}" rel="stylesheet">
-<link rel="stylesheet" href="/assets/brand.css"><link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/menu-icon.css">
+<link rel="stylesheet" href="/assets/brand.css"><link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/menu-icon.css"><link rel="stylesheet" href="/assets/home2.css">
 <script>/* animațiile de la scroll pornesc doar cu JS și fără „reduce motion” */if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('rv')</script>${favicons(v)}
-</head><body>`;
+</head><body class="x-page">`;
 }
 // logo-ul: varianta potrivită fundalului din fiecare loc (data/brand.json › variante › logo › pe_site);
 // header-ul A și footerul sunt gri închis, deci logo cu text alb; header-ul deschis al lui B folosește logo-ul cu text gri
@@ -130,54 +130,12 @@ function header(F, ctx) {
     </div>
   </div><div class="mm-scrim" hidden></div></header>`;
 }
-// footer: închis la culoare (diferit de banda finală), cu starea programului din creier, contactele echipei
-// și numele programului desenat mare la bază
-const ICON = {
-  linkedin: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.5h4V21H3zM9.5 9.5h3.8v1.6h.06c.53-1 1.83-2.06 3.77-2.06 4.03 0 4.77 2.65 4.77 6.1V21h-4v-5.1c0-1.22-.02-2.79-1.7-2.79-1.7 0-1.96 1.33-1.96 2.7V21h-4z"/></svg>',
-  facebook: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 21v-7.5h2.5l.4-3h-2.9V8.6c0-.87.25-1.46 1.5-1.46h1.55V4.47A20 20 0 0 0 14.3 4.3c-2.2 0-3.7 1.34-3.7 3.8v2.4H8.1v3h2.5V21z"/></svg>',
-  arrow: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-};
+// footer-ul: site/home2.js (home2Footer), același pe toate paginile
 function footer(F, ctx, opt = {}) {
-  const { D } = ctx;
-  const edUrl = (e) => (e.serie === 'Cluj' ? `/editii/cluj-${e.numar}` : `/editii/${e.numar}`);
-  const team = Object.fromEntries(D.program.contact.echipa.map((p) => [p.id, p]));
-  const ong = F.ongoing, nx = F.next;
-  const contact = (p, label) => p ? `<div class="ftr-person"><span>${label}</span><b>${esc(p.nume)}</b><a href="mailto:${esc(p.email)}">${esc(p.email)}</a>${p.telefon ? `<a href="tel:${esc(p.telefon.replace(/\D/g, ''))}">${esc(p.telefon)}</a>` : ''}</div>` : '';
-  const recent = D.editii.filter((e) => e.serie === 'București').sort((a, b) => b.numar - a.numar).slice(0, 4);
-  return `<footer class="ftr">
-  <div class="wrap">
-    <div class="ftr-top">
-      <div class="ftr-brand">
-        ${logo('footer', ctx.brandId)}
-        <p class="ftr-claim">${esc(tx(D, 'footer.mesaj')).replace(/\n/g, '<br>')}</p>
-        <p class="ftr-sub">Program al Fundației Romanian Business Leaders, din ${D.program.de_cand}. ${F.maxNr} ${de(F.maxNr)}cohorte în București, plus Cluj.</p>
-        <div class="ftr-social">
-          <a href="https://www.linkedin.com/company/antreprenoria" rel="noopener" aria-label="LinkedIn">${ICON.linkedin}</a>
-          <a href="https://www.facebook.com/antreprenoria/" rel="noopener" aria-label="Facebook">${ICON.facebook}</a>
-        </div>
-      </div>
-      ${ong ? `<a class="ftr-status" href="${edUrl(ong)}">
-        <span class="ftr-status-top"><i class="dot-live"></i>Acum: cohorta #${ong.numar}</span>
-        ${nx ? `<b>Următorul atelier: ${esc(nx.titlu)}</b><span>${fmtDay(nx.data)}${nx.locatie ? ' · ' + esc(nx.locatie) : ''}</span>` : `<b>${esc(ong.perioada)}</b>`}
-        <em>Vezi agenda ${ICON.arrow}</em>
-      </a>` : ''}
-    </div>
-    <div class="ftr-cols">
-      <nav aria-label="Program"><h4>Program</h4>${NAV.slice(0, 4).map(([t, u]) => `<a href="${u}">${t}</a>`).join('')}<a href="/aplica">Aplică</a></nav>
-      <nav aria-label="Comunitate"><h4>Comunitate</h4>${NAV.slice(4).map(([t, u]) => `<a href="${u}">${t}</a>`).join('')}<a href="/despre#contact">Contact</a></nav>
-      <nav aria-label="Cohorte recente"><h4>Cohorte recente</h4>${recent.map((e) => `<a href="${edUrl(e)}">#${e.numar} <small>${esc(e.sezon)} ${e.an}</small></a>`).join('')}${F.cluj ? `<a href="${edUrl(F.cluj)}">Cluj #${F.cluj.numar} <small>înscrieri deschise</small></a>` : ''}</nav>
-      <div class="ftr-contact"><h4>Contact</h4>
-        ${team['raluca-bedereag'] ? `<div class="ftr-quick">${team['raluca-bedereag'].telefon ? `<a class="btn btn-light" href="tel:${esc(team['raluca-bedereag'].telefon.replace(/\D/g, ''))}">Sună</a>` : ''}<a class="btn btn-outline-light" href="mailto:${esc(team['raluca-bedereag'].email)}">Scrie-ne</a><small>${esc(team['raluca-bedereag'].nume)}, pentru participanți</small></div>` : ''}
-        ${contact(team['raluca-bedereag'], 'Pentru participanți')}
-        ${contact(team['larisa-slavenie'], 'Parteneriate')}
-        <p class="ftr-addr">Calea Dorobanți 42, et. 3, ap. 5<br>Sector 1, București</p>
-      </div>
-    </div>
-  </div>
-  <div class="ftr-word" aria-hidden="true"><svg viewBox="0 0 1000 124" preserveAspectRatio="xMidYMax meet"><defs><linearGradient id="ftr-fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="currentColor" stop-opacity=".2"/><stop offset="1" stop-color="currentColor" stop-opacity=".03"/></linearGradient></defs><text x="2" y="124" textLength="996" lengthAdjust="spacingAndGlyphs" fill="url(#ftr-fade)">Antreprenoria</text></svg></div>
-  <div class="wrap ftr-legal"><span>© ${new Date().getFullYear()} Fundația Romanian Business Leaders</span><span><a href="/confidentialitate">Confidențialitate</a><a href="/termeni-si-conditii">Termeni</a><a href="/politica-cookies">Cookies</a></span></div>
-</footer>
-${opt.mcta === false ? '' : mctaBar(F)}`;
+  const { home2Footer } = require('./home2');
+  return `${home2Footer(ctx, F, { logo: logo('footer', ctx.brandId), nav: NAV })}
+${opt.mcta === false ? '' : mctaBar(F)}
+<script src="/assets/home2.js"></script>`;
 }
 // doar pe mobil: acțiunea principală, la îndemâna degetului mare; apare după primul ecran (site.js)
 function mctaBar(F) {
@@ -189,8 +147,8 @@ function mctaBar(F) {
 </div>`;
 }
 
-// ---------- HOMEPAGE ----------
-function renderHome(opt = {}) {
+// ---------- HOMEPAGE VECHI (doar local: /previzualizare/acasa-veche) ----------
+function renderHomeOld(opt = {}) {
   const ctx = load(opt.brand), F = facts(ctx);
   return `${head('Antreprenoria – acceleratorul antreprenorilor Romanian Business Leaders', 'Program de accelerare pentru companii în creștere: ateliere cu antreprenori de top, un grup selectat de colegi și comunitatea Romanian Business Leaders. Din 2013.', opt.brand)}
 ${header(F, ctx)}
@@ -229,16 +187,16 @@ ${footer(F, ctx)}
 </body></html>`;
 }
 
-// ---------- HOMEPAGE 2029 (previzualizare, doar local) ----------
-function renderHome2(opt = {}) {
+// ---------- HOMEPAGE ----------
+// centrul de comandă al programului: cohorta live, navigatorul, verificarea potrivirii, liderii (site/home2.js)
+function renderHome(opt = {}) {
   const ctx = load(opt.brand), F = facts(ctx);
-  const { home2Body, home2Footer } = require('./home2');
-  return `${head('Antreprenoria – acceleratorul antreprenorilor Romanian Business Leaders', 'Previzualizare: varianta nouă a homepage-ului.', opt.brand).replace('</head>', '<link rel="stylesheet" href="/assets/home2.css"><meta name="robots" content="noindex"></head>').replace('<body>', '<body class="x-page">')}
+  const { home2Body } = require('./home2');
+  return `${head('Antreprenoria – acceleratorul antreprenorilor Romanian Business Leaders', 'Program de accelerare pentru companii în creștere: ateliere cu antreprenori de top, un grup selectat de colegi și comunitatea Romanian Business Leaders. Din 2013.', opt.brand)}
 ${header(F, ctx)}
 ${home2Body(ctx, F)}
-${home2Footer(ctx, F, { logo: logo('footer', ctx.brandId), nav: NAV })}
-${mctaBar(F)}
-<script src="/assets/site.js"></script><script src="/assets/home2.js"></script>
+${footer(F, ctx)}
+<script src="/assets/site.js"></script>
 </body></html>`;
 }
 
@@ -395,4 +353,4 @@ const applyOptions = () => { const ctx = load(); return aplicaOptions(ctx, facts
 // indexul comunității pentru căutarea din meniu
 const renderCommunityIndex = (opt = {}) => JSON.stringify(communityIndex(load(opt.brand)));
 
-module.exports = { renderHome2, render404, renderCommunityIndex, renderHome, renderEdition, renderProgram, renderDespre, renderTeme, renderTema, renderTraineri, renderTrainer, renderAlumni, renderAlumnus, renderParteneri, renderEditii, renderAplica, applyOptions };
+module.exports = { renderHomeOld, render404, renderCommunityIndex, renderHome, renderEdition, renderProgram, renderDespre, renderTeme, renderTema, renderTraineri, renderTrainer, renderAlumni, renderAlumnus, renderParteneri, renderEditii, renderAplica, applyOptions };
