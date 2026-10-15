@@ -86,7 +86,6 @@ function despre2Body(ctx, F) {
   <section class="sec" id="de-ce"><div class="wrap">
     <div class="sec-head"><p class="eyebrow">Ce primești</p><h2>Nu doar cursuri: cinci lucruri care îți schimbă compania.</h2></div>
     <ol class="dx-get">${prog.metodologie.map((m, k) => `<li><span class="step-n">0${k + 1}</span><h3>${esc(lower(m.titlu))}</h3><p>${esc(String(m.puncte[0] || '').replace(/;$/, '.').replace(/\bANTREPRENORI\b/g, 'antreprenori').replace(/provocarile/g, 'provocările'))}</p></li>`).join('')}</ol>
-    <ul class="checks dx-checks">${prog.ce_obtii.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
   </div></section>
 
   <!-- 02 cum funcționează: o zi reală și formatul cohortei -->
