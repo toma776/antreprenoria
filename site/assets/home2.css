@@ -452,3 +452,10 @@ a.x-tile:hover { transform: translateY(-3px); box-shadow: 0 24px 50px -30px rgba
 .x .dx-night .crit span { color: var(--dark-muted); }
 .x .dx-night .ab-logos span { background: rgba(255, 255, 255, .95); }
 .x .dx-night .ab-rbl-logo { background: #fff; border-radius: calc(var(--radius) * 3); }
+/* Despre (unită): pe mobil, banda finală are spațiu între butoane și caseta de contact (vechea pagină o ascundea) */
+@media (max-width: 720px) {
+  .x .cta-band#contact .cta-band-in { gap: 28px; }
+  .x #contact .ask-card { gap: 2px; padding: 20px; }
+  .x #contact .ask-card a { min-height: 36px; }
+  .x #contact .ask-card a:first-of-type { margin-top: 8px; }
+}
