@@ -196,8 +196,8 @@ function panels(ctx, F) {
           <span class="mm-sub">Propunerea și contractul vin pe email; ne vedem doar dacă vrei.</span>
           <span class="mm-more">Scrie-ne →</span></a>` },
 
-    // despre: încrederea (cine organizează, de când, cine e în spate) și un om de contact pentru fiecare întrebare
-    { id: 'despre', title: 'Despre', href: '/despre', intro: `Ce primești, cum funcționează, pentru cine e și cine e în spate. Un program al Fundației Romanian Business Leaders, din ${D.program.de_cand}. ${F.maxNr} de cohorte până acum, cu sprijinul liderilor din comunitatea RBL.`,
+    // despre: încrederea (cine organizează, de când, cine e în echipă) și un om de contact pentru fiecare întrebare
+    { id: 'despre', title: 'Despre', href: '/despre', intro: `Ce primești, cum funcționează, pentru cine e, organizatorul și echipa. Un program al Fundației Romanian Business Leaders, din ${D.program.de_cand}. ${F.maxNr} de cohorte până acum, cu sprijinul liderilor din comunitatea RBL.`,
       cols: [
         col('Cunoaște-ne', [
           link('/despre#de-ce', 'Ce primești', 'Cinci lucruri, nu doar cursuri'),
@@ -205,7 +205,7 @@ function panels(ctx, F) {
           link('/despre#pentru-cine', 'Ești potrivit?', 'Criteriile și cine a mai participat'),
           link('/despre#investitie', 'Investiția', 'Taxa și ce include o cohortă'),
           link('/despre#istoric', 'Din ' + D.program.de_cand, `${F.maxNr} ${de(F.maxNr)}cohorte până acum`),
-          link('/despre#echipa', 'Cine e în spate', `Fundația RBL · ${cifra('membri')} de membri`),
+          link('/despre#echipa', 'Organizatorul și echipa', `Fundația RBL · ${cifra('membri')} de membri`),
         ].join(''), 'mm-tiles'),
         col('În cifre', `<dl class="mm-figs">${D.program.cifre.filter((c) => c.sursa === '/despre-noi').map((c) => `<div><dt>${esc(c.valoare)}</dt><dd>${esc(c.ce.replace(/ din \d{4}$/, ''))}</dd></div>`).join('')}</dl>`, 'mm-hide-m'),
       ],
