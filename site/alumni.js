@@ -1,5 +1,5 @@
-// Comunitatea: /comunitate (toți alumnii edițiilor încheiate: căutare după nevoie, explorare, director) și /comunitate/<id> (doar profilurile completate).
-// Un participant intră în comunitate când ediția lui se încheie; până atunci apare doar pe pagina ediției.
+// Comunitatea: /comunitate (toți alumnii cohortelor încheiate: căutare după nevoie, explorare, director) și /comunitate/<id> (doar profilurile completate).
+// Un participant intră în comunitate când cohorta lui se încheie; până atunci apare doar pe pagina cohortei.
 // Cifrele de business apar numai agregat, niciodată pe om sau pe companie.
 const { esc, initials, img, milLei, slug, logoImg, de, tidy } = require('./util');
 
@@ -8,7 +8,7 @@ const avatar = (src, nume, w) => (src ? `<img src="${esc(img(src, w))}" alt="" l
 const edUrl = (e) => (e.serie === 'Cluj' ? `/editii/cluj-${e.numar}` : `/editii/${e.numar}`);
 const edLabel = (e) => (e.serie === 'Cluj' ? `Cluj #${e.numar}` : `#${e.numar}`);
 const chrono = (D) => D.editii.slice().sort((a, b) => a.an - b.an || (a.sezon === b.sezon ? (a.serie === 'Cluj') - (b.serie === 'Cluj') : a.sezon === 'primăvară' ? -1 : 1));
-// o ediție e încheiată (participanții intră în comunitate) doar după „Arhivează” din panou: starea „Ediție închisă”
+// o cohortă e încheiată (participanții intră în comunitate) doar după „Arhivează” din panou: starea „Ediție închisă”
 const ended = (e) => /închis|încheiat/i.test(e.status || '');
 const median = (a) => { const s = a.filter((x) => x != null).sort((x, y) => x - y); return s.length ? s[Math.floor(s.length / 2)] : null; };
 const quantile = (a, q) => { const s = a.filter((x) => x != null).sort((x, y) => x - y); return s.length ? s[Math.floor((s.length - 1) * q)] : null; };
@@ -107,13 +107,13 @@ function alumniBody(ctx, F, sel = {}) {
       <div><dt>${d.L.length}</dt><dd>${de(d.L.length)}antreprenori</dd></div>
       <div><dt>${d.companies}</dt><dd>${de(d.companies)}companii</dd></div>
       <div><dt>${d.sectors.length}</dt><dd>${de(d.sectors.length)}industrii</dd></div>
-      <div><dt>${d.eds.length}</dt><dd>${de(d.eds.length)}ediții încheiate</dd></div>
+      <div><dt>${d.eds.length}</dt><dd>${de(d.eds.length)}cohorte încheiate</dd></div>
     </dl></div>
   </div></section>
 
   <section class="cm-how" aria-label="Cum funcționează"><div class="wrap"><ol>
     <li><i>${I.search}</i><span><b>Caută după nevoie</b>Un serviciu, un produs, o problemă de rezolvat. Căutarea citește tot ce face fiecare companie.</span></li>
-    <li><i>${I.card}</i><span><b>Vezi profilul complet</b>Ce face, ce oferă și pentru cine, plus ediția în care a fost colegul tău.</span></li>
+    <li><i>${I.card}</i><span><b>Vezi profilul complet</b>Ce face, ce oferă și pentru cine, plus cohorta în care a fost colegul tău.</span></li>
     <li><i>${I.link}</i><span><b>Cere o conectare</b>Echipa programului face introducerea. Datele de contact rămân private.</span></li>
   </ol></div></section>
 
@@ -121,7 +121,7 @@ function alumniBody(ctx, F, sel = {}) {
     <div class="sec-head row"><div><p class="eyebrow">Explorează</p><h2>Comunitatea, pe felii.</h2></div>
       <div class="cm-tabs" role="tablist" aria-label="Explorează după">
         <button role="tab" aria-selected="true" data-tab="sector">Industrie</button>
-        <button role="tab" aria-selected="false" data-tab="ed">Ediție</button>
+        <button role="tab" aria-selected="false" data-tab="ed">Cohortă</button>
         ${d.cities.length ? '<button role="tab" aria-selected="false" data-tab="city">Oraș</button>' : ''}
       </div></div>
     <div class="cm-tiles" data-panel="sector">${d.sectors.map(([s, n]) => tile('sector', s, n, d.L.filter((a) => a.sector === s))).join('')}</div>
@@ -133,7 +133,7 @@ function alumniBody(ctx, F, sel = {}) {
     <div class="cm-bar">
       <div class="cm-bar-q"><span class="cm-search-ic">${I.search}</span><input id="cm-q2" type="search" placeholder="Caută în comunitate" autocomplete="off" aria-label="Caută în comunitate"></div>
       <label class="cm-sel"><span>Industrie</span><select data-f="sector" data-param="sector"><option value="">Toate</option>${d.sectors.map(([s, n]) => `<option value="${esc(s)}" data-q="${esc(slug(s))}" ${selS === s ? 'selected' : ''}>${esc(s)} (${n})</option>`).join('')}</select></label>
-      <label class="cm-sel"><span>Ediție</span><select data-f="ed" data-param="editie"><option value="">Toate</option>${d.eds.slice().reverse().map((e) => `<option value="${esc(e.id)}" data-q="${esc(String(e.numar))}" ${selE === e.id ? 'selected' : ''}>${esc(edLabel(e))} · ${esc(e.sezon)} ${e.an}</option>`).join('')}</select></label>
+      <label class="cm-sel"><span>Cohortă</span><select data-f="ed" data-param="editie"><option value="">Toate</option>${d.eds.slice().reverse().map((e) => `<option value="${esc(e.id)}" data-q="${esc(String(e.numar))}" ${selE === e.id ? 'selected' : ''}>${esc(edLabel(e))} · ${esc(e.sezon)} ${e.an}</option>`).join('')}</select></label>
       ${d.cities.length ? `<label class="cm-sel"><span>Oraș</span><select data-f="city" data-param="oras"><option value="">Toate</option>${d.cities.map(([c, n]) => `<option value="${esc(c)}" data-q="${esc(slug(c))}">${esc(c)} (${n})</option>`).join('')}</select></label>` : ''}
     </div>
     <div class="cm-status"><p class="cm-count" aria-live="polite"><b>${nShown}</b> ${nShown === 1 ? 'membru' : de(nShown) + 'membri'}</p><button class="cm-reset" type="button" ${selS || selE ? '' : 'hidden'}>Șterge filtrele</button></div>
@@ -174,8 +174,8 @@ function alumniBody(ctx, F, sel = {}) {
     <div class="cta-band-copy">
       <p class="eyebrow">Intră în comunitate</p>
       <h2>Locul tău e pe lista asta.</h2>
-      <p>Ești deja alumnus? Completează-ți profilul ca să te găsească cine are nevoie de tine. Nu ești încă? Comunitatea începe cu o ediție.</p>
-      <div class="hero-actions"><a class="btn btn-light btn-lg" href="/aplica">Aplică la ediția următoare</a>${mail ? `<a class="btn btn-outline-light btn-lg" href="mailto:${esc(mail)}?subject=${encodeURIComponent('Profilul meu în comunitatea Antreprenoria')}">Completează-ți profilul</a>` : ''}</div>
+      <p>Ești deja alumnus? Completează-ți profilul ca să te găsească cine are nevoie de tine. Nu ești încă? Comunitatea începe cu o cohortă.</p>
+      <div class="hero-actions"><a class="btn btn-light btn-lg" href="/aplica">Aplică la cohorta următoare</a>${mail ? `<a class="btn btn-outline-light btn-lg" href="mailto:${esc(mail)}?subject=${encodeURIComponent('Profilul meu în comunitatea Antreprenoria')}">Completează-ți profilul</a>` : ''}</div>
     </div>
   </div></section>
 
@@ -217,7 +217,7 @@ function alumnusBody(ctx, F, id, opt = {}) {
   const connect = mail ? `mailto:${mail}?subject=${subj}&body=${body}` : '/despre#contact';
   const link = (x) => href(x) || `/comunitate?membru=${x.id}#lista`;
   const person = (x, sub) => `<li><a href="${esc(link(x))}">${avatar(x.imagine, x.nume, 128)}<span><b>${esc(x.nume)}</b><small>${esc(sub ?? x.org?.nume ?? '')}</small></span></a></li>`;
-  // parcursul: atelierele fiecărei ediții (fără petrecerea de final), în ordine
+  // parcursul: atelierele fiecărei cohorte (fără petrecerea de final), în ordine
   const journey = a.eds.slice().reverse().map((e) => ({ e, ws: e.ateliere.filter((w) => T[w.tema] && T[w.tema].format !== 'networking').sort((x, y) => String(x.data).localeCompare(String(y.data))) }));
   const nWs = journey.reduce((n, j) => n + j.ws.length, 0);
   const wsRow = (e, w) => { const t = T[w.tema]; return `<li><a href="${esc(themeUrl(t))}">
@@ -245,7 +245,7 @@ function alumnusBody(ctx, F, id, opt = {}) {
       <dl class="ld-kpi" aria-label="Pe scurt">
         <div><dt>${esc(edLabel(last))}</dt><dd>${esc(last.sezon)} ${last.an}</dd></div>
         <div><dt>${nWs}</dt><dd>${de(nWs)}ateliere parcurse</dd></div>
-        <div><dt>${colleagues.length}</dt><dd>colegi de ediție</dd></div>
+        <div><dt>${colleagues.length}</dt><dd>colegi de cohortă</dd></div>
         <div><dt>${sameSector.length}</dt><dd>${a.sector ? 'în aceeași industrie' : 'în comunitate'}</dd></div>
       </dl>
     </div>
@@ -275,14 +275,14 @@ function alumnusBody(ctx, F, id, opt = {}) {
       </section>
 
       <section class="ld-card ld-ws mp-journey" id="parcurs" aria-labelledby="mp-j-h">
-        <div class="ld-card-h ld-card-row"><div><p class="ld-k">Parcursul în program</p><h2 id="mp-j-h">Ce a lucrat la Antreprenoria</h2></div><span class="ld-span">${plural(nWs, 'atelier', 'ateliere')} · ${plural(a.eds.length, 'ediție', 'ediții')}</span></div>
-        ${journey.map(({ e, ws }, i) => `<div class="mp-ed"><a class="mp-ed-h" href="${edUrl(e)}"><b>Antreprenoria ${esc(edLabel(e))}</b><span>${esc(e.sezon)} ${e.an}${e.perioada ? ` · ${esc(e.perioada)}` : ''}</span><i>Pagina ediției →</i></a>
+        <div class="ld-card-h ld-card-row"><div><p class="ld-k">Parcursul în program</p><h2 id="mp-j-h">Ce a lucrat la Antreprenoria</h2></div><span class="ld-span">${plural(nWs, 'atelier', 'ateliere')} · ${plural(a.eds.length, 'cohortă', 'cohorte')}</span></div>
+        ${journey.map(({ e, ws }, i) => `<div class="mp-ed"><a class="mp-ed-h" href="${edUrl(e)}"><b>Antreprenoria ${esc(edLabel(e))}</b><span>${esc(e.sezon)} ${e.an}${e.perioada ? ` · ${esc(e.perioada)}` : ''}</span><i>Pagina cohortei →</i></a>
           <ol class="ld-ws-list">${ws.slice(0, i ? 3 : 5).map((w) => wsRow(e, w)).join('')}</ol>
           ${ws.length > (i ? 3 : 5) ? `<details class="ld-more"><summary><span>Încă ${plural(ws.length - (i ? 3 : 5), 'atelier', 'ateliere')}</span></summary><ol class="ld-ws-list">${ws.slice(i ? 3 : 5).map((w) => wsRow(e, w)).join('')}</ol></details>` : ''}</div>`).join('')}
       </section>
 
       ${colleagues.length ? `<section class="ld-card mp-peers" id="colegi" aria-labelledby="mp-c-h">
-        <div class="ld-card-h ld-card-row"><div><p class="ld-k">Colegii de ediție</p><h2 id="mp-c-h">${esc(edLabel(last))}, ${esc(last.sezon)} ${last.an}</h2></div><a class="ld-link" href="/comunitate?editie=${last.numar}#lista">Toți ${colleagues.length + 1} →</a></div>
+        <div class="ld-card-h ld-card-row"><div><p class="ld-k">Colegii de cohortă</p><h2 id="mp-c-h">${esc(edLabel(last))}, ${esc(last.sezon)} ${last.an}</h2></div><a class="ld-link" href="/comunitate?editie=${last.numar}#lista">Toți ${colleagues.length + 1} →</a></div>
         <ul class="mp-faces">${colleagues.slice(0, 12).map((x) => `<li><a href="${esc(link(x))}" title="${esc(x.nume)}${x.org ? ` · ${esc(x.org.nume)}` : ''}">${avatar(x.imagine, x.nume, 128)}<b>${esc(x.nume)}</b><small>${esc(x.org?.nume || '')}</small></a></li>`).join('')}</ul>
       </section>` : ''}
     </div>

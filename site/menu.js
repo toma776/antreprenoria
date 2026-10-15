@@ -29,7 +29,7 @@ function faces(L, n) {
 function community(ctx, AL) {
   const sec = AL.sectors.slice(0, 8), max = AL.sectors[0]?.[1] || 1, mail = connectMail(ctx.D);
   const wall = faces(AL.L, 18);
-  // cei mai noi membri: din ultima ediție încheiată, alții decât cei din perete
+  // cei mai noi membri: din ultima cohortă încheiată, alții decât cei din perete
   const lastEd = AL.eds[AL.eds.length - 1];
   const fresh = AL.L.filter((a) => a.eds.includes(lastEd) && a.desc && !wall.includes(a)).slice(0, 4);
   return `<div class="wrap mm-in mmc" data-mail="${esc(mail)}">
@@ -51,7 +51,7 @@ function community(ctx, AL) {
       <h3 class="mm-h">Pe industrii</h3>
       <div class="mmc-sectors">${sec.map(([s, n]) => `<a href="/comunitate?sector=${esc(slug(s))}#lista"><span>${esc(s)}</span><i style="--w:${Math.round((n / max) * 100)}%"></i><b>${n}</b></a>`).join('')}</div>
       <a class="mm-all" href="/comunitate#exploreaza">Toate cele ${AL.sectors.length} ${de(AL.sectors.length)}industrii →</a>
-      <h3 class="mm-h mmc-h2">Pe ediții</h3>
+      <h3 class="mm-h mmc-h2">Pe cohorte</h3>
       <div class="mmc-eds">${AL.eds.slice().reverse().map((e) => `<a href="/comunitate?editie=${e.numar}#lista"><b>${esc(edLabel(e))}</b><span>${e.participanti.length}</span></a>`).join('')}</div>
     </div>
     <a class="mmc-wall" href="/comunitate">
@@ -59,7 +59,7 @@ function community(ctx, AL) {
       <span class="mmc-wall-tx">
         <span class="mm-kicker">Toată comunitatea</span>
         <b>${AL.L.length} de antreprenori, ${AL.companies} de companii</b>
-        <span class="mm-sub">din ${AL.sectors.length} ${de(AL.sectors.length)}industrii și ${AL.eds.length} ${de(AL.eds.length)}ediții încheiate, fiecare cu ce face și ce oferă</span>
+        <span class="mm-sub">din ${AL.sectors.length} ${de(AL.sectors.length)}industrii și ${AL.eds.length} ${de(AL.eds.length)}cohorte încheiate, fiecare cu ce face și ce oferă</span>
         <span class="mm-more">Intră în comunitate →</span>
       </span>
     </a>
@@ -106,22 +106,22 @@ function panels(ctx, F) {
       cols: [
         col('Programul', [
           link('/program#cum', 'Cum funcționează', 'O zi de atelier: training dimineața, antreprenori după-amiaza, networking seara'),
-          link('/program#format', 'Formatul unei ediții', 'Ateliere full-day, ateliere de seară, mastermind, petrecerea de final'),
+          link('/program#format', 'Formatul unei cohorte', 'Ateliere full-day, ateliere de seară, mastermind, petrecerea de final'),
           link('/program#metodologie', 'Metodologia', D.program.metodologie.map((m) => m.titlu.charAt(0) + m.titlu.slice(1).toLowerCase()).slice(0, 3).join(' · ') + ' …'),
         ].join('')),
         col('Înscrierea', [
           link('/program#pentru-cine', 'Pentru cine e', 'Companii de peste 1 mil. € sau 500.000 € cu avantaj inovativ'),
           link('/program#investitie', 'Investiția', 'Taxa de participare și ce include'),
-          link('/aplica', 'Aplică', `Lista pentru ediția #${F.maxNr + 1}${F.cluj ? ` sau înscriere la Cluj #${F.cluj.numar}` : ''}`),
+          link('/aplica', 'Aplică', `Lista pentru cohorta #${F.maxNr + 1}${F.cluj ? ` sau înscriere la Cluj #${F.cluj.numar}` : ''}`),
         ].join('')),
       ],
       feature: F.next ? `<a class="mm-feature" href="${esc(edUrl(ong))}#agenda">
           <span class="mm-kicker"><i class="dot-live"></i>Următorul atelier · ${shortDay(F.next.data)}</span>
           <b>${esc(F.next.titlu)}</b>
           <span class="mm-people">${F.next.program.flatMap((x) => x.speakeri).map((s) => P[s.persoana]).filter(Boolean).map((p) => `<span class="mm-face">${pic(p)}</span>`).join('')}</span>
-          <span class="mm-more">Agenda ediției #${ong.numar} →</span></a>` : '' },
+          <span class="mm-more">Agenda cohortei #${ong.numar} →</span></a>` : '' },
 
-    // cohortele (edițiile): toate, în casete compacte, de la cea mai nouă; starea fiecăreia dintr-o privire
+    // cohortele (cohortele): toate, în casete compacte, de la cea mai nouă; starea fiecăreia dintr-o privire
     { id: 'editii', title: 'Cohorte', href: '/editii', intro: `Două cohorte pe an în București, plus Cluj. ${F.maxNr} ${de(F.maxNr)}cohorte din ${D.program.de_cand}.`,
       cols: [
         col('Toate cohortele', `<div class="mm-cohorts">${[
@@ -142,21 +142,21 @@ function panels(ctx, F) {
           <span class="mm-upcoming">${upcoming.map((a) => `<span><i>${shortDay(a.data)}</i>${esc(a.titlu.replace(/^(Atelier de Seară|COCKTAIL NETWORKING)\s*[-:]\s*/i, ''))}</span>`).join('')}</span>
           <span class="mm-more">Vezi cohorta →</span></a>` : '' },
 
-    { id: 'teme', title: 'Teme', href: '/teme', intro: 'Curriculum-ul: teme care se repetă și se îmbunătățesc de la o ediție la alta.',
+    { id: 'teme', title: 'Teme', href: '/teme', intro: 'Curriculum-ul: teme care se repetă și se îmbunătățesc de la o cohortă la alta.',
       cols: [
-        col('Ateliere full-day', fullDay.map((t, i) => link(`/teme/${t.id}`, `<i class="mm-n">${String(i + 1).padStart(2, '0')}</i>${esc(t.nume)}`, `${themePeople(t)} ${de(themePeople(t))}traineri și antreprenori · ${t.editii.length} ${de(t.editii.length)}ediții`)).join(''), 'wide'),
-        col('Ateliere de seară', `<div class="mm-compact">${evening.map((t) => `<a href="/teme#${t.id}"><span>${esc(t.nume)}</span><b>${t.editii.length}</b></a>`).join('')}</div><p class="mm-note">număr de ediții în care a existat atelierul</p>`),
+        col('Ateliere full-day', fullDay.map((t, i) => link(`/teme/${t.id}`, `<i class="mm-n">${String(i + 1).padStart(2, '0')}</i>${esc(t.nume)}`, `${themePeople(t)} ${de(themePeople(t))}traineri și antreprenori · ${t.editii.length} ${de(t.editii.length)}cohorte`)).join(''), 'wide'),
+        col('Ateliere de seară', `<div class="mm-compact">${evening.map((t) => `<a href="/teme#${t.id}"><span>${esc(t.nume)}</span><b>${t.editii.length}</b></a>`).join('')}</div><p class="mm-note">număr de cohorte în care a existat atelierul</p>`),
       ],
       feature: `<a class="mm-feature" href="/teme#matrice">
-          <span class="mm-kicker">Curriculum pe ediții</span>
+          <span class="mm-kicker">Curriculum pe cohorte</span>
           <span class="mm-matrix">${D.teme.map((t) => `<span>${edChrono.map((e) => `<i class="${e.ateliere.some((a) => a.tema === t.id) ? 'on' : ''}"></i>`).join('')}</span>`).join('')}</span>
-          <span class="mm-sub">${D.teme.length} ${de(D.teme.length)}teme × ${D.editii.length} ${de(D.editii.length)}ediții: cele 5 full-day sunt în toate edițiile, cele de seară s-au schimbat</span>
+          <span class="mm-sub">${D.teme.length} ${de(D.teme.length)}teme × ${D.editii.length} ${de(D.editii.length)}cohorte: cele 5 full-day sunt în toate cohortele, cele de seară s-au schimbat</span>
           <span class="mm-more">Vezi matricea →</span></a>` },
 
     // liderii: antreprenorii invitați în față (fondatori și CEO), apoi trainerii și facilitatorii; companiile din spatele lor dau greutatea
-    { id: 'traineri', title: 'Lideri', href: '/lideri', intro: `${TR.length} de fondatori, CEO și traineri care predau din ce au construit. ${F.constanti} dintre ei revin în cel puțin cinci ediții.`,
+    { id: 'traineri', title: 'Lideri', href: '/lideri', intro: `${TR.length} de fondatori, CEO și traineri care predau din ce au construit. ${F.constanti} dintre ei revin în cel puțin cinci cohorte.`,
       cols: [
-        col('Fondatori și CEO invitați', `<div class="mm-people-grid">${TR.filter((x) => x.roluri.includes('antreprenor invitat')).slice(0, 8).map((x) => `<a href="/lideri/${esc(x.p.id)}">${pic(x.p)}<b>${esc(x.p.nume)}</b><span>${esc(x.org)}${x.p.editii.length > 1 ? ` · ${x.p.editii.length} ${de(x.p.editii.length)}ediții` : ''}</span></a>`).join('')}</div>`, 'wide'),
+        col('Fondatori și CEO invitați', `<div class="mm-people-grid">${TR.filter((x) => x.roluri.includes('antreprenor invitat')).slice(0, 8).map((x) => `<a href="/lideri/${esc(x.p.id)}">${pic(x.p)}<b>${esc(x.p.nume)}</b><span>${esc(x.org)}${x.p.editii.length > 1 ? ` · ${x.p.editii.length} ${de(x.p.editii.length)}cohorte` : ''}</span></a>`).join('')}</div>`, 'wide'),
         col('Cine predă', [
           link('/lideri?rol=antreprenor-invitat#lista', 'Antreprenori invitați', `${nRol('antreprenor invitat')} fondatori și CEO care povestesc cum au rezolvat problema zilei`),
           link('/lideri?rol=trainer#lista', 'Traineri', `${nRol('trainer')} specialiști pentru partea aplicată, dimineața`),
@@ -177,7 +177,7 @@ function panels(ctx, F) {
       cols: [
         col('Alege formatul', [
           link('/parteneri?format=atelier#construieste', 'Un atelier', 'Sponsor de atelier · o zi'),
-          link('/parteneri?format=editie#construieste', 'O ediție', 'Partener de ediție · 3 luni'),
+          link('/parteneri?format=editie#construieste', 'O cohortă', 'Partener de cohortă · 3 luni'),
           link('/parteneri?format=an#construieste', 'Un an', 'Partener strategic · tot anul'),
           link('/parteneri#cost-real', 'Costul real', 'Din impozitul plătit oricum'),
         ].join(''), 'mm-tiles'),
@@ -197,11 +197,11 @@ function panels(ctx, F) {
           <span class="mm-more">Scrie-ne →</span></a>` },
 
     // despre: încrederea (cine organizează, de când, cine e în spate) și un om de contact pentru fiecare întrebare
-    { id: 'despre', title: 'Despre', href: '/despre', intro: `Un program al Fundației Romanian Business Leaders, din ${D.program.de_cand}. ${F.maxNr} de ediții până acum, cu sprijinul liderilor din comunitatea RBL.`,
+    { id: 'despre', title: 'Despre', href: '/despre', intro: `Un program al Fundației Romanian Business Leaders, din ${D.program.de_cand}. ${F.maxNr} de cohorte până acum, cu sprijinul liderilor din comunitatea RBL.`,
       cols: [
         col('Cunoaște-ne', [
           link('/despre#program', 'Programul', 'Ce primești și cine a crescut cu noi'),
-          link('/despre#istoric', 'Istoricul', `Din ${D.program.de_cand} până la ediția #${F.maxNr}`),
+          link('/despre#istoric', 'Istoricul', `Din ${D.program.de_cand} până la cohorta #${F.maxNr}`),
           link('/despre#rbl', 'Organizatorul', `Fundația RBL · ${cifra('membri')} de membri`),
           link('/despre#echipa', 'Echipa', `${team.length} ${de(team.length)}oameni care țin programul`),
         ].join(''), 'mm-tiles'),

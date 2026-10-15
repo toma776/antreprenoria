@@ -1,5 +1,5 @@
 // Liderii (trainerii, antreprenorii invitați și facilitatorii): /lideri (toți, cu filtre) și /lideri/<id> (fișa fiecăruia).
-// Totul vine din agenda atelierelor: ce teme a ținut fiecare, în ce ediții, alături de cine.
+// Totul vine din agenda atelierelor: ce teme a ținut fiecare, în ce cohorte, alături de cine.
 const { esc, initials, fmtDay, today, img, de } = require('./util');
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : (n % 100 === 0 || n % 100 >= 20 ? 'de ' : '') + many}`;
@@ -69,7 +69,7 @@ function personData(ctx, id) {
   const order = chrono(D), rank = Object.fromEntries(order.map((e, i) => [e.id, i]));
   const byId = Object.fromEntries(D.editii.map((e) => [e.id, e]));
   const t0 = today();
-  // fiecare apariție, cu atelierul și ediția ei
+  // fiecare apariție, cu atelierul și cohorta ei
   const ws = p.aparitii.map((a) => { const e = byId[a.editie]; const w = e?.ateliere.find((x) => x.nr === a.atelier); return e && w ? { e, w, rol: a.rol } : null; })
     .filter(Boolean).sort((x, y) => rank[x.e.id] - rank[y.e.id] || x.w.nr - y.w.nr);
   const eds = [...new Set(ws.map((x) => x.e))];
@@ -106,7 +106,7 @@ function traineriBody(ctx, F) {
       <div class="hero-copy">
         <p class="eyebrow">Lideri · fondatori, CEO și traineri</p>
         <h1>Oameni care vorbesc din ce trăiesc.</h1>
-        <p class="lead">Dimineața, un trainer lucrează aplicat cu grupa. După-amiaza, antreprenori care au trecut prin aceeași problemă povestesc cum au rezolvat-o. ${plural(L.filter((x) => x.p.editii.length >= 5).length, 'om revine', 'oameni revin')} în cel puțin cinci ediții.</p>
+        <p class="lead">Dimineața, un trainer lucrează aplicat cu grupa. După-amiaza, antreprenori care au trecut prin aceeași problemă povestesc cum au rezolvat-o. ${plural(L.filter((x) => x.p.editii.length >= 5).length, 'om revine', 'oameni revin')} în cel puțin cinci cohorte.</p>
       </div>
       <dl class="tr-stats" aria-label="În cifre">
         <div><dt>${n('antreprenor invitat')}</dt><dd>fondatori și CEO invitați, cu povestea lor</dd></div>
@@ -124,7 +124,7 @@ function traineriBody(ctx, F) {
     </div>
     <div class="tr-meta"><p class="tr-count" aria-live="polite"></p><p class="al-q-note tr-q-note" hidden></p></div>
     <div class="tr-grid">${L.map((x) => `<a class="tr-card" href="/lideri/${esc(x.p.id)}" data-rol="${esc(x.roluri.join('|'))}" data-teme="${esc(x.themes.join(' '))}">
-      <span class="tr-ph">${avatar(x.p, 384)}</span>${x.p.editii.length > 1 ? `<i class="tr-n">${plural(x.p.editii.length, 'ediție', 'ediții')}</i>` : ''}
+      <span class="tr-ph">${avatar(x.p, 384)}</span>${x.p.editii.length > 1 ? `<i class="tr-n">${plural(x.p.editii.length, 'cohortă', 'cohorte')}</i>` : ''}
       <span class="tr-tx"><em>${x.rol === 'antreprenor invitat' ? 'Antreprenor<span class="tr-long"> invitat</span>' : esc(ROL[x.rol] || 'Invitat')}</em><b>${esc(x.p.nume)}</b><span>${esc(x.org)}</span></span></a>`).join('')}</div>
     <p class="tr-empty" hidden>Nimeni pentru combinația asta.</p>
   </div></section>
@@ -133,7 +133,7 @@ function traineriBody(ctx, F) {
     <div class="cta-band-copy">
       <p class="eyebrow">Curriculum</p>
       <h2>Fiecare temă, cu oamenii ei.</h2>
-      <p>Cinci teme full-day, aceleași în fiecare ediție, și ateliere de seară între ele.</p>
+      <p>Cinci teme full-day, aceleași în fiecare cohortă, și ateliere de seară între ele.</p>
       <div class="hero-actions"><a class="btn btn-light btn-lg" href="/aplica">Aplică</a><a class="btn btn-outline-light btn-lg" href="/teme">Vezi temele</a></div>
     </div>
   </div></section>
@@ -181,7 +181,7 @@ function trainerBody(ctx, F, id) {
 
   // rezumatul de sus: bio-ul din panou sau o frază din ce știm
   const top = areas.slice(0, 2).map((a) => a.t.nume);
-  const sum = p.bio || `${d.fn && orgName ? `${d.fn} la ${orgName}. ` : ''}${ROL[d.rol] || 'Invitat'} la Antreprenoria din ${yr0}: ${plural(d.ws.length, 'atelier', 'ateliere')} în ${plural(d.eds.length, 'ediție', 'ediții')}${top.length ? `, mai ales despre ${list(top.map((x) => x.toLowerCase()))}` : ''}.`;
+  const sum = p.bio || `${d.fn && orgName ? `${d.fn} la ${orgName}. ` : ''}${ROL[d.rol] || 'Invitat'} la Antreprenoria din ${yr0}: ${plural(d.ws.length, 'atelier', 'ateliere')} în ${plural(d.eds.length, 'cohortă', 'cohorte')}${top.length ? `, mai ales despre ${list(top.map((x) => x.toLowerCase()))}` : ''}.`;
 
   // compania: ce știm despre ea și cine mai e de acolo în program
   const orgPeople = lastOrg ? (lastOrg.oameni || []).filter((x) => x !== id && ctx.P[x]).map((x) => ctx.P[x]) : [];
@@ -229,7 +229,7 @@ function trainerBody(ctx, F, id) {
         </div>
       </div>
       <dl class="ld-kpi" aria-label="Pe scurt">
-        <div><dt>${d.eds.length}</dt><dd>${d.eds.length === 1 ? 'ediție' : 'ediții'}</dd></div>
+        <div><dt>${d.eds.length}</dt><dd>${d.eds.length === 1 ? 'cohortă' : 'cohorte'}</dd></div>
         <div><dt>${d.ws.length}</dt><dd>${d.ws.length === 1 ? 'atelier' : 'ateliere'}</dd></div>
         <div><dt>${areas.length}</dt><dd>${areas.length === 1 ? 'arie' : 'arii'}</dd></div>
         <div><dt>${yr0}</dt><dd>primul atelier</dd></div>

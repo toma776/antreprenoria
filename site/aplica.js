@@ -43,8 +43,8 @@ const STEPS = [
     { k: 'schimbare', t: 'area', label: 'Ce vrei să fie diferit în companie după cele 3 luni de program?', ph: 'ex. Să am un plan de creștere pe 3 ani asumat de echipă și doi directori care preiau vânzările și operațiunile.' },
     { k: 'angajament', t: 'one', ui: 'cards', label: 'Poți fi prezent la toate atelierele, timp de 3 luni?', req: true, opts: [['da', 'Da, îmi blochez zilele de acum', 'Atelierele full-day și serile de networking.'], ['probabil', 'Cel mai probabil', 'Pot lipsi cel mult o dată.'], ['nesigur', 'Nu sunt sigur încă', 'Depinde de perioadă.']] },
   ] },
-  { id: 'final', titlu: 'Ultimul pas', sub: 'Alege ediția și verifică-ți răspunsurile înainte să trimiți.', fields: [
-    { k: 'editie', t: 'editie', label: 'Ediția', req: true },
+  { id: 'final', titlu: 'Ultimul pas', sub: 'Alege cohorta și verifică-ți răspunsurile înainte să trimiți.', fields: [
+    { k: 'editie', t: 'editie', label: 'Cohorta', req: true },
     { k: 'sursa', t: 'one', ui: 'chips', label: 'Cum ai aflat de Antreprenoria?', opts: [['Recomandare de la un alumni', 'Recomandare de la un alumni'], ['LinkedIn', 'LinkedIn'], ['Facebook', 'Facebook'], ['Google', 'Google'], ['Comunitatea RBL', 'Comunitatea RBL'], ['Altceva', 'Altceva']] },
     { k: 'sursa_alta', t: 'text', label: 'Unde?', showIf: ['sursa', 'Altceva'] },
   ] },
@@ -64,13 +64,13 @@ function validCUI(v) {
   return r === Number(c.slice(-1));
 }
 
-// edițiile la care se poate aplica: cele cu înscrieri deschise (încă neîncepute) și lista de așteptare pentru următoarea din București
+// cohortele la care se poate aplica: cele cu înscrieri deschise (încă neîncepute) și lista de așteptare pentru următoarea din București
 function options(ctx, F) {
   const { D } = ctx;
   const t0 = new Date().toISOString().slice(0, 10);
   const open = D.editii.filter((e) => e.deschisa && !e.ateliere.some((a) => a.data && a.data < t0 && a.data.startsWith(String(e.an))))
     .map((e) => { const p = e.preturi.find((x) => !x.ascuns); return { id: e.id, title: `${e.serie === 'Cluj' ? 'Cluj' : 'București'} #${e.numar}`, tag: 'Înscrieri deschise', sub: `${e.perioada}${p ? ' · ' + p.pret_text.replace(/(\d)(\d{3})\b/, '$1.$2') : ''}`, href: edUrl(e) }; });
-  const next = { id: `bucuresti-${F.maxNr + 1}`, title: `București #${F.maxNr + 1}`, tag: 'Listă de așteptare', sub: 'Următoarea ediție; te anunțăm primii când se deschid înscrierile', href: null };
+  const next = { id: `bucuresti-${F.maxNr + 1}`, title: `București #${F.maxNr + 1}`, tag: 'Listă de așteptare', sub: 'Următoarea cohortă; te anunțăm primii când se deschid înscrierile', href: null };
   return [...open, next];
 }
 
@@ -79,7 +79,7 @@ function fieldError(f, d, ids) {
   const v = d[f.k];
   if (f.showIf && d[f.showIf[0]] !== f.showIf[1]) return '';
   const empty = Array.isArray(v) ? !v.length : f.t === 'consent' ? !v : !String(v ?? '').trim();
-  if (empty) return f.req ? ({ consent: 'Avem nevoie de acordul tău ca să putem evalua aplicarea.', one: 'Alege o variantă.', many: 'Alege cel puțin o variantă.', editie: 'Alege ediția.' }[f.t] || { nume: 'Scrie numele și prenumele.', companie: 'Scrie numele companiei.', email: 'Scrie adresa de email.', telefon: 'Scrie numărul de telefon.', cui: 'Scrie CUI-ul companiei.' }[f.k] || 'Scrie câteva fraze.') : '';
+  if (empty) return f.req ? ({ consent: 'Avem nevoie de acordul tău ca să putem evalua aplicarea.', one: 'Alege o variantă.', many: 'Alege cel puțin o variantă.', editie: 'Alege cohorta.' }[f.t] || { nume: 'Scrie numele și prenumele.', companie: 'Scrie numele companiei.', email: 'Scrie adresa de email.', telefon: 'Scrie numărul de telefon.', cui: 'Scrie CUI-ul companiei.' }[f.k] || 'Scrie câteva fraze.') : '';
   if (f.k === 'nume' && String(v).split(/\s+/).filter(Boolean).length < 2) return 'Scrie numele și prenumele.';
   if (f.t === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) return 'Adresa de email nu pare corectă.';
   if (f.t === 'tel' && String(v).replace(/\D/g, '').length < 9) return 'Numărul de telefon pare prea scurt.';
@@ -88,7 +88,7 @@ function fieldError(f, d, ids) {
   if (f.t === 'many' && v.some((x) => !f.opts.some(([k]) => k === x))) return 'Alege dintre variantele de mai sus.';
   if (f.t === 'many' && v.length > f.max) return `Alege cel mult ${f.max}.`;
   if (f.t === 'area' && String(v).trim().length < f.min) return `Mai scrie puțin (măcar ${f.min} de caractere).`;
-  if (f.t === 'editie' && !ids.includes(v)) return 'Alege ediția.';
+  if (f.t === 'editie' && !ids.includes(v)) return 'Alege cohorta.';
   return '';
 }
 

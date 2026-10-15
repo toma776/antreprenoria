@@ -29,14 +29,14 @@
     const v = d[f.k];
     if (f.showIf && d[f.showIf[0]] !== f.showIf[1]) return '';
     const empty = Array.isArray(v) ? !v.length : f.t === 'consent' ? !v : !String(v ?? '').trim();
-    if (empty) return f.req ? ({ consent: 'Avem nevoie de acordul tău ca să putem evalua aplicarea.', one: 'Alege o variantă.', many: 'Alege cel puțin o variantă.', editie: 'Alege ediția.' }[f.t] || { nume: 'Scrie numele și prenumele.', companie: 'Scrie numele companiei.', email: 'Scrie adresa de email.', telefon: 'Scrie numărul de telefon.', cui: 'Scrie CUI-ul companiei.' }[f.k] || 'Scrie câteva fraze.') : '';
+    if (empty) return f.req ? ({ consent: 'Avem nevoie de acordul tău ca să putem evalua aplicarea.', one: 'Alege o variantă.', many: 'Alege cel puțin o variantă.', editie: 'Alege cohorta.' }[f.t] || { nume: 'Scrie numele și prenumele.', companie: 'Scrie numele companiei.', email: 'Scrie adresa de email.', telefon: 'Scrie numărul de telefon.', cui: 'Scrie CUI-ul companiei.' }[f.k] || 'Scrie câteva fraze.') : '';
     if (f.k === 'nume' && String(v).split(/\s+/).filter(Boolean).length < 2) return 'Scrie numele și prenumele.';
     if (f.t === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) return 'Adresa de email nu pare corectă.';
     if (f.t === 'tel' && String(v).replace(/\D/g, '').length < 9) return 'Numărul de telefon pare prea scurt.';
     if (f.t === 'cui' && !validCUI(v)) return 'CUI-ul nu e valid. Verifică cifrele (cu sau fără RO).';
     if (f.t === 'many' && v.length > f.max) return `Alege cel mult ${f.max}.`;
     if (f.t === 'area' && String(v).trim().length < f.min) return `Mai scrie puțin (măcar ${f.min} de caractere).`;
-    if (f.t === 'editie' && !ids.includes(v)) return 'Alege ediția.';
+    if (f.t === 'editie' && !ids.includes(v)) return 'Alege cohorta.';
     return '';
   }
 
@@ -192,7 +192,7 @@
     const box = $('.ax-done', form); focusStep(); box.focus({ preventScroll: true });
   }
 
-  // ---------- pornirea: ciorna din browser, linkul de reluare, ediția din adresă ----------
+  // ---------- pornirea: ciorna din browser, linkul de reluare, cohorta din adresă ----------
   async function start() {
     let st = null;
     try { st = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {}

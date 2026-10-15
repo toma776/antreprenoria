@@ -8,10 +8,10 @@ const PAGINI = [
     ['cum.text', 'Cum funcționează · text', 'La fiecare atelier: dimineața training aplicat, după-amiaza antreprenori care povestesc cum au rezolvat exact problema despre care vorbiți. Seara, networking cu colegii.'],
     ['oameni.titlu', 'Traineri · titlu', 'Oameni care vorbesc din ce trăiesc.'],
     ['potrivit.titlu', 'Pentru cine e · titlu', 'Ești potrivit pentru Antreprenoria?'],
-    ['potrivit.text', 'Pentru cine e · text', 'Selectăm în jur de 25 de antreprenori pe ediție, ca discuțiile să fie între oameni cu provocări asemănătoare. Trei întrebări îți spun dacă merită să aplici.'],
+    ['potrivit.text', 'Pentru cine e · text', 'Selectăm în jur de 25 de antreprenori pe cohortă, ca discuțiile să fie între oameni cu provocări asemănătoare. Trei întrebări îți spun dacă merită să aplici.'],
     ['parteneri.titlu', 'Parteneri · titlu', 'Companiile care fac posibil programul.'],
     ['final.titlu', 'Banda finală · titlu', 'Cresc antreprenorii, crește România.'],
-    ['final.text', 'Banda finală · text', 'Următoarea ediție din București se formează acum. Lasă-ne datele și te anunțăm primul când se deschid înscrierile.'],
+    ['final.text', 'Banda finală · text', 'Următoarea cohortă din București se formează acum. Lasă-ne datele și te anunțăm primul când se deschid înscrierile.'],
   ] },
   { id: 'despre', nume: 'Despre', url: '/despre', blocuri: [
     ['titlu', 'Titlul mare', 'Cresc antreprenorii, crește România.'],

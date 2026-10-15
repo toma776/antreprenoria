@@ -249,7 +249,7 @@ const deRo = (n) => (n % 100 >= 20 || (n && n % 100 === 0) ? 'de ' : '');
     h.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
   });
 
-  // ---------- agenda ediției pe mobil: atelierul următor rămâne închis (pe desktop e deschis) ----------
+  // ---------- agenda cohortei pe mobil: atelierul următor rămâne închis (pe desktop e deschis) ----------
   if (isMobile()) $$('details.ag-item[open]').forEach((d) => d.removeAttribute('open'));
 
   // „Ești potrivit?”: răspuns imediat, fără date trimise nicăieri
@@ -681,7 +681,7 @@ const cmEngine = (() => {
   document.querySelectorAll('[data-idea]').forEach((b) => b.addEventListener('click', () => { setQ(b.dataset.idea); toList(); }));
   sels.forEach((s) => s.addEventListener('change', apply));
   reset.addEventListener('click', () => { sels.forEach((s) => { s.value = ''; }); setQ(''); });
-  // explorarea: filele (industrie, ediție, oraș) și felia aleasă devine filtru în director
+  // explorarea: filele (industrie, cohortă, oraș) și felia aleasă devine filtru în director
   const tabs = [...document.querySelectorAll('.cm-tabs [role="tab"]')];
   tabs.forEach((t) => t.addEventListener('click', () => {
     tabs.forEach((x) => x.setAttribute('aria-selected', String(x === t)));
@@ -812,7 +812,7 @@ const cmEngine = (() => {
       $('.sp-out-rol', cfgEl).textContent = C.fmt[f].rol;
       const ben = C.fmt[f].ben.map((b) => b.replace('{tema}', tema ? tema.dataset.n : ''));
       $('.sp-out-ben', cfgEl).innerHTML = [...ben.map((b) => `<li>${b}</li>`), ...team.map((t) => `<li class="add">${C.echipa[t]}</li>`)].map((li, k) => li.replace('<li', `<li style="animation-delay:${k * 40}ms"`)).join('');
-      const what = f === 'atelier' ? `sponsor al unui atelier (tema: ${tema.dataset.n})` : f === 'editie' ? 'partener al unei ediții întregi' : 'partener strategic pentru un an';
+      const what = f === 'atelier' ? `sponsor al unui atelier (tema: ${tema.dataset.n})` : f === 'editie' ? 'partener al unei cohorte întregi' : 'partener strategic pentru un an';
       const extra = team.map((t) => C.msg[t]);
       cta.dataset.imMsg = `Vreau să fiu ${what}.${extra.length ? ` Mi-ar plăcea și: ${extra.join('; ')}.` : ''}`;
     }

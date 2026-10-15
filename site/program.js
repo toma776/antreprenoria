@@ -1,5 +1,5 @@
 // Pagina /program: tot ce trebuie să știi înainte să aplici, într-o singură pagină cu secțiuni (ancorele din meniu duc aici).
-// Conținutul vine din creier: descrierea și audiența de pe /despre-noi, metodologia, agenda ediției curente, prețurile.
+// Conținutul vine din creier: descrierea și audiența de pe /despre-noi, metodologia, agenda cohortei curente, prețurile.
 // Profilul participanților apare doar agregat.
 const { esc, initials, milLei, img, de } = require('./util');
 const { tx } = require('./texte');
@@ -22,7 +22,7 @@ function programBody(ctx, F) {
   const fullDay = byFormat('full-day'), evening = byFormat('seară'), networking = byFormat('networking');
   const mastermind = evening.filter((a) => a.tema === 'mastermind'), eveningOther = evening.filter((a) => a.tema !== 'mastermind');
 
-  // o zi de atelier: primul atelier full-day al ediției curente cu programul complet
+  // o zi de atelier: primul atelier full-day al cohortei curente cu programul complet
   const day = fullDay.find((a) => a.program.length >= 5) || fullDay[0];
   const blocks = (day?.program || []).map((x) => { const [a, b] = x.interval.split('-').map((s) => s.trim()); return { ...x, from: a, to: b, len: mins(b) - mins(a) }; }).filter((x) => x.len > 0);
   const total = blocks.reduce((n, x) => n + x.len, 0) || 1;
@@ -37,7 +37,7 @@ function programBody(ctx, F) {
   ];
   const maxSector = F.sectors[0]?.[1] || 1;
 
-  // investiția: prețurile vizibile ale edițiilor deschise și ce include o ediție
+  // investiția: prețurile vizibile ale cohortelor deschise și ce include o cohortă
   const priced = D.editii.filter((e) => e.deschisa).map((e) => ({ e, p: e.preturi.find((x) => !x.ascuns) })).filter((x) => x.p);
   const benefits = (ong.beneficii.length ? ong.beneficii : D.editii.find((e) => e.beneficii.length)?.beneficii || []).map((b) => { const m = /^(\d+)\s+(.*)$/.exec(b.trim()); return m ? [m[1], m[2].replace(/success/i, 'succes')] : ['1', b]; });
   const valoare = ong.valoare_estimata || D.editii.find((e) => e.valoare_estimata)?.valoare_estimata;
@@ -57,9 +57,9 @@ function programBody(ctx, F) {
         <div class="hero-actions"><a class="btn btn-primary btn-lg" href="/aplica">Aplică pentru un loc</a><a class="btn btn-ghost btn-lg" href="#pentru-cine">Ești potrivit?</a></div>
       </div>
       <aside class="pg-glance" aria-label="Pe scurt">
-        <div class="ed-live-top"><span>Pe scurt</span><span>o ediție</span></div>
+        <div class="ed-live-top"><span>Pe scurt</span><span>o cohortă</span></div>
         <dl>
-          <div><dt>3 luni</dt><dd>${esc(ong.perioada.replace(/\s*-\s*/, '–'))}, la ediția #${ong.numar}</dd></div>
+          <div><dt>3 luni</dt><dd>${esc(ong.perioada.replace(/\s*-\s*/, '–'))}, la cohorta #${ong.numar}</dd></div>
           <div><dt>${fullDay.length} ${de(fullDay.length)}ateliere full-day</dt><dd>câte o temă: ${fullDay.map((a) => esc(T[a.tema]?.nume || cleanTitle(a.titlu))).join(', ')}</dd></div>
           <div><dt>${evening.length} ${de(evening.length)}ateliere de seară</dt><dd>${evening.map((a) => esc(cleanTitle(a.titlu))).join(', ')}</dd></div>
           <div><dt>~25 de antreprenori</dt><dd>selectați, ca discuțiile să fie între oameni cu provocări asemănătoare</dd></div>
@@ -79,13 +79,13 @@ function programBody(ctx, F) {
       <ol class="day-list" style="grid-template-columns:${blocks.map((x) => (kind(x) === 'break' ? 'minmax(84px, .6fr)' : 'minmax(150px, 1.4fr)')).join(' ')}">${blocks.map((x) => { const ppl = x.speakeri.map((s) => ({ p: P[s.persoana], s })).filter((y) => y.p);
         return `<li class="${kind(x)}" style="--w:${Math.max(x.len / total, 0.06)}"><time>${esc(x.from)}</time><b>${esc(kind(x) === 'break' ? x.activitate : KIND_LABEL[kind(x)])}</b>
           ${ppl.map(({ p, s }) => `<a class="day-person" href="/lideri/${esc(p.id)}">${avatar(p)}<span><b>${esc(p.nume)}</b><small>${esc(O[s.organizatie]?.nume || (s.companie !== 'Trainer' ? s.companie : '') || ROLE[s.rol] || '')}</small></span></a>`).join('')}</li>`; }).join('')}</ol>
-      <p class="day-note">Exemplu real: atelierul „${esc(cleanTitle(day.titlu))}”, ediția #${ong.numar}. <a href="${edUrl(ong)}#agenda">Toată agenda ediției →</a></p>
+      <p class="day-note">Exemplu real: atelierul „${esc(cleanTitle(day.titlu))}”, cohorta #${ong.numar}. <a href="${edUrl(ong)}#agenda">Toată agenda cohortei →</a></p>
     </div>
   </div></section>` : ''}
 
   <section class="sec sec-alt" id="format"><div class="wrap">
-    <div class="sec-head row"><div><p class="eyebrow">Formatul unei ediții</p><h2>${plural(ws.length, 'întâlnire', 'întâlniri')} într-un trimestru.</h2>
-      <p class="lead">Temele full-day sunt aceleași de la o ediție la alta; atelierele de seară s-au schimbat.</p></div>
+    <div class="sec-head row"><div><p class="eyebrow">Formatul unei cohorte</p><h2>${plural(ws.length, 'întâlnire', 'întâlniri')} într-un trimestru.</h2>
+      <p class="lead">Temele full-day sunt aceleași de la o cohortă la alta; atelierele de seară s-au schimbat.</p></div>
       <a class="link-arrow" href="/teme">Toate temele →</a></div>
     <div class="fmt">
       <div class="fmt-card big"><b>${fullDay.length}</b><h3>Ateliere full-day</h3><ul>${fullDay.map((a) => `<li><a href="/teme/${esc(a.tema)}">${esc(T[a.tema]?.nume || cleanTitle(a.titlu))}</a></li>`).join('')}</ul></div>
@@ -93,8 +93,8 @@ function programBody(ctx, F) {
       ${mastermind.length ? `<div class="fmt-card"><b>${mastermind.length}</b><h3>Mastermind</h3><p>${esc(firstSentence(mastermind[0].descriere))}</p></div>` : ''}
       ${networking.length ? `<div class="fmt-card"><b>${networking.length}</b><h3>Petrecerea de final</h3><p>${esc(cleanTitle(networking[0].titlu))}. ${esc(firstSentence(networking[0].descriere))}</p></div>` : ''}
     </div>
-    <div class="fmt-line" aria-label="Calendarul ediției #${ong.numar}">${ws.filter((a) => a.data).map((a) => `<span class="${a.format === 'full-day' ? 'fd' : a.format === 'networking' ? 'nw' : 'ev'}" title="${esc(cleanTitle(a.titlu))}"><i></i><small>${Number(a.data.slice(8))}.${a.data.slice(5, 7)}</small></span>`).join('')}</div>
-    <p class="day-note">Calendarul ediției #${ong.numar}: <i class="k fd"></i>full-day <i class="k ev"></i>seară <i class="k nw"></i>networking</p>
+    <div class="fmt-line" aria-label="Calendarul cohortei #${ong.numar}">${ws.filter((a) => a.data).map((a) => `<span class="${a.format === 'full-day' ? 'fd' : a.format === 'networking' ? 'nw' : 'ev'}" title="${esc(cleanTitle(a.titlu))}"><i></i><small>${Number(a.data.slice(8))}.${a.data.slice(5, 7)}</small></span>`).join('')}</div>
+    <p class="day-note">Calendarul cohortei #${ong.numar}: <i class="k fd"></i>full-day <i class="k ev"></i>seară <i class="k nw"></i>networking</p>
   </div></section>
 
   <section class="sec" id="metodologie"><div class="wrap">
@@ -125,21 +125,21 @@ function programBody(ctx, F) {
 
   <section class="sec" id="investitie"><div class="wrap">
     <div class="sec-head row"><div><p class="eyebrow">Investiția</p><h2>Ce plătești și ce primești.</h2>
-      ${valoare ? `<p class="lead">Valoarea estimată a unei ediții e de ${esc(valoare.replace(/^valoare estimată:\s*/i, ''))}: atelierele, accesul la traineri și antreprenori, sprijinul partenerilor și comunitatea.</p>` : ''}</div></div>
+      ${valoare ? `<p class="lead">Valoarea estimată a unei cohorte e de ${esc(valoare.replace(/^valoare estimată:\s*/i, ''))}: atelierele, accesul la traineri și antreprenori, sprijinul partenerilor și comunitatea.</p>` : ''}</div></div>
     <div class="price-row">
       ${priced.map(({ e, p }) => { const live = F.ongoing && e.id === F.ongoing.id;
-        return `<a class="price ${live ? 'ref' : ''}" href="${edUrl(e)}"><span class="ask-kicker">${e.serie === 'Cluj' ? `Cluj #${e.numar}` : `Ediția #${e.numar}`} · ${live ? 'în desfășurare' : 'înscrieri deschise'}</span><b>${esc(p.pret_text.replace(/(\d)(\d{3})\b/, '$1.$2'))}</b>
-        <span>${live ? 'taxa la ediția în curs, ca reper; înscrierile s-au încheiat' : esc(p.nota ? p.nota.replace(/\.$/, '') : p.eticheta || '')}</span><em>Vezi ediția →</em></a>`; }).join('')}
-      <a class="price next" href="/aplica"><span class="ask-kicker">Ediția #${F.maxNr + 1} · București</span><b>Listă de așteptare</b><span>Te anunțăm primul când se deschid înscrierile și cât costă.</span><em>Intră pe listă →</em></a>
+        return `<a class="price ${live ? 'ref' : ''}" href="${edUrl(e)}"><span class="ask-kicker">${e.serie === 'Cluj' ? `Cluj #${e.numar}` : `Cohorta #${e.numar}`} · ${live ? 'în desfășurare' : 'înscrieri deschise'}</span><b>${esc(p.pret_text.replace(/(\d)(\d{3})\b/, '$1.$2'))}</b>
+        <span>${live ? 'taxa la cohorta în curs, ca reper; înscrierile s-au încheiat' : esc(p.nota ? p.nota.replace(/\.$/, '') : p.eticheta || '')}</span><em>Vezi cohorta →</em></a>`; }).join('')}
+      <a class="price next" href="/aplica"><span class="ask-kicker">Cohorta #${F.maxNr + 1} · București</span><b>Listă de așteptare</b><span>Te anunțăm primul când se deschid înscrierile și cât costă.</span><em>Intră pe listă →</em></a>
     </div>
-    ${benefits.length ? `<h3 class="who-h" style="margin-top:36px">Ce include o ediție</h3><div class="benefits">${benefits.map(([n, t]) => `<div class="benefit"><b>${esc(n)}</b><span>${esc(t)}</span></div>`).join('')}</div>` : ''}
+    ${benefits.length ? `<h3 class="who-h" style="margin-top:36px">Ce include o cohortă</h3><div class="benefits">${benefits.map(([n, t]) => `<div class="benefit"><b>${esc(n)}</b><span>${esc(t)}</span></div>`).join('')}</div>` : ''}
   </div></section>
 
   <section class="cta-band"><div class="wrap cta-band-in">
     <div class="cta-band-copy">
       <p class="eyebrow">Aplică</p>
       <h2>Crești mai repede alături de oameni care au trecut prin asta.</h2>
-      <p>Intră pe lista pentru ediția #${F.maxNr + 1} din București${F.cluj ? ` sau aplică la Cluj #${F.cluj.numar}` : ''}.</p>
+      <p>Intră pe lista pentru cohorta #${F.maxNr + 1} din București${F.cluj ? ` sau aplică la Cluj #${F.cluj.numar}` : ''}.</p>
       <div class="hero-actions"><a class="btn btn-light btn-lg" href="/aplica">Intră pe lista de așteptare</a>${F.cluj ? `<a class="btn btn-outline-light btn-lg" href="${edUrl(F.cluj)}">Aplică la Cluj #${F.cluj.numar}</a>` : ''}</div>
     </div>
     ${raluca ? `<div class="ask-card"><span class="ask-kicker">Ai întrebări înainte să aplici?</span><b>${esc(raluca.nume)}</b><span>${esc(raluca.rol.split('·')[0].trim())}</span>

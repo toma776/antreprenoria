@@ -25,8 +25,11 @@ const img = (u, w = 384) => {
   return `/_vercel/image?url=${encodeURIComponent(u)}&w=${size}&q=75`;
 };
 
-// „de” cerut de gramatică între număr și substantiv: 20 de ediții, 101 ediții, 120 de ediții (n poate fi și „1.234”)
+// „de” cerut de gramatică între număr și substantiv: 20 de cohorte, 101 cohorte, 120 de cohorte (n poate fi și „1.234”)
 const de = (n) => { const v = typeof n === 'number' ? Math.round(n) : Number(String(n).replace(/[^\d]/g, '')); return Number.isFinite(v) && (v % 100 === 0 ? v > 0 : v % 100 >= 20) ? 'de ' : ''; };
 // textele preluate (descrieri): fără spațiu înaintea semnelor de punctuație
 const tidy = (s) => String(s ?? '').replace(/\s+([,.;:!?])/g, '$1');
-module.exports = { de, tidy, esc, today, MONTHS, fmtDay, median, quantile, milLei, initials, slug, img, logoImg };
+// textele preluate care spun „ediție”: pe site spunem „cohortă” (aceleași forme, același gen)
+const COH = { edițiilor: 'cohortelor', edițiile: 'cohortele', ediției: 'cohortei', ediția: 'cohorta', ediții: 'cohorte', ediție: 'cohortă', Edițiile: 'Cohortele', Ediția: 'Cohorta', Ediții: 'Cohorte', Ediție: 'Cohortă' };
+const cohorta = (s) => String(s ?? '').replace(/(?<!\p{L})(Edițiile|edițiilor|edițiile|ediției|Ediția|ediția|Ediții|ediții|Ediție|ediție)(?!\p{L})/gu, (m) => COH[m]);
+module.exports = { cohorta, de, tidy, esc, today, MONTHS, fmtDay, median, quantile, milLei, initials, slug, img, logoImg };

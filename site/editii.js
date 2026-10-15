@@ -1,4 +1,4 @@
-// /editii: toate edițiile — cele active sus (în desfășurare, cu înscrieri deschise), apoi arhiva, pe ani.
+// /editii: toate cohortele — cele active sus (în desfășurare, cu înscrieri deschise), apoi arhiva, pe ani.
 const { esc, initials, fmtDay, today, img, de } = require('./util');
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : (n % 100 === 0 || n % 100 >= 20 ? 'de ' : '') + many}`;
@@ -7,7 +7,7 @@ const edLabel = (e) => (e.serie === 'Cluj' ? `Cluj #${e.numar}` : `#${e.numar}`)
 const cleanTitle = (t) => String(t || '').replace(/^(Atelier de Seară|COCKTAIL NETWORKING)\s*[-:]\s*/i, '').replace(/\.\s*$/, '');
 const face = (src, nume) => (src ? `<img src="${esc(img(src, 128))}" alt="" loading="lazy">` : `<span class="ph">${esc(initials(nume || '?'))}</span>`);
 const chrono = (D) => D.editii.slice().sort((a, b) => a.an - b.an || (a.sezon === b.sezon ? (a.serie === 'Cluj') - (b.serie === 'Cluj') : a.sezon === 'primăvară' ? -1 : 1));
-// starea unei ediții, aceeași regulă ca pe pagina ei: arhivată doar prin panou
+// starea unei cohorte, aceeași regulă ca pe pagina ei: arhivată doar prin panou
 function stateOf(e) {
   if (/închis|încheiat/i.test(e.status || '')) return 'past';
   const t0 = today(), dated = e.ateliere.filter((a) => a.data && a.data.startsWith(String(e.an)));
@@ -28,7 +28,7 @@ function editiiBody(ctx, F) {
   const totalWs = D.editii.reduce((n, e) => n + e.ateliere.length, 0);
   const years = [...new Set(past.map((e) => e.an))];
 
-  // cardul mare al unei ediții active: progresul și următoarea întâlnire
+  // cardul mare al unei cohorte active: progresul și următoarea întâlnire
   const activeCard = (e) => {
     const st = stateOf(e), ws = e.ateliere.slice().sort((a, b) => (a.data || '9').localeCompare(b.data || '9'));
     const held = ws.filter((a) => a.data && a.data < t0).length;
@@ -45,7 +45,7 @@ function editiiBody(ctx, F) {
       <span class="ex-go">${st === 'live' ? 'Vezi agenda' : 'Detalii și înscriere'} →</span>
     </a>`;
   };
-  // cardul unei ediții din arhivă: perioada, cifrele și câteva fețe din grupă
+  // cardul unei cohorte din arhivă: perioada, cifrele și câteva fețe din grupă
   const pastCard = (e) => {
     const themes = [...new Set(e.ateliere.map((a) => a.tema).filter(Boolean))].map((t) => T[t]).filter((t) => t && t.format === 'full-day');
     const faces = e.participanti.filter((x) => x.imagine || P[x.persoana]?.imagine).slice(0, 6);

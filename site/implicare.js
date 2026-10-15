@@ -26,7 +26,7 @@ function validate(input) {
 }
 
 // fereastra cu formularul (se deschide din butoanele [data-implica] sau din adresa ?implicare=…)
-// formate, echipa: aceleași ca în configurator (site/parteneri.js); themes: temele atelierelor; cluj: textul despre ediția din Cluj
+// formate, echipa: aceleași ca în configurator (site/parteneri.js); themes: temele atelierelor; cluj: textul despre cohorta din Cluj
 function implicareDialog({ formate, echipa, themes, cluj = '' }) {
   const field = (name, label, attrs) => `<div class="af-field" data-f="${name}">
         <label for="im-${name}">${label}</label>
