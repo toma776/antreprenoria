@@ -36,6 +36,6 @@ const cohorta = (s) => String(s ?? '').replace(/(?<!\p{L})(Edițiile|edițiilor|
 const TEME = false;
 // unde duce o temă: pagina ei (dacă Teme e vizibilă), altfel liderii care o predau
 const temaUrl = (t) => (!t ? '/lideri' : TEME ? (t.format === 'full-day' ? `/teme/${t.id}` : `/teme#${t.id}`) : `/lideri?tema=${t.id}#lista`);
-// paginile separate ale comunității (căutarea, industriile, cohortele): deocamdată doar local, ca previzualizare
-const CM_PAGES = !process.env.VERCEL;
+// paginile separate ale comunității (căutarea, industriile, cohortele): publicate, și local, și pe Vercel
+const CM_PAGES = true;
 module.exports = { CM_PAGES, TEME, temaUrl, cohorta, de, tidy, esc, today, MONTHS, fmtDay, median, quantile, milLei, initials, slug, img, logoImg };

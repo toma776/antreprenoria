@@ -507,7 +507,7 @@ async function handler(req, res) {
       const q1 = new URLSearchParams(query);
       return res.end(fresh('./site/render').renderAlumni({ brand: q1.get('brand') || undefined, sector: q1.get('sector') || undefined, editie: q1.get('editie') || undefined, q: q1.get('q') || undefined }));
     }
-    // paginile separate ale comunității (deocamdată doar local): căutarea, industriile, cohortele
+    // paginile separate ale comunității: căutarea, industriile, cohortele
     if (fresh('./site/util').CM_PAGES) {
       const q3 = new URLSearchParams(query), R = fresh('./site/render'), brand = q3.get('brand') || undefined;
       let cm = null;
