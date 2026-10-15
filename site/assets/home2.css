@@ -392,3 +392,13 @@ a.x-tile:hover { transform: translateY(-3px); box-shadow: 0 24px 50px -30px rgba
 .xf-cohorts .xf-wide { grid-column: 1 / -1; }
 .xf-all { display: inline-flex !important; align-items: center; gap: 6px; margin-top: 12px; color: var(--dark-ink) !important; font-size: 13.5px !important; font-weight: 600; }
 .xf-all svg { width: 15px; height: 15px; }
+/* footer pe mobil: linkurile pe două coloane, ca pastile; Aplică pe toată lățimea */
+@media (max-width: 600px) {
+  nav.xf-col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  nav.xf-col h4 { grid-column: 1 / -1; margin-bottom: 4px; }
+  nav.xf-col > a { padding: 11px 14px; border: 1px solid rgba(255, 255, 255, .1); border-radius: calc(var(--radius) * 2); background: rgba(255, 255, 255, .04); font-size: 14.5px; opacity: 1; }
+  nav.xf-col > a:hover { transform: none; }
+  nav.xf-col > a:active { background: rgba(255, 255, 255, .1); }
+  nav.xf-col > .xf-apply { grid-column: 1 / -1; justify-content: center; margin-top: 2px; padding: 13px 14px; border-color: transparent; background: var(--primary); color: #fff !important; }
+  nav.xf-col > .xf-apply svg { width: 16px; height: 16px; }
+}

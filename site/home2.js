@@ -220,7 +220,7 @@ function home2Footer(ctx, F, { logo, nav }) {
     </div>
 
     <div class="xf-grid">
-      <nav class="xf-col" aria-label="Explorează"><h4>Explorează</h4>${nav.map(([t, u]) => `<a href="${u}">${t}</a>`).join('')}<a class="xf-apply" href="/aplica">Aplică ${ARROW}</a></nav>
+      <nav class="xf-col" aria-label="Explorează"><h4>Explorează</h4>${nav.map(([t, u]) => `<a href="${u}">${t}</a>`).join('')}<a href="/despre#contact">Contact</a><a class="xf-apply" href="/aplica">Aplică ${ARROW}</a></nav>
       <div class="xf-col"><h4>Cohorte</h4>
         <div class="xf-cohorts">
           <small class="xf-ch">Poți intra</small>
