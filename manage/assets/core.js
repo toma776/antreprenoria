@@ -3,6 +3,8 @@ const SITE = 'https://antreprenoria.ro';
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+// starea unei cohorte vine din date („Ediție închisă”); în panou o numim „Cohortă închisă”
+const stareLab = (s) => (s === 'Ediție închisă' ? 'Cohortă închisă' : s || '');
 const shortUrl = (u) => String(u || '').replace(/^https?:\/\/(www\.)?antreprenoria\.ro/, '') || '/';
 const link = (u, t) => (u ? `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(t ?? shortUrl(u))}</a>` : '<span class="muted">—</span>');
 const lei = (n) => (n == null || n === '' ? '—' : `${Number(n).toLocaleString('ro-RO')} lei`);
@@ -62,7 +64,7 @@ document.addEventListener('click', (e) => {
 });
 window.addEventListener('popstate', () => go(routeFromPath()));
 
-// numărul total de entități din creier: ediții, ateliere, oameni, organizații, locații, teme (aceleași noduri ca în Sinapse)
+// numărul total de entități din creier: cohorte, ateliere, oameni, organizații, locații, teme (aceleași noduri ca în Sinapse)
 const entityTotal = (D) => D.editii.length + D.editii.reduce((n, e) => n + e.ateliere.length, 0) + D.oameni.length + D.organizatii.length + D.locatii.length + D.teme.length;
 function updateCounts() {
   const E = store.entitati;
@@ -85,7 +87,7 @@ routes.dashboard = function renderDashboard() {
   $('#view').innerHTML = `
     <div class="head"><div><div class="crumb">manage</div><h1>Dashboard</h1></div></div>
     <div class="kpis">
-      <a class="kpi" href="/manage/entitati/editii"><b>${E.editii.length}</b><span>ediții pe site</span></a>
+      <a class="kpi" href="/manage/entitati/editii"><b>${E.editii.length}</b><span>cohorte pe site</span></a>
       <div class="kpi"><b>${E.editii.reduce((n, e) => n + e.ateliere.length, 0)}</b><span>ateliere</span></div>
       <a class="kpi" href="/manage/entitati/oameni"><b>${E.oameni.filter((p) => p.aparitii.length).length}</b><span>traineri & speakeri</span></a>
       <a class="kpi" href="/manage/entitati/organizatii/alumni"><b>${alumni.length}</b><span>companii alumni</span></a>
@@ -94,7 +96,7 @@ routes.dashboard = function renderDashboard() {
     </div>
     <div class="grid2">
       <div class="card">
-        <h3><a href="/manage/entitati/editii">Ediții în curs →</a></h3>
+        <h3><a href="/manage/entitati/editii">Cohorte în curs →</a></h3>
         ${curr.map((e) => `<p><a href="/manage/entitati/editii/${e.id}"><b>${esc(edLabel(e))}</b></a> · ${esc(e.perioada)} · ${tags(e.status, 'ok')}<br>${plural(e.ateliere.length, 'atelier', 'ateliere')}, ${plural(e.participanti.length, 'participant', 'participanți')}${e.preturi.filter((p) => !p.ascuns).map((p) => ` · ${esc(p.pret_text)}`).join('')}</p>`).join('')}
       </div>
       <div class="card">
@@ -103,7 +105,7 @@ routes.dashboard = function renderDashboard() {
       </div>
       <div class="card">
         <h3><a href="/manage/entitati/oameni/traineri">Cei mai constanți traineri →</a></h3>
-        ${topPeople.map((p) => `<p><a href="/manage/entitati/oameni/p/${p.id}">${esc(p.nume)}</a> <span class="muted">· ${plural(p.editii.length, 'ediție', 'ediții')} · ${esc(p.companii[p.companii.length - 1] || '')}</span></p>`).join('')}
+        ${topPeople.map((p) => `<p><a href="/manage/entitati/oameni/p/${p.id}">${esc(p.nume)}</a> <span class="muted">· ${plural(p.editii.length, 'cohortă', 'cohorte')} · ${esc(p.companii[p.companii.length - 1] || '')}</span></p>`).join('')}
       </div>
       <div class="card">
         <h3><a href="/manage/entitati/organizatii/alumni">Companii alumni pe sectoare →</a></h3>

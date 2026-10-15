@@ -1,9 +1,9 @@
 /* SINAPSE (fostele „Legături”): graful creierului Antreprenoria. Noduri = entitățile din data/entitati.json; legături = relațiile dintre ele
-   (atelier -> ediție, temă, locație, sponsor, speakeri; participant -> ediție, companie; speaker -> companie;
-   partener -> ediție; locație -> organizația gazdă). Fiecare tip e un „lob” legat de Antreprenoria, în centru. */
+   (atelier -> cohortă, temă, locație, sponsor, speakeri; participant -> cohortă, companie; speaker -> companie;
+   partener -> cohortă; locație -> organizația gazdă). Fiecare tip e un „lob” legat de Antreprenoria, în centru. */
 const GRAPH_CATS = {
   brand: ['Antreprenoria', '#5B9BE0', 'program'],
-  editii: ['Ediții', '#FADC3A', 'editii'],
+  editii: ['Cohorte', '#FADC3A', 'editii'],
   ateliere: ['Ateliere', '#8DB6F0', 'editii'],
   teme: ['Teme', '#B9A3E3', 'teme'],
   speakeri: ['Traineri & invitați', '#F28B82', 'oameni/traineri'],
@@ -195,7 +195,7 @@ async function renderGraph(D, el, openCat) {
     const grp = {}; for (const n of iso) (grp[n.cat] ||= []).push(n);
     info.innerHTML = `<button type="button" class="b-x" aria-label="Închide">×</button>
       <div class="b-cat" style="--c:#F28B82">De legat</div><h4>${plural(iso.length, 'entitate', 'entități')} fără nicio legătură</h4>
-      <p class="small">Sunt legate doar de categoria lor: nu apar în nicio ediție, la niciun atelier și nu au o companie asociată. Merită legate sau verificate.</p>
+      <p class="small">Sunt legate doar de categoria lor: nu apar în nicio cohortă, la niciun atelier și nu au o companie asociată. Merită legate sau verificate.</p>
       ${Object.entries(grp).map(([c, a]) => `<div class="b-g"><span style="--c:${GRAPH_CATS[c][1]}">${esc(GRAPH_CATS[c][0])} · ${a.length}</span>${a.map((m) => `<a href="#" data-gn="${esc(m.id)}">${esc(cut(m.nume, 70))}</a>`).join('')}</div>`).join('') || '<p>Toate entitățile au cel puțin o legătură.</p>'}`;
     info.hidden = false;
   };

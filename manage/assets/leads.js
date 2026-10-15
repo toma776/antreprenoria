@@ -40,7 +40,7 @@ routes.leads = async function renderLeads() {
     const list = all.filter((a) => (state.ed === 'toate' || a.editie === state.ed) && (state.st === 'toate' || (state.st === 'trimise') === done(a))
       && (!q || [a.nume, a.email, a.companie, a.cui, a.telefon].join(' ').toLowerCase().includes(q)));
     $('#ap-list').innerHTML = list.length ? `<div class="tbl"><table>
-      <thead><tr><th>Ultima activitate</th><th>Stadiu</th><th>Nume și companie</th><th>Cifra de afaceri</th><th>Ediția</th><th>Contact</th><th></th></tr></thead>
+      <thead><tr><th>Ultima activitate</th><th>Stadiu</th><th>Nume și companie</th><th>Cifra de afaceri</th><th>Cohorta</th><th>Contact</th><th></th></tr></thead>
       <tbody>${list.map((a) => `<tr${a.cifra_afaceri === 'sub-500k' ? ' class="warn-row"' : ''}>
         <td class="small">${esc(dt(a.actualizat || a.primit))}</td>
         <td>${done(a) ? '<span class="tag ok">trimisă</span>' : `<span class="tag warn">pasul ${a.pas || 1} din ${N}</span>`}</td>
@@ -58,7 +58,7 @@ routes.leads = async function renderLeads() {
   $('#view').innerHTML = `<div class="head"><div><div class="crumb">manage › leads · aplicările din formularul /aplica (Supabase)</div><h1>Leads <span class="n" id="ap-count"></span></h1></div>
       <button type="button" id="ap-csv"${all.length ? '' : ' disabled'}>Descarcă CSV</button></div>${leadsTabs('aplicari')}
     <div class="toolbar"><div class="seg-chips" id="ap-st">${[['toate', 'Toate', all.length], ['trimise', 'Trimise', nDone], ['neterminate', 'Neterminate', all.length - nDone]].map(([k, l, n]) => `<button type="button" data-st="${k}" class="${k === 'toate' ? 'on' : ''}">${l} · ${n}</button>`).join('')}</div>
-      <div class="seg-chips" id="ap-eds">${['toate', ...eds].map((e) => `<button type="button" data-ed="${esc(e)}" class="${e === 'toate' ? 'on' : ''}">${e === 'toate' ? 'Toate edițiile' : esc(edName(e))}</button>`).join('')}</div>
+      <div class="seg-chips" id="ap-eds">${['toate', ...eds].map((e) => `<button type="button" data-ed="${esc(e)}" class="${e === 'toate' ? 'on' : ''}">${e === 'toate' ? 'Toate cohortele' : esc(edName(e))}</button>`).join('')}</div>
       <input type="search" id="ap-q" placeholder="Caută nume, email, companie, CUI…"></div>
     <div id="ap-list"></div>
     <p class="muted small">Neterminate = au lăsat datele de contact, dar n-au trimis aplicarea. Pentru reminder, trimite-le linkul de reluare: îi duce la pasul la care au rămas, cu răspunsurile completate. Datele personale de aici nu se publică: panoul de pe Vercel nu are acces la ele.</p>`;

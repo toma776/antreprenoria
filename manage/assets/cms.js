@@ -33,14 +33,14 @@ const CMS = (() => {
   const visField = (tip, id) => (S.on ? fs_('Vizibilitate', checks('_vis', [['on', 'Apare pe site'], ['off', 'Ascuns (rămâne în panou)']], hidden(tip, id) ? 'off' : 'on', 'radio')) : '');
 
   /* ---------- tipurile ---------- */
-  // rolurile care se pot pune de mână (cât timp omul nu e încă în agenda vreunui atelier); participarea vine doar din ediții
+  // rolurile care se pot pune de mână (cât timp omul nu e încă în agenda vreunui atelier); participarea vine doar din cohorte
   const ROLE_MANUAL = [['trainer', 'Trainer'], ['antreprenor invitat', 'Antreprenor invitat'], ['facilitator', 'Facilitator'], ['echipă', 'Echipa programului']];
   const RL = { trainer: 'Trainer', 'antreprenor invitat': 'Antreprenor invitat', facilitator: 'Facilitator', invitat: 'Invitat' };
   const t0 = () => new Date().toISOString().slice(0, 10);
-  // participanții devin alumni doar după arhivarea ediției (starea „Ediție închisă”), nu automat la final
+  // participanții devin alumni doar după arhivarea cohortei (starea „Cohortă închisă”), nu automat la final
   const edEnded = (e) => /închis|încheiat/i.test(e.status || '');
   const partsOf = (id) => D.editii.filter((e) => e.participanti.some((x) => x.persoana === id));
-  // rolurile unui om, cu edițiile lor, calculate din agende și participări
+  // rolurile unui om, cu cohortele lor, calculate din agende și participări
   function rolesOf(p) {
     const out = [], by = {};
     (p.aparitii || []).forEach((a) => { (by[a.rol] ||= new Set()).add(a.editie); });
@@ -51,14 +51,14 @@ const CMS = (() => {
     return out;
   }
   const roleLabel = (t, id) => { const parts = id ? partsOf(id) : []; return t.includes('trainer') ? 'Trainer' : t.includes('antreprenor invitat') ? 'Antreprenor invitat' : t.includes('facilitator') ? 'Facilitator' : parts.some((e) => !edEnded(e)) ? 'Participant' : t.includes('participant') ? 'Alumni' : t.includes('echipă') ? 'Echipă' : 'Participant'; };
-  const personRow = (p) => ({ img: p.imagine, title: p.nume, meta: `${p.companii?.[p.companii.length - 1] || ''}${p.editii?.length ? ` · ${p.editii.length === 1 ? '1 ediție' : p.editii.length + ' ediții'}: ${p.editii.slice(-4).map(eLab).join(', ')}` : ''}` });
+  const personRow = (p) => ({ img: p.imagine, title: p.nume, meta: `${p.companii?.[p.companii.length - 1] || ''}${p.editii?.length ? ` · ${p.editii.length === 1 ? '1 cohortă' : p.editii.length + ' cohorte'}: ${p.editii.slice(-4).map(eLab).join(', ')}` : ''}` });
   const personCard = (v) => `<div class="sp-card"><div class="ph" style="${v.imagine ? `background-image:url('${esc(v.imagine)}')` : ''}">${v.imagine ? '' : initials(v.nume) || '?'}</div><div class="tx"><b>${esc(v.nume || 'Nume Prenume')}</b><small>${esc(v.functie || '')}${v.functie && v.companie ? ', ' : ''}${esc(v.companie || '')}</small><br><span class="pill">${esc(roleLabel([].concat(v.tipuri || []), v.id))}</span></div></div>`;
   function personWhere(v) {
     const w = [], t = [].concat(v.tipuri || []);
     if (t.includes('echipă')) w.push(['/despre#echipa', 'echipa, pe pagina Despre']);
     if (t.some((x) => ['trainer', 'antreprenor invitat', 'facilitator', 'invitat'].includes(x))) w.push(['/', 'traineri pe homepage'], ['/lideri', 'lista liderilor']);
-    (v.editii || []).slice(-3).forEach((e) => w.push([eUrl(e), `ediția ${eLab(e)}`]));
-    if (v.id && partsOf(v.id).length) w.push(['/', 'cifrele agregate ale edițiilor (fără nume)']);
+    (v.editii || []).slice(-3).forEach((e) => w.push([eUrl(e), `cohorta ${eLab(e)}`]));
+    if (v.id && partsOf(v.id).length) w.push(['/', 'cifrele agregate ale cohortelor (fără nume)']);
     [...new Set((v.aparitii || []).map((a) => a.tema))].filter((x) => FULL.includes(x)).slice(0, 2).forEach((x) => w.push([`/teme/${x}`, 'pagina temei']));
     return w;
   }
@@ -69,7 +69,7 @@ const CMS = (() => {
     const last = parts[parts.length - 1], x = last.participanti.find((y) => y.persoana === p.id);
     const desc = (x?.descriere || Oid(x?.organizatie)?.descriere || '').trim();
     const isAlum = parts.some(edEnded), full = (p.bio || '').trim().length > 20 || desc.length > 40;
-    const msg = !isAlum ? 'Devine membru al comunității când ediția e arhivată. Pagina lui apare atunci, dacă are textul de mai sus sau descrierea companiei.'
+    const msg = !isAlum ? 'Devine membru al comunității când cohorta e arhivată. Pagina lui apare atunci, dacă are textul de mai sus sau descrierea companiei.'
       : full ? `Are pagină în comunitate: <a href="/comunitate/${esc(p.id)}" target="_blank" rel="noopener">/comunitate/${esc(p.id)} ↗</a>`
       : `Nu are încă pagină în comunitate. Apare când completezi textul de mai sus sau descrierea companiei. <a href="/comunitate/${esc(p.id)}?previzualizare" target="_blank" rel="noopener">Previzualizează ↗</a>`;
     return `<div class="al-status ${full && isAlum ? 'ok' : ''}">${msg}</div>`;
@@ -77,7 +77,7 @@ const CMS = (() => {
   // compania curentă a omului (ultima din fișă) și adresa de site scrisă fără „https://”
   const orgOf = (p) => Oid(p.organizatii?.[p.organizatii.length - 1]) || D.organizatii.find((o) => nrm(o.nume) === nrm(p.companii?.[p.companii.length - 1]));
   const normUrl = (u) => { u = String(u || '').trim(); return !u ? null : /^https?:\/\//i.test(u) ? u : 'https://' + u; };
-  // ediția la care se adaugă de obicei participanți: cea mai nouă care nu s-a încheiat
+  // cohorta la care se adaugă de obicei participanți: cea mai nouă care nu s-a încheiat
   const edDefault = () => eds().find((e) => !edEnded(e))?.id || eds()[0].id;
   const personType = (kind, label, one, desc) => ({
     tip: 'oameni', label, one, desc, kind,
@@ -91,14 +91,14 @@ const CMS = (() => {
       const roles = p.id ? rolesOf(p) : [];
       const manualOn = (p.tipuri || []).filter((t) => t === 'echipă' || !(p.aparitii || []).some((a) => a.rol === t));
       return fs_('Cine e', `${inp('nume', 'Nume și prenume', p.nume, { ph: 'ex. Andreea Popescu', req: true })}<div class="dup" id="dup" hidden></div>${photo('imagine', p.imagine)}${inp('linkedin', 'LinkedIn', p.linkedin, { ph: 'https://www.linkedin.com/in/…' })}`)
-        + (showParts ? fs_('Participări la ediții <span class="tag warn">cifrele rămân doar în panou</span>', rows('participari', 'Ediția, compania și cifrele declarate la înscriere', part, [['editie', '', 1, { select: eds().map((e) => [e.id, `${eLab(e.id)}${edEnded(e) ? '' : ' · în curs'}`]) }], ['companie', 'Companie', 1.4], ['cifra_afaceri', 'Cifra de afaceri (lei)', 1, 'num'], ['angajati', 'Angajați', .6, 'num']], '+ participare la altă ediție') + '<small class="ro">Până la arhivarea ediției omul apare ca participant; după arhivare devine alumnus. Pe site apar doar cifrele agregate.</small>') : '')
-        + fs_('Roluri în program', `${roles.length ? `<div class="roles">${roles.map(([r, L]) => `<span><b>${esc(r)}</b> ${L.map(eLab).join(', ')}</span>`).join('')}</div><small class="ro">Se calculează singure: din agenda atelierelor (trainer, invitat) și din participări (participant, alumni).</small>` : '<small class="ro">Încă fără roluri în ediții. Participarea se adaugă mai sus; trainerii și invitații se pun în agenda atelierelor.</small>'}
+        + (showParts ? fs_('Participări la cohorte <span class="tag warn">cifrele rămân doar în panou</span>', rows('participari', 'Cohorta, compania și cifrele declarate la înscriere', part, [['editie', '', 1, { select: eds().map((e) => [e.id, `${eLab(e.id)}${edEnded(e) ? '' : ' · în curs'}`]) }], ['companie', 'Companie', 1.4], ['cifra_afaceri', 'Cifra de afaceri (lei)', 1, 'num'], ['angajati', 'Angajați', .6, 'num']], '+ participare la altă cohortă') + '<small class="ro">Până la arhivarea cohortei omul apare ca participant; după arhivare devine alumnus. Pe site apar doar cifrele agregate.</small>') : '')
+        + fs_('Roluri în program', `${roles.length ? `<div class="roles">${roles.map(([r, L]) => `<span><b>${esc(r)}</b> ${L.map(eLab).join(', ')}</span>`).join('')}</div><small class="ro">Se calculează singure: din agenda atelierelor (trainer, invitat) și din participări (participant, alumni).</small>` : '<small class="ro">Încă fără roluri în cohorte. Participarea se adaugă mai sus; trainerii și invitații se pun în agenda atelierelor.</small>'}
           <div class="f"><label>Adaugă manual</label>${checks('tipuri', ROLE_MANUAL, manualOn)}<small>Pentru cine nu e încă în agenda unui atelier (de ex. un trainer nou) sau face parte din echipă.</small></div>`)
         + fs_('Companie și funcție', f2(inp('companie', 'Companie', p.companii?.[p.companii.length - 1], { list: 'cms-orgs', ph: 'Caută sau scrie una nouă', hint: 'Dacă nu există, se adaugă și în Organizații.' }), inp('functie', 'Funcția afișată', p.functii?.[p.functii.length - 1], { ph: 'ex. Fondator & CEO' })) + inp('site', 'Site-ul companiei', orgOf(p)?.url, { ph: 'https://…', hint: 'Se salvează la companie și apare pe pagina de alumni („Site-ul companiei”).' }))
         + (showParts ? fs_('Profilul din comunitate (/comunitate)', area('oferta', 'Ce oferă', (p.oferta || []).join('\n'), { ph: 'Câte un serviciu sau produs pe rând, cu cuvintele după care l-ar căuta cineva.\nex. curățenie de birouri\nex. spălare fațade cu drone', hint: 'Apar pe pagina lui din comunitate și intră în căutare (pagina Comunitate și meniul).' }) + area('pentru_cine', 'Pentru cine', (p.pentru_cine || []).join('\n'), { ph: 'Câte un tip de client pe rând.\nex. clădiri de birouri\nex. companii de producție, peste 50 de angajați', hint: 'Clienții potriviți: industrii, mărimi de companie, orașe.' })) : '')
         + fs_('Prezentare', area('bio', 'Câteva rânduri despre el/ea', p.bio, { ph: kind === 'participant' ? '2–3 fraze. Apare pe pagina lui de alumni.' : '2–3 fraze. Apare pe fișa de pe site.' }) + alumniPage(p))
         + (kind !== 'participant' && (kind || p.aparitii?.length) ? fs_('Fișa de lider (/lideri)', inp('expertiza', 'Arii de expertiză', (p.expertiza || []).join(', '), { ph: 'ex. fintech, scalare internațională, atragere de investiții', hint: 'Separate prin virgulă. Apar deasupra temelor ținute în program.' }) + area('intrebari', 'Întrebări pe care i le pot pune antreprenorii', (p.intrebari || []).join('\n'), { ph: 'Câte una pe rând. Apar primele; dacă lipsesc, fișa propune întrebări după temele ținute.' }) + area('org_descriere', 'Ce face compania', orgOf(p)?.descriere, { ph: 'Ce face compania, pentru cine, în 1–2 fraze. Se salvează la companie.' })) : '')
-        + (p.aparitii?.length ? fs_('Unde apare în program', `<ul class="ro">${p.aparitii.slice(-6).reverse().map((a) => `<li><b>${eLab(a.editie)}</b> · ${esc(a.titlu || '')} · ${esc(a.rol)}</li>`).join('')}</ul><small class="ro">Aparițiile se schimbă din atelier: Ediții › ediția › Construiește › Traineri și invitați.</small>`) : '')
+        + (p.aparitii?.length ? fs_('Unde apare în program', `<ul class="ro">${p.aparitii.slice(-6).reverse().map((a) => `<li><b>${eLab(a.editie)}</b> · ${esc(a.titlu || '')} · ${esc(a.rol)}</li>`).join('')}</ul><small class="ro">Aparițiile se schimbă din atelier: Cohorte › cohorta › Construiește › Traineri și invitați.</small>`) : '')
         + visField('oameni', p.id);
     },
     values: (p) => ({ id: p.id, nume: p.nume, imagine: p.imagine, companie: p.companii?.[p.companii.length - 1], functie: p.functii?.[p.functii.length - 1], tipuri: p.tipuri }),
@@ -108,8 +108,8 @@ const CMS = (() => {
       const v = form(f);
       if (!v.nume.trim()) throw new Error('Scrie numele.');
       const want = rowsVal(f, 'participari').filter((x) => x.editie);
-      if (kind === 'participant' && !want.length) throw new Error('Alege ediția la care participă.');
-      if (new Set(want.map((x) => x.editie)).size < want.length) throw new Error('Aceeași ediție apare de două ori la participări.');
+      if (kind === 'participant' && !want.length) throw new Error('Alege cohorta la care participă.');
+      if (new Set(want.map((x) => x.editie)).size < want.length) throw new Error('Aceeași cohortă apare de două ori la participări.');
       let orgId = null;
       if (v.companie.trim()) {
         const o = D.organizatii.find((x) => nrm(x.nume) === nrm(v.companie));
@@ -150,8 +150,8 @@ const CMS = (() => {
   });
   const num = (v) => { const d = String(v ?? '').replace(/[^\d]/g, ''); return d ? Number(d) : null; };
 
-  const STATUS = [['În pregătire', 'În pregătire'], ['Înscrieri deschise', 'Înscrieri deschise'], ['În desfășurare', 'În desfășurare'], ['Ediție închisă', 'Ediție închisă']];
-  const ORG_ROLES = [['partener strategic', 'Partener strategic'], ['powered by', 'Powered by'], ['partener ediție', 'Partener ediție'], ['sponsor atelier', 'Sponsor atelier']];
+  const STATUS = [['În pregătire', 'În pregătire'], ['Înscrieri deschise', 'Înscrieri deschise'], ['În desfășurare', 'În desfășurare'], ['Ediție închisă', 'Cohortă închisă']];
+  const ORG_ROLES = [['partener strategic', 'Partener strategic'], ['powered by', 'Powered by'], ['partener ediție', 'Partener de cohortă'], ['sponsor atelier', 'Sponsor atelier']];
   const T = {
     identitate: { tip: 'program', label: 'Identitate', single: true, desc: 'Numele, sloganul, descrierea și publicul programului.',
       items: () => [{ id: 'program', ...D.program }], row: () => ({ title: D.program.nume, meta: D.program.slogan }),
@@ -190,26 +190,26 @@ const CMS = (() => {
         return v.nume;
       } },
 
-    editii: { tip: 'editii', label: 'Ediții', one: 'ediție', desc: 'Fiecare ediție, cu ateliere, participanți și parteneri.',
+    editii: { tip: 'editii', label: 'Cohorte', one: 'cohortă', desc: 'Fiecare cohortă, cu ateliere, participanți și parteneri.',
       items: () => eds(), row: (e) => ({ num: eLab(e.id), title: `Antreprenoria ${eLab(e.id)}`, meta: `${e.perioada || ''} · ${e.ateliere.length} ateliere · ${e.participanti.length} participanți · ${e.status}` }),
       blank: () => { const n = Math.max(...D.editii.filter((e) => e.serie === 'București').map((e) => e.numar)) + 1; return { serie: 'București', numar: n, an: new Date().getFullYear() + 1, sezon: 'primăvară', ateliere: [], participanti: [], parteneri: [], beneficii: [], preturi: [], status: 'În pregătire' }; },
-      fields: (e) => fs_('Ediția', f2(sel('serie', 'Serie', [['București', 'București'], ['Cluj', 'Cluj']], e.serie), inp('numar', 'Număr', e.numar, { type: 'number', req: true })) + f2(inp('an', 'Anul', e.an, { type: 'number' }), sel('sezon', 'Sezonul', [['primăvară', 'Primăvară'], ['toamnă', 'Toamnă']], e.sezon)) + f2(inp('perioada', 'Perioada afișată', e.perioada, { ph: 'ex. Septembrie – Decembrie 2026' }), sel('status', 'Stare', STATUS, e.status)) + inp('subtitlu', 'Subtitlu', e.subtitlu) + checks('deschisa', [['da', 'Înscrieri deschise (apare în formularul Aplică)']], e.deschisa ? 'da' : '') + inp('link_inscriere', 'Link de plată / înscriere (opțional)', e.link_inscriere))
+      fields: (e) => fs_('Cohorta', f2(sel('serie', 'Serie', [['București', 'București'], ['Cluj', 'Cluj']], e.serie), inp('numar', 'Număr', e.numar, { type: 'number', req: true })) + f2(inp('an', 'Anul', e.an, { type: 'number' }), sel('sezon', 'Sezonul', [['primăvară', 'Primăvară'], ['toamnă', 'Toamnă']], e.sezon)) + f2(inp('perioada', 'Perioada afișată', e.perioada, { ph: 'ex. Septembrie – Decembrie 2026' }), sel('status', 'Stare', STATUS, e.status)) + inp('subtitlu', 'Subtitlu', e.subtitlu) + checks('deschisa', [['da', 'Înscrieri deschise (apare în formularul Aplică)']], e.deschisa ? 'da' : '') + inp('link_inscriere', 'Link de plată / înscriere (opțional)', e.link_inscriere))
         + fs_('Preț', rows('preturi', 'Prețuri', e.preturi || [], [['eticheta', 'Etichetă, ex. Early bird'], ['pret_text', 'Preț, ex. 7700 lei + TVA'], ['nota', 'Notă, ex. până la 11 sept.']]) + inp('valoare_estimata', 'Valoare estimată', e.valoare_estimata))
         + fs_('Ce primește participantul', rows('beneficii', 'Beneficii', (e.beneficii || []).map((b) => ({ b })), [['b', 'Un beneficiu']]))
-        + (e.id ? fs_(`Ateliere · ${e.ateliere.length}`, `<div class="mini-list">${e.ateliere.map((a) => `<a href="#" data-cms-edit="ateliere" data-cms-id="${a.id}"><b>${a.nr}</b><span>${esc(a.titlu)}</span><small>${dayRo(a.data) || 'fără dată'}</small></a>`).join('')}</div>${S.on ? `<button type="button" class="sm" data-cms-new="ateliere" data-cms-editie="${e.id}">+ Atelier în această ediție</button>` : ''}`) : '')
+        + (e.id ? fs_(`Ateliere · ${e.ateliere.length}`, `<div class="mini-list">${e.ateliere.map((a) => `<a href="#" data-cms-edit="ateliere" data-cms-id="${a.id}"><b>${a.nr}</b><span>${esc(a.titlu)}</span><small>${dayRo(a.data) || 'fără dată'}</small></a>`).join('')}</div>${S.on ? `<button type="button" class="sm" data-cms-new="ateliere" data-cms-editie="${e.id}">+ Atelier în această cohortă</button>` : ''}`) : '')
         + (e.id ? fs_(`Participanți · ${e.participanti.length}`, `<div class="rel" data-chips="participanti">${e.participanti.map((x) => chip(x)).join('')}<input class="rel-add" list="cms-people" placeholder="+ participant (caută în Oameni)"></div><small class="ro">Compania și cifrele se completează pe fișa participantului (Oameni › Participanți).</small>`) : '')
-        + (e.id ? fs_(`Parteneri · ${e.parteneri.filter((x) => x.rol !== 'sponsor atelier').length}`, rows('parteneri', 'Partenerii ediției (sponsorii de atelier se aleg în atelier)', e.parteneri.filter((x) => x.rol !== 'sponsor atelier').map((x) => ({ org: Oid(x.organizatie)?.nume || x.organizatie, rol: x.rol })), [['org', 'Organizația', 1.4], ['rol', '', 1, { select: ORG_ROLES.filter(([r]) => r !== 'sponsor atelier') }]], '+ partener')) : '')
+        + (e.id ? fs_(`Parteneri · ${e.parteneri.filter((x) => x.rol !== 'sponsor atelier').length}`, rows('parteneri', 'Partenerii cohortei (sponsorii de atelier se aleg în atelier)', e.parteneri.filter((x) => x.rol !== 'sponsor atelier').map((x) => ({ org: Oid(x.organizatie)?.nume || x.organizatie, rol: x.rol })), [['org', 'Organizația', 1.4], ['rol', '', 1, { select: ORG_ROLES.filter(([r]) => r !== 'sponsor atelier') }]], '+ partener')) : '')
         + visField('editii', e.id),
       values: (e) => ({ serie: e.serie, numar: e.numar, perioada: e.perioada, status: e.status }),
-      preview: (v) => `<div class="sp-ed"><span class="${/închis/i.test(v.status || '') ? '' : 'live'}">${esc(cap(v.status || ''))}</span><b>${v.serie === 'Cluj' ? 'Cluj ' : ''}#${esc(v.numar || '')}</b><small>${esc(v.perioada || 'perioada')}</small></div>`,
-      where: (v) => [[v.serie === 'Cluj' ? `/editii/cluj-${v.numar}` : `/editii/${v.numar}`, 'pagina ediției'], ['/', 'homepage'], ['/aplica', 'formularul Aplică, dacă e deschisă']],
+      preview: (v) => `<div class="sp-ed"><span class="${/închis/i.test(v.status || '') ? '' : 'live'}">${esc(cap(stareLab(v.status)))}</span><b>${v.serie === 'Cluj' ? 'Cluj ' : ''}#${esc(v.numar || '')}</b><small>${esc(v.perioada || 'perioada')}</small></div>`,
+      where: (v) => [[v.serie === 'Cluj' ? `/editii/cluj-${v.numar}` : `/editii/${v.numar}`, 'pagina cohortei'], ['/', 'homepage'], ['/aplica', 'formularul Aplică, dacă e deschisă']],
       async save(f, e, nou) {
         const v = form(f);
         const date = { serie: v.serie, numar: num(v.numar), an: num(v.an), sezon: v.sezon, perioada: v.perioada, status: v.status, subtitlu: v.subtitlu, deschisa: v.deschisa.includes('da'), link_inscriere: v.link_inscriere || null,
           preturi: rowsVal(f, 'preturi').filter((r) => r.pret_text).map((r, i) => ({ ...(e.preturi?.[i] || {}), eticheta: r.eticheta, pret_text: r.pret_text, pret: num(r.pret_text), nota: r.nota || null, ascuns: false })),
           beneficii: rowsVal(f, 'beneficii').map((r) => r.b).filter(Boolean), valoare_estimata: v.valoare_estimata || null };
         if (nou) Object.assign(date, { titlu: `Antreprenoria ${v.serie === 'Cluj' ? 'Cluj ' : ''}#${date.numar}`, cheie: `${v.serie === 'Cluj' ? 'cluj' : 'bucuresti'}-${date.numar}` });
-        const r = await put({ op: 'entitate', tip: 'editii', id: e.id, nou, date, eticheta: `${nou ? 'ediție nouă' : 'ediția'} ${v.serie === 'Cluj' ? 'Cluj ' : ''}#${date.numar}` });
+        const r = await put({ op: 'entitate', tip: 'editii', id: e.id, nou, date, eticheta: `${nou ? 'cohortă nouă' : 'cohorta'} ${v.serie === 'Cluj' ? 'Cluj ' : ''}#${date.numar}` });
         const id = r.id || e.id;
         lastEd = id;
         if (!nou) {
@@ -234,18 +234,18 @@ const CMS = (() => {
           if (JSON.stringify(L2) !== JSON.stringify(e.parteneri)) await put({ op: 'parteneri', id, lista: L2, eticheta: `parteneri ${eLab(id)}` });
         }
         await visSave(f, 'editii', id);
-        return `ediția ${eLab(id) || '#' + date.numar}`;
+        return `cohorta ${eLab(id) || '#' + date.numar}`;
       } },
 
-    ateliere: { tip: 'ateliere', label: 'Ateliere', one: 'atelier', desc: 'Atelierele fiecărei ediții: dată, temă, locație, oameni.',
+    ateliere: { tip: 'ateliere', label: 'Ateliere', one: 'atelier', desc: 'Atelierele fiecărei cohorte: dată, temă, locație, oameni.',
       items: () => eds().flatMap((e) => e.ateliere.map((a) => ({ ...a, editie: e.id }))), row: (a) => ({ num: `${eLab(a.editie)}·${a.nr}`, title: a.titlu, meta: `${dayRo(a.data) || 'fără dată'} · ${a.format}${a.locatie ? ' · ' + a.locatie : ''}` }),
       blank: () => ({ editie: eds()[0].id, format: 'full-day', program: [] }),
-      fields: (a) => fs_('Atelierul', f2(a.id ? `<div class="f"><label>Ediția</label><input value="Antreprenoria ${esc(eLab(a.editie))}" disabled></div>` : sel('editie', 'Ediția', eds().map((e) => [e.id, `Antreprenoria ${eLab(e.id)}`]), a.editie), inp('data', 'Data', a.data, { type: 'date' })) + f2(sel('tema', 'Tema (din Curriculum)', D.teme.map((t) => [t.id, `${t.nume} · ${t.format}`]), a.tema, { empty: 'Alege tema' }), sel('format', 'Format', [['full-day', 'Full-day'], ['seară', 'Seară'], ['networking', 'Networking']], a.format)) + inp('titlu', 'Titlul afișat', a.titlu, { hint: 'Dacă îl lași gol, se folosește numele temei.' }) + area('descriere', 'Descriere', cap(a.descriere || '')))
+      fields: (a) => fs_('Atelierul', f2(a.id ? `<div class="f"><label>Cohorta</label><input value="Antreprenoria ${esc(eLab(a.editie))}" disabled></div>` : sel('editie', 'Cohorta', eds().map((e) => [e.id, `Antreprenoria ${eLab(e.id)}`]), a.editie), inp('data', 'Data', a.data, { type: 'date' })) + f2(sel('tema', 'Tema (din Curriculum)', D.teme.map((t) => [t.id, `${t.nume} · ${t.format}`]), a.tema, { empty: 'Alege tema' }), sel('format', 'Format', [['full-day', 'Full-day'], ['seară', 'Seară'], ['networking', 'Networking']], a.format)) + inp('titlu', 'Titlul afișat', a.titlu, { hint: 'Dacă îl lași gol, se folosește numele temei.' }) + area('descriere', 'Descriere', cap(a.descriere || '')))
         + fs_('Unde și cu cine', f2(sel('loc', 'Locația', D.locatii.map((l) => [l.id, l.nume]), a.loc, { empty: 'Încă nestabilită' }), sel('sponsor', 'Sponsorul atelierului', D.organizatii.slice().sort((x, y) => x.nume.localeCompare(y.nume, 'ro')).map((o) => [o.id, o.nume]), a.sponsor, { empty: 'Fără sponsor' })) + checks('cauta_sponsor', [['da', 'Căutăm sponsor (apare pe site ca invitație)']], a.cauta_sponsor ? 'da' : ''))
         + fs_('Agenda zilei', rows('program', 'Momentele zilei și oamenii lor', (a.program || []).map((m) => ({ interval: m.interval, activitate: m.activitate, speakeri: m.speakeri })), [['interval', '09:00 - 09:30', .7], ['activitate', 'ex. Training', 1.1], ['speakeri', '+ om', 1.4, 'chips']], '+ moment în agendă') + '<small class="ro">Oamenii se aleg din Oameni. Un nume nou primește automat fișă.</small>'),
       values: (a) => ({ titlu: a.titlu, data: a.data, format: a.format, editie: a.editie, loc: a.loc, tema: a.tema }),
       preview: (v) => `<div class="sp-ag"><span>${esc(dayRo(v.data) || 'Data')}</span><b>${esc(v.titlu || D.teme.find((t) => t.id === v.tema)?.nume || 'Titlul atelierului')}</b><small>${esc(cap(v.format || ''))}${v.loc ? ' · ' + esc(D.locatii.find((l) => l.id === v.loc)?.nume || '') : ''}</small></div>`,
-      where: (v) => [[eUrl(v.editie) + '#agenda', 'agenda ediției'], ...(FULL.includes(v.tema) ? [[`/teme/${v.tema}`, 'pagina temei']] : []), ['/', 'pulsul de pe homepage'], ['/program', 'calendarul din Program']],
+      where: (v) => [[eUrl(v.editie) + '#agenda', 'agenda cohortei'], ...(FULL.includes(v.tema) ? [[`/teme/${v.tema}`, 'pagina temei']] : []), ['/', 'pulsul de pe homepage'], ['/program', 'calendarul din Program']],
       async save(f, a, nou) {
         const v = form(f), tema = D.teme.find((t) => t.id === v.tema), loc = D.locatii.find((l) => l.id === v.loc);
         const titlu = v.titlu.trim() || tema?.nume || '';
@@ -274,7 +274,7 @@ const CMS = (() => {
       fields: (l) => fs_('Locația', inp('nume', 'Nume', l.nume, { ph: 'ex. Sediul Zitec', req: true }) + f2(inp('oras', 'Oraș', l.oras), inp('tip', 'Tip', l.tip, { ph: 'ex. sediu partener, hotel' })) + inp('adresa', 'Adresa', l.adresa, { ph: 'Strada, număr' }) + inp('gazda', 'Gazda (din Organizații)', Oid(l.organizatie)?.nume, { list: 'cms-orgs' })) + visField('locatii', l.id),
       values: (l) => ({ nume: l.nume, oras: l.oras }),
       preview: (v) => `<div class="sp-ag"><span>Locația</span><b>${esc(v.nume || 'Numele locației')}</b><small>${esc(v.oras || '')}</small></div>`,
-      where: () => [['/editii/22#agenda', 'agenda edițiilor'], ['/program', 'calendarul din Program']],
+      where: () => [['/editii/22#agenda', 'agenda cohortelor'], ['/program', 'calendarul din Program']],
       async save(f, l, nou) { const v = form(f); if (!v.nume.trim()) throw new Error('Scrie numele.'); const o = D.organizatii.find((x) => nrm(x.nume) === nrm(v.gazda)); const r = await put({ op: 'entitate', tip: 'locatii', id: l.id, nou, date: { nume: v.nume.trim(), oras: v.oras, tip: v.tip, adresa: v.adresa || null, organizatie: o?.id || null }, eticheta: `locație: ${v.nume}` }); await visSave(f, 'locatii', r.id || l.id); return v.nume; } },
 
   };
@@ -289,7 +289,7 @@ const CMS = (() => {
     traineri: personType('trainer', 'Traineri', 'trainer', 'Trainerii atelierelor full-day.'),
     invitati: personType('antreprenor invitat', 'Antreprenori invitați', 'antreprenor invitat', 'Antreprenorii care povestesc în a doua parte a zilei.'),
     facilitatori: personType('facilitator', 'Facilitatori & invitați de seară', 'facilitator', 'Cei care țin atelierele de seară.'),
-    participanti: personType('participant', 'Participanți', 'participant', 'Alumnii fiecărei ediții.'),
+    participanti: personType('participant', 'Participanți', 'participant', 'Alumnii fiecărei cohorte.'),
   });
   T.oameni = personType('', 'Oameni', 'om', '');
   // organizațiile: trei liste, același editor
@@ -297,12 +297,12 @@ const CMS = (() => {
     items: () => D.organizatii.filter(f).sort((a, b) => a.nume.localeCompare(b.nume, 'ro')), row: (o) => ({ img: o.logo, sq: true, title: o.nume, meta: `${o.tip || o.sector || ''}${o.editii?.length ? ` · ${o.editii.map(eLab).join(', ')}` : ''}` }),
     blank: () => ({ tipuri, roluri: [], editii: [], oameni: [] }),
     fields: (o) => fs_('Organizația', `${inp('nume', 'Nume', o.nume, { req: true })}<div class="dup" id="dup" hidden></div>${photo('logo', o.logo, true)}${f2(inp('tip', 'Tip', o.tip, { ph: 'ex. Bancă, Software' }), inp('sector', 'Sector', o.sector))}${inp('url', 'Site', o.url, { ph: 'https://' })}${area('descriere', 'Descriere scurtă', o.descriere)}`)
-      + (o.roluri?.length ? fs_('Roluri pe ediții', `<ul class="ro">${(o.parcurs || []).map((p) => `<li><b>${eLab(p.editie)}</b> · ${p.roluri.map(esc).join(', ')}</li>`).join('')}</ul><small class="ro">Rolurile vin din ediții: partenerii se aleg în ediție, sponsorii și gazdele în atelier, alumnii din participanți.</small>`) : '')
+      + (o.roluri?.length ? fs_('Roluri pe cohorte', `<ul class="ro">${(o.parcurs || []).map((p) => `<li><b>${eLab(p.editie)}</b> · ${p.roluri.map(esc).join(', ')}</li>`).join('')}</ul><small class="ro">Rolurile vin din cohorte: partenerii se aleg în cohortă, sponsorii și gazdele în atelier, alumnii din participanți.</small>`) : '')
       + (o.oameni?.length ? fs_('Oameni', `<div class="rel">${o.oameni.slice(0, 16).map((id) => `<span>${esc(Pid(id)?.nume || id)}</span>`).join('')}</div>`) : '')
       + visField('organizatii', o.id),
     values: (o) => ({ nume: o.nume, logo: o.logo, editii: o.editii }),
     preview: (v) => `<div class="sp-logo">${v.logo ? `<img src="${esc(v.logo)}" alt="">` : `<b>${esc(v.nume || 'Logo')}</b>`}</div>`,
-    where: (v) => [['/', 'banda de parteneri de pe homepage'], ...(v.editii || []).slice(-3).map((e) => [eUrl(e), `ediția ${eLab(e)}`])],
+    where: (v) => [['/', 'banda de parteneri de pe homepage'], ...(v.editii || []).slice(-3).map((e) => [eUrl(e), `cohorta ${eLab(e)}`])],
     dup: (q) => D.organizatii.filter((o) => nrm(o.nume).includes(nrm(q))),
     async save(f, o, nou) { const v = form(f); if (!v.nume.trim()) throw new Error('Scrie numele.'); const date = { nume: v.nume.trim(), logo: v.logo || null, tip: v.tip, sector: v.sector || null, url: v.url || null, descriere: v.descriere || null }; if (nou) date.tipuri = tipuri; const r = await put({ op: 'entitate', tip: 'organizatii', id: o.id, nou, date, eticheta: `${nou ? 'organizație nouă' : 'organizație'}: ${date.nume}` }); await visSave(f, 'organizatii', r.id || o.id); return date.nume; } });
   Object.assign(T, {
@@ -313,9 +313,9 @@ const CMS = (() => {
   });
   // temele: trei liste, același editor
   const temaType = (label, one, fmt) => ({ tip: 'teme', label, one, desc: '',
-    items: () => D.teme.filter((t) => !fmt || t.format === fmt), row: (t) => ({ title: t.nume, meta: `în ${t.editii.length} ediții · ${t.editii.map(eLab).join(', ')}` }), blank: () => ({ format: fmt || 'full-day', editii: [], titluri: [] }),
+    items: () => D.teme.filter((t) => !fmt || t.format === fmt), row: (t) => ({ title: t.nume, meta: `în ${t.editii.length} cohorte · ${t.editii.map(eLab).join(', ')}` }), blank: () => ({ format: fmt || 'full-day', editii: [], titluri: [] }),
     fields: (t) => fs_('Tema', `${inp('nume', 'Numele temei', t.nume, { req: true })}<div class="dup" id="dup" hidden></div>${sel('format', 'Format', [['full-day', 'Full-day'], ['seară', 'Seară'], ['networking', 'Networking']], t.format)}${area('descriere', 'Descriere pentru pagina temei', t.descriere, { ph: 'Ce problemă rezolvă atelierul. Dacă e gol, se folosește descrierea din ultimul atelier.', tall: true })}`)
-      + (t.titluri?.length ? fs_('Istoric', `<p class="ro" style="margin:0">Titluri folosite: ${t.titluri.map(esc).join(' · ')}</p>${t.nota ? `<p class="ro">${esc(t.nota)}</p>` : ''}<small class="ro">Edițiile și trainerii temei se completează singuri din ateliere.</small>`) : '')
+      + (t.titluri?.length ? fs_('Istoric', `<p class="ro" style="margin:0">Titluri folosite: ${t.titluri.map(esc).join(' · ')}</p>${t.nota ? `<p class="ro">${esc(t.nota)}</p>` : ''}<small class="ro">Cohortele și trainerii temei se completează singuri din ateliere.</small>`) : '')
       + visField('teme', t.id),
     values: (t) => ({ nume: t.nume, format: t.format, id: t.id, descriere: t.descriere }),
     preview: (v) => `<div class="sp-box"><small>${esc(cap(v.format || ''))}</small><b>${esc(v.nume || 'Numele temei')}</b><p>${esc(v.descriere || '')}</p></div>`,
@@ -420,7 +420,7 @@ const CMS = (() => {
     if (nrm(q).trim().length < 3) { box.hidden = true; return; }
     const hits = ty.dup(q.trim()).slice(0, 3);
     box.hidden = !hits.length;
-    box.innerHTML = `<b>Există deja:</b>${hits.map((h) => `<div class="d-row">${h.imagine || h.logo ? `<img class="av ${h.logo ? 'sq' : ''}" src="${esc(h.imagine || h.logo)}" alt="">` : `<span class="av">${initials(h.nume)}</span>`}<div><b>${esc(h.nume)}</b><br><small>${esc((h.tipuri || [h.format]).join(', '))}${h.editii?.length ? ' · ' + h.editii.map(eLab).join(', ') : ''}</small></div><button type="button" class="sm primary" data-cms-dup="${esc(h.id)}">${T[cur.key]?.kind === 'participant' ? 'Folosește această fișă' : 'Deschide fișa'}</button></div>`).join('')}<small>${T[cur.key]?.kind === 'participant' ? 'A mai fost în program? Folosește fișa lui: i se adaugă participarea la ediția nouă, fără o fișă dublă.' : 'Dacă e același, deschide fișa existentă și adaugă rolul nou, în loc să creezi încă una.'}</small>`;
+    box.innerHTML = `<b>Există deja:</b>${hits.map((h) => `<div class="d-row">${h.imagine || h.logo ? `<img class="av ${h.logo ? 'sq' : ''}" src="${esc(h.imagine || h.logo)}" alt="">` : `<span class="av">${initials(h.nume)}</span>`}<div><b>${esc(h.nume)}</b><br><small>${esc((h.tipuri || [h.format]).join(', '))}${h.editii?.length ? ' · ' + h.editii.map(eLab).join(', ') : ''}</small></div><button type="button" class="sm primary" data-cms-dup="${esc(h.id)}">${T[cur.key]?.kind === 'participant' ? 'Folosește această fișă' : 'Deschide fișa'}</button></div>`).join('')}<small>${T[cur.key]?.kind === 'participant' ? 'A mai fost în program? Folosește fișa lui: i se adaugă participarea la cohorta nouă, fără o fișă dublă.' : 'Dacă e același, deschide fișa existentă și adaugă rolul nou, în loc să creezi încă una.'}</small>`;
   }
   function close() { $('#cms-drawer')?.classList.remove('on'); $('#cms-scrim')?.classList.remove('on'); cur = null; }
   async function save(btn) {
@@ -465,7 +465,7 @@ const CMS = (() => {
   }
   function pickNew(only) {
     shell();
-    const groups = [['Program', ['metodologie', 'cifre', 'echipa']], ['Ediții', ['editii', 'ateliere']], ['Oameni', ['traineri', 'invitati', 'facilitatori', 'participanti']], ['Organizații', ['parteneri', 'alumni', 'speakeri', 'locatii']], ['Curriculum', ['full-day', 'seara', 'networking']]].filter(([g]) => !only || g === only);
+    const groups = [['Program', ['metodologie', 'cifre', 'echipa']], ['Cohorte', ['editii', 'ateliere']], ['Oameni', ['traineri', 'invitati', 'facilitatori', 'participanti']], ['Organizații', ['parteneri', 'alumni', 'speakeri', 'locatii']], ['Curriculum', ['full-day', 'seara', 'networking']]].filter(([g]) => !only || g === only);
     $('#cms-drawer').innerHTML = `<div class="dr-head"><h2>Ce vrei să adaugi?</h2><button type="button" data-cms-close>Închide ✕</button></div><div style="padding:20px;overflow:auto">${groups.map(([g, L]) => `<div class="fs"><h4>${g}</h4><div class="checks-r">${L.map((k) => `<button type="button" data-cms-new="${k}">+ ${esc(T[k].one)}</button>`).join('')}</div></div>`).join('')}</div>`;
     $('#cms-drawer').classList.add('on'); $('#cms-scrim').classList.add('on');
   }
@@ -515,8 +515,8 @@ const CMS = (() => {
       <div class="cats">${S.pagini.map((p) => `<div class="cat sg" data-href="/manage/entitati/texte/${p.id}"><div class="cat-top"><span class="cat-ico">${icon('teme')}</span><span class="cat-total">${p.blocuri.length}</span></div><h3>${esc(p.nume)}</h3><div class="onsite">Pe site: <code>${esc(p.url)}</code></div><p class="ro sg-quote">„${esc(cut(S.texte[`${p.id}.${p.blocuri[0][0]}`] || p.blocuri[0][2], 100))}”</p><span class="cat-open">Editează textele →</span></div>`).join('')}</div>`;
   }
 
-  /* ---------- CONSTRUCTORUL DE EDIȚIE: pașii, în ordinea în care se construiește o ediție ---------- */
-  const PASI = [['baza', 'Datele ediției'], ['calendar', 'Atelierele'], ['oameni', 'Traineri și invitați'], ['inscrieri', 'Preț și înscrieri'], ['parteneri', 'Parteneri și sponsori'], ['participanti', 'Participanți'], ['site', 'Pe site']];
+  /* ---------- CONSTRUCTORUL DE EDIȚIE: pașii, în ordinea în care se construiește o cohortă ---------- */
+  const PASI = [['baza', 'Datele cohortei'], ['calendar', 'Atelierele'], ['oameni', 'Traineri și invitați'], ['inscrieri', 'Preț și înscrieri'], ['parteneri', 'Parteneri și sponsori'], ['participanti', 'Participanți'], ['site', 'Pe site']];
   const isTraining = (m) => /training/i.test(m.activitate || ''), isTalk = (m) => /prezentare/i.test(m.activitate || '');
   // oamenii unui atelier, pe roluri, citiți din agendă
   function slots(a) {
@@ -551,27 +551,27 @@ const CMS = (() => {
   function verifica(e) {
     const ws = e.ateliere, fd = ws.filter((a) => a.format === 'full-day');
     const c = {
-      baza: [[!!e.perioada, 'perioada ediției'], [!!e.an, 'anul']],
+      baza: [[!!e.perioada, 'perioada cohortei'], [!!e.an, 'anul']],
       calendar: [[ws.length > 0, 'cel puțin un atelier'], [ws.every((a) => a.data), 'data fiecărui atelier'], [ws.every((a) => a.loc || a.locatie), 'locația fiecărui atelier']],
       oameni: ws.length ? [[fd.every((a) => slots(a).trainer.length), 'un trainer la fiecare atelier full-day'], [fd.every((a) => slots(a).invitati.length), 'antreprenori invitați la fiecare full-day']] : [[false, 'întâi atelierele (pasul 2)']],
       inscrieri: [[!e.deschisa || e.preturi.some((p) => p.pret_text), 'prețul (înscrierile sunt deschise)'], [e.beneficii.length > 0, 'ce primește participantul']],
       parteneri: [],
-      participanti: ws.some((a) => a.data && a.data <= new Date().toISOString().slice(0, 10)) ? [[e.participanti.length > 0, 'participanții (ediția a început)']] : [],
-      site: [[!hidden('editii', e.id), 'ediția e vizibilă pe site']],
+      participanti: ws.some((a) => a.data && a.data <= new Date().toISOString().slice(0, 10)) ? [[e.participanti.length > 0, 'participanții (cohorta a început)']] : [],
+      site: [[!hidden('editii', e.id), 'cohorta e vizibilă pe site']],
     };
     return c;
   }
   const done = (L) => L.every(([ok]) => ok);
   function builder(eid, pas) {
     const e = ED(eid);
-    if (!e) return '<div class="card empty"><b>Ediția nu există.</b></div>';
+    if (!e) return '<div class="card empty"><b>Cohorta nu există.</b></div>';
     const ck = verifica(e), cur = PASI.some(([k]) => k === pas) ? pas : 'baza';
     const idx = PASI.findIndex(([k]) => k === cur), next = PASI[idx + 1];
     const off = hidden('editii', e.id), url = `${eUrl(e.id)}${off ? '?previzualizare' : ''}`;
     const count = { calendar: e.ateliere.length, participanti: e.participanti.length, parteneri: e.parteneri.length };
-    return `<div class="head"><div><div class="crumb"><a href="/manage/entitati/editii">← Ediții</a> · entități › Ediții › ${esc(eLab(e.id))}</div>
+    return `<div class="head"><div><div class="crumb"><a href="/manage/entitati/editii">← Cohorte</a> · entități › Cohorte › ${esc(eLab(e.id))}</div>
         <h1><span class="cat-ico">${icon('editii')}</span>Construiește Antreprenoria ${esc(eLab(e.id))} ${off ? '<span class="tag warn">ascunsă pe site</span>' : '<span class="tag ok">pe site</span>'}</h1></div>
-        <a class="btn" href="${url}" target="_blank" rel="noopener">${off ? 'Previzualizează pagina' : 'Vezi pagina'} ↗</a><a class="btn" href="/manage/entitati/editii/${e.id}">Fișa ediției</a></div>
+        <a class="btn" href="${url}" target="_blank" rel="noopener">${off ? 'Previzualizează pagina' : 'Vezi pagina'} ↗</a><a class="btn" href="/manage/entitati/editii/${e.id}">Fișa cohortei</a></div>
       ${pendingBar()}${archiveBanner(e)}
       <div class="bld">
         <nav class="bld-steps">${PASI.map(([k, l], i) => { const ok = done(ck[k]), opt = !ck[k].length; return `<a href="/manage/entitati/editii/${e.id}/construieste/${k}" class="${k === cur ? 'on' : ''} ${ok && !opt ? 'ok' : ''}"><i>${ok && !opt ? '✓' : i + 1}</i><span>${l}${count[k] != null ? ` <em>${count[k]}</em>` : ''}${opt ? ` <small>${{ participanti: 'după selecție', parteneri: 'dacă sunt' }[k] || 'opțional'}</small>` : !ok ? ` <small>${ck[k].filter(([o]) => !o).length} de completat</small>` : ''}</span></a>`; }).join('')}</nav>
@@ -584,17 +584,17 @@ const CMS = (() => {
   }
   const lipsa = (L) => (L.some(([o]) => !o) ? `<div class="bld-miss">De completat: ${L.filter(([o]) => !o).map(([, t]) => esc(t)).join(', ')}.</div>` : '');
   const STEP = {
-    baza: (e, ck) => `<h2>Datele ediției</h2><p class="lead">Numele, perioada și textul de sub titlu, așa cum apar sus pe pagina ediției.</p>${lipsa(ck.baza)}
-      <form id="bld-f" class="fs">${f2(`<div class="f"><label>Ediția</label><input value="Antreprenoria ${esc(eLab(e.id))}" disabled></div>`, sel('status', 'Stare', STATUS, e.status))}
+    baza: (e, ck) => `<h2>Datele cohortei</h2><p class="lead">Numele, perioada și textul de sub titlu, așa cum apar sus pe pagina cohortei.</p>${lipsa(ck.baza)}
+      <form id="bld-f" class="fs">${f2(`<div class="f"><label>Cohorta</label><input value="Antreprenoria ${esc(eLab(e.id))}" disabled></div>`, sel('status', 'Stare', STATUS, e.status))}
         ${f2(inp('an', 'Anul', e.an, { type: 'number' }), sel('sezon', 'Sezonul', [['primăvară', 'Primăvară'], ['toamnă', 'Toamnă']], e.sezon))}
         ${inp('perioada', 'Perioada afișată', e.perioada, { ph: 'ex. Martie – Iunie 2027', hint: perioadaAuto(e) ? `Din datele atelierelor: <a href="#" data-bld-perioada="${esc(perioadaAuto(e))}">${esc(perioadaAuto(e))}</a>` : 'Se poate calcula din datele atelierelor, după ce le pui în calendar.' })}
-        ${inp('subtitlu', 'Subtitlu', e.subtitlu, { ph: 'O frază despre ediție, sub titlu' })}</form>`,
+        ${inp('subtitlu', 'Subtitlu', e.subtitlu, { ph: 'O frază despre cohortă, sub titlu' })}</form>`,
     calendar: (e, ck) => {
       const prev = eds().filter((x) => x.id !== e.id && x.ateliere.length);
       const teme = D.teme.slice().sort((a, b) => ['full-day', 'seară', 'networking'].indexOf(a.format) - ['full-day', 'seară', 'networking'].indexOf(b.format));
       const add = `<div class="bld-add"><span>Adaugă un atelier:</span>${teme.map((t) => `<button type="button" class="sm" data-bld-tema="${t.id}">+ ${esc(t.nume)} <small>${esc(t.format)}</small></button>`).join('')}</div>`;
-      if (!e.ateliere.length) return `<h2>Atelierele</h2><p class="lead">Cel mai simplu: pornești de la o ediție anterioară și schimbi doar datele. Sau le adaugi pe rând, din temele programului.</p>
-        <div class="bld-start"><form class="fs" id="bld-copy"><h4>Pornește de la o ediție anterioară</h4>
+      if (!e.ateliere.length) return `<h2>Atelierele</h2><p class="lead">Cel mai simplu: pornești de la o cohortă anterioară și schimbi doar datele. Sau le adaugi pe rând, din temele programului.</p>
+        <div class="bld-start"><form class="fs" id="bld-copy"><h4>Pornește de la o cohortă anterioară</h4>
           ${sel('din', 'Copiază structura de la', prev.map((x) => [x.id, `Antreprenoria ${eLab(x.id)} · ${x.ateliere.length} ateliere`]), prev[0]?.id)}
           ${checks('ce', [['locatii', 'păstrează locațiile'], ['oameni', 'păstrează trainerii și invitații'], ['beneficii', 'copiază ce primește participantul'], ['preturi', 'copiază prețul']], ['beneficii', 'preturi'])}
           <small class="ro">Se copiază atelierele (temele, titlurile, descrierile, agenda zilei). Datele le pui tu în pasul ăsta.</small>
@@ -615,23 +615,23 @@ const CMS = (() => {
       ${e.ateliere.length ? `<form id="bld-f"><div class="bld-ppl">${e.ateliere.slice().sort((a, b) => (a.data || '9').localeCompare(b.data || '9') || a.nr - b.nr).map((a) => { const sl = slots(a); return `<div class="fs" data-aid="${a.id}"><h4>${a.nr}. ${esc(a.titlu)} <span class="tag grey">${esc(dayRo(a.data) || 'fără dată')}</span></h4>
         ${a.format === 'full-day' ? f2(`<div class="f"><label>Trainer (dimineața)</label>${chipBox('trainer', sl.trainer.map((id) => ({ persoana: id })), '+ trainer')}</div>`, `<div class="f"><label>Antreprenori invitați (după-amiaza)</label>${chipBox('invitati', sl.invitati.map((id) => ({ persoana: id })), '+ invitat')}</div>`)
           : a.format === 'networking' ? '<small class="ro">Networking: fără speakeri.</small>' : `<div class="f"><label>Facilitatori / invitați</label>${chipBox('facilitatori', sl.facilitatori.map((id) => ({ persoana: id })), '+ om')}</div>`}</div>`; }).join('')}</div></form>` : '<div class="card empty">Adaugă întâi atelierele, în pasul anterior.</div>'}`,
-    inscrieri: (e, ck) => { const prev = eds().find((x) => x.id !== e.id && x.beneficii.length); return `<h2>Preț și înscrieri</h2><p class="lead">Când deschizi înscrierile, ediția apare în formularul Aplică.</p>${lipsa(ck.inscrieri)}
+    inscrieri: (e, ck) => { const prev = eds().find((x) => x.id !== e.id && x.beneficii.length); return `<h2>Preț și înscrieri</h2><p class="lead">Când deschizi înscrierile, cohorta apare în formularul Aplică.</p>${lipsa(ck.inscrieri)}
       <form id="bld-f">
         <div class="fs">${checks('deschisa', [['da', 'Înscrieri deschise (apare în formularul Aplică)']], e.deschisa ? 'da' : '')}${inp('link_inscriere', 'Link de plată / înscriere (opțional)', e.link_inscriere)}</div>
         <div class="fs">${rows('preturi', 'Prețuri', e.preturi || [], [['eticheta', 'Etichetă, ex. Early bird'], ['pret_text', 'Preț, ex. 7700 lei + TVA'], ['nota', 'Notă, ex. până la 1 martie']], '+ preț')}${inp('valoare_estimata', 'Valoare estimată', e.valoare_estimata)}</div>
         <div class="fs">${rows('beneficii', 'Ce primește participantul', (e.beneficii || []).map((b) => ({ b })), [['b', 'ex. 5 ateliere full day']], '+ beneficiu')}${!e.beneficii.length && prev ? `<button type="button" class="sm" data-bld-ben="${prev.id}">Copiază de la ${esc(eLab(prev.id))}</button>` : ''}</div>
       </form>`; },
-    parteneri: (e) => `<h2>Parteneri și sponsori</h2><p class="lead">Partenerii ediției apar sus pe pagină; sponsorul unui atelier apare la atelierul lui.</p>
-      <form id="bld-f"><div class="fs">${rows('parteneri', 'Partenerii ediției', e.parteneri.filter((x) => x.rol !== 'sponsor atelier').map((x) => ({ org: Oid(x.organizatie)?.nume || x.organizatie, rol: x.rol })), [['org', 'Organizația (scrie sau alege)', 1.4], ['rol', '', 1, { select: ORG_ROLES.filter(([r]) => r !== 'sponsor atelier') }]], '+ partener')}</div>
+    parteneri: (e) => `<h2>Parteneri și sponsori</h2><p class="lead">Partenerii cohortei apar sus pe pagină; sponsorul unui atelier apare la atelierul lui.</p>
+      <form id="bld-f"><div class="fs">${rows('parteneri', 'Partenerii cohortei', e.parteneri.filter((x) => x.rol !== 'sponsor atelier').map((x) => ({ org: Oid(x.organizatie)?.nume || x.organizatie, rol: x.rol })), [['org', 'Organizația (scrie sau alege)', 1.4], ['rol', '', 1, { select: ORG_ROLES.filter(([r]) => r !== 'sponsor atelier') }]], '+ partener')}</div>
         <div class="fs"><h4>Sponsorii atelierelor</h4>${e.ateliere.slice().sort((a, b) => a.nr - b.nr).map((a) => `<div class="bld-sp" data-aid="${a.id}"><span>${a.nr}. ${esc(a.titlu)}</span><select data-k="sponsor"><option value="">Fără sponsor</option>${D.organizatii.slice().sort((x, y) => x.nume.localeCompare(y.nume, 'ro')).map((o) => `<option value="${o.id}" ${o.id === a.sponsor ? 'selected' : ''}>${esc(o.nume)}</option>`).join('')}</select><label class="ro"><input type="checkbox" data-k="cauta_sponsor" ${a.cauta_sponsor ? 'checked' : ''}> căutăm sponsor</label></div>`).join('') || '<small class="ro">Apar aici după ce adaugi atelierele.</small>'}</div></form>`,
     participanti: (e) => {
       const L = e.participanti, sum = L.reduce((n, x) => n + (x.cifra_afaceri || 0), 0);
       return `<h2>Participanți</h2><p class="lead">Antreprenorii selectați, unul câte unul. Se completează după selecție; din ziua primului atelier pasul devine obligatoriu. Cifrele rămân în panou, pe site apar doar agregat.</p>
-      <div class="fs"><h4>În ediție · ${L.length}${L.length ? ` <span class="tag grey">cifră de afaceri cumulată ${esc(leiShort(sum))}</span>` : ''}</h4>
+      <div class="fs"><h4>În cohortă · ${L.length}${L.length ? ` <span class="tag grey">cifră de afaceri cumulată ${esc(leiShort(sum))}</span>` : ''}</h4>
         ${L.length ? `<div class="bld-plist">${L.map((x) => { const p = Pid(x.persoana), o = Oid(x.organizatie); return `<div class="bld-p">${p?.imagine || x.imagine ? `<img class="av" src="${esc(p?.imagine || x.imagine)}" alt="">` : `<span class="av">${initials(x.nume)}</span>`}
           <div><b>${esc(x.nume)}</b><small>${esc(o?.nume || 'fără companie')}${p?.functii?.length ? ' · ' + esc(p.functii[p.functii.length - 1]) : ''}</small></div>
           <span class="num">${x.cifra_afaceri ? esc(leiShort(x.cifra_afaceri)) : '<i>fără cifră</i>'}</span><span class="num">${x.angajati ?? '—'} ang.</span>
-          <button type="button" class="sm" data-cms-edit="participanti" data-cms-id="${esc(x.persoana)}">Fișa</button>${S.on ? `<button type="button" class="sm danger" data-bld-prem="${esc(x.persoana)}" title="Scoate din ediție">✕</button>` : ''}</div>`; }).join('')}</div>` : '<p class="ro" style="margin:0">Încă niciun participant.</p>'}</div>
+          <button type="button" class="sm" data-cms-edit="participanti" data-cms-id="${esc(x.persoana)}">Fișa</button>${S.on ? `<button type="button" class="sm danger" data-bld-prem="${esc(x.persoana)}" title="Scoate din cohortă">✕</button>` : ''}</div>`; }).join('')}</div>` : '<p class="ro" style="margin:0">Încă niciun participant.</p>'}</div>
       ${S.on ? `<form class="fs bld-pf" id="bld-pf" onsubmit="return false"><h4>Adaugă un participant</h4>
         <input type="hidden" name="p_id">
         <div class="f"><label>Nume și prenume *</label><input name="p_nume" placeholder="Scrie numele; dacă a mai fost în program, îl găsești aici" autocomplete="off"><div id="bld-pdup" class="bld-pdup" hidden></div><div id="bld-pchosen" class="bld-chosen" hidden></div></div>
@@ -642,15 +642,15 @@ const CMS = (() => {
         ${photo('p_imagine', '')}
         ${area('p_bio', 'Despre el/ea', '', { ph: '2–3 fraze despre om și ce face. Apare pe pagina lui de alumni.' })}
         ${area('p_descriere', 'Despre companie', '', { ph: 'Ce face compania, în 1–2 fraze.' })}
-        <small class="ro">Pe pagina lui de pe site vor apărea: fotografia, numele, funcția, compania, sectorul, LinkedIn, textele de mai sus și edițiile la care a participat. Cifra de afaceri și angajații nu apar niciodată individual, doar în totalul ediției.</small>
-        <div class="bld-pact"><button type="button" class="primary" data-bld-padd>Adaugă în ediție</button><button type="button" data-bld-pclear>Golește</button><small class="ro">După adăugare, formularul se golește pentru următorul.</small></div>
+        <small class="ro">Pe pagina lui de pe site vor apărea: fotografia, numele, funcția, compania, sectorul, LinkedIn, textele de mai sus și cohortele la care a participat. Cifra de afaceri și angajații nu apar niciodată individual, doar în totalul cohortei.</small>
+        <div class="bld-pact"><button type="button" class="primary" data-bld-padd>Adaugă în cohortă</button><button type="button" data-bld-pclear>Golește</button><small class="ro">După adăugare, formularul se golește pentru următorul.</small></div>
       </form>
-      <div class="fs" id="bld-leads" data-editie="${e.id}"><h4>Din aplicări</h4><p class="ro" style="margin:0">Se încarcă aplicările pentru această ediție…</p></div>` : ''}`;
+      <div class="fs" id="bld-leads" data-editie="${e.id}"><h4>Din aplicări</h4><p class="ro" style="margin:0">Se încarcă aplicările pentru această cohortă…</p></div>` : ''}`;
     },
-    site: (e, ck) => { const all = PASI.flatMap(([k, l]) => ck[k].map(([ok, t]) => [ok, t, k, l])); const off = hidden('editii', e.id); return `<h2>Pe site</h2><p class="lead">Verifică ce lipsește, apoi arată ediția pe site.</p>
+    site: (e, ck) => { const all = PASI.flatMap(([k, l]) => ck[k].map(([ok, t]) => [ok, t, k, l])); const off = hidden('editii', e.id); return `<h2>Pe site</h2><p class="lead">Verifică ce lipsește, apoi arată cohorta pe site.</p>
       <div class="fs"><h4>Verificare</h4><ul class="bld-check">${all.map(([ok, t, k, l]) => `<li class="${ok ? 'ok' : ''}"><i>${ok ? '✓' : '!'}</i>${esc(cap(t))} <a href="/manage/entitati/editii/${e.id}/construieste/${k}">${esc(l)}</a></li>`).join('')}</ul></div>
-      <div class="fs"><h4>Vizibilitate</h4><p class="ro" style="margin:0">${off ? 'Ediția e ascunsă: nu apare în meniu, pe homepage sau în listele de ediții. O poți previzualiza din butonul de sus.' : 'Ediția apare pe site-ul local; pe cel public după „Publică pe site”.'}</p>
-        ${S.on ? `<div><button class="${off ? 'primary' : ''}" data-bld-vis="${off ? 'on' : 'off'}">${off ? 'Arată ediția pe site' : 'Ascunde ediția de pe site'}</button></div>` : ''}</div>`; },
+      <div class="fs"><h4>Vizibilitate</h4><p class="ro" style="margin:0">${off ? 'Cohorta e ascunsă: nu apare în meniu, pe homepage sau în listele de cohorte. O poți previzualiza din butonul de sus.' : 'Cohorta apare pe site-ul local; pe cel public după „Publică pe site”.'}</p>
+        ${S.on ? `<div><button class="${off ? 'primary' : ''}" data-bld-vis="${off ? 'on' : 'off'}">${off ? 'Arată cohorta pe site' : 'Ascunde cohorta de pe site'}</button></div>` : ''}</div>`; },
   };
   function perioadaAuto(e) {
     const d = e.ateliere.map((a) => a.data).filter(Boolean).sort();
@@ -664,7 +664,7 @@ const CMS = (() => {
     const box = $('#bld'), e = ED(box.dataset.editie), pas = box.dataset.pas, f = $('#bld-f');
     btn.disabled = true; btn.textContent = 'Se salvează…';
     try {
-      if (pas === 'baza') { const v = form(f); await put({ op: 'entitate', tip: 'editii', id: e.id, date: { status: v.status, an: num(v.an), sezon: v.sezon, perioada: v.perioada, subtitlu: v.subtitlu }, eticheta: `ediția ${eLab(e.id)}: datele` }); }
+      if (pas === 'baza') { const v = form(f); await put({ op: 'entitate', tip: 'editii', id: e.id, date: { status: v.status, an: num(v.an), sezon: v.sezon, perioada: v.perioada, subtitlu: v.subtitlu }, eticheta: `cohorta ${eLab(e.id)}: datele` }); }
       if (pas === 'calendar' && f) {
         for (const r of $$('.bld-w', f)) {
           const a = e.ateliere.find((x) => x.id === r.dataset.aid), v = Object.fromEntries($$('[data-k]', r).map((i) => [i.dataset.k, i.value || null]));
@@ -683,7 +683,7 @@ const CMS = (() => {
           await put({ op: 'agenda', id: a.id, lista: agendaCu(a, sl), eticheta: `oamenii atelierului ${a.nr}, ${eLab(e.id)}` });
         }
       }
-      if (pas === 'inscrieri') { const v = form(f); await put({ op: 'entitate', tip: 'editii', id: e.id, date: { deschisa: v.deschisa.includes('da'), link_inscriere: v.link_inscriere || null, valoare_estimata: v.valoare_estimata || null, preturi: rowsVal(f, 'preturi').filter((r) => r.pret_text).map((r) => ({ eticheta: r.eticheta, pret_text: r.pret_text, pret: num(r.pret_text), nota: r.nota || null, ascuns: false })), beneficii: rowsVal(f, 'beneficii').map((r) => r.b).filter(Boolean) }, eticheta: `ediția ${eLab(e.id)}: preț și înscrieri` }); }
+      if (pas === 'inscrieri') { const v = form(f); await put({ op: 'entitate', tip: 'editii', id: e.id, date: { deschisa: v.deschisa.includes('da'), link_inscriere: v.link_inscriere || null, valoare_estimata: v.valoare_estimata || null, preturi: rowsVal(f, 'preturi').filter((r) => r.pret_text).map((r) => ({ eticheta: r.eticheta, pret_text: r.pret_text, pret: num(r.pret_text), nota: r.nota || null, ascuns: false })), beneficii: rowsVal(f, 'beneficii').map((r) => r.b).filter(Boolean) }, eticheta: `cohorta ${eLab(e.id)}: preț și înscrieri` }); }
       if (pas === 'parteneri') {
         const parts = [];
         for (const r of rowsVal(f, 'parteneri').filter((x) => x.org)) { const o = D.organizatii.find((x) => nrm(x.nume) === nrm(r.org)); parts.push({ organizatie: o?.id || (await put({ op: 'entitate', tip: 'organizatii', nou: true, date: { nume: r.org, tip: 'companie', tipuri: ['partener'] }, eticheta: `partener nou: ${r.org}` })).id, rol: r.rol }); }
@@ -703,24 +703,24 @@ const CMS = (() => {
   const refreshData = async () => { D = store.entitati = await api.get('/api/entitati'); };
   async function bldAction(fn, msg) { try { await fn(); await refresh(); go(routeFromPath()); if (msg) toast(msg); } catch (err) { toast(err.message); } }
 
-  /* ---------- arhivarea: după ultimul atelier, ediția se poate închide oficial ---------- */
+  /* ---------- arhivarea: după ultimul atelier, cohorta se poate închide oficial ---------- */
   const lastDay = (e) => e.ateliere.map((a) => a.data).filter(Boolean).sort().pop();
   const archived = (e) => /închis|încheiat/i.test(e.status || '');
-  // de arhivat: are ateliere datate, toate au trecut, dar starea nu e încă „Ediție închisă”
+  // de arhivat: are ateliere datate, toate au trecut, dar starea nu e încă „Cohortă închisă”
   const toArchive = (e) => !archived(e) && e.ateliere.some((a) => a.data) && e.ateliere.every((a) => !a.data || a.data < t0());
-  const archiveBanner = (e) => (toArchive(e) ? `<div class="arch"><div><b>Ediția ${esc(eLab(e.id))} s-a încheiat pe ${esc(dayRo(lastDay(e)))}.</b><span>Arhivarea închide înscrierile, scoate prețul de pe site și trece pagina ediției în formatul edițiilor anterioare. Participanții devin alumni.</span></div>${S.on ? `<button class="primary" data-cms-archive="${esc(e.id)}">Arhivează</button>` : ''}</div>` : '');
+  const archiveBanner = (e) => (toArchive(e) ? `<div class="arch"><div><b>Cohorta ${esc(eLab(e.id))} s-a încheiat pe ${esc(dayRo(lastDay(e)))}.</b><span>Arhivarea închide înscrierile, scoate prețul de pe site și trece pagina cohortei în formatul cohortelor anterioare. Participanții devin alumni.</span></div>${S.on ? `<button class="primary" data-cms-archive="${esc(e.id)}">Arhivează</button>` : ''}</div>` : '');
   async function archive(id, btn) {
     const e = ED(id);
-    if (!confirm(`Arhivezi ediția ${eLab(id)}?\n\n• starea devine „Ediție închisă”\n• înscrierile se închid și prețul dispare de pe site\n• pagina ediției trece în formatul edițiilor anterioare\n• cei ${e.participanti.length} participanți devin alumni`)) return;
+    if (!confirm(`Arhivezi cohorta ${eLab(id)}?\n\n• starea devine „Cohortă închisă”\n• înscrierile se închid și prețul dispare de pe site\n• pagina cohortei trece în formatul cohortelor anterioare\n• cei ${e.participanti.length} participanți devin alumni`)) return;
     btn.disabled = true; btn.textContent = 'Se arhivează…';
     try {
-      await put({ op: 'entitate', tip: 'editii', id, date: { status: 'Ediție închisă', deschisa: false, preturi: (e.preturi || []).map((p) => ({ ...p, ascuns: true })) }, eticheta: `ediția ${eLab(id)} arhivată` });
+      await put({ op: 'entitate', tip: 'editii', id, date: { status: 'Ediție închisă', deschisa: false, preturi: (e.preturi || []).map((p) => ({ ...p, ascuns: true })) }, eticheta: `cohorta ${eLab(id)} arhivată` });
       await refresh(); go(routeFromPath());
-      toast(`Ediția ${eLab(id)} e arhivată. Se vede pe site-ul local; pe cel public după „Publică pe site”.`);
+      toast(`Cohorta ${eLab(id)} e arhivată. Se vede pe site-ul local; pe cel public după „Publică pe site”.`);
     } catch (err) { toast(err.message); btn.disabled = false; btn.textContent = 'Arhivează'; }
   }
 
-  /* ---------- participanții unei ediții: formularul de adăugare ---------- */
+  /* ---------- participanții unei cohorte: formularul de adăugare ---------- */
   function pdupShow(q) {
     const box = $('#bld-pdup'), n = nrm(q).trim();
     if (!box) return;
@@ -742,7 +742,7 @@ const CMS = (() => {
     if (p.imagine) { const box = $('[data-photo=p_imagine]', f); $('input[type=hidden]', box).value = p.imagine; $('.av', box).innerHTML = `<img class="av" src="${esc(p.imagine)}" alt="">`; }
     $('#bld-pdup').hidden = true;
     const ch = $('#bld-pchosen'); ch.hidden = false;
-    ch.innerHTML = `Fișă existentă: <b>${esc(p.nume)}</b>${p.editii.length ? ` · a mai fost la ${p.editii.map(eLab).join(', ')}` : ''}. Cifrele de mai jos sunt pentru ediția asta. <a href="#" data-bld-pclear>alt om</a>`;
+    ch.innerHTML = `Fișă existentă: <b>${esc(p.nume)}</b>${p.editii.length ? ` · a mai fost la ${p.editii.map(eLab).join(', ')}` : ''}. Cifrele de mai jos sunt pentru cohorta asta. <a href="#" data-bld-pclear>alt om</a>`;
     $('[name=p_cifra]', f).focus();
   }
   function pClear() {
@@ -756,7 +756,7 @@ const CMS = (() => {
     const box = $('#bld'), e = ED(box.dataset.editie), f = $('#bld-pf'), v = Object.fromEntries($$('[name]', f).map((i) => [i.name, i.value.trim()]));
     if (!v.p_nume) { $('[name=p_nume]', f).focus(); return toast('Scrie numele participantului.'); }
     if (!v.p_companie) { $('[name=p_companie]', f).focus(); return toast('Scrie compania.'); }
-    if (v.p_id && e.participanti.some((x) => x.persoana === v.p_id)) return toast('E deja în ediție.');
+    if (v.p_id && e.participanti.some((x) => x.persoana === v.p_id)) return toast('E deja în cohortă.');
     btn.disabled = true; btn.textContent = 'Se adaugă…';
     try {
       let o = D.organizatii.find((x) => nrm(x.nume) === nrm(v.p_companie));
@@ -775,9 +775,9 @@ const CMS = (() => {
       await refresh(); go(routeFromPath());
       toast(`Adăugat: ${v.p_nume}. Poți adăuga următorul.`);
       setTimeout(() => $('#bld-pf [name=p_nume]')?.focus(), 50);
-    } catch (err) { toast(err.message); btn.disabled = false; btn.textContent = 'Adaugă în ediție'; }
+    } catch (err) { toast(err.message); btn.disabled = false; btn.textContent = 'Adaugă în cohortă'; }
   }
-  // aplicările primite prin formularul de pe site pentru ediția asta (doar local)
+  // aplicările primite prin formularul de pe site pentru cohorta asta (doar local)
   const CA_LABEL = { 'sub-500k': 'sub 500.000 €', '500k-1m': '500.000 – 1 mil. €', '1m-10m': '1 – 10 mil. €', 'peste-10m': 'peste 10 mil. €' };
   let LEADS = null;
   async function loadLeads() {
@@ -786,7 +786,7 @@ const CMS = (() => {
     if (!LEADS) { try { LEADS = await api.get('/api/aplicari'); } catch (e) { LEADS = null; } }
     const e = ED(box.dataset.editie), L = (Array.isArray(LEADS) ? LEADS : []).filter((a) => a.editie === e.id);
     const inEd = new Set(e.participanti.map((x) => nrm(x.nume)));
-    box.innerHTML = `<h4>Din aplicări · ${L.length}</h4>${L.length ? `<div class="bld-leads">${L.map((a, i) => `<div class="bld-lead"><div><b>${esc(a.nume)}</b><small>${esc(a.companie)} · CUI ${esc(a.cui)} · ${esc(CA_LABEL[a.cifra_afaceri] || a.cifra_afaceri || '')}</small></div>${inEd.has(nrm(a.nume)) ? '<span class="tag ok">în ediție</span>' : `<button type="button" class="sm" data-bld-lead="${i}">Completează formularul</button>`}</div>`).join('')}</div><small class="ro">Aplicarea completează numele și compania; cifra exactă și restul le adaugi tu.</small>` : `<p class="ro" style="margin:0">${Array.isArray(LEADS) ? 'Nicio aplicare pentru această ediție încă. Aplicările din formularul de pe site apar aici.' : 'Aplicările se văd doar în panoul local.'}</p>`}`;
+    box.innerHTML = `<h4>Din aplicări · ${L.length}</h4>${L.length ? `<div class="bld-leads">${L.map((a, i) => `<div class="bld-lead"><div><b>${esc(a.nume)}</b><small>${esc(a.companie)} · CUI ${esc(a.cui)} · ${esc(CA_LABEL[a.cifra_afaceri] || a.cifra_afaceri || '')}</small></div>${inEd.has(nrm(a.nume)) ? '<span class="tag ok">în cohortă</span>' : `<button type="button" class="sm" data-bld-lead="${i}">Completează formularul</button>`}</div>`).join('')}</div><small class="ro">Aplicarea completează numele și compania; cifra exactă și restul le adaugi tu.</small>` : `<p class="ro" style="margin:0">${Array.isArray(LEADS) ? 'Nicio aplicare pentru această cohortă încă. Aplicările din formularul de pe site apar aici.' : 'Aplicările se văd doar în panoul local.'}</p>`}`;
     box._leads = L;
   }
   function leadFill(i) {
@@ -813,13 +813,13 @@ const CMS = (() => {
     if (d.bldPclear !== undefined) { pClear(); return; }
     if (d.bldPick) { pPick(d.bldPick); return; }
     if (d.bldLead) { leadFill(+d.bldLead); return; }
-    if (d.bldPrem) { const ed = ED(bid), x = ed.participanti.find((y) => y.persoana === d.bldPrem); if (!confirm(`Scoți ${x?.nume} din ediție? Fișa omului rămâne.`)) return; return bldAction(() => put({ op: 'participanti', id: bid, lista: ed.participanti.filter((y) => y.persoana !== d.bldPrem), eticheta: `participant scos din ${eLab(bid)}: ${x?.nume}` }), 'Scos din ediție.'); }
+    if (d.bldPrem) { const ed = ED(bid), x = ed.participanti.find((y) => y.persoana === d.bldPrem); if (!confirm(`Scoți ${x?.nume} din cohortă? Fișa omului rămâne.`)) return; return bldAction(() => put({ op: 'participanti', id: bid, lista: ed.participanti.filter((y) => y.persoana !== d.bldPrem), eticheta: `participant scos din ${eLab(bid)}: ${x?.nume}` }), 'Scos din cohortă.'); }
     if (d.bldPerioada) { const i = $('#bld-f [name=perioada]'); if (i) i.value = d.bldPerioada; return; }
-    if (d.bldCopy !== undefined) { const v = form($('#bld-copy')); t.disabled = true; t.textContent = 'Se copiază…'; return bldAction(() => put({ op: 'copiaza', id: bid, din: v.din, ce: Object.fromEntries(['ateliere', ...v.ce].map((k) => [k, true])), eticheta: `ediția ${eLab(bid)}: structura de la ${eLab(v.din)}` }), 'Structura a fost copiată. Acum pune datele atelierelor.'); }
+    if (d.bldCopy !== undefined) { const v = form($('#bld-copy')); t.disabled = true; t.textContent = 'Se copiază…'; return bldAction(() => put({ op: 'copiaza', id: bid, din: v.din, ce: Object.fromEntries(['ateliere', ...v.ce].map((k) => [k, true])), eticheta: `cohorta ${eLab(bid)}: structura de la ${eLab(v.din)}` }), 'Structura a fost copiată. Acum pune datele atelierelor.'); }
     if (d.bldTema) { const tm = D.teme.find((x) => x.id === d.bldTema); return bldAction(async () => { const r2 = await put({ op: 'entitate', tip: 'ateliere', nou: true, editie: bid, date: { tema: tm.id, titlu: tm.nume, format: tm.format, descriere: '', data: null }, eticheta: `atelier nou: ${tm.nume}` }); const prog = agendaTip(tm.format, tm.id); if (prog.length) await put({ op: 'agenda', id: r2.id, lista: prog, eticheta: `agenda: ${tm.nume}` }); }, `Atelier adăugat: ${tm.nume}`); }
-    if (d.bldDel) { if (!confirm('Scoți atelierul din ediție?')) return; return bldAction(() => put({ op: 'sterge', tip: 'ateliere', id: d.bldDel, eticheta: 'atelier scos' }), 'Atelier scos.'); }
+    if (d.bldDel) { if (!confirm('Scoți atelierul din cohortă?')) return; return bldAction(() => put({ op: 'sterge', tip: 'ateliere', id: d.bldDel, eticheta: 'atelier scos' }), 'Atelier scos.'); }
     if (d.bldBen) { const src = ED(d.bldBen), box = $('[data-rows=beneficii] .lrows'); const tpl = box.firstElementChild; box.innerHTML = ''; src.beneficii.forEach((b) => { const c = tpl.cloneNode(true); $('input', c).value = b; box.append(c); }); t.remove(); return; }
-    if (d.bldVis) { return bldAction(() => put({ op: 'ascuns', tip: 'editii', id: bid, ascuns: d.bldVis === 'off', eticheta: `ediția ${eLab(bid)} ${d.bldVis === 'off' ? 'ascunsă' : 'arătată pe site'}` }), d.bldVis === 'off' ? 'Ediția e ascunsă de pe site.' : 'Ediția apare acum pe site-ul local.'); }
+    if (d.bldVis) { return bldAction(() => put({ op: 'ascuns', tip: 'editii', id: bid, ascuns: d.bldVis === 'off', eticheta: `cohorta ${eLab(bid)} ${d.bldVis === 'off' ? 'ascunsă' : 'arătată pe site'}` }), d.bldVis === 'off' ? 'Cohorta e ascunsă de pe site.' : 'Cohorta apare acum pe site-ul local.'); }
     if (d.cmsEdit) { const ty = T[d.cmsEdit], x = ty.items().find((i) => String(i.id) === d.cmsId); if (x) open(d.cmsEdit, x); return; }
     if (d.cmsDup && T[cur.key].tip === 'oameni') { const k = cur.key, p = Pid(d.cmsDup); if (p) open(k, { ...p, _addPart: T[k].kind === 'participant' ? edDefault() : null }); return; }
     if (d.cmsDup) { const k = cur.key; const x = T[k].tip === 'oameni' ? Pid(d.cmsDup) : T[k].tip === 'organizatii' ? Oid(d.cmsDup) : D.teme.find((y) => y.id === d.cmsDup); if (x) open(T[k].tip === 'oameni' ? 'oameni' : T[k].tip === 'organizatii' ? 'organizatii' : 'teme', x); return; }

@@ -65,7 +65,7 @@ const logoForm = (v) => { const L = v.logo, ids = L.variante.map((x) => [x.id, x
     <div class="fs"><h4>Fișierele logo-ului</h4><div class="b-logos">${L.variante.map((x, i) => `<div class="b-logo" data-i="${i}"><span class="blogo-img" style="background:${x.fundal === 'închis' ? '#34373E' : '#fff'}"><img src="${esc(x.web || x.fisier)}" alt=""></span><b>${esc(x.nume)}</b><label class="btn sm">Înlocuiește<input type="file" accept="image/png,image/svg+xml,image/webp" hidden></label></div>`).join('')}</div>
     <small class="ro">Încarcă fișierul nou pe fundal transparent (ideal SVG sau PNG). Varianta „pe fundal închis” trebuie să aibă textul deschis.</small></div>`; };
 const logoPrev = (v) => { const L = v.logo, f = (id) => L.variante.find((x) => x.id === id); const h = f(L.pe_site.header), ft = f(L.pe_site.footer);
-  return `<div class="b-prev-hdr"><img src="${esc(h?.web || h?.fisier || '')}" alt=""><span>Program · Ediții · Teme</span></div><div class="b-prev-ftr"><img src="${esc(ft?.web || ft?.fisier || '')}" alt=""></div>`; };
+  return `<div class="b-prev-hdr"><img src="${esc(h?.web || h?.fisier || '')}" alt=""><span>Program · Cohorte · Teme</span></div><div class="b-prev-ftr"><img src="${esc(ft?.web || ft?.fisier || '')}" alt=""></div>`; };
 
 const ED_SEC = { culori: ['Culori', culoriForm, culoriPrev], tipografie: ['Tipografie', tipoForm, tipoPrev], forme: ['Forme', formeForm, formePrev], logo: ['Logo', logoForm, logoPrev] };
 function openBrandEditor(sec, varId) {

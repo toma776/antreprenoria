@@ -147,15 +147,15 @@ function cmsEdit(b) {
       if (b.nou) {
         if (b.tip === 'ateliere') {
           const ed = D.editii.find((e) => e.id === b.editie);
-          if (!ed) return { error: 'Alege ediția atelierului.' };
+          if (!ed) return { error: 'Alege cohorta atelierului.' };
           const nr = Math.max(0, ...ed.ateliere.map((a) => a.nr)) + 1;
           id = `${ed.id}-a${nr}`; Object.assign(date, { nr, _nou: true, _editie: ed.id });
         } else if (b.tip === 'editii') {
-          if (!date.numar) return { error: 'Scrie numărul ediției.' };
+          if (!date.numar) return { error: 'Scrie numărul cohortei.' };
           id = `${date.serie === 'Cluj' ? 'cluj' : 'bucuresti'}-${date.numar}`;
-          if (exists('editii', id)) return { error: 'Ediția există deja.' };
+          if (exists('editii', id)) return { error: 'Cohorta există deja.' };
           date._nou = true;
-          // o ediție nouă nu apare pe site până nu e gata (pasul „Pe site” din constructor)
+          // o cohortă nouă nu apare pe site până nu e gata (pasul „Pe site” din constructor)
           if (!E.ascunse.includes(`editii:${id}`)) E.ascunse.push(`editii:${id}`);
         } else {
           const base = slug(date.nume || date.titlu || '');
@@ -202,10 +202,10 @@ function cmsEdit(b) {
       return { ok: true, nepublicate: pendingList() };
     }
     case 'ordine_echipa': if (!Array.isArray(b.lista)) return { error: 'lipsește lista' }; E.ordine_echipa = b.lista.map(String); break;
-    // constructorul de ediție: copiază structura altei ediții (atelierele cu temele și agenda, beneficiile, prețul)
+    // constructorul de cohortă: copiază structura altei cohorte (atelierele cu temele și agenda, beneficiile, prețul)
     case 'copiaza': {
       const tinta = D.editii.find((e) => e.id === b.id), sursa = D.editii.find((e) => e.id === b.din);
-      if (!tinta || !sursa) return { error: 'Ediție inexistentă.' };
+      if (!tinta || !sursa) return { error: 'Cohortă inexistentă.' };
       const ce = b.ce || {};
       if (ce.ateliere) {
         let nr = Math.max(0, ...tinta.ateliere.map((a) => a.nr));
@@ -449,12 +449,12 @@ async function handler(req, res) {
       const alias = readJson(path.join(DATA, 'curare', 'oameni.json'), {}).aliasuri?.[tr[1]];
       if (alias) { res.writeHead(301, { Location: `/lideri/${alias}` }); return res.end(); }
     }
-    // /editii: lista edițiilor (active sus, arhiva pe ani)
+    // /editii: lista cohortelor (active sus, arhiva pe ani)
     if ((url === '/editii' || url === '/editii/')) {
       res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' });
       return res.end(fresh('./site/render').renderEditii({ brand: new URLSearchParams(query).get('brand') || undefined }));
     }
-    // /parteneri: partenerii edițiilor, sponsorii atelierelor, implicarea; linkurile vechi din meniu duc la secțiunea lor
+    // /parteneri: partenerii cohortelor, sponsorii atelierelor, implicarea; linkurile vechi din meniu duc la secțiunea lor
     if ((url === '/parteneri' || url === '/parteneri/')) {
       res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' });
       return res.end(fresh('./site/render').renderParteneri({ brand: new URLSearchParams(query).get('brand') || undefined }));
