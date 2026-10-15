@@ -67,7 +67,7 @@ function home2Body(ctx, F) {
         <p class="x-lead">${esc(tx(D, 'acasa.lead'))}</p>
         <div class="x-actions">
           <a class="x-btn x-btn-glow" href="/aplica">Aplică pentru un loc ${ARROW}</a>
-          <a class="x-btn x-btn-glass" href="#navigator">Găsește-ți tema</a>
+          <a class="x-btn x-btn-glass" href="#navigator">Găsește-ți provocarea</a>
         </div>
         <dl class="x-kpis">
           <div><dt data-x-count="${F.maxNr}">${F.maxNr}</dt><dd>${de(F.maxNr)}cohorte</dd></div>
