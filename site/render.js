@@ -212,6 +212,18 @@ ${footer(F, ctx)}
 </body></html>`;
 }
 
+// ---------- HOMEPAGE, varianta de recrutare (previzualizare, doar local) ----------
+function renderHome3(opt = {}) {
+  const ctx = load(opt.brand), F = facts(ctx);
+  const { home3Body } = require('./home3');
+  return `${head('Antreprenoria – acceleratorul antreprenorilor Romanian Business Leaders', 'Program de accelerare selectiv pentru companii cu peste 500.000 € cifră de afaceri și un model de business scalabil: ateliere cu fondatori și CEO, o cohortă de aproximativ 25 de antreprenori, comunitatea RBL.', opt.brand)}
+${header(F, ctx)}
+${home3Body(ctx, F)}
+${footer(F, ctx)}
+<script src="/assets/site.js"></script>
+</body></html>`;
+}
+
 // ---------- 404 ----------
 // adresa nu există: aceeași pagină cu meniu și footer, cu drumurile principale la îndemână
 function render404(opt = {}) {
@@ -365,4 +377,4 @@ const applyOptions = () => { const ctx = load(); return aplicaOptions(ctx, facts
 // indexul comunității pentru căutarea din meniu
 const renderCommunityIndex = (opt = {}) => JSON.stringify(communityIndex(load(opt.brand)));
 
-module.exports = { renderDespreOld, renderHomeOld, render404, renderCommunityIndex, renderHome, renderEdition, renderProgram, renderDespre, renderTeme, renderTema, renderTraineri, renderTrainer, renderAlumni, renderAlumnus, renderParteneri, renderEditii, renderAplica, applyOptions };
+module.exports = { renderHome3, renderDespreOld, renderHomeOld, render404, renderCommunityIndex, renderHome, renderEdition, renderProgram, renderDespre, renderTeme, renderTema, renderTraineri, renderTrainer, renderAlumni, renderAlumnus, renderParteneri, renderEditii, renderAplica, applyOptions };

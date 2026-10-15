@@ -56,7 +56,7 @@ function safe(base, rel) {
 }
 // modulele site-ului se reîncarcă la fiecare cerere, ca schimbările din data/ și site/ să apară fără repornire
 function fresh(mod) {
-  ['./site/render', './site/brand', './site/menu', './site/home', './site/util', './site/edition', './site/program', './site/despre', './site/teme', './site/aplica', './site/texte', './site/traineri', './site/alumni', './site/parteneri', './site/implicare', './site/editii', './site/home2', './site/despre2'].forEach((m) => delete require.cache[require.resolve(m)]);
+  ['./site/render', './site/brand', './site/menu', './site/home', './site/util', './site/edition', './site/program', './site/despre', './site/teme', './site/aplica', './site/texte', './site/traineri', './site/alumni', './site/parteneri', './site/implicare', './site/editii', './site/home2', './site/despre2', './site/home3'].forEach((m) => delete require.cache[require.resolve(m)]);
   return require(mod);
 }
 
@@ -424,8 +424,8 @@ async function handler(req, res) {
     // previzualizare (doar local): homepage-ul în stilul instituțional (site/assets/inst.css, activ cu body.inst)
     if (url === '/previzualizare/acasa' && !READ_ONLY) {
       res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' });
-      return res.end(fresh('./site/render').renderHome({ brand: new URLSearchParams(query).get('brand') || undefined })
-        .replace('</head>', '<link rel="stylesheet" href="/assets/inst.css"><meta name="robots" content="noindex"></head>')
+      return res.end(fresh('./site/render').renderHome3({ brand: new URLSearchParams(query).get('brand') || undefined })
+        .replace('</head>', '<link rel="stylesheet" href="/assets/inst.css"><link rel="stylesheet" href="/assets/home3.css"><meta name="robots" content="noindex"></head>')
         .replace('<body class="x-page">', '<body class="x-page inst">'));
     }
     // Despre nouă e acum /despre; paginile vechi Despre și Program rămân doar local, pentru comparație
