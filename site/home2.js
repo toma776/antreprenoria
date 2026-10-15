@@ -222,7 +222,14 @@ function home2Footer(ctx, F, { logo, nav }) {
     <div class="xf-grid">
       <nav class="xf-col" aria-label="Explorează"><h4>Explorează</h4>${nav.map(([t, u]) => `<a href="${u}">${t}</a>`).join('')}<a class="xf-apply" href="/aplica">Aplică ${ARROW}</a></nav>
       <div class="xf-col"><h4>Cohorte</h4>
-        <div class="xf-cohorts">${recent.map((e) => `<a class="${e === ong ? 'is-live' : ''}" href="${edUrl(e)}"><b>#${e.numar}${e === ong ? '<i class="dot-live"></i>' : ''}</b><span>${esc(e.sezon)} ${e.an}</span></a>`).join('')}${F.cluj ? `<a class="is-open" href="${edUrl(F.cluj)}"><b>Cluj #${F.cluj.numar}</b><span>înscrieri deschise</span></a>` : ''}<a class="is-next" href="/aplica"><b>#${F.maxNr + 1}</b><span>listă de așteptare</span></a></div>
+        <div class="xf-cohorts">
+          <small class="xf-ch">Poți intra</small>
+          ${F.cluj ? `<a class="is-open" href="${edUrl(F.cluj)}"><b>Cluj #${F.cluj.numar}</b><span>înscrieri deschise</span></a>` : ''}<a class="is-next" href="/aplica"><b>#${F.maxNr + 1}</b><span>listă de așteptare</span></a>
+          ${ong ? `<small class="xf-ch">Acum</small><a class="is-live xf-wide" href="${edUrl(ong)}"><b>#${ong.numar}<i class="dot-live"></i></b><span>${esc(ong.sezon)} ${ong.an} · ${held} din ${ws.length} ateliere ținute</span></a>` : ''}
+          <small class="xf-ch">Încheiate</small>
+          ${recent.filter((e) => e !== ong).slice(0, 2).map((e) => `<a href="${edUrl(e)}"><b>#${e.numar}</b><span>${esc(e.sezon)} ${e.an}</span></a>`).join('')}
+        </div>
+        <a class="xf-all" href="/editii">Toate cohortele ${ARROW}</a>
       </div>
       <div class="xf-col xf-contact"><h4>Vorbește cu noi</h4>
         ${person(team['raluca-bedereag'], 'Pentru participanți')}

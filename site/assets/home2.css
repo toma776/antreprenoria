@@ -386,3 +386,9 @@ a.x-tile:hover { transform: translateY(-3px); box-shadow: 0 24px 50px -30px rgba
 .x-page .hdr .logo img { width: auto; object-fit: contain; }
 @media (min-width: 1181px) { .x-page .mm-trigger { padding: 9px 11px; } .x-page .hdr-in { gap: 20px; } }
 @media (min-width: 1181px) and (max-width: 1320px) { .x-page .hdr-cta .live { font-size: 0; gap: 0; padding: 9px; } }
+/* cohortele din footer, pe grupuri: unde poți intra, cea în desfășurare, cele încheiate */
+.xf-ch { grid-column: 1 / -1; margin: 6px 0 -2px; font: 600 11px/1.2 var(--eyebrow-font); letter-spacing: .08em; text-transform: uppercase; color: rgba(255, 255, 255, .45); }
+.xf-ch:first-child { margin-top: 0; }
+.xf-cohorts .xf-wide { grid-column: 1 / -1; }
+.xf-all { display: inline-flex !important; align-items: center; gap: 6px; margin-top: 12px; color: var(--dark-ink) !important; font-size: 13.5px !important; font-weight: 600; }
+.xf-all svg { width: 15px; height: 15px; }
