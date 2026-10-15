@@ -177,11 +177,16 @@ function footer(F, ctx, opt = {}) {
   <div class="ftr-word" aria-hidden="true"><svg viewBox="0 0 1000 124" preserveAspectRatio="xMidYMax meet"><defs><linearGradient id="ftr-fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="currentColor" stop-opacity=".2"/><stop offset="1" stop-color="currentColor" stop-opacity=".03"/></linearGradient></defs><text x="2" y="124" textLength="996" lengthAdjust="spacingAndGlyphs" fill="url(#ftr-fade)">Antreprenoria</text></svg></div>
   <div class="wrap ftr-legal"><span>© ${new Date().getFullYear()} Fundația Romanian Business Leaders</span><span><a href="/confidentialitate">Confidențialitate</a><a href="/termeni-si-conditii">Termeni</a><a href="/politica-cookies">Cookies</a></span></div>
 </footer>
-${opt.mcta === false ? '' : `<!-- doar pe mobil: acțiunea principală, la îndemâna degetului mare; apare după primul ecran (site.js) -->
-<div class="mcta" aria-hidden="true">
+${opt.mcta === false ? '' : mctaBar(F)}`;
+}
+// doar pe mobil: acțiunea principală, la îndemâna degetului mare; apare după primul ecran (site.js)
+function mctaBar(F) {
+  const ong = F.ongoing, nx = F.next;
+  const edUrl = (e) => (e.serie === 'Cluj' ? `/editii/cluj-${e.numar}` : `/editii/${e.numar}`);
+  return `<div class="mcta" aria-hidden="true">
   ${ong ? `<a class="mcta-ed" href="${edUrl(ong)}" tabindex="-1"><i class="dot-live"></i><span>Cohorta #${ong.numar}<small>${nx ? (nx.data === today() ? 'atelier azi' : `următorul: ${fmtDay(nx.data)}`) : 'în desfășurare'}</small></span></a>` : ''}
   <a class="btn btn-primary mcta-go" href="/aplica" tabindex="-1">Aplică</a>
-</div>`}`;
+</div>`;
 }
 
 // ---------- HOMEPAGE ----------
@@ -227,11 +232,12 @@ ${footer(F, ctx)}
 // ---------- HOMEPAGE 2029 (previzualizare, doar local) ----------
 function renderHome2(opt = {}) {
   const ctx = load(opt.brand), F = facts(ctx);
-  const { home2Body } = require('./home2');
+  const { home2Body, home2Footer } = require('./home2');
   return `${head('Antreprenoria – acceleratorul antreprenorilor Romanian Business Leaders', 'Previzualizare: varianta nouă a homepage-ului.', opt.brand).replace('</head>', '<link rel="stylesheet" href="/assets/home2.css"><meta name="robots" content="noindex"></head>')}
 ${header(F, ctx)}
 ${home2Body(ctx, F)}
-${footer(F, ctx)}
+${home2Footer(ctx, F, { logo: logo('footer', ctx.brandId), nav: NAV })}
+${mctaBar(F)}
 <script src="/assets/site.js"></script><script src="/assets/home2.js"></script>
 </body></html>`;
 }

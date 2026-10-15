@@ -291,3 +291,68 @@ a.x-tile:hover { transform: translateY(-3px); box-shadow: 0 24px 50px -30px rgba
 .x-lg-adrem img { height: 22px; }
 .x-lg-smartbill img { height: 28px; }
 @media (max-width: 720px) { .x-lg-zitec img { height: 13px; } .x-lg-secom img { height: 36px; } .x-lg-emerson img, .x-lg-bittnet-group img { height: 26px; } }
+
+/* ---------- footer „2029” ---------- */
+.xf { position: relative; isolation: isolate; overflow: hidden; padding: clamp(56px, 7vw, 92px) 0 0; background: color-mix(in srgb, var(--dark) 70%, #000); color: var(--dark-ink); border-top: 1px solid rgba(255, 255, 255, .08); }
+.xf-aurora { inset: auto -10% -60%; height: 120%; opacity: .55; }
+.xf-aurora i:nth-child(1) { left: 55%; top: 10%; }
+.xf-aurora i:nth-child(2) { left: 5%; top: 30%; }
+.xf .x-grid { mask-image: radial-gradient(ellipse 70% 60% at 30% 20%, #000 20%, transparent 75%); -webkit-mask-image: radial-gradient(ellipse 70% 60% at 30% 20%, #000 20%, transparent 75%); }
+.xf-top { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: clamp(28px, 4vw, 64px); align-items: start; padding-bottom: clamp(36px, 4vw, 52px); border-bottom: 1px solid rgba(255, 255, 255, .1); }
+.xf-brand .logo img { height: 52px; }
+.xf-claim { margin: 22px 0 0; font: var(--d-weight) clamp(30px, 3.6vw, 52px)/1.04 var(--f-display); font-stretch: var(--d-stretch); letter-spacing: var(--d-track); color: #fff; }
+.xf-sub { margin: 14px 0 0; max-width: 52ch; font-size: 15px; line-height: 1.6; color: var(--dark-muted); }
+.xf-social { display: flex; gap: 8px; margin-top: 22px; }
+.xf-social a { display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid rgba(255, 255, 255, .14); border-radius: 50%; background: rgba(255, 255, 255, .04); color: #fff; transition: background .2s, border-color .2s, transform .2s; }
+.xf-social a:hover { background: var(--primary); border-color: var(--primary); transform: translateY(-2px); }
+.xf-social svg { width: 18px; height: 18px; fill: currentColor; }
+.xf-live { display: grid; gap: 10px; padding: 22px; border-radius: var(--x-r, 18px); color: var(--dark-ink); text-decoration: none; transition: transform .25s; }
+.xf-live:hover { transform: translateY(-3px); }
+.xf-live-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 13px; color: var(--dark-muted); }
+.xf-live b { font: 700 19px/1.3 var(--f-body); color: #fff; }
+.xf-live-m { font-size: 13.5px; color: var(--dark-muted); }
+.xf-live em { display: inline-flex; align-items: center; gap: 6px; font-style: normal; font-weight: 700; font-size: 14px; color: var(--highlight); }
+.xf-live em svg { width: 16px; height: 16px; }
+.xf-grid { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.1fr) minmax(0, 1.3fr); gap: clamp(24px, 4vw, 56px); padding: clamp(32px, 4vw, 48px) 0 clamp(8px, 1vw, 16px); }
+.xf h4 { margin: 0 0 14px; font: 700 11.5px/1.2 var(--eyebrow-font); letter-spacing: .1em; text-transform: uppercase; color: var(--dark-muted); }
+.xf-col > a { display: block; padding: 6px 0; color: #fff; font-size: 15px; text-decoration: none; opacity: .86; transition: opacity .15s, transform .15s; }
+.xf-col > a:hover { opacity: 1; transform: translateX(3px); }
+.xf-apply { display: inline-flex !important; align-items: center; gap: 6px; margin-top: 6px; color: var(--highlight) !important; font-weight: 700; opacity: 1 !important; }
+.xf-apply svg { width: 15px; height: 15px; }
+.xf-cohorts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.xf-cohorts a { display: grid; gap: 2px; padding: 10px 12px; border: 1px solid rgba(255, 255, 255, .1); border-radius: calc(var(--radius) * 2); background: rgba(255, 255, 255, .03); color: #fff; text-decoration: none; transition: border-color .2s, background .2s; }
+.xf-cohorts a:hover { border-color: rgba(255, 255, 255, .3); background: rgba(255, 255, 255, .07); }
+.xf-cohorts b { display: flex; align-items: center; gap: 6px; font: var(--d-weight) 16px/1.1 var(--f-display); font-stretch: var(--d-stretch); }
+.xf-cohorts span { font-size: 12px; color: var(--dark-muted); }
+.xf-cohorts .is-live { border-color: color-mix(in srgb, var(--highlight) 45%, transparent); }
+.xf-cohorts .is-open span { color: #6fdca3; }
+.xf-cohorts .is-next { border-style: dashed; }
+.xf-person { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 12px; align-items: center; padding: 10px 0; }
+.xf-person img, .xf-person .ph { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; background: var(--dark-2); display: grid; place-items: center; font: 700 14px/1 var(--f-body); color: #fff; }
+.xf-person > span { display: grid; gap: 2px; min-width: 0; }
+.xf-person em { font-style: normal; font-size: 12px; color: var(--dark-muted); }
+.xf-person b { font-size: 15.5px; color: #fff; }
+.xf-acts { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 2px; }
+.xf-acts a { display: inline-flex; align-items: center; gap: 6px; min-width: 0; color: var(--dark-ink); font-size: 13.5px; text-decoration: none; opacity: .85; }
+.xf-acts a:hover { opacity: 1; color: var(--highlight); }
+.xf-acts svg { flex: none; width: 15px; height: 15px; }
+.xf-acts i { overflow: hidden; font-style: normal; white-space: nowrap; text-overflow: ellipsis; }
+.xf-addr { display: flex; gap: 10px; margin: 10px 0 0; font-size: 13.5px; line-height: 1.5; color: var(--dark-muted); }
+.xf-addr svg { flex: none; width: 18px; height: 18px; margin-top: 1px; color: var(--dark-muted); }
+.xf-word { display: block; line-height: 0; padding: 0 clamp(8px, 2vw, 24px); margin-top: clamp(8px, 2vw, 20px); }
+.xf-word svg { display: block; width: 100%; height: auto; }
+.xf-word text { font: var(--d-weight) 132px/1 var(--f-display); font-stretch: var(--d-stretch); letter-spacing: -.02em; }
+.xf-legal { display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; padding: 18px 0 24px; border-top: 1px solid rgba(255, 255, 255, .08); font-size: 13px; color: var(--dark-muted); }
+.xf-legal span:last-child { display: flex; gap: 18px; }
+.xf-legal a { color: var(--dark-muted); text-decoration: none; }
+.xf-legal a:hover { color: #fff; }
+@media (max-width: 960px) {
+  .xf-top { grid-template-columns: 1fr; }
+  .xf-grid { grid-template-columns: 1fr 1fr; }
+  .xf-contact { grid-column: 1 / -1; }
+}
+@media (max-width: 600px) {
+  .xf-grid { grid-template-columns: 1fr; gap: 28px; }
+  .xf-col > a { padding: 8px 0; }
+  .xf-legal { flex-direction: column; padding-bottom: 96px; }
+}

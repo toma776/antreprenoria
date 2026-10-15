@@ -184,4 +184,56 @@ function home2Body(ctx, F) {
 </main>`;
 }
 
-module.exports = { home2Body };
+// footer-ul „2029”: aceeași lume vizuală ca hero-ul; starea live a cohortei, cohortele în casete, oamenii de contact, numele programului la bază
+const ICON = {
+  linkedin: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.5h4V21H3zM9.5 9.5h3.8v1.6h.06c.53-1 1.83-2.06 3.77-2.06 4.03 0 4.77 2.65 4.77 6.1V21h-4v-5.1c0-1.22-.02-2.79-1.7-2.79-1.7 0-1.96 1.33-1.96 2.7V21h-4z"/></svg>',
+  facebook: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 21v-7.5h2.5l.4-3h-2.9V8.6c0-.87.25-1.46 1.5-1.46h1.55V4.47A20 20 0 0 0 14.3 4.3c-2.2 0-3.7 1.34-3.7 3.8v2.4H8.1v3h2.5V21z"/></svg>',
+  mail: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v12H4zM4 7l8 6 8-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>',
+  phone: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 3.5h3l1.5 4-2 1.3a11 11 0 0 0 6.1 6.1l1.3-2 4 1.5v3a2 2 0 0 1-2 2A16.5 16.5 0 0 1 4.6 5.5a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>',
+  pin: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-6.2-6.5-11.2A6.5 6.5 0 0 1 18.5 9.8C18.5 14.8 12 21 12 21z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="10" r="2.3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>',
+};
+function home2Footer(ctx, F, { logo, nav }) {
+  const { D, P } = ctx;
+  const ong = F.ongoing, nx = F.next, t0 = today();
+  const ws = ong ? ong.ateliere.slice().sort((a, b) => (a.data || '9').localeCompare(b.data || '9')) : [];
+  const held = ws.filter((a) => a.data && a.data < t0).length;
+  const team = Object.fromEntries(D.program.contact.echipa.map((p) => [p.id, p]));
+  const recent = D.editii.filter((e) => e.serie === 'București' && (e.ateliere.length || e.participanti.length)).sort((a, b) => b.numar - a.numar).slice(0, 4);
+  const person = (m, label) => (m ? `<div class="xf-person">${face(P[m.id], 96)}<span><em>${label}</em><b>${esc(m.nume)}</b><span class="xf-acts"><a href="mailto:${esc(m.email)}" aria-label="Scrie-i lui ${esc(m.nume)}">${ICON.mail}<i>${esc(m.email)}</i></a>${m.telefon ? `<a href="tel:${esc(m.telefon.replace(/\D/g, ''))}" aria-label="Sună-l pe ${esc(m.nume)}">${ICON.phone}<i>${esc(m.telefon)}</i></a>` : ''}</span></span></div>` : '');
+  return `<footer class="xf" id="subsol">
+  <div class="x-aurora xf-aurora" aria-hidden="true"><i></i><i></i></div>
+  <div class="x-grid" aria-hidden="true"></div>
+  <div class="wrap">
+    <div class="xf-top">
+      <div class="xf-brand">
+        ${logo}
+        <p class="xf-claim">${esc(tx(D, 'footer.mesaj')).replace(/\n/g, '<br>')}</p>
+        <p class="xf-sub">Program al Fundației Romanian Business Leaders, din ${D.program.de_cand}. ${F.maxNr} ${de(F.maxNr)}cohorte în București, plus Cluj.</p>
+        <div class="xf-social"><a href="https://www.linkedin.com/company/antreprenoria" rel="noopener" aria-label="LinkedIn">${ICON.linkedin}</a><a href="https://www.facebook.com/antreprenoria/" rel="noopener" aria-label="Facebook">${ICON.facebook}</a></div>
+      </div>
+      ${ong ? `<a class="xf-live x-glass" href="${edUrl(ong)}#agenda">
+        <span class="xf-live-top"><span class="x-tag"><i class="dot-live"></i>Live</span><span>Cohorta #${ong.numar} · ${held} din ${ws.length} ateliere</span></span>
+        ${nx ? `<b>${esc(cleanTitle(nx.titlu))}</b><span class="xf-live-m">${fmtDay(nx.data)} · ${startOf(nx)}${nx.locatie && nx.locatie !== 'TBD' ? ' · ' + esc(nx.locatie) : ''}</span>` : `<b>${esc(ong.perioada)}</b>`}
+        <span class="x-cc-track">${ws.map((a) => `<i class="${a.data && a.data < t0 ? 'done' : nx && a.id === nx.id ? 'next' : ''}"></i>`).join('')}</span>
+        <em>Vezi agenda ${ARROW}</em>
+      </a>` : ''}
+    </div>
+
+    <div class="xf-grid">
+      <nav class="xf-col" aria-label="Explorează"><h4>Explorează</h4>${nav.map(([t, u]) => `<a href="${u}">${t}</a>`).join('')}<a class="xf-apply" href="/aplica">Aplică ${ARROW}</a></nav>
+      <div class="xf-col"><h4>Cohorte</h4>
+        <div class="xf-cohorts">${recent.map((e) => `<a class="${e === ong ? 'is-live' : ''}" href="${edUrl(e)}"><b>#${e.numar}${e === ong ? '<i class="dot-live"></i>' : ''}</b><span>${esc(e.sezon)} ${e.an}</span></a>`).join('')}${F.cluj ? `<a class="is-open" href="${edUrl(F.cluj)}"><b>Cluj #${F.cluj.numar}</b><span>înscrieri deschise</span></a>` : ''}<a class="is-next" href="/aplica"><b>#${F.maxNr + 1}</b><span>listă de așteptare</span></a></div>
+      </div>
+      <div class="xf-col xf-contact"><h4>Vorbește cu noi</h4>
+        ${person(team['raluca-bedereag'], 'Pentru participanți')}
+        ${person(team['larisa-slavenie'], 'Parteneriate')}
+        <p class="xf-addr">${ICON.pin}<span>Calea Dorobanți 42, et. 3, ap. 5<br>Sector 1, București</span></p>
+      </div>
+    </div>
+  </div>
+  <div class="xf-word" aria-hidden="true"><svg viewBox="0 0 1000 124" preserveAspectRatio="xMidYMax meet"><defs><linearGradient id="xf-g" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="var(--primary)"/><stop offset=".55" stop-color="#ffffff"/><stop offset="1" stop-color="var(--highlight)"/></linearGradient><linearGradient id="xf-f" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".14"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><text x="2" y="122" textLength="996" lengthAdjust="spacingAndGlyphs" fill="url(#xf-f)" stroke="url(#xf-g)" stroke-width="1.2" stroke-opacity=".55">Antreprenoria</text></svg></div>
+  <div class="wrap xf-legal"><span>© ${new Date().getFullYear()} Fundația Romanian Business Leaders</span><span><a href="/confidentialitate">Confidențialitate</a><a href="/termeni-si-conditii">Termeni</a><a href="/politica-cookies">Cookies</a></span></div>
+</footer>`;
+}
+
+module.exports = { home2Body, home2Footer };
