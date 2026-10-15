@@ -1,6 +1,6 @@
 // Liderii (trainerii, antreprenorii invitați și facilitatorii): /lideri (toți, cu filtre) și /lideri/<id> (fișa fiecăruia).
 // Totul vine din agenda atelierelor: ce teme a ținut fiecare, în ce ediții, alături de cine.
-const { esc, initials, fmtDay, today, img } = require('./util');
+const { esc, initials, fmtDay, today, img, de } = require('./util');
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : (n % 100 === 0 || n % 100 >= 20 ? 'de ' : '') + many}`;
 const avatar = (p, w) => (p?.imagine ? `<img src="${esc(img(p.imagine, w))}" alt="" loading="lazy">` : `<span class="ph">${esc(initials(p?.nume || '?'))}</span>`);
@@ -110,7 +110,7 @@ function traineriBody(ctx, F) {
       </div>
       <dl class="tr-stats" aria-label="În cifre">
         <div><dt>${n('antreprenor invitat')}</dt><dd>fondatori și CEO invitați, cu povestea lor</dd></div>
-        <div><dt>${n('trainer')}</dt><dd>traineri, pentru partea aplicată a atelierelor</dd></div>
+        <div><dt>${n('trainer')}</dt><dd>${de(n('trainer'))}traineri, pentru partea aplicată a atelierelor</dd></div>
         <div><dt>${n('facilitator')}</dt><dd>facilitatori pentru atelierele de seară</dd></div>
       </dl>
     </div>
@@ -190,7 +190,7 @@ function trainerBody(ctx, F, id) {
       <p class="ld-k">Compania</p>
       <div class="ld-org-id">${lastOrg?.logo ? `<span class="ld-logo"><img src="${esc(lastOrg.logo)}" alt="" loading="lazy"></span>` : `<span class="ld-logo ld-logo-ph">${esc(initials(orgName))}</span>`}
         <div><h2 id="ld-org-h">${esc(orgName)}</h2>${lastOrg && (lastOrg.sector || (lastOrg.tip && lastOrg.tip !== 'companie')) ? `<span>${esc([lastOrg.tip !== 'companie' ? lastOrg.tip : '', lastOrg.sector].filter(Boolean).join(' · '))}</span>` : ''}</div></div>
-      ${lastOrg?.descriere ? `<p class="ld-org-d">${esc(lastOrg.descriere)}</p>` : `<p class="ld-org-d">${esc(first)} vine la Antreprenoria din partea ${esc(orgName)}. Un bun punct de pornire pentru discuție: ce face compania, pentru cine și cum a ajuns aici.</p>`}
+      ${lastOrg?.descriere ? `<p class="ld-org-d">${esc(tidy(lastOrg.descriere))}</p>` : `<p class="ld-org-d">${esc(first)} vine la Antreprenoria din partea ${esc(orgName)}. Un bun punct de pornire pentru discuție: ce face compania, pentru cine și cum a ajuns aici.</p>`}
       <ul class="ld-org-f">
         ${orgAlumni ? `<li>Companie din comunitatea Antreprenoria · ${plural(lastOrg.participari.length, 'participare', 'participări')}</li>` : ''}
         ${orgPeople.length ? `<li>Tot de acolo: ${orgPeople.slice(0, 3).map((o) => `<a href="${o.aparitii.length ? `/lideri/${esc(o.id)}` : `/comunitate/${esc(o.id)}`}">${esc(o.nume)}</a>`).join(', ')}</li>` : ''}
@@ -259,7 +259,7 @@ function trainerBody(ctx, F, id) {
       <section class="ld-card ld-ws" id="ateliere" aria-labelledby="ld-ws-h">
         <div class="ld-card-h ld-card-row"><div><p class="ld-k">Atelierele</p><h2 id="ld-ws-h">Unde a vorbit</h2></div><span class="ld-span">${esc(span(d.eds))}</span></div>
         <ol class="ld-ws-list">${wsAll.slice(0, SHOW).map(wsRow).join('')}</ol>
-        ${wsAll.length > SHOW ? `<details class="ld-more"><summary><span>Toate cele ${wsAll.length} ateliere</span></summary><ol class="ld-ws-list">${wsAll.slice(SHOW).map(wsRow).join('')}</ol></details>` : ''}
+        ${wsAll.length > SHOW ? `<details class="ld-more"><summary><span>Toate cele ${wsAll.length} ${de(wsAll.length)}ateliere</span></summary><ol class="ld-ws-list">${wsAll.slice(SHOW).map(wsRow).join('')}</ol></details>` : ''}
       </section>
     </div>
 

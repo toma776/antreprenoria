@@ -1,4 +1,7 @@
 /* Interacțiunile site-ului: mega-meniul (desktop: hover/click; mobil: meniu lateral cu acordeon) și testul „Ești potrivit?”. */
+
+// „de” între număr și substantiv: 20 de oameni, 19 oameni
+const deRo = (n) => (n % 100 >= 20 || (n && n % 100 === 0) ? 'de ' : '');
 (() => {
   const $ = (s, el = document) => el.querySelector(s);
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
@@ -380,7 +383,7 @@ const peopleSearch = (() => {
       [...shown, ...cards.filter((c) => !shown.includes(c))].forEach((c) => grid.append(c));
     }
     empty.hidden = shown.length > 0;
-    if (count) count.innerHTML = shown.length === cards.length ? `<b>${cards.length}</b> oameni care au predat în program` : `<b>${shown.length}</b> din ${cards.length}`;
+    if (count) count.innerHTML = shown.length === cards.length ? `<b>${cards.length}</b> ${deRo(cards.length)}oameni care au predat în program` : `<b>${shown.length}</b> din ${cards.length}`;
   };
   const setFilter = (g, b) => { g.querySelectorAll('[data-tr]').forEach((x) => x.classList.toggle('on', x === b)); state[g.dataset.trGroup] = b.dataset.tr; };
   document.querySelectorAll('[data-tr-group]').forEach((g) => g.addEventListener('click', (e) => {
@@ -456,10 +459,11 @@ const peopleSearch = (() => {
     // saltul merge din card în card (rândul are fixare pe carduri, deci ținta trebuie să fie exact începutul unui card)
     const go = (dir) => {
       const x0 = row.getBoundingClientRect().left + parseFloat(getComputedStyle(row).paddingLeft || 0);
-      const pos = items.map((x) => x.getBoundingClientRect().left - x0 + row.scrollLeft);
+      // pozițiile distincte: pe benzile cu două rânduri (logo-urile) două carduri stau unul sub altul, pe aceeași coloană
+      const pos = [...new Set(items.map((x) => Math.round(x.getBoundingClientRect().left - x0 + row.scrollLeft)))].sort((a, b) => a - b);
       // cardul cel mai apropiat de poziția curentă, apoi următorul / anteriorul
       const cur = pos.reduce((b, p, k) => (Math.abs(p - row.scrollLeft) < Math.abs(pos[b] - row.scrollLeft) ? k : b), 0);
-      const i = Math.max(0, Math.min(items.length - 1, cur + dir));
+      const i = Math.max(0, Math.min(pos.length - 1, cur + dir));
       row.scrollTo({ left: pos[i], behavior: 'smooth' });
       // unele browsere ignoră derularea lină pe rândurile cu fixare: atunci sărim direct
       setTimeout(() => { if (Math.abs(row.scrollLeft - pos[i]) > 6) row.scrollTo({ left: pos[i] }); update(); }, 450);
@@ -651,7 +655,7 @@ const cmEngine = (() => {
     const shown = order.filter(ok);
     cards.forEach((c) => { c.hidden = !shown.includes(c); mark(c, r.list ? r.terms : []); });
     [...shown, ...cards.filter((c) => !shown.includes(c))].forEach((c) => grid.append(c));
-    count.innerHTML = `<b>${shown.length}</b> ${shown.length === 1 ? 'membru' : 'membri'}${state.q ? ` pentru „${escH(state.q)}”` : ''}`;
+    count.innerHTML = `<b>${shown.length}</b> ${shown.length === 1 ? 'membru' : (shown.length % 100 >= 20 || (shown.length && shown.length % 100 === 0) ? 'de ' : '') + 'membri'}${state.q ? ` pentru „${escH(state.q)}”` : ''}`;
     note.hidden = !r.partial; if (r.partial) note.textContent = 'Nimeni nu se potrivește pe toate cuvintele. Iată potrivirile parțiale:';
     empty.hidden = shown.length > 0;
     reset.hidden = !state.q && !sels.some((s) => s.value);
@@ -854,7 +858,7 @@ const cmEngine = (() => {
         const ok = (!st.k || c.dataset.k.split(' ').includes(st.k)) && (!st.y || c.dataset.y.split(' ').includes(st.y)) && (!st.q || norm(c.dataset.q).includes(st.q));
         c.hidden = !ok; if (ok) n++;
       });
-      count.textContent = st.k || st.y || st.q ? `${n} din ${cards.length} branduri` : `${cards.length} branduri, de la cele mai implicate`;
+      count.textContent = st.k || st.y || st.q ? `${n} din ${cards.length} ${deRo(cards.length)}branduri` : `${cards.length} ${deRo(cards.length)}branduri, de la cele mai implicate`;
       empty.hidden = n > 0;
     }
     const group = (sel, key) => $$(sel).forEach((b) => b.addEventListener('click', () => { $$(sel).forEach((x) => x.classList.toggle('on', x === b)); st[key] = b.dataset[key]; apply(); }));

@@ -1,12 +1,12 @@
 // Pagina unei ediții (/editii/22, /editii/cluj-1): același limbaj vizual ca homepage-ul.
 // Hero cu progresul ediției, cifre, agenda pe ateliere (cu programul zilei), oamenii, colegii de ediție, ce include, parteneri.
 // Cifrele de afaceri ale participanților apar doar agregat (interval, mediană), niciodată per companie.
-const { esc, initials, milLei, fmtDay, today, median, quantile, img, logoImg } = require('./util');
+const { esc, initials, milLei, fmtDay, today, median, quantile, img, logoImg, de } = require('./util');
 
 const DAY = 864e5;
 const days = (a, b) => Math.round((new Date(b + 'T12:00') - new Date(a + 'T12:00')) / DAY);
 const cap = (s) => String(s || '').replace(/(^|[.!?]\s+)(\p{Ll})/gu, (m, a, b) => a + b.toUpperCase());
-const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+const plural = (n, one, many) => `${n} ${n === 1 ? one : (n % 100 === 0 || n % 100 >= 20 ? 'de ' : '') + many}`;
 const pluralDe = (n, one, many) => `${n} ${n === 1 ? one : (n % 100 === 0 || n % 100 >= 20 ? 'de ' : '') + many}`;
 const avatar = (p, cls = '') => (p?.imagine ? `<img class="${cls}" src="${esc(img(p.imagine))}" alt="" loading="lazy">` : `<span class="${cls} ph">${esc(initials(p?.nume || '?'))}</span>`);
 const edUrl = (e) => (e.serie === 'Cluj' ? `/editii/cluj-${e.numar}` : `/editii/${e.numar}`);
@@ -101,8 +101,8 @@ function editionBody(ctx, F, e) {
         </div>
       </div>
       <aside class="ed-live" aria-label="Progresul ediției">
-        <div class="ed-live-top"><span>${STATE[1] === 'live' ? '<i class="dot-live"></i>' : ''}${dated.length ? 'Progresul ediției' : 'Ediția pe scurt'}</span><span>${dated.length ? `${held.length} din ${ws.length} întâlniri` : esc(e.perioada)}</span></div>
-        ${dated.length ? '' : '<!--'}<div class="ed-progress" role="img" aria-label="${held.length} din ${ws.length} întâlniri ținute">${ws.map((a) => `<i class="${a.data && a.data < t0 ? 'done' : next && a.id === next.id ? 'next' : ''}" title="${esc(cleanTitle(a.titlu))}"></i>`).join('')}</div>${dated.length ? '' : '-->'}
+        <div class="ed-live-top"><span>${STATE[1] === 'live' ? '<i class="dot-live"></i>' : ''}${dated.length ? 'Progresul ediției' : 'Ediția pe scurt'}</span><span>${dated.length ? `${held.length} din ${ws.length} ${de(ws.length)}întâlniri` : esc(e.perioada)}</span></div>
+        ${dated.length ? '' : '<!--'}<div class="ed-progress" role="img" aria-label="${held.length} din ${ws.length} ${de(ws.length)}întâlniri ținute">${ws.map((a) => `<i class="${a.data && a.data < t0 ? 'done' : next && a.id === next.id ? 'next' : ''}" title="${esc(cleanTitle(a.titlu))}"></i>`).join('')}</div>${dated.length ? '' : '-->'}
         ${next ? `<div class="ed-next">
           <span class="ask-kicker">Următoarea întâlnire · ${when}</span>
           <b>${esc(cleanTitle(next.titlu))}</b>
@@ -123,12 +123,12 @@ function editionBody(ctx, F, e) {
 
   // ---------- cifre ----------
   const stats = `<section class="proof"><div class="wrap proof-in">
-    <div class="stat"><b><span data-count="${ws.length}">${ws.length}</span></b><span>întâlniri, din care ${fullDay} ateliere full-day</span></div>
-    <div class="stat"><b><span data-count="${people.length}">${people.length}</span></b><span>traineri și antreprenori invitați</span></div>
-    ${part.length ? `<div class="stat"><b><span data-count="${part.length}">${part.length}</span></b><span>participanți din ${plural(companies.size, 'companie', 'companii')}</span></div>`
+    <div class="stat"><b><span data-count="${ws.length}">${ws.length}</span></b><span>${de(ws.length)}întâlniri, din care ${fullDay} ${de(fullDay)}ateliere full-day</span></div>
+    <div class="stat"><b><span data-count="${people.length}">${people.length}</span></b><span>${de(people.length)}traineri și antreprenori invitați</span></div>
+    ${part.length ? `<div class="stat"><b><span data-count="${part.length}">${part.length}</span></b><span>${de(part.length)}participanți din ${plural(companies.size, 'companie', 'companii')}</span></div>`
       : `<div class="stat"><b>~<span data-count="25">25</span></b><span>locuri, pentru antreprenori selectați</span></div>`}
     ${ca.filter(Boolean).length >= 5 ? `<div class="stat"><b><span data-count="${(median(ca) / 1e6).toFixed(1)}" data-dec="1">${milLei(median(ca))}</span><em> mil. lei</em></b><span>cifra de afaceri mediană a companiilor participante</span></div>` : ''}
-    ${sectorList.length ? `<div class="stat"><b><span data-count="${sectorList.length}">${sectorList.length}</span></b><span>sectoare de activitate</span></div>` : ''}
+    ${sectorList.length ? `<div class="stat"><b><span data-count="${sectorList.length}">${sectorList.length}</span></b><span>${de(sectorList.length)}sectoare de activitate</span></div>` : ''}
     ${!part.length && price ? `<div class="stat"><b><span data-count="${price.pret}">${price.pret.toLocaleString('ro-RO')}</span><em> lei</em></b><span>+ TVA, taxa de participare${price.nota ? ' · ' + esc(price.nota.toLowerCase().replace(/\.$/, '')) : ''}</span></div>` : ''}
   </div></section>`;
 
@@ -186,8 +186,8 @@ function editionBody(ctx, F, e) {
     <div class="alumni-grid">
       <div class="figures">
         ${ca.filter(Boolean).length >= 5 ? `<div class="fig"><b>${milLei(quantile(ca, 0.25))}–${milLei(quantile(ca, 0.75))}<em> mil. lei</em></b><span>cifra de afaceri a jumătății „de mijloc” a companiilor</span></div>` : ''}
-        ${ang.filter(Boolean).length >= 5 ? `<div class="fig"><b><span data-count="${median(ang)}">${median(ang)}</span></b><span>angajați, la mediană</span></div>` : ''}
-        <div class="fig"><b><span data-count="${companies.size}">${companies.size}</span></b><span>companii</span></div>
+        ${ang.filter(Boolean).length >= 5 ? `<div class="fig"><b><span data-count="${median(ang)}">${median(ang)}</span></b><span>${de(median(ang))}angajați, la mediană</span></div>` : ''}
+        <div class="fig"><b><span data-count="${companies.size}">${companies.size}</span></b><span>${de(companies.size)}companii</span></div>
       </div>
       <div class="sectors">${sectorList.slice(0, 9).map(([s, n]) => `<div class="sector"><span>${esc(s)}</span><i style="--w:${(n / maxSector) * 100}%"></i><b>${n}</b></div>`).join('')}</div>
     </div>
@@ -230,7 +230,7 @@ function editionBody(ctx, F, e) {
       ${prev ? `<a href="${edUrl(prev)}"><span>← Ediția anterioară</span><b>${esc(edLabel(prev))}</b><small>${esc(prev.perioada)} · ${plural(prev.participanti.length, 'participant', 'participanți')}</small></a>` : ''}
       ${nextEd ? `<a href="${edUrl(nextEd)}"><span>Ediția următoare →</span><b>${esc(edLabel(nextEd))}</b><small>${esc(nextEd.perioada)}</small></a>`
         : e.serie === 'București' ? `<a href="/aplica"><span>Ediția următoare →</span><b>#${e.numar + 1}</b><small>listă de așteptare</small></a>` : ''}
-      <a class="ed-nav-all" href="/editii"><span>Arhiva</span><b>Toate edițiile</b><small>${F.maxNr} ediții în București din ${D.program.de_cand}, plus Cluj</small></a>
+      <a class="ed-nav-all" href="/editii"><span>Arhiva</span><b>Toate edițiile</b><small>${F.maxNr} ${de(F.maxNr)}ediții în București din ${D.program.de_cand}, plus Cluj</small></a>
     </nav>
   </div></section>`;
 
@@ -257,9 +257,9 @@ function editionBody(ctx, F, e) {
           <div class="ed-live-top"><span>Ediția în cifre</span><span>${esc(e.perioada)}</span></div>
           <dl class="ed-figs">
             <div><dt>Întâlniri</dt><dd>${ws.length}</dd><small>${fullDay} full-day</small></div>
-            <div><dt>Traineri și invitați</dt><dd>${people.length}</dd><small>${trainers} traineri</small></div>
+            <div><dt>Traineri și invitați</dt><dd>${people.length}</dd><small>${trainers} ${de(trainers)}traineri</small></div>
             <div><dt>Participanți</dt><dd>${part.length}</dd><small>${plural(companies.size, 'companie', 'companii')}</small></div>
-            ${ca.filter(Boolean).length >= 5 ? `<div><dt>CA mediană</dt><dd>${milLei(median(ca))}<em> mil. lei</em></dd><small>${median(ang) ? `${median(ang)} angajați, la mediană` : ''}</small></div>` : ''}
+            ${ca.filter(Boolean).length >= 5 ? `<div><dt>CA mediană</dt><dd>${milLei(median(ca))}<em> mil. lei</em></dd><small>${median(ang) ? `${median(ang)} ${de(median(ang))}angajați, la mediană` : ''}</small></div>` : ''}
           </dl>
           ${topSectors.length ? `<div class="ed-sum-sec"><span>Sectoare</span>${topSectors.map(([s, n]) => `<em>${esc(s)} · ${n}</em>`).join('')}${sectorList.length > 4 ? `<em>+${sectorList.length - 4}</em>` : ''}</div>` : ''}
         </aside>

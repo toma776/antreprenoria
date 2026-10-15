@@ -1,6 +1,6 @@
 // Curriculum-ul: /teme (matricea, temele principale, atelierele de seară) și /teme/<id> pentru cele 5 teme full-day.
 // Totul vine din atelierele edițiilor din creier: cine a predat tema, când, sub ce titlu, cu ce sponsor.
-const { esc, initials, fmtDay, today, img, logoImg } = require('./util');
+const { esc, initials, fmtDay, today, img, logoImg, de } = require('./util');
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : (n % 100 === 0 || n % 100 >= 20 ? 'de ' : '') + many}`;
 const avatar = (p) => (p?.imagine ? `<img src="${esc(img(p.imagine))}" alt="" loading="lazy">` : `<span class="ph">${esc(initials(p?.nume || '?'))}</span>`);
@@ -107,7 +107,7 @@ function temaBody(ctx, F, id) {
   <section class="cta-band"><div class="wrap cta-band-in">
     <div class="cta-band-copy">
       <p class="eyebrow">Curriculum</p>
-      <h2>Una din cele ${fullDay.length} teme ale fiecărei ediții.</h2>
+      <h2>Una din cele ${fullDay.length} ${de(fullDay.length)}teme ale fiecărei ediții.</h2>
       <p>Fiecare ediție le parcurge pe toate, în trei luni, cu ateliere de seară între ele.</p>
       <div class="hero-actions"><a class="btn btn-light btn-lg" href="/aplica">Aplică</a><a class="btn btn-outline-light btn-lg" href="/teme">Tot curriculum-ul</a></div>
     </div>
@@ -132,14 +132,14 @@ function temeBody(ctx, F) {
     <div class="hero-split">
       <div class="hero-copy">
         <p class="eyebrow">Curriculum</p>
-        <h1>Cinci teme full-day, aceleași de ${fullDay[0].editii.length} ediții încoace.</h1>
+        <h1>Cinci teme full-day, aceleași de ${fullDay[0].editii.length} ${de(fullDay[0].editii.length)}ediții încoace.</h1>
         <p class="lead">Viziunea, modelul de business, marketingul, vânzările și cultura organizației: fiecare cu un trainer dimineața și doi antreprenori după-amiaza. Între ele, ateliere de seară care s-au schimbat de la o ediție la alta.</p>
       </div>
       <aside class="pg-glance" aria-label="Curriculum în cifre">
         <div class="ed-live-top"><span>În cifre</span><span>edițiile ${edLabel(order.find((e) => e.serie === 'București'))}–${edLabel(order.filter((e) => e.serie === 'București').slice(-1)[0])}</span></div>
         <dl>
-          <div><dt>${D.teme.length} teme</dt><dd>${fullDay.length} full-day, ${evening.filter((t) => t.format === 'seară').length} de seară, plus petrecerea de final</dd></div>
-          <div><dt>${D.editii.reduce((n, e) => n + e.ateliere.length, 0)} ateliere</dt><dd>în ${plural(D.editii.length, 'ediție', 'ediții')} din arhivă</dd></div>
+          <div><dt>${D.teme.length} ${de(D.teme.length)}teme</dt><dd>${fullDay.length} full-day, ${evening.filter((t) => t.format === 'seară').length} de seară, plus petrecerea de final</dd></div>
+          <div><dt>${D.editii.reduce((n, e) => n + e.ateliere.length, 0)} ${de(D.editii.reduce((n, e) => n + e.ateliere.length, 0))}ateliere</dt><dd>în ${plural(D.editii.length, 'ediție', 'ediții')} din arhivă</dd></div>
           <div><dt>${D.oameni.filter((p) => p.aparitii.length).length} de oameni</dt><dd>traineri, antreprenori invitați și facilitatori</dd></div>
         </dl>
       </aside>

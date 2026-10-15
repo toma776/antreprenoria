@@ -1,7 +1,7 @@
 // Comunitatea: /comunitate (toți alumnii edițiilor încheiate: căutare după nevoie, explorare, director) și /comunitate/<id> (doar profilurile completate).
 // Un participant intră în comunitate când ediția lui se încheie; până atunci apare doar pe pagina ediției.
 // Cifrele de business apar numai agregat, niciodată pe om sau pe companie.
-const { esc, initials, img, milLei, slug, logoImg } = require('./util');
+const { esc, initials, img, milLei, slug, logoImg, de, tidy } = require('./util');
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : (n % 100 === 0 || n % 100 >= 20 ? 'de ' : '') + many}`;
 const avatar = (src, nume, w) => (src ? `<img src="${esc(img(src, w))}" alt="" loading="lazy">` : `<span class="ph">${esc(initials(nume || '?'))}</span>`);
@@ -30,7 +30,7 @@ function alumniData(ctx) {
   const L = [...by.values()].map((a) => {
     const last = a.parts[a.parts.length - 1], o = O[last.organizatie];
     // ce face: descrierea companiei din înscriere, altfel cea din registrul de companii
-    const desc = (last.descriere || o?.descriere || '').trim();
+    const desc = tidy(last.descriere || o?.descriere || '').trim();
     return { ...a, nume: a.p?.nume || a.nume, imagine: a.p?.imagine || last.imagine, org: o, sector: o?.sector || null, oras: o?.oras || null, desc, oferta: (a.p?.oferta || []).filter(Boolean), pentru: (a.p?.pentru_cine || []).filter(Boolean),
       fn: (a.p?.functii || []).filter((f) => f && f !== 'Trainer').slice(-1)[0] || '', page: hasPage(a.p) || desc.length > 40, speaker: !!a.p?.aparitii?.length };
   }).sort((x, y) => eds.indexOf(y.eds[y.eds.length - 1]) - eds.indexOf(x.eds[x.eds.length - 1]) || x.nume.localeCompare(y.nume, 'ro'));
@@ -104,10 +104,10 @@ function alumniBody(ctx, F, sel = {}) {
       <div class="cm-ideas" aria-label="Căutări sugerate"><span>Încearcă:</span>${ideas(d.L).map((w) => `<button type="button" data-idea="${esc(w)}">${esc(w)}</button>`).join('')}</div>
     </div>
     <dl class="cm-kpis" aria-label="Comunitatea în cifre">
-      <div><dt>${d.L.length}</dt><dd>antreprenori</dd></div>
-      <div><dt>${d.companies}</dt><dd>companii</dd></div>
-      <div><dt>${d.sectors.length}</dt><dd>industrii</dd></div>
-      <div><dt>${d.eds.length}</dt><dd>ediții încheiate</dd></div>
+      <div><dt>${d.L.length}</dt><dd>${de(d.L.length)}antreprenori</dd></div>
+      <div><dt>${d.companies}</dt><dd>${de(d.companies)}companii</dd></div>
+      <div><dt>${d.sectors.length}</dt><dd>${de(d.sectors.length)}industrii</dd></div>
+      <div><dt>${d.eds.length}</dt><dd>${de(d.eds.length)}ediții încheiate</dd></div>
     </dl></div>
   </div></section>
 
@@ -136,7 +136,7 @@ function alumniBody(ctx, F, sel = {}) {
       <label class="cm-sel"><span>Ediție</span><select data-f="ed" data-param="editie"><option value="">Toate</option>${d.eds.slice().reverse().map((e) => `<option value="${esc(e.id)}" data-q="${esc(String(e.numar))}" ${selE === e.id ? 'selected' : ''}>${esc(edLabel(e))} · ${esc(e.sezon)} ${e.an}</option>`).join('')}</select></label>
       ${d.cities.length ? `<label class="cm-sel"><span>Oraș</span><select data-f="city" data-param="oras"><option value="">Toate</option>${d.cities.map(([c, n]) => `<option value="${esc(c)}" data-q="${esc(slug(c))}">${esc(c)} (${n})</option>`).join('')}</select></label>` : ''}
     </div>
-    <div class="cm-status"><p class="cm-count" aria-live="polite"><b>${nShown}</b> ${nShown === 1 ? 'membru' : 'membri'}</p><button class="cm-reset" type="button" ${selS || selE ? '' : 'hidden'}>Șterge filtrele</button></div>
+    <div class="cm-status"><p class="cm-count" aria-live="polite"><b>${nShown}</b> ${nShown === 1 ? 'membru' : de(nShown) + 'membri'}</p><button class="cm-reset" type="button" ${selS || selE ? '' : 'hidden'}>Șterge filtrele</button></div>
     <p class="cm-note" hidden></p>
     <div class="cm-grid">${d.L.map(card).join('')}</div>
     <div class="cm-empty" ${nShown ? 'hidden' : ''}><b>Nimic încă pentru căutarea asta.</b><span>Spune-ne ce cauți: echipa întreabă în comunitate și revine cu un om potrivit.</span>${mail ? `<a class="btn btn-primary" href="mailto:${esc(mail)}?subject=${encodeURIComponent('Caut în comunitatea Antreprenoria')}">Cere o recomandare</a>` : ''}</div>
@@ -158,7 +158,7 @@ function alumniBody(ctx, F, sel = {}) {
       <div class="cm-bars">${d.bands.map((b) => `<div class="cm-band"><span>${esc(b.label)}</span><i style="--w:${(b.n / maxBand) * 100}%"></i><b>${b.n}</b></div>`).join('')}</div>
       <dl>
         ${d.medianCa ? `<div><dt>${milLei(d.medianCa)} mil. lei</dt><dd>cifra de afaceri mediană</dd></div>` : ''}
-        ${d.medianAng ? `<div><dt>${d.medianAng}</dt><dd>angajați la mediană</dd></div>` : ''}
+        ${d.medianAng ? `<div><dt>${d.medianAng}</dt><dd>${de(d.medianAng)}angajați la mediană</dd></div>` : ''}
       </dl>
       <p class="cm-fine">Cifrele sunt doar agregate: nu publicăm cifra de afaceri a niciunei companii.</p>
     </aside>
@@ -244,7 +244,7 @@ function alumnusBody(ctx, F, id, opt = {}) {
       </div>
       <dl class="ld-kpi" aria-label="Pe scurt">
         <div><dt>${esc(edLabel(last))}</dt><dd>${esc(last.sezon)} ${last.an}</dd></div>
-        <div><dt>${nWs}</dt><dd>ateliere parcurse</dd></div>
+        <div><dt>${nWs}</dt><dd>${de(nWs)}ateliere parcurse</dd></div>
         <div><dt>${colleagues.length}</dt><dd>colegi de ediție</dd></div>
         <div><dt>${sameSector.length}</dt><dd>${a.sector ? 'în aceeași industrie' : 'în comunitate'}</dd></div>
       </dl>

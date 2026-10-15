@@ -1,7 +1,7 @@
 // /parteneri: pagina pentru brandurile care vor un program de CSR cu impact („Cresc antreprenorii, crește România”)
 // și inventarul brandurilor care au susținut programul. Totul vine din ediții: partenerii din antetul fiecărei ediții,
 // sponsorii și gazdele din ateliere, cifrele din participanți (doar agregate).
-const { esc, fmtDay, today, median } = require('./util');
+const { esc, fmtDay, today, median, de, tidy } = require('./util');
 const { implicareDialog } = require('./implicare');
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : (n % 100 === 0 || n % 100 >= 20 ? 'de ' : '') + many}`;
@@ -106,10 +106,10 @@ function parteneriBody(ctx, F) {
 
   // roata: antreprenorii cresc -> companiile cresc -> crește România -> cresc brandurile
   const FW = [
-    ['Cresc antreprenorii', `~${nr(I.antreprenori)}`, `de antreprenori în ${I.nEd} ediții, din ${I.de_cand}`],
-    ['Cresc companiile', nr(I.sumAng), `de angajați în companiile din ultimele ${I.nDocEds} ediții`],
+    ['Cresc antreprenorii', `~${nr(I.antreprenori)}`, `de antreprenori în ${I.nEd} ${de(I.nEd)}ediții, din ${I.de_cand}`],
+    ['Cresc companiile', nr(I.sumAng), `de angajați în companiile din ultimele ${I.nDocEds} ${de(I.nDocEds)}ediții`],
     ['Crește România', `${mld(I.sumCa)} mld.`, 'lei cifră de afaceri cumulată a acelorași companii'],
-    ['Cresc brandurile', String(d.all.length), `de branduri au fost alături de program${d.ciclu.length ? `, ${d.ciclu.length} chiar din alumni` : ''}`],
+    ['Cresc brandurile', String(d.all.length), `${de(d.all.length)}branduri au fost alături de program${d.ciclu.length ? `, ${d.ciclu.length} chiar din alumni` : ''}`],
   ];
 
   const cfg = {
@@ -127,12 +127,12 @@ function parteneriBody(ctx, F) {
 
   const brandDetail = (x) => { const o = x.o, th = [...new Set(x.ws.map(({ a }) => a.tema).filter(Boolean))].map((t) => T[t]).filter(Boolean);
     const rows = x.eds.slice().sort((a, b) => a.an - b.an || (a.sezon === 'primăvară' ? -1 : 1)).map((e) => {
-      const r = [...x.roles.filter((y) => y.e === e).map((y) => ROL[y.rol] || y.rol), ...(x.hostEds.includes(e) ? ['Gazdă'] : []), ...[x.ws.filter((w) => w.e === e).map(({ a }) => cleanTitle(a.titlu))].filter((t) => t.length).map((t) => `${t.length === 1 ? 'Sponsor atelier' : `Sponsor la ${t.length} ateliere`}: ${t.join(', ')}`)];
+      const r = [...x.roles.filter((y) => y.e === e).map((y) => ROL[y.rol] || y.rol), ...(x.hostEds.includes(e) ? ['Gazdă'] : []), ...[x.ws.filter((w) => w.e === e).map(({ a }) => cleanTitle(a.titlu))].filter((t) => t.length).map((t) => `${t.length === 1 ? 'Sponsor atelier' : `Sponsor la ${t.length} ${de(t.length)}ateliere`}: ${t.join(', ')}`)];
       return `<li><a href="${edUrl(e)}">${esc(edLabel(e))}</a><span>${esc(e.an)} ${esc(e.sezon || '')}</span><em>${r.map(esc).join(' · ')}</em></li>`; }).join('');
     return `<template data-br="${esc(o.id)}">
       <div class="sp-dt-top"><span class="sp-dt-logo">${logoOnly(o)}</span><div><h3>${esc(o.nume)}</h3><p>${esc([o.tip, o.sector].filter(Boolean).join(' · '))}</p>
         <div class="sp-dt-tags">${x.kinds.map((k) => `<span class="sp-tag k-${k}">${{ partener: 'Partener de ediție', sponsor: 'Sponsor de atelier', gazda: 'Gazdă', alumni: 'Din alumni' }[k]}</span>`).join('')}</div></div></div>
-      ${o.descriere ? `<p class="sp-dt-desc">${esc(o.descriere.length > 320 ? o.descriere.slice(0, 317).replace(/\s+\S*$/, '') + '…' : o.descriere)}</p>` : ''}
+      ${o.descriere ? `<p class="sp-dt-desc">${esc(tidy(o.descriere).length > 320 ? tidy(o.descriere).slice(0, 317).replace(/\s+\S*$/, '') + '…' : tidy(o.descriere))}</p>` : ''}
       ${o.ciclu && d.byId[o.ciclu.alumni_din] ? `<p class="sp-dt-cyc">A trecut prin program ca participant în ediția ${esc(edLabel(d.byId[o.ciclu.alumni_din]))} și s-a întors ca partener.</p>` : ''}
       <h4>Alături de program</h4><ul class="sp-dt-eds">${rows}</ul>
       ${th.length ? `<div class="sp-dt-th">${th.map((t) => (FULL.includes(t.id) ? `<a href="/teme/${esc(t.id)}">${esc(t.nume)}</a>` : `<span>${esc(t.nume)}</span>`)).join('')}</div>` : ''}
@@ -150,13 +150,13 @@ function parteneriBody(ctx, F) {
       <div class="sp-hero-copy">
         <p class="eyebrow">Parteneriate CSR · din ${I.de_cand}</p>
         <h1>Cresc antreprenorii. Crește România. <em>Crește și brandul tău.</em></h1>
-        <p class="lead">Antreprenoria e cel mai longeviv program RBL pentru antreprenori: ${I.ani} ani, ${I.nEd} de ediții, ~${nr(I.antreprenori)} de fondatori. Un parteneriat aici nu e un logo pe un banner, ci o zi întreagă cu oamenii care angajează, investesc și plătesc taxe în România.</p>
+        <p class="lead">Antreprenoria e cel mai longeviv program RBL pentru antreprenori: ${I.ani} ${de(I.ani)}ani, ${I.nEd} ${de(I.nEd)}ediții, ~${nr(I.antreprenori)} de fondatori. Un parteneriat aici nu e un logo pe un banner, ci o zi întreagă cu oamenii care angajează, investesc și plătesc taxe în România.</p>
         <div class="hero-actions"><a class="btn btn-primary btn-lg sp-cta" href="?implicare=sponsorizare#vreau" data-implica="sponsorizare">Vreau și eu <span aria-hidden="true">→</span></a><a class="btn btn-outline-light btn-lg" href="#construieste">Construiește-ți parteneriatul</a></div>
         <dl class="sp-hero-figs">
-          <div><dt data-to="${I.ani}">${I.ani}</dt><dd>ani</dd></div>
-          <div><dt data-to="${I.nEd}">${I.nEd}</dt><dd>ediții</dd></div>
-          <div><dt data-to="${I.antreprenori}">${nr(I.antreprenori)}</dt><dd>antreprenori</dd></div>
-          <div><dt data-to="${d.nWs}">${d.nWs}</dt><dd>ateliere sponsorizate</dd></div>
+          <div><dt data-to="${I.ani}">${I.ani}</dt><dd>${de(I.ani)}ani</dd></div>
+          <div><dt data-to="${I.nEd}">${I.nEd}</dt><dd>${de(I.nEd)}ediții</dd></div>
+          <div><dt data-to="${I.antreprenori}">${nr(I.antreprenori)}</dt><dd>${de(nr(I.antreprenori))}antreprenori</dd></div>
+          <div><dt data-to="${d.nWs}">${d.nWs}</dt><dd>${de(d.nWs)}ateliere sponsorizate</dd></div>
         </dl>
       </div>
       <div class="sp-fw" aria-label="Cum crește totul împreună">
@@ -180,7 +180,7 @@ function parteneriBody(ctx, F) {
     <div class="sec-head"><p class="eyebrow">De ce Antreprenoria</p><h2>Nu sponsorizezi un eveniment. Investești în cei care țin economia în mișcare.</h2></div>
     <div class="sp-why">
       <article><b>${mil(I.medCa)} <em>mil. lei</em></b><h3>Decidenți, nu curioși</h3><p>Cifra de afaceri a participantului tipic, cu ${plural(Math.round(I.medAng), 'angajat', 'angajați')}. În sală stau fondatori și manageri selectați, care decid.</p></article>
-      <article><b>${mld(I.sumCa)} <em>mld. lei</em></b><h3>Economia reală</h3><p>Cifra de afaceri cumulată a celor ${nr(I.nPart)} de companii din ultimele ${I.nDocEds} ediții, cu ${nr(I.sumAng)} de angajați.</p></article>
+      <article><b>${mld(I.sumCa)} <em>mld. lei</em></b><h3>Economia reală</h3><p>Cifra de afaceri cumulată a celor ${nr(I.nPart)} de companii din ultimele ${I.nDocEds} ${de(I.nDocEds)}ediții, cu ${nr(I.sumAng)} de angajați.</p></article>
       <article><b>${GRUPA} <em>× o zi</em></b><h3>Timp, nu impresii</h3><p>O grupă mică, o zi întreagă de lucru aplicat pe o temă. Brandul tău e asociat cu problema pe care o rezolvă.</p></article>
       <article><b>${d.ciclu.length || d.all.length}</b><h3>${d.ciclu.length ? 'Alumni deveniți parteneri' : 'Branduri alături de noi'}</h3><p>${d.ciclu.length ? 'Companii care au trecut prin program ca participanți și s-au întors să-l susțină. Comunitatea crește și dă înapoi.' : 'Companii care au susținut programul ediție cu ediție.'}</p></article>
     </div>
@@ -204,7 +204,7 @@ function parteneriBody(ctx, F) {
       <aside class="sp-out">
         <div class="sp-out-top"><span>Impactul tău</span><b class="sp-out-rol">Sponsor de atelier</b></div>
         <div class="sp-out-figs" aria-live="polite">
-          <div><b data-o="ant">${GRUPA}</b><span>antreprenori în sală</span></div>
+          <div><b data-o="ant">${GRUPA}</b><span>${de(GRUPA)}antreprenori în sală</span></div>
           <div><b data-o="ore">–</b><span>ore de lucru aplicat, cumulat</span></div>
           <div><b data-o="ca">–</b><span>cifra de afaceri a companiilor din sală</span></div>
           <div><b data-o="ang">–</b><span>angajați în aceste companii</span></div>
@@ -212,7 +212,7 @@ function parteneriBody(ctx, F) {
         <p class="sp-out-h">Ce primește brandul tău</p>
         <ul class="sp-out-ben"></ul>
         <a class="btn btn-light btn-lg sp-out-cta" href="?implicare=sponsorizare#vreau">Vreau asta <span aria-hidden="true">→</span></a>
-        <p class="sp-out-note">Estimare pe media companiilor din ultimele ${I.nDocEds} ediții. Primești propunerea și contractul pe email; ne vedem doar dacă vrei.</p>
+        <p class="sp-out-note">Estimare pe media companiilor din ultimele ${I.nDocEds} ${de(I.nDocEds)}ediții. Primești propunerea și contractul pe email; ne vedem doar dacă vrei.</p>
       </aside>
     </div>
   </div></section>

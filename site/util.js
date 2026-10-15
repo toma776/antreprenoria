@@ -25,4 +25,8 @@ const img = (u, w = 384) => {
   return `/_vercel/image?url=${encodeURIComponent(u)}&w=${size}&q=75`;
 };
 
-module.exports = { esc, today, MONTHS, fmtDay, median, quantile, milLei, initials, slug, img, logoImg };
+// „de” cerut de gramatică între număr și substantiv: 20 de ediții, 101 ediții, 120 de ediții (n poate fi și „1.234”)
+const de = (n) => { const v = typeof n === 'number' ? Math.round(n) : Number(String(n).replace(/[^\d]/g, '')); return Number.isFinite(v) && (v % 100 === 0 ? v > 0 : v % 100 >= 20) ? 'de ' : ''; };
+// textele preluate (descrieri): fără spațiu înaintea semnelor de punctuație
+const tidy = (s) => String(s ?? '').replace(/\s+([,.;:!?])/g, '$1');
+module.exports = { de, tidy, esc, today, MONTHS, fmtDay, median, quantile, milLei, initials, slug, img, logoImg };

@@ -1,6 +1,6 @@
 // Meniul principal (mega-meniu): fiecare secțiune a site-ului deschide un panou cu tot ce conține,
 // generat din creier. Pe desktop panourile se deschid la hover sau click; pe mobil devin acordeon într-un meniu lateral.
-const { img, slug } = require('./util');
+const { img, slug, de } = require('./util');
 const { alumniData, ideas, connectMail } = require('./alumni');
 const { everyone } = require('./traineri');
 const { partnersData } = require('./parteneri');
@@ -50,7 +50,7 @@ function community(ctx, AL) {
     <div class="mmc-explore">
       <h3 class="mm-h">Pe industrii</h3>
       <div class="mmc-sectors">${sec.map(([s, n]) => `<a href="/comunitate?sector=${esc(slug(s))}#lista"><span>${esc(s)}</span><i style="--w:${Math.round((n / max) * 100)}%"></i><b>${n}</b></a>`).join('')}</div>
-      <a class="mm-all" href="/comunitate#exploreaza">Toate cele ${AL.sectors.length} industrii →</a>
+      <a class="mm-all" href="/comunitate#exploreaza">Toate cele ${AL.sectors.length} ${de(AL.sectors.length)}industrii →</a>
       <h3 class="mm-h mmc-h2">Pe ediții</h3>
       <div class="mmc-eds">${AL.eds.slice().reverse().map((e) => `<a href="/comunitate?editie=${e.numar}#lista"><b>${esc(edLabel(e))}</b><span>${e.participanti.length}</span></a>`).join('')}</div>
     </div>
@@ -59,7 +59,7 @@ function community(ctx, AL) {
       <span class="mmc-wall-tx">
         <span class="mm-kicker">Toată comunitatea</span>
         <b>${AL.L.length} de antreprenori, ${AL.companies} de companii</b>
-        <span class="mm-sub">din ${AL.sectors.length} industrii și ${AL.eds.length} ediții încheiate, fiecare cu ce face și ce oferă</span>
+        <span class="mm-sub">din ${AL.sectors.length} ${de(AL.sectors.length)}industrii și ${AL.eds.length} ${de(AL.eds.length)}ediții încheiate, fiecare cu ce face și ce oferă</span>
         <span class="mm-more">Intră în comunitate →</span>
       </span>
     </a>
@@ -114,36 +114,36 @@ function panels(ctx, F) {
     { id: 'editii', title: 'Ediții', href: '/editii', intro: `Două ediții pe an în București, plus Cluj.`,
       cols: [
         col('Acum', [
-          ong ? link(edUrl(ong), `Antreprenoria #${ong.numar}`, `${esc(ong.perioada)} · ${held} din ${ong.ateliere.length} ateliere ținute`, `<em class="mm-badge live">în desfășurare</em>`) : '',
-          F.cluj ? link(edUrl(F.cluj), `Antreprenoria Cluj #${F.cluj.numar}`, `${esc(F.cluj.perioada)} · ${F.cluj.ateliere.length} ateliere`, `<em class="mm-badge open">înscrieri deschise</em>`) : '',
+          ong ? link(edUrl(ong), `Antreprenoria #${ong.numar}`, `${esc(ong.perioada)} · ${held} din ${ong.ateliere.length} ${de(ong.ateliere.length)}ateliere ținute`, `<em class="mm-badge live">în desfășurare</em>`) : '',
+          F.cluj ? link(edUrl(F.cluj), `Antreprenoria Cluj #${F.cluj.numar}`, `${esc(F.cluj.perioada)} · ${F.cluj.ateliere.length} ${de(F.cluj.ateliere.length)}ateliere`, `<em class="mm-badge open">înscrieri deschise</em>`) : '',
           link('/aplica', `Antreprenoria #${F.maxNr + 1}`, 'Următoarea ediție din București', '<em class="mm-badge">listă de așteptare</em>'),
         ].join('')),
-        col('Arhiva', `<div class="mm-editions">${editii.filter((e) => !e.deschisa).map((e) => `<a href="${esc(edUrl(e))}"><b>${esc(edLabel(e))}</b><span>${esc(e.sezon)} ${e.an}</span><small>${e.participanti.length} participanți</small></a>`).join('')}</div>
+        col('Arhiva', `<div class="mm-editions">${editii.filter((e) => !e.deschisa).map((e) => `<a href="${esc(edUrl(e))}"><b>${esc(edLabel(e))}</b><span>${esc(e.sezon)} ${e.an}</span><small>${e.participanti.length} ${de(e.participanti.length)}participanți</small></a>`).join('')}</div>
           <a class="mm-all" href="/editii">Toată arhiva, cu agendele și participanții →</a>`, 'wide'),
       ],
       feature: ong ? `<a class="mm-feature" href="${esc(edUrl(ong))}">
           <span class="mm-kicker"><i class="dot-live"></i>Ediția #${ong.numar}</span>
-          <b>${held} din ${ong.ateliere.length} ateliere</b>
+          <b>${held} din ${ong.ateliere.length} ${de(ong.ateliere.length)}ateliere</b>
           <span class="mm-progress"><i style="width:${Math.round((held / ong.ateliere.length) * 100)}%"></i></span>
-          <span class="mm-sub">${ong.participanti.length} participanți · ${esc(ong.locatii.filter((l) => l !== 'TBD')[0] || '')}</span>
+          <span class="mm-sub">${ong.participanti.length} ${de(ong.participanti.length)}participanți · ${esc(ong.locatii.filter((l) => l !== 'TBD')[0] || '')}</span>
           <span class="mm-upcoming">${upcoming.map((a) => `<span><i>${shortDay(a.data)}</i>${esc(a.titlu.replace(/^(Atelier de Seară|COCKTAIL NETWORKING)\s*[-:]\s*/i, ''))}</span>`).join('')}</span>
           <span class="mm-more">Vezi ediția →</span></a>` : '' },
 
     { id: 'teme', title: 'Teme', href: '/teme', intro: 'Curriculum-ul: teme care se repetă și se îmbunătățesc de la o ediție la alta.',
       cols: [
-        col('Ateliere full-day', fullDay.map((t, i) => link(`/teme/${t.id}`, `<i class="mm-n">${String(i + 1).padStart(2, '0')}</i>${esc(t.nume)}`, `${themePeople(t)} traineri și antreprenori · ${t.editii.length} ediții`)).join(''), 'wide'),
+        col('Ateliere full-day', fullDay.map((t, i) => link(`/teme/${t.id}`, `<i class="mm-n">${String(i + 1).padStart(2, '0')}</i>${esc(t.nume)}`, `${themePeople(t)} ${de(themePeople(t))}traineri și antreprenori · ${t.editii.length} ${de(t.editii.length)}ediții`)).join(''), 'wide'),
         col('Ateliere de seară', `<div class="mm-compact">${evening.map((t) => `<a href="/teme#${t.id}"><span>${esc(t.nume)}</span><b>${t.editii.length}</b></a>`).join('')}</div><p class="mm-note">număr de ediții în care a existat atelierul</p>`),
       ],
       feature: `<a class="mm-feature" href="/teme#matrice">
           <span class="mm-kicker">Curriculum pe ediții</span>
           <span class="mm-matrix">${D.teme.map((t) => `<span>${edChrono.map((e) => `<i class="${e.ateliere.some((a) => a.tema === t.id) ? 'on' : ''}"></i>`).join('')}</span>`).join('')}</span>
-          <span class="mm-sub">${D.teme.length} teme × ${D.editii.length} ediții: cele 5 full-day sunt în toate edițiile, cele de seară s-au schimbat</span>
+          <span class="mm-sub">${D.teme.length} ${de(D.teme.length)}teme × ${D.editii.length} ${de(D.editii.length)}ediții: cele 5 full-day sunt în toate edițiile, cele de seară s-au schimbat</span>
           <span class="mm-more">Vezi matricea →</span></a>` },
 
     // liderii: antreprenorii invitați în față (fondatori și CEO), apoi trainerii și facilitatorii; companiile din spatele lor dau greutatea
     { id: 'traineri', title: 'Lideri', href: '/lideri', intro: `${TR.length} de fondatori, CEO și traineri care predau din ce au construit. ${F.constanti} dintre ei revin în cel puțin cinci ediții.`,
       cols: [
-        col('Fondatori și CEO invitați', `<div class="mm-people-grid">${TR.filter((x) => x.roluri.includes('antreprenor invitat')).slice(0, 8).map((x) => `<a href="/lideri/${esc(x.p.id)}">${pic(x.p)}<b>${esc(x.p.nume)}</b><span>${esc(x.org)}${x.p.editii.length > 1 ? ` · ${x.p.editii.length} ediții` : ''}</span></a>`).join('')}</div>`, 'wide'),
+        col('Fondatori și CEO invitați', `<div class="mm-people-grid">${TR.filter((x) => x.roluri.includes('antreprenor invitat')).slice(0, 8).map((x) => `<a href="/lideri/${esc(x.p.id)}">${pic(x.p)}<b>${esc(x.p.nume)}</b><span>${esc(x.org)}${x.p.editii.length > 1 ? ` · ${x.p.editii.length} ${de(x.p.editii.length)}ediții` : ''}</span></a>`).join('')}</div>`, 'wide'),
         col('Cine predă', [
           link('/lideri?rol=antreprenor-invitat#lista', 'Antreprenori invitați', `${nRol('antreprenor invitat')} fondatori și CEO care povestesc cum au rezolvat problema zilei`),
           link('/lideri?rol=trainer#lista', 'Traineri', `${nRol('trainer')} specialiști pentru partea aplicată, dimineața`),
@@ -175,7 +175,7 @@ function panels(ctx, F) {
       ],
       feature: PD.open.length ? `<a class="mm-feature" href="/parteneri#vreau">
           <span class="mm-kicker"><i class="dot-live"></i>Disponibile acum</span>
-          <b>${PD.open.length === 1 ? 'Un atelier caută' : `${PD.open.length} ateliere caută`} sponsor</b>
+          <b>${PD.open.length === 1 ? 'Un atelier caută' : `${PD.open.length} ${de(PD.open.length)}ateliere caută`} sponsor</b>
           <span class="mm-upcoming">${PD.open.slice(0, 3).map(({ e, a }) => `<span><i>${a.data ? shortDay(a.data) : edLabel(e)}</i>${esc(a.titlu.replace(/^(Atelier de Seară|COCKTAIL NETWORKING)\s*[-:]\s*/i, ''))}</span>`).join('')}</span>
           <span class="mm-more">Rezervă un atelier →</span></a>` : `<a class="mm-feature" href="/parteneri#vreau">
           <span class="mm-kicker">Vreau și eu</span>
@@ -190,7 +190,7 @@ function panels(ctx, F) {
           link('/despre#program', 'Programul', 'Ce primești și cine a crescut cu noi'),
           link('/despre#istoric', 'Istoricul', `Din ${D.program.de_cand} până la ediția #${F.maxNr}`),
           link('/despre#rbl', 'Organizatorul', `Fundația RBL · ${cifra('membri')} de membri`),
-          link('/despre#echipa', 'Echipa', `${team.length} oameni care țin programul`),
+          link('/despre#echipa', 'Echipa', `${team.length} ${de(team.length)}oameni care țin programul`),
         ].join(''), 'mm-tiles'),
         col('În cifre', `<dl class="mm-figs">${D.program.cifre.filter((c) => c.sursa === '/despre-noi').map((c) => `<div><dt>${esc(c.valoare)}</dt><dd>${esc(c.ce.replace(/ din \d{4}$/, ''))}</dd></div>`).join('')}</dl>`, 'mm-hide-m'),
       ],

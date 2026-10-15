@@ -8,7 +8,7 @@ const { megaMenu } = require('./menu');
 // local, cu modificările încă nepublicate din panou (entitati-local.json); pe Vercel, doar ce e publicat
 const DATA_PUB = path.join(__dirname, '..', 'data', 'entitati.json'), DATA_LOCAL = path.join(__dirname, '..', 'data', 'entitati-local.json');
 const dataFile = () => (!process.env.VERCEL && fs.existsSync(DATA_LOCAL) ? DATA_LOCAL : DATA_PUB);
-const { esc, today, fmtDay, median, quantile, milLei, initials } = require('./util');
+const { esc, today, fmtDay, median, quantile, milLei, initials, de } = require('./util');
 const { tx } = require('./texte');
 const { homeBody } = require('./home');
 const { editionBody, findEdition, edLabel } = require('./edition');
@@ -146,7 +146,7 @@ function footer(F, ctx, opt = {}) {
       <div class="ftr-brand">
         ${logo('footer', ctx.brandId)}
         <p class="ftr-claim">${esc(tx(D, 'footer.mesaj')).replace(/\n/g, '<br>')}</p>
-        <p class="ftr-sub">Program al Fundației Romanian Business Leaders, din ${D.program.de_cand}. ${F.maxNr} ediții în București, plus Cluj.</p>
+        <p class="ftr-sub">Program al Fundației Romanian Business Leaders, din ${D.program.de_cand}. ${F.maxNr} ${de(F.maxNr)}ediții în București, plus Cluj.</p>
         <div class="ftr-social">
           <a href="https://www.linkedin.com/company/antreprenoria" rel="noopener" aria-label="LinkedIn">${ICON.linkedin}</a>
           <a href="https://www.facebook.com/antreprenoria/" rel="noopener" aria-label="Facebook">${ICON.facebook}</a>
@@ -215,6 +215,28 @@ function renderProgram(opt = {}) {
 ${header(F, ctx)}
 <div class="gridlines" aria-hidden="true"></div>
 ${programBody(ctx, F)}
+${footer(F, ctx)}
+<script src="/assets/site.js"></script>
+</body></html>`;
+}
+
+// ---------- 404 ----------
+// adresa nu există: aceeași pagină cu meniu și footer, cu drumurile principale la îndemână
+function render404(opt = {}) {
+  const ctx = load(opt.brand), F = facts(ctx);
+  const LINKS = [['/editii', 'Edițiile', 'în desfășurare, înscrieri și arhivă'], ['/lideri', 'Liderii', 'fondatori, CEO și traineri'], ['/comunitate', 'Comunitatea', 'antreprenorii care au trecut prin program'], ['/parteneri', 'Parteneri', 'parteneriate CSR'], ['/despre', 'Despre', 'organizatorul, echipa și contactul']];
+  return `${head('Pagina nu există – Antreprenoria', 'Pagina căutată nu există sau s-a mutat.', opt.brand).replace('</head>', '<meta name="robots" content="noindex"></head>')}
+${header(F, ctx)}
+<div class="gridlines" aria-hidden="true"></div>
+<main>
+  <section class="hero pg-hero nf-hero"><div class="wrap">
+    <p class="eyebrow">Eroare 404</p>
+    <h1>Pagina asta nu există.</h1>
+    <p class="lead">Poate s-a mutat sau adresa are o greșeală. Începe de aici:</p>
+    <div class="hero-actions"><a class="btn btn-primary btn-lg" href="/">Acasă</a><a class="btn btn-ghost btn-lg" href="/aplica">Aplică</a></div>
+    <nav class="nf-links" aria-label="Paginile principale">${LINKS.map(([h, t, s]) => `<a href="${h}"><b>${t} →</b><span>${s}</span></a>`).join('')}</nav>
+  </div></section>
+</main>
 ${footer(F, ctx)}
 <script src="/assets/site.js"></script>
 </body></html>`;
@@ -351,4 +373,4 @@ const applyOptions = () => { const ctx = load(); return aplicaOptions(ctx, facts
 // indexul comunității pentru căutarea din meniu
 const renderCommunityIndex = (opt = {}) => JSON.stringify(communityIndex(load(opt.brand)));
 
-module.exports = { renderCommunityIndex, renderHome, renderEdition, renderProgram, renderDespre, renderTeme, renderTema, renderTraineri, renderTrainer, renderAlumni, renderAlumnus, renderParteneri, renderEditii, renderAplica, applyOptions };
+module.exports = { render404, renderCommunityIndex, renderHome, renderEdition, renderProgram, renderDespre, renderTeme, renderTema, renderTraineri, renderTrainer, renderAlumni, renderAlumnus, renderParteneri, renderEditii, renderAplica, applyOptions };

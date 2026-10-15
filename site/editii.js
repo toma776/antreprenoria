@@ -1,5 +1,5 @@
 // /editii: toate edițiile — cele active sus (în desfășurare, cu înscrieri deschise), apoi arhiva, pe ani.
-const { esc, initials, fmtDay, today, img } = require('./util');
+const { esc, initials, fmtDay, today, img, de } = require('./util');
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : (n % 100 === 0 || n % 100 >= 20 ? 'de ' : '') + many}`;
 const edUrl = (e) => (e.serie === 'Cluj' ? `/editii/cluj-${e.numar}` : `/editii/${e.numar}`);
@@ -38,7 +38,7 @@ function editiiBody(ctx, F) {
       <div class="ex-top"><span class="ed-badge ${LABEL[st][1]}">${st === 'live' ? '<i class="dot-live"></i>' : ''}${LABEL[st][0]}</span><span class="ex-where">${esc(e.serie)}</span></div>
       <b class="ex-num">${esc(edLabel(e))}</b>
       <span class="ex-per">${esc(e.perioada || '')}</span>
-      ${ws.length ? `<div class="ex-prog" aria-label="${held} din ${ws.length} întâlniri ținute">${ws.map((a) => `<i class="${a.data && a.data < t0 ? 'done' : next && a.id === next.id ? 'next' : ''}"></i>`).join('')}</div>
+      ${ws.length ? `<div class="ex-prog" aria-label="${held} din ${ws.length} ${de(ws.length)}întâlniri ținute">${ws.map((a) => `<i class="${a.data && a.data < t0 ? 'done' : next && a.id === next.id ? 'next' : ''}"></i>`).join('')}</div>
       <span class="ex-meta">${held ? `${held} din ${plural(ws.length, 'întâlnire', 'întâlniri')} ținute` : plural(ws.length, 'întâlnire', 'întâlniri')}${e.participanti.length ? ` · ${plural(e.participanti.length, 'participant', 'participanți')}` : ''}</span>` : ''}
       ${next ? `<span class="ex-next"><small>${st === 'live' ? 'Următorul atelier' : 'Primul atelier'}</small><b>${esc(cleanTitle(next.titlu))}</b><span>${fmtDay(next.data)}${next.locatie && next.locatie !== 'TBD' ? ' · ' + esc(next.locatie) : ''}</span></span>` : ''}
       ${price ? `<span class="ex-price">${esc(price.pret_text.replace(/(\d)(\d{3})\b/, '$1.$2'))}${price.nota ? ` · ${esc(price.nota)}` : ''}</span>` : ''}
@@ -52,7 +52,7 @@ function editiiBody(ctx, F) {
     return `<a class="ex-past" href="${edUrl(e)}">
       <div class="ex-past-top"><b class="ex-num">${esc(edLabel(e))}</b><span>${esc(e.sezon)} ${e.an}</span></div>
       <span class="ex-per">${esc(e.perioada || '')}</span>
-      <span class="ex-figs"><span><b>${e.participanti.length}</b> participanți</span><span><b>${e.ateliere.length}</b> ateliere</span></span>
+      <span class="ex-figs"><span><b>${e.participanti.length}</b> ${de(e.participanti.length)}participanți</span><span><b>${e.ateliere.length}</b> ${de(e.ateliere.length)}ateliere</span></span>
       ${faces.length ? `<span class="ex-faces">${faces.map((x) => face(P[x.persoana]?.imagine || x.imagine, x.nume)).join('')}${e.participanti.length > faces.length ? `<em>+${e.participanti.length - faces.length}</em>` : ''}</span>` : ''}
       ${themes.length ? `<span class="ex-themes">${themes.map((t) => `<i>${esc(t.nume)}</i>`).join('')}</span>` : ''}
     </a>`;

@@ -1,7 +1,7 @@
 // Pagina /program: tot ce trebuie să știi înainte să aplici, într-o singură pagină cu secțiuni (ancorele din meniu duc aici).
 // Conținutul vine din creier: descrierea și audiența de pe /despre-noi, metodologia, agenda ediției curente, prețurile.
 // Profilul participanților apare doar agregat.
-const { esc, initials, milLei, img } = require('./util');
+const { esc, initials, milLei, img, de } = require('./util');
 const { tx } = require('./texte');
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : (n % 100 === 0 || n % 100 >= 20 ? 'de ' : '') + many}`;
@@ -60,8 +60,8 @@ function programBody(ctx, F) {
         <div class="ed-live-top"><span>Pe scurt</span><span>o ediție</span></div>
         <dl>
           <div><dt>3 luni</dt><dd>${esc(ong.perioada.replace(/\s*-\s*/, '–'))}, la ediția #${ong.numar}</dd></div>
-          <div><dt>${fullDay.length} ateliere full-day</dt><dd>câte o temă: ${fullDay.map((a) => esc(T[a.tema]?.nume || cleanTitle(a.titlu))).join(', ')}</dd></div>
-          <div><dt>${evening.length} ateliere de seară</dt><dd>${evening.map((a) => esc(cleanTitle(a.titlu))).join(', ')}</dd></div>
+          <div><dt>${fullDay.length} ${de(fullDay.length)}ateliere full-day</dt><dd>câte o temă: ${fullDay.map((a) => esc(T[a.tema]?.nume || cleanTitle(a.titlu))).join(', ')}</dd></div>
+          <div><dt>${evening.length} ${de(evening.length)}ateliere de seară</dt><dd>${evening.map((a) => esc(cleanTitle(a.titlu))).join(', ')}</dd></div>
           <div><dt>~25 de antreprenori</dt><dd>selectați, ca discuțiile să fie între oameni cu provocări asemănătoare</dd></div>
           ${networking.length ? `<div><dt>Petrecerea de final</dt><dd>${esc(cleanTitle(networking[0].titlu))}, cu comunitatea RBL</dd></div>` : ''}
         </dl>
@@ -116,7 +116,7 @@ function programBody(ctx, F) {
         <h3 class="who-h">Cine a participat până acum</h3>
         <div class="figures who-figs">
           <div class="fig"><b>${milLei(F.q1)}–${milLei(F.q3)}<em> mil. lei</em></b><span>cifra de afaceri a jumătății „de mijloc” a companiilor</span></div>
-          <div class="fig"><b>${F.medianAng}</b><span>angajați, la mediană</span></div>
+          <div class="fig"><b>${F.medianAng}</b><span>${de(F.medianAng)}angajați, la mediană</span></div>
         </div>
         <div class="sectors">${F.sectors.slice(0, 7).map(([s, n]) => `<div class="sector"><span>${esc(s)}</span><i style="--w:${(n / maxSector) * 100}%"></i><b>${n}</b></div>`).join('')}</div>
       </div>

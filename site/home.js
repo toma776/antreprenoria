@@ -1,7 +1,7 @@
 // Homepage-ul: produs de date mai mult decât broșură. Hero cu întrebare interactivă (sugestii fixe -> răspuns din creier),
 // cifre în grilă, curriculum pe tab-uri, „Pulsul programului” (flux generat din date), agenda ediției în banda finală.
 // Cifrele de afaceri apar doar agregat.
-const { esc, initials, milLei, fmtDay, today, img, logoImg } = require('./util');
+const { esc, initials, milLei, fmtDay, today, img, logoImg, de } = require('./util');
 const { tx } = require('./texte');
 
 // sugestiile din hero: problema antreprenorului -> tema din curriculum
@@ -83,7 +83,7 @@ function pulse(ctx, F) {
       const ppl = up[0].program.flatMap((x) => x.speakeri).map((s) => P[s.persoana]).filter(Boolean);
       out.push({ date: up[0].data, kind: 'next', title: `Următorul atelier: ${up[0].titlu}`, text: `Ediția #${ong.numar} · ${up[0].locatie || ''}${ppl.length ? ' · cu ' + ppl.map((p) => p.nume).join(', ') : ''}`, people: ppl, href: `${edUrl(ong)}#agenda` });
     }
-    if (held[0]) out.push({ date: held[0].data, kind: 'done', title: `S-a ținut atelierul „${held[0].titlu}”`, text: `Ediția #${ong.numar} · ${held.length} din ${ong.ateliere.length} ateliere ținute până acum`, href: edUrl(ong) });
+    if (held[0]) out.push({ date: held[0].data, kind: 'done', title: `S-a ținut atelierul „${held[0].titlu}”`, text: `Ediția #${ong.numar} · ${held.length} din ${ong.ateliere.length} ${de(ong.ateliere.length)}ateliere ținute până acum`, href: edUrl(ong) });
     // sponsorii ediției care au fost participanți
     ong.ateliere.filter((a) => a.sponsor && O[a.sponsor]?.ciclu).slice(0, 2).forEach((a) => {
       const o = O[a.sponsor];
@@ -134,7 +134,7 @@ function agendaCard(F) {
   const rows = e.ateliere.filter((a) => a.data && a.data.startsWith(String(e.an))).sort((a, b) => a.data.localeCompare(b.data));
   const nextId = rows.find((a) => a.data >= today())?.id;
   return `<div class="agenda-card" aria-label="Agenda ediției #${e.numar}">
-    <div class="agenda-top"><span><i class="dot-live"></i>Ediția #${e.numar} · ${esc(e.perioada)}</span><span>${e.participanti.length} participanți</span></div>
+    <div class="agenda-top"><span><i class="dot-live"></i>Ediția #${e.numar} · ${esc(e.perioada)}</span><span>${e.participanti.length} ${de(e.participanti.length)}participanți</span></div>
     <ol>${rows.map((a) => {
       const st = a.data < today() ? 'done' : a.id === nextId ? 'next' : '';
       return `<li class="${st}"><time>${fmtDay(a.data).replace(/ \d{4}$/, '')}</time><span>${esc(a.titlu.replace(/^(Atelier de Seară|COCKTAIL NETWORKING)\s*[-:]\s*/i, ''))}</span><em>${st === 'done' ? 'ținut' : st === 'next' ? 'următorul' : a.format}</em></li>`;
@@ -162,7 +162,7 @@ function mosaic(ctx, F) {
   const used = new Set();
   const pick = (big) => { const k = pool.findIndex((p, i) => !used.has(i) && (!big || p.s)); used.add(k); return k; };
   const tile = (shape) => {
-    if (shape === 'stat') return `<div class="mz mz-stat"><b>${F.maxNr}</b><span>ediții</span></div>`;
+    if (shape === 'stat') return `<div class="mz mz-stat"><b>${F.maxNr}</b><span>${de(F.maxNr)}ediții</span></div>`;
     if (shape === 'count') return `<div class="mz mz-count"><b>${F.participanti}+</b><span>antreprenori</span></div>`;
     if (shape === 'dots') return '<div class="mz mz-dots" aria-hidden="true"><i></i><i></i><i></i></div>';
     const big = shape.startsWith('big'), k = pick(big), p = pool[k];
@@ -196,10 +196,10 @@ function homeBody(ctx, F) {
   </div></section>
 
   <section class="proof"><div class="wrap proof-in">
-    <div class="stat"><b><span data-count="${F.ani}">${F.ani}</span></b><span>ani de program</span></div>
-    <div class="stat"><b><span data-count="${F.maxNr}">${F.maxNr}</span></b><span>ediții în București, plus Cluj</span></div>
-    <div class="stat"><b><span data-count="${F.speakers}">${F.speakers}</span></b><span>traineri și antreprenori invitați din 2023</span></div>
-    <div class="stat"><b><span data-count="${F.alumni}">${F.alumni}</span></b><span>companii în ultimele ${D.editii.filter((e) => e.participanti.length).length} ediții</span></div>
+    <div class="stat"><b><span data-count="${F.ani}">${F.ani}</span></b><span>${de(F.ani)}ani de program</span></div>
+    <div class="stat"><b><span data-count="${F.maxNr}">${F.maxNr}</span></b><span>${de(F.maxNr)}ediții în București, plus Cluj</span></div>
+    <div class="stat"><b><span data-count="${F.speakers}">${F.speakers}</span></b><span>${de(F.speakers)}traineri și antreprenori invitați din 2023</span></div>
+    <div class="stat"><b><span data-count="${F.alumni}">${F.alumni}</span></b><span>${de(F.alumni)}companii în ultimele ${D.editii.filter((e) => e.participanti.length).length} ${de(D.editii.filter((e) => e.participanti.length).length)}ediții</span></div>
     <div class="stat"><b><span data-count="${(F.medianCa / 1e6).toFixed(1)}" data-dec="1">${milLei(F.medianCa)}</span><em> mil. lei</em></b><span>cifra de afaceri mediană a participanților</span></div>
   </div></section>
 
@@ -212,7 +212,7 @@ function homeBody(ctx, F) {
   </div></section>
 
   <section class="sec sec-alt" id="teme"><div class="wrap">
-    <div class="sec-head row"><div><p class="eyebrow">Curriculum</p><h2>Cinci teme full-day, aceleași de ${T.viziune.editii.length} ediții încoace.</h2></div>
+    <div class="sec-head row"><div><p class="eyebrow">Curriculum</p><h2>Cinci teme full-day, aceleași de ${T.viziune.editii.length} ${de(T.viziune.editii.length)}ediții încoace.</h2></div>
       <a class="link-arrow" href="/teme">Toate temele →</a></div>
     ${curriculumTabs(ctx, F)}
   </div></section>
@@ -224,8 +224,8 @@ function homeBody(ctx, F) {
       <p class="lead">Ateliere, parteneri, ediții noi.</p>
       <div class="pulse-stats">
         ${nextIn === 0 ? `<div class="pulse-stat"><b>Azi</b><span>e atelier: ${esc(F.next.titlu.replace(/^(Atelier de Seară|COCKTAIL NETWORKING)\s*[-:]\s*/i, ''))}</span></div>` : nextIn != null ? `<div class="pulse-stat"><b><span data-count="${nextIn}">${nextIn}</span></b><span>${nextIn === 1 ? 'zi' : 'zile'} până la următorul atelier</span></div>` : ''}
-        <div class="pulse-stat"><b><span data-count="${heldYear}">${heldYear}</span></b><span>ateliere ținute în ${today().slice(0, 4)}</span></div>
-        ${ong ? `<div class="pulse-stat"><b><span data-count="${ong.participanti.length}">${ong.participanti.length}</span></b><span>antreprenori în ediția #${ong.numar}</span></div>` : ''}
+        <div class="pulse-stat"><b><span data-count="${heldYear}">${heldYear}</span></b><span>${de(heldYear)}ateliere ținute în ${today().slice(0, 4)}</span></div>
+        ${ong ? `<div class="pulse-stat"><b><span data-count="${ong.participanti.length}">${ong.participanti.length}</span></b><span>${de(ong.participanti.length)}antreprenori în ediția #${ong.numar}</span></div>` : ''}
       </div>
     </div>
     <div class="feed" role="list">
@@ -244,23 +244,23 @@ function homeBody(ctx, F) {
       <a class="link-arrow" href="/lideri">Toți cei ${F.speakers} →</a></div>
     <div class="people">
       ${F.topTrainers.map((p) => `<a class="person" href="/lideri/${p.id}">${avatar(p)}<b>${esc(p.nume)}</b><span>${esc(ctx.O[p.organizatii[0]]?.nume || p.functii[0] || '')}</span>
-        <span class="person-ed">${p.editii.length} ediții · ${esc([...new Set(p.aparitii.map((a) => T[a.tema]?.nume).filter(Boolean))][0] || '')}</span></a>`).join('')}
+        <span class="person-ed">${p.editii.length} ${de(p.editii.length)}ediții · ${esc([...new Set(p.aparitii.map((a) => T[a.tema]?.nume).filter(Boolean))][0] || '')}</span></a>`).join('')}
     </div>
   </div></section>
 
   <section class="sec sec-dark" id="alumni"><div class="wrap">
-    <div class="sec-head"><p class="eyebrow">Cine participă</p><h2>Companii reale, în creștere, din ${F.sectors.length} sectoare.</h2></div>
+    <div class="sec-head"><p class="eyebrow">Cine participă</p><h2>Companii reale, în creștere, din ${F.sectors.length} ${de(F.sectors.length)}sectoare.</h2></div>
     <div class="alumni-grid">
       <div class="figures">
         <div class="fig"><b>${milLei(F.q1)}–${milLei(F.q3)}<em> mil. lei</em></b><span>cifra de afaceri a jumătății „de mijloc” a participanților</span></div>
-        <div class="fig"><b><span data-count="${F.medianAng}">${F.medianAng}</span></b><span>angajați, la mediană</span></div>
-        <div class="fig"><b><span data-count="${F.participanti}">${F.participanti}</span></b><span>antreprenori și manageri în edițiile #16–#${F.maxNr}</span></div>
+        <div class="fig"><b><span data-count="${F.medianAng}">${F.medianAng}</span></b><span>${de(F.medianAng)}angajați, la mediană</span></div>
+        <div class="fig"><b><span data-count="${F.participanti}">${F.participanti}</span></b><span>${de(F.participanti)}antreprenori și manageri în edițiile #16–#${F.maxNr}</span></div>
       </div>
       <div class="sectors">${F.sectors.slice(0, 9).map(([s, n]) => `<div class="sector"><span>${esc(s)}</span><i style="--w:${(n / maxSector) * 100}%"></i><b>${n}</b></div>`).join('')}</div>
     </div>
     <div class="cycle">
       <div class="cycle-copy"><p class="eyebrow">Din alumni, parteneri</p><h3>Vii ca participant. Revii ca partener.</h3>
-        <p>${F.ciclu.length} companii care au trecut prin program s-au întors să sponsorizeze ateliere, să le găzduiască sau să trimită speakeri.</p></div>
+        <p>${F.ciclu.length} ${de(F.ciclu.length)}companii care au trecut prin program s-au întors să sponsorizeze ateliere, să le găzduiască sau să trimită speakeri.</p></div>
       <div class="cycle-list">${F.ciclu.map((o) => `<div class="cycle-item">${logoImg(o)}
         <span>alumni #${esc(o.ciclu.alumni_din.split('-')[1])} → ${esc(o.ciclu.apoi.map((r) => r.replace(' atelier', '')).join(', '))}</span></div>`).join('')}</div>
     </div>
@@ -272,7 +272,7 @@ function homeBody(ctx, F) {
       const live = F.ongoing && e.id === F.ongoing.id, open = e.deschisa && !live;
       return `<a class="tl ${live ? 'is-live' : ''} ${open ? 'is-open' : ''}" href="${edUrl(e)}">
         <span class="tl-dot"></span><b>${esc(edLabel(e))}</b><span>${esc(e.perioada.replace(' - ', '–'))}</span>
-        <small>${live ? 'în desfășurare' : open ? 'înscrieri deschise' : `${e.participanti.length} participanți`}</small></a>`;
+        <small>${live ? 'în desfășurare' : open ? 'înscrieri deschise' : `${e.participanti.length} ${de(e.participanti.length)}participanți`}</small></a>`;
     }).join('')}
       <a class="tl is-next" href="/aplica"><span class="tl-dot"></span><b>#${F.maxNr + 1}</b><span>Următoarea ediție</span><small>listă de așteptare</small></a>
     </div>

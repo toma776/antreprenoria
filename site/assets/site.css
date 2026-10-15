@@ -2577,3 +2577,12 @@ body:has(main.sp) .mcta { display: none !important; }
   .mp-ring { inset: -4px; }
 }
 @media (prefers-reduced-motion: reduce) { .mp-soon i { animation: none; } }
+
+/* 404: drumurile principale */
+.nf-hero { padding-bottom: clamp(48px, 7vw, 96px); }
+.nf-hero h1 { max-width: 16ch; }
+.nf-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-top: clamp(28px, 4vw, 44px); }
+.nf-links a { display: grid; align-content: start; gap: 3px; padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); color: var(--ink); text-decoration: none; transition: border-color .15s, transform .15s; }
+.nf-links a:hover { border-color: var(--primary); transform: translateY(-2px); }
+.nf-links b { font-size: 15px; }
+.nf-links span { font-size: 13px; color: var(--muted); }

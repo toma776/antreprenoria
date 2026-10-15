@@ -241,6 +241,11 @@ async function handler(req, res) {
   const [rawPath, query = ''] = req.url.split('#')[0].split('?');
   const url = decodeURIComponent(rawPath);
   try {
+    // o singură adresă pentru fiecare pagină: /program/ duce la /program (API-ul, fișierele și panoul rămân cum sunt)
+    if ((req.method === 'GET' || req.method === 'HEAD') && url.length > 1 && url.endsWith('/') && !/^\/(api|assets|manage)(\/|$)/.test(url)) {
+      res.writeHead(301, { Location: url.replace(/\/+$/, '') + (query ? '?' + query : '') });
+      return res.end();
+    }
     if (req.method === 'GET' && JSON_FILES[url]) {
       const f = url === '/api/entitati' ? dataFile() : url === '/api/brand' && !READ_ONLY && fs.existsSync(BRAND_LOCAL) ? BRAND_LOCAL : path.join(DATA, JSON_FILES[url]);
       return fs.existsSync(f) ? sendJson(res, 200, fs.readFileSync(f, 'utf8')) : sendJson(res, 404, { error: 'lipsește ' + JSON_FILES[url] });
@@ -484,7 +489,10 @@ async function handler(req, res) {
       if (r?.redirect) { res.writeHead(301, { Location: r.redirect }); return res.end(); }
       if (r?.html) { res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' }); return res.end(r.html); }
     }
-    sendJson(res, 404, { error: 'pagină inexistentă' });
+    // adresele de API primesc JSON; paginile, o pagină 404 cu meniu și footer
+    if (url.startsWith('/api/')) return sendJson(res, 404, { error: 'pagină inexistentă' });
+    res.writeHead(404, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' });
+    return res.end(fresh('./site/render').render404({ brand: new URLSearchParams(query).get('brand') || undefined }));
   } catch (e) {
     // dacă răspunsul a apucat să înceapă, nu mai putem trimite antetele unei erori: doar îl închidem
     if (res.headersSent) { console.error(e); return res.end(); }

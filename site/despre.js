@@ -1,6 +1,6 @@
 // Pagina /despre: programul, istoricul, organizatorul (RBL), echipa și contactul, într-o singură pagină cu secțiuni.
 // Cifrele mari sunt cele declarate pe site-ul vechi (/despre-noi); arhiva detaliată începe cu ediția #16.
-const { esc, initials, img } = require('./util');
+const { esc, initials, img, de } = require('./util');
 const { tx } = require('./texte');
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : (n % 100 === 0 || n % 100 >= 20 ? 'de ' : '') + many}`;
@@ -38,7 +38,7 @@ function despreBody(ctx, F) {
       <aside class="pg-glance ab-figs" aria-label="În cifre">
         <div class="ed-live-top"><span>În cifre</span></div>
         <dl>${cifre.map((c) => `<div><dt>${esc(c.valoare)}</dt><dd>${esc(c.ce)}</dd></div>`).join('')}
-          <div><dt>${F.maxNr} ediții</dt><dd>în București din ${prog.de_cand}, plus Cluj din ${F.cluj ? F.cluj.an : ''}</dd></div></dl>
+          <div><dt>${F.maxNr} ${de(F.maxNr)}ediții</dt><dd>în București din ${prog.de_cand}, plus Cluj din ${F.cluj ? F.cluj.an : ''}</dd></div></dl>
       </aside>
     </div>
   </div>
@@ -68,10 +68,10 @@ function despreBody(ctx, F) {
       <a class="hist-ed next" href="/aplica"><b>#${F.maxNr + 1}</b><span>următoarea</span><small>listă de așteptare</small></a>
     </div>
     <div class="ab-stats">
-      <div><b>${F.participanti}</b><span>antreprenori și manageri în edițiile #${first.numar}–#${F.maxNr}</span></div>
-      <div><b>${speakers}</b><span>traineri și antreprenori invitați</span></div>
-      <div><b>${F.ateliere}</b><span>ateliere în arhivă</span></div>
-      <div><b>${F.ciclu.length}</b><span>companii alumni revenite ca parteneri</span></div>
+      <div><b>${F.participanti}</b><span>${de(F.participanti)}antreprenori și manageri în edițiile #${first.numar}–#${F.maxNr}</span></div>
+      <div><b>${speakers}</b><span>${de(speakers)}traineri și antreprenori invitați</span></div>
+      <div><b>${F.ateliere}</b><span>${de(F.ateliere)}ateliere în arhivă</span></div>
+      <div><b>${F.ciclu.length}</b><span>${de(F.ciclu.length)}companii alumni revenite ca parteneri</span></div>
     </div>
   </div></section>
 
