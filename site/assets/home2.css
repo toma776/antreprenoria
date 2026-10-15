@@ -458,3 +458,10 @@ a.x-tile:hover { transform: translateY(-3px); box-shadow: 0 24px 50px -30px rgba
   .x #contact .ask-card a { min-height: 36px; }
   .x #contact .ask-card a:first-of-type { margin-top: 8px; }
 }
+/* companiile care au crescut cu programul: un rând compact pe desktop */
+.dx-logos { grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 8px; }
+.dx-logos span { height: 64px; padding: 10px; }
+.dx-logos img { max-height: 32px; }
+.dx-logos b { font-size: 12.5px; line-height: 1.25; text-align: center; color: var(--ink); }
+@media (max-width: 1080px) { .dx-logos { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .dx-logos { grid-template-columns: repeat(3, minmax(0, 1fr)); } }

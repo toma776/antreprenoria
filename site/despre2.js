@@ -37,7 +37,12 @@ function despre2Body(ctx, F) {
   const criterii = [['Peste 1 milion €', 'cifră de afaceri anuală'], ['Peste 500.000 €', 'cu un avantaj competitiv inovativ'], ['Sub 500.000 €', 'dacă e fondată de antreprenori seniori, cu o investiție semnificativă']];
   const maxSector = F.sectors[0]?.[1] || 1;
   const byName = new Map(D.organizatii.map((o) => [o.nume.toLowerCase(), o]));
-  const alumni = prog.alumni_mentionati.map((n) => ({ n, o: byName.get(n.toLowerCase()) || D.organizatii.find((o) => o.nume.toLowerCase().startsWith(n.toLowerCase())) }));
+  // companiile care au crescut cu programul: doar participanți confirmați în cohortele încheiate (nu și în cea în desfășurare);
+  // cele menționate pe site-ul vechi și confirmate în date, plus cele cu logo; întâi cele cu logo
+  const closed = D.editii.filter((e) => /închis|încheiat/i.test(e.status || ''));
+  const inClosed = (o) => !!o && closed.some((e) => e.participanti.some((p) => p.organizatie === o.id));
+  const mentioned = prog.alumni_mentionati.map((n) => byName.get(n.toLowerCase()) || D.organizatii.find((o) => o.nume.toLowerCase().startsWith(n.toLowerCase()))).filter(inClosed);
+  const alumni = [...new Map([...D.organizatii.filter((o) => o.logo && inClosed(o)), ...mentioned].map((o) => [o.id, o])).values()].sort((a, b) => !!b.logo - !!a.logo);
 
   // investiția
   const priced = D.editii.filter((e) => e.deschisa).map((e) => ({ e, p: e.preturi.find((x) => !x.ascuns) })).filter((x) => x.p);
@@ -128,7 +133,7 @@ function despre2Body(ctx, F) {
       </div>
     </div>
     ${alumni.length ? `<div class="dx-alumni"><h3 class="who-h">Companii care au crescut și cu ajutorul programului</h3>
-      <div class="ab-logos">${alumni.map(({ n, o }) => (o?.logo ? `<span title="${esc(n)}"><img src="${esc(o.logo)}" alt="${esc(n)}" loading="lazy"></span>` : `<span><b>${esc(n)}</b></span>`)).join('')}</div></div>` : ''}
+      <div class="ab-logos dx-logos">${alumni.map((o) => ({ ...o, nume: o.nume.replace(/\s*\(.*\)$/, '') })).map((o) => (o.logo ? `<span title="${esc(o.nume)}"><img src="${esc(o.logo)}" alt="${esc(o.nume)}" loading="lazy"></span>` : `<span><b>${esc(o.nume)}</b></span>`)).join('')}</div></div>` : ''}
   </div></section>
 
   <!-- 04 investiția -->
