@@ -402,3 +402,53 @@ a.x-tile:hover { transform: translateY(-3px); box-shadow: 0 24px 50px -30px rgba
   nav.xf-col > .xf-apply { grid-column: 1 / -1; justify-content: center; margin-top: 2px; padding: 13px 14px; border-color: transparent; background: var(--primary); color: #fff !important; }
   nav.xf-col > .xf-apply svg { width: 16px; height: 16px; }
 }
+
+/* ---------- Despre (unită cu Program): hero, ce primești, cine e în spate ---------- */
+.dx-hero { padding-bottom: clamp(40px, 5vw, 64px); }
+.dx-hero .x-hero-in { padding-bottom: 0; }
+.dx-hero h1 { font-size: clamp(36px, 4.4vw, 62px); }
+.dx-crumbs { margin-bottom: 22px; color: var(--dark-muted); }
+.dx-crumbs a { color: var(--dark-muted); }
+.dx-crumbs b { color: #fff; }
+.dx-glance { display: grid; gap: 14px; padding: clamp(20px, 2.4vw, 28px); border-radius: var(--x-r); }
+.dx-glance .x-k { color: var(--dark-muted); }
+.dx-glance dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 18px; margin: 0; }
+.dx-glance dt { font: var(--d-weight) clamp(28px, 2.8vw, 38px)/1 var(--f-display); font-stretch: var(--d-stretch); color: #fff; }
+.dx-glance dd { margin: 4px 0 0; font-size: 13px; line-height: 1.4; color: var(--dark-muted); }
+.dx-proof { display: flex; align-items: baseline; gap: 12px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, .12); }
+.dx-proof b { font: var(--d-weight) 30px/1 var(--f-display); font-stretch: var(--d-stretch); color: var(--highlight); }
+.dx-proof span { font-size: 13.5px; color: var(--dark-ink); }
+.dx-get { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin: 0; padding: 0; list-style: none; }
+.dx-get li { display: grid; align-content: start; gap: 8px; padding: 20px; border: 1px solid var(--line); border-radius: calc(var(--radius) * 3); background: var(--surface); transition: transform .25s, box-shadow .25s; }
+.dx-get li:hover { transform: translateY(-3px); box-shadow: 0 22px 44px -28px rgba(11, 37, 69, .45); }
+.dx-get h3 { margin: 0; font-size: 17px; line-height: 1.2; }
+.dx-get p { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--muted); }
+.dx-checks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 28px; margin: 28px 0 0; }
+.dx-fmt { margin-top: 36px; }
+.dx-who-cta { margin-top: 24px; }
+.dx-alumni { margin-top: clamp(32px, 4vw, 48px); padding-top: clamp(24px, 3vw, 36px); border-top: 1px solid rgba(255, 255, 255, .12); }
+.dx-rbl-figs { display: flex; flex-wrap: wrap; gap: 14px 32px; margin: 22px 0 26px; }
+.dx-rbl-figs dt { font: var(--d-weight) 30px/1 var(--f-display); font-stretch: var(--d-stretch); color: var(--highlight); }
+.dx-rbl-figs dd { margin: 4px 0 0; max-width: 18ch; font-size: 13px; line-height: 1.4; color: var(--dark-muted); }
+.dx-team { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 20px; }
+.dx-member { display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid rgba(255, 255, 255, .12); border-radius: calc(var(--radius) * 2); background: rgba(255, 255, 255, .04); }
+.dx-member img, .dx-member .ph { flex: none; width: 52px; height: 52px; border-radius: 50%; object-fit: cover; background: var(--dark-2); display: grid; place-items: center; font: 700 15px/1 var(--f-body); color: #fff; }
+.dx-member span { display: grid; min-width: 0; }
+.dx-member b { color: #fff; font-size: 15px; }
+.dx-member small { font-size: 12.5px; line-height: 1.35; color: var(--dark-muted); }
+@media (max-width: 1080px) { .dx-get { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 720px) {
+  .dx-get, .dx-checks, .dx-team { grid-template-columns: 1fr; }
+  .dx-glance dl { gap: 12px; }
+  .dx-hero h1 { font-size: clamp(32px, 9vw, 42px); }
+}
+/* secțiunile cheie de pe Despre: albastrul nopții din noul design (stilul de brand face .sec-dark deschis) */
+.x .sec-dark.dx-night { --dark: var(--x-night); --dark-2: #12325C; --dark-ink: #F2F6FC; --dark-muted: #A9B8D0; --highlight: #FADC3A; position: relative; isolation: isolate; overflow: hidden; background: var(--x-night); color: var(--dark-ink); }
+.x .dx-night::before { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(60% 70% at 85% 10%, color-mix(in srgb, var(--primary) 35%, transparent), transparent 70%); }
+.x .dx-night h2, .x .dx-night h3:not(.who-h) { color: #fff; }
+.x .dx-night .who-h { color: var(--dark-muted); }
+.x .dx-night .crit > div { border-color: rgba(255, 255, 255, .12); background: rgba(255, 255, 255, .04); }
+.x .dx-night .crit b { color: #fff; }
+.x .dx-night .crit span { color: var(--dark-muted); }
+.x .dx-night .ab-logos span { background: rgba(255, 255, 255, .95); }
+.x .dx-night .ab-rbl-logo { background: #fff; border-radius: calc(var(--radius) * 3); }

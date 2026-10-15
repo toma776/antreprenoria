@@ -200,6 +200,18 @@ ${footer(F, ctx)}
 </body></html>`;
 }
 
+// ---------- DESPRE, unită cu Program (previzualizare, doar local) ----------
+function renderDespre2(opt = {}) {
+  const ctx = load(opt.brand), F = facts(ctx);
+  const { despre2Body } = require('./despre2');
+  return `${head('Despre Antreprenoria – programul, pentru cine e, investiția, echipa', 'Acceleratorul Romanian Business Leaders, din 2013: ce primești, cum arată o zi de atelier, pentru cine e, cât costă și cine e în spate.', opt.brand).replace('</head>', '<meta name="robots" content="noindex"></head>')}
+${header(F, ctx)}
+${despre2Body(ctx, F)}
+${footer(F, ctx)}
+<script src="/assets/site.js"></script>
+</body></html>`;
+}
+
 // ---------- 404 ----------
 // adresa nu există: aceeași pagină cu meniu și footer, cu drumurile principale la îndemână
 function render404(opt = {}) {
@@ -353,4 +365,4 @@ const applyOptions = () => { const ctx = load(); return aplicaOptions(ctx, facts
 // indexul comunității pentru căutarea din meniu
 const renderCommunityIndex = (opt = {}) => JSON.stringify(communityIndex(load(opt.brand)));
 
-module.exports = { renderHomeOld, render404, renderCommunityIndex, renderHome, renderEdition, renderProgram, renderDespre, renderTeme, renderTema, renderTraineri, renderTrainer, renderAlumni, renderAlumnus, renderParteneri, renderEditii, renderAplica, applyOptions };
+module.exports = { renderDespre2, renderHomeOld, render404, renderCommunityIndex, renderHome, renderEdition, renderProgram, renderDespre, renderTeme, renderTema, renderTraineri, renderTrainer, renderAlumni, renderAlumnus, renderParteneri, renderEditii, renderAplica, applyOptions };
