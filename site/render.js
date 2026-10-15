@@ -224,6 +224,18 @@ ${footer(F, ctx)}
 </body></html>`;
 }
 
+// ---------- HOMEPAGE 2029 (previzualizare, doar local) ----------
+function renderHome2(opt = {}) {
+  const ctx = load(opt.brand), F = facts(ctx);
+  const { home2Body } = require('./home2');
+  return `${head('Antreprenoria – acceleratorul antreprenorilor Romanian Business Leaders', 'Previzualizare: varianta nouă a homepage-ului.', opt.brand).replace('</head>', '<link rel="stylesheet" href="/assets/home2.css"><meta name="robots" content="noindex"></head>')}
+${header(F, ctx)}
+${home2Body(ctx, F)}
+${footer(F, ctx)}
+<script src="/assets/site.js"></script><script src="/assets/home2.js"></script>
+</body></html>`;
+}
+
 // ---------- 404 ----------
 // adresa nu există: aceeași pagină cu meniu și footer, cu drumurile principale la îndemână
 function render404(opt = {}) {
@@ -377,4 +389,4 @@ const applyOptions = () => { const ctx = load(); return aplicaOptions(ctx, facts
 // indexul comunității pentru căutarea din meniu
 const renderCommunityIndex = (opt = {}) => JSON.stringify(communityIndex(load(opt.brand)));
 
-module.exports = { render404, renderCommunityIndex, renderHome, renderEdition, renderProgram, renderDespre, renderTeme, renderTema, renderTraineri, renderTrainer, renderAlumni, renderAlumnus, renderParteneri, renderEditii, renderAplica, applyOptions };
+module.exports = { renderHome2, render404, renderCommunityIndex, renderHome, renderEdition, renderProgram, renderDespre, renderTeme, renderTema, renderTraineri, renderTrainer, renderAlumni, renderAlumnus, renderParteneri, renderEditii, renderAplica, applyOptions };

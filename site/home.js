@@ -311,4 +311,4 @@ function homeBody(ctx, F) {
 </main>`;
 }
 
-module.exports = { homeBody };
+module.exports = { homeBody, themeInfo, pulse, NEEDS };

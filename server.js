@@ -56,7 +56,7 @@ function safe(base, rel) {
 }
 // modulele site-ului se reîncarcă la fiecare cerere, ca schimbările din data/ și site/ să apară fără repornire
 function fresh(mod) {
-  ['./site/render', './site/brand', './site/menu', './site/home', './site/util', './site/edition', './site/program', './site/despre', './site/teme', './site/aplica', './site/texte', './site/traineri', './site/alumni', './site/parteneri', './site/implicare', './site/editii'].forEach((m) => delete require.cache[require.resolve(m)]);
+  ['./site/render', './site/brand', './site/menu', './site/home', './site/util', './site/edition', './site/program', './site/despre', './site/teme', './site/aplica', './site/texte', './site/traineri', './site/alumni', './site/parteneri', './site/implicare', './site/editii', './site/home2'].forEach((m) => delete require.cache[require.resolve(m)]);
   return require(mod);
 }
 
@@ -416,6 +416,11 @@ async function handler(req, res) {
     const PAGES = { '/': 'renderHome', '/program': 'renderProgram', '/despre': 'renderDespre', '/teme': 'renderTeme' };
     // adresa veche de contact duce la secțiunea de contact din /despre
     if (url === '/contact') { res.writeHead(301, { Location: '/despre#contact' }); return res.end(); }
+    // previzualizare (doar local): varianta nouă a homepage-ului
+    if (url === '/previzualizare/acasa' && !READ_ONLY) {
+      res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' });
+      return res.end(fresh('./site/render').renderHome2({ brand: new URLSearchParams(query).get('brand') || undefined }));
+    }
     if (PAGES[url]) {
       const brand = new URLSearchParams(query).get('brand') || undefined;
       res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' });
