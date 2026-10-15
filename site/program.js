@@ -125,7 +125,7 @@ function programBody(ctx, F) {
 
   <section class="sec" id="investitie"><div class="wrap">
     <div class="sec-head row"><div><p class="eyebrow">Investiția</p><h2>Ce plătești și ce primești.</h2>
-      ${valoare ? `<p class="lead">Valoarea estimată a unei cohorte e de ${esc(valoare.replace(/^valoare estimată:\s*/i, ''))}: atelierele, accesul la traineri și antreprenori, sprijinul partenerilor și comunitatea.</p>` : ''}</div></div>
+      ${valoare ? `<p class="lead">Valoarea estimată a unei cohorte e de <b>${esc(valoare.replace(/^valoare estimată:\s*/i, ''))}</b>: atelierele, accesul la traineri și antreprenori, sprijinul partenerilor și comunitatea.</p>` : ''}</div></div>
     <div class="price-row">
       ${priced.map(({ e, p }) => { const live = F.ongoing && e.id === F.ongoing.id;
         return `<a class="price ${live ? 'ref' : ''}" href="${edUrl(e)}"><span class="ask-kicker">${e.serie === 'Cluj' ? `Cluj #${e.numar}` : `Cohorta #${e.numar}`} · ${live ? 'în desfășurare' : 'înscrieri deschise'}</span><b>${esc(p.pret_text.replace(/(\d)(\d{3})\b/, '$1.$2'))}</b>

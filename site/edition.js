@@ -199,7 +199,7 @@ function editionBody(ctx, F, e) {
   const benefits = e.beneficii.map((b) => { const m = /^(\d+)\s+(.*)$/.exec(b.trim()); return m ? [m[1], m[2]] : ['1', b]; });
   const includes = e.beneficii.length || e.metodologie.length ? `<section class="sec" id="include"><div class="wrap">
     <div class="sec-head row"><div><p class="eyebrow">Ce include cohorta</p><h2>Un trimestru întreg, nu o conferință.</h2>
-      ${e.valoare_estimata || price ? `<p class="lead">${e.valoare_estimata ? esc(e.valoare_estimata) + '. ' : ''}${price ? `Taxa de participare: <b>${esc(price.pret_text)}</b>${price.nota ? ` (${esc(price.nota.replace(/\.$/, '').toLowerCase())})` : ''}.` : ''}</p>` : ''}</div></div>
+      ${e.valoare_estimata || price ? `<p class="lead">${e.valoare_estimata ? esc(e.valoare_estimata).replace(/^(valoare estimată:\s*)(.+)$/i, '$1<b>$2</b>') + '. ' : ''}${price ? `Taxa de participare: <b>${esc(price.pret_text)}</b>${price.nota ? ` (${esc(price.nota.replace(/\.$/, '').toLowerCase())})` : ''}.` : ''}</p>` : ''}</div></div>
     ${benefits.length ? `<div class="benefits">${benefits.map(([n, t]) => `<div class="benefit"><b>${esc(n)}</b><span>${esc(t.replace(/success/i, 'succes'))}</span></div>`).join('')}</div>` : ''}
     ${e.metodologie.length ? `<ol class="steps ed-steps">${e.metodologie.map((m, k) => `<li class="step"><span class="step-n">0${k + 1}</span><h3>${esc(m.titlu.charAt(0) + m.titlu.slice(1).toLowerCase())}</h3>
       <ul>${m.puncte.map((x) => `<li>${esc(x.replace(/;$/, '.').replace(/\bANTREPRENORI\b/g, 'antreprenori').replace(/provocarile/g, 'provocările'))}</li>`).join('')}</ul></li>`).join('')}</ol>` : ''}

@@ -2,7 +2,8 @@
 // Drumul unui antreprenor care se decide: promisiunea și cifrele, ce primește, cum arată o zi și o cohortă,
 // dacă e potrivit, cât costă, dovada (istoricul), cine e în spate, aplicarea. Fiecare informație apare o singură dată.
 // Profilul participanților apare doar agregat.
-const { esc, initials, milLei, img, de, temaUrl } = require('./util');
+const fs = require('fs'), path = require('path');
+const { esc, initials, milLei, img, de } = require('./util');
 const { tx } = require('./texte');
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : (n % 100 === 0 || n % 100 >= 20 ? 'de ' : '') + many}`;
@@ -41,8 +42,12 @@ function despre2Body(ctx, F) {
   // cele menționate pe site-ul vechi și confirmate în date, plus cele cu logo; întâi cele cu logo
   const closed = D.editii.filter((e) => /închis|încheiat/i.test(e.status || ''));
   const inClosed = (o) => !!o && closed.some((e) => e.participanti.some((p) => p.organizatie === o.id));
-  const mentioned = prog.alumni_mentionati.map((n) => byName.get(n.toLowerCase()) || D.organizatii.find((o) => o.nume.toLowerCase().startsWith(n.toLowerCase()))).filter(inClosed);
-  const alumni = [...new Map([...D.organizatii.filter((o) => o.logo && inClosed(o)), ...mentioned].map((o) => [o.id, o])).values()].sort((a, b) => !!b.logo - !!a.logo);
+  const LOGO_FILES = Object.fromEntries((() => { try { return fs.readdirSync(path.join(__dirname, 'assets', 'logos')); } catch { return []; } })().map((f) => [f.replace(/\.[a-z]+$/, ''), f]));
+  const caMax = (o) => Math.max(0, ...closed.flatMap((e) => e.participanti.filter((p) => p.organizatie === o.id).map((p) => p.cifra_afaceri || 0)));
+  const logoOf = (o) => o.logo || (LOGO_FILES[o.id] ? `/assets/logos/${LOGO_FILES[o.id]}` : null);
+  const alumni = D.organizatii.filter((o) => logoOf(o) && inClosed(o)).map((o) => ({ ...o, logo: logoOf(o) }))
+    // ordinea: după mărimea companiei (cifra de afaceri declarată decide doar ordinea, nu se afișează)
+    .sort((a, b) => caMax(b) - caMax(a));
 
   // investiția
   const priced = D.editii.filter((e) => e.deschisa).map((e) => ({ e, p: e.preturi.find((x) => !x.ascuns) })).filter((x) => x.p);
@@ -105,7 +110,7 @@ function despre2Body(ctx, F) {
       <p class="day-note">Exemplu real: atelierul „${esc(cleanTitle(day.titlu))}”, cohorta #${ong.numar}.</p>
     </div>
     <div class="fmt dx-fmt">
-      <div class="fmt-card big"><b>${fullDay.length}</b><h3>Ateliere full-day</h3><ul>${fullDay.map((a) => `<li><a href="${esc(temaUrl(T[a.tema]))}">${esc(T[a.tema]?.nume || cleanTitle(a.titlu))}</a></li>`).join('')}</ul></div>
+      <div class="fmt-card big"><b>${fullDay.length}</b><h3>Ateliere full-day</h3><ul>${fullDay.map((a) => `<li>${esc(T[a.tema]?.nume || cleanTitle(a.titlu))}</li>`).join('')}</ul></div>
       ${eveningOther.length ? `<div class="fmt-card"><b>${eveningOther.length}</b><h3>Ateliere de seară</h3><ul>${eveningOther.map((a) => `<li>${esc(cleanTitle(a.titlu))}</li>`).join('')}</ul></div>` : ''}
       ${mastermind.length ? `<div class="fmt-card"><b>${mastermind.length}</b><h3>Mastermind</h3><p>${esc(firstSentence(mastermind[0].descriere))}</p></div>` : ''}
       ${networking.length ? `<div class="fmt-card"><b>${networking.length}</b><h3>Petrecerea de final</h3><p>${esc(cleanTitle(networking[0].titlu))}, cu comunitatea RBL.</p></div>` : ''}
@@ -139,7 +144,7 @@ function despre2Body(ctx, F) {
   <!-- 04 investiția -->
   <section class="sec" id="investitie"><div class="wrap">
     <div class="sec-head row"><div><p class="eyebrow">Investiția</p><h2>Ce plătești și ce primești.</h2>
-      ${valoare ? `<p class="lead">Valoarea estimată a unei cohorte e de ${esc(valoare.replace(/^valoare estimată:\s*/i, ''))}: atelierele, accesul la traineri și antreprenori, sprijinul partenerilor și comunitatea.</p>` : ''}</div></div>
+      ${valoare ? `<p class="lead">Valoarea estimată a unei cohorte e de <b>${esc(valoare.replace(/^valoare estimată:\s*/i, ''))}</b>: atelierele, accesul la traineri și antreprenori, sprijinul partenerilor și comunitatea.</p>` : ''}</div></div>
     <div class="price-row">
       ${priced.map(({ e, p }) => { const live = F.ongoing && e.id === F.ongoing.id;
         return `<a class="price ${live ? 'ref' : ''}" href="${edUrl(e)}"><span class="ask-kicker">${e.serie === 'Cluj' ? `Cluj #${e.numar}` : `Cohorta #${e.numar}`} · ${live ? 'în desfășurare' : 'înscrieri deschise'}</span><b>${esc(p.pret_text.replace(/(\d)(\d{3})\b/, '$1.$2'))}</b>
