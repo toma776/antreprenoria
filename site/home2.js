@@ -3,7 +3,7 @@
 // navigatorul „ce vrei să rezolvi”, verificarea potrivirii cu cohorta (doar cifre agregate), lideri, comunitate, parteneri.
 // Totul vine din creier; cifrele de afaceri apar doar agregat (mediană, intervale, distribuție).
 const fs = require('fs'), path = require('path');
-const { esc, initials, fmtDay, today, img, de } = require('./util');
+const { esc, initials, fmtDay, today, img, de, TEME, temaUrl } = require('./util');
 const { tx } = require('./texte');
 const { themeInfo, pulse, NEEDS } = require('./home');
 const { everyone } = require('./traineri');
@@ -110,7 +110,7 @@ function home2Body(ctx, F) {
           <div class="x-navi-ppl">${people.slice(0, 4).map(({ p, n: k }) => `<a href="/lideri/${esc(p.id)}">${face(p, 96)}<span><b>${esc(p.nume)}</b><small>${esc(O[p.organizatii[0]]?.nume || '')} · ${k}×</small></span></a>`).join('')}</div>
           <div class="x-navi-ft">
             <span>${next ? `<i class="dot-live"></i>Următorul: <b>${fmtDay(next.a.data)}</b>, cohorta ${esc(edLabel(next.e))}` : cluj ? `Următorul: <b>Cluj #${cluj.e.numar}</b>, ${esc(cluj.e.perioada)}` : `Următorul: <b>cohorta ${nextB}</b>`}</span>
-            <a class="x-link" href="/teme/${esc(t.id)}">Despre temă ${ARROW}</a>
+            <a class="x-link" href="${esc(temaUrl(t))}">${TEME ? 'Despre temă' : 'Liderii temei'} ${ARROW}</a>
           </div>
         </div>`;
       }).join('')}</div>

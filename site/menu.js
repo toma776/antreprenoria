@@ -1,6 +1,6 @@
 // Meniul principal (mega-meniu): fiecare secțiune a site-ului deschide un panou cu tot ce conține,
 // generat din creier. Pe desktop panourile se deschid la hover sau click; pe mobil devin acordeon într-un meniu lateral.
-const { img, slug, de } = require('./util');
+const { img, slug, de, TEME } = require('./util');
 const { alumniData, ideas, connectMail } = require('./alumni');
 const { everyone } = require('./traineri');
 const { partnersData } = require('./parteneri');
@@ -216,7 +216,7 @@ function panels(ctx, F) {
 }
 
 function megaMenu(ctx, F) {
-  return panels(ctx, F).map((p) => `
+  return panels(ctx, F).filter((p) => TEME || p.id !== 'teme').map((p) => `
     <div class="mm-item" data-mm="${p.id}">
       <button class="mm-trigger" type="button" aria-expanded="false" aria-controls="mm-${p.id}">${esc(p.title)}<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5 6 7.5 9 4.5"/></svg></button>
       <div class="mm-panel" id="mm-${p.id}" role="region" aria-label="${esc(p.title)}">

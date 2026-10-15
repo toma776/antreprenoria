@@ -1,6 +1,6 @@
 // Liderii (trainerii, antreprenorii invitați și facilitatorii): /lideri (toți, cu filtre) și /lideri/<id> (fișa fiecăruia).
 // Totul vine din agenda atelierelor: ce teme a ținut fiecare, în ce cohorte, alături de cine.
-const { esc, initials, fmtDay, today, img, de } = require('./util');
+const { esc, initials, fmtDay, today, img, de, TEME, temaUrl } = require('./util');
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : (n % 100 === 0 || n % 100 >= 20 ? 'de ' : '') + many}`;
 const avatar = (p, w) => (p?.imagine ? `<img src="${esc(img(p.imagine, w))}" alt="" loading="lazy">` : `<span class="ph">${esc(initials(p?.nume || '?'))}</span>`);
@@ -11,7 +11,7 @@ const chrono = (D) => D.editii.slice().sort((a, b) => a.an - b.an || (a.sezon ==
 const ROL = { trainer: 'Trainer', 'antreprenor invitat': 'Antreprenor invitat', facilitator: 'Facilitator', invitat: 'Invitat' };
 const SPEAKER = ['trainer', 'antreprenor invitat', 'facilitator', 'invitat'];
 const FULL = ['viziune', 'model-business', 'marketing', 'vanzari', 'cultura'];
-const themeUrl = (t) => (t.format === 'full-day' ? `/teme/${t.id}` : `/teme#${t.id}`);
+const themeUrl = temaUrl;
 
 // pentru fiecare temă: când merită să vorbești cu omul (pentru antreprenor) și întrebări de pornire.
 // „poveste” = pentru cei care au construit o companie (o = numele companiei, poate lipsi); „metoda” = pentru traineri.
@@ -134,7 +134,7 @@ function traineriBody(ctx, F) {
       <p class="eyebrow">Curriculum</p>
       <h2>Fiecare temă, cu oamenii ei.</h2>
       <p>Cinci teme full-day, aceleași în fiecare cohortă, și ateliere de seară între ele.</p>
-      <div class="hero-actions"><a class="btn btn-light btn-lg" href="/aplica">Aplică</a><a class="btn btn-outline-light btn-lg" href="/teme">Vezi temele</a></div>
+      <div class="hero-actions"><a class="btn btn-light btn-lg" href="/aplica">Aplică</a>${TEME ? '<a class="btn btn-outline-light btn-lg" href="/teme">Vezi temele</a>' : '<a class="btn btn-outline-light btn-lg" href="/editii">Vezi cohortele</a>'}</div>
     </div>
   </div></section>
 </main>`;

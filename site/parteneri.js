@@ -1,7 +1,7 @@
 // /parteneri: pagina pentru brandurile care vor un program de CSR cu impact („Cresc antreprenorii, crește România”)
 // și inventarul brandurilor care au susținut programul. Totul vine din cohorte: partenerii din antetul fiecărei cohorte,
 // sponsorii și gazdele din ateliere, cifrele din participanți (doar agregate).
-const { esc, fmtDay, today, median, de, tidy } = require('./util');
+const { esc, fmtDay, today, median, de, tidy, temaUrl } = require('./util');
 const { implicareDialog } = require('./implicare');
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : (n % 100 === 0 || n % 100 >= 20 ? 'de ' : '') + many}`;
@@ -135,7 +135,7 @@ function parteneriBody(ctx, F) {
       ${o.descriere ? `<p class="sp-dt-desc">${esc(tidy(o.descriere).length > 320 ? tidy(o.descriere).slice(0, 317).replace(/\s+\S*$/, '') + '…' : tidy(o.descriere))}</p>` : ''}
       ${o.ciclu && d.byId[o.ciclu.alumni_din] ? `<p class="sp-dt-cyc">A trecut prin program ca participant în cohorta ${esc(edLabel(d.byId[o.ciclu.alumni_din]))} și s-a întors ca partener.</p>` : ''}
       <h4>Alături de program</h4><ul class="sp-dt-eds">${rows}</ul>
-      ${th.length ? `<div class="sp-dt-th">${th.map((t) => (FULL.includes(t.id) ? `<a href="/teme/${esc(t.id)}">${esc(t.nume)}</a>` : `<span>${esc(t.nume)}</span>`)).join('')}</div>` : ''}
+      ${th.length ? `<div class="sp-dt-th">${th.map((t) => (FULL.includes(t.id) ? `<a href="${esc(temaUrl(t))}">${esc(t.nume)}</a>` : `<span>${esc(t.nume)}</span>`)).join('')}</div>` : ''}
       <div class="sp-dt-act">${o.url ? `<a class="btn btn-ghost" href="${esc(o.url)}" target="_blank" rel="noopener">${esc(o.url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, ''))} ↗</a>` : ''}<a class="btn btn-primary" href="?implicare=sponsorizare#vreau" data-implica="sponsorizare">Vreau și eu alături de ei</a></div>
     </template>`; };
 

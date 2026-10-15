@@ -1,7 +1,7 @@
 // Pagina unei cohorte (/editii/22, /editii/cluj-1): același limbaj vizual ca homepage-ul.
 // Hero cu progresul cohortei, cifre, agenda pe ateliere (cu programul zilei), oamenii, colegii de cohortă, ce include, parteneri.
 // Cifrele de afaceri ale participanților apar doar agregat (interval, mediană), niciodată per companie.
-const { esc, initials, milLei, fmtDay, today, median, quantile, img, logoImg, de } = require('./util');
+const { esc, initials, milLei, fmtDay, today, median, quantile, img, logoImg, de, TEME, temaUrl } = require('./util');
 
 const DAY = 864e5;
 const days = (a, b) => Math.round((new Date(b + 'T12:00') - new Date(a + 'T12:00')) / DAY);
@@ -152,7 +152,7 @@ function editionBody(ctx, F, e) {
         <div class="ag-body">
           <div class="ag-desc">
             ${a.descriere ? `<p>${esc(cap(a.descriere))}</p>` : ''}
-            ${a.tema && T[a.tema] ? `<a class="link-arrow" href="/teme/${esc(a.tema)}">Despre tema „${esc(T[a.tema].nume)}” →</a>` : ''}
+            ${a.tema && T[a.tema] ? `<a class="link-arrow" href="${esc(temaUrl(T[a.tema]))}">${TEME ? 'Despre tema' : 'Liderii temei'} „${esc(T[a.tema].nume)}” →</a>` : ''}
             ${sp ? `<div class="ag-sponsor"><span>Atelier susținut de</span>${sp.logo ? `<img src="${esc(sp.logo)}" alt="${esc(sp.nume)}" loading="lazy">` : `<b>${esc(sp.nume)}</b>`}</div>`
               : a.cauta_sponsor ? `<a class="ag-sponsor ag-sponsor-free" href="/parteneri"><span>Atelierul caută un sponsor</span><b>Susține-l →</b></a>` : ''}
           </div>

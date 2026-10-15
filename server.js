@@ -413,6 +413,8 @@ async function handler(req, res) {
     }
     if (url.startsWith('/assets/')) return sendFile(res, safe(path.join(ROOT, 'site', 'assets'), url.slice('/assets/'.length)) || '');
     // paginile site-ului se generează la fiecare cerere din data/entitati.json și data/brand.json
+    // pagina Teme e ascunsă (site/util.js › TEME): adresele ei duc la /program
+    if (!fresh('./site/util').TEME && /^\/teme(\/|$)/.test(url)) { res.writeHead(301, { Location: '/program' }); return res.end(); }
     const PAGES = { '/': 'renderHome', '/program': 'renderProgram', '/despre': 'renderDespre', '/teme': 'renderTeme' };
     // adresa veche de contact duce la secțiunea de contact din /despre
     if (url === '/contact') { res.writeHead(301, { Location: '/despre#contact' }); return res.end(); }

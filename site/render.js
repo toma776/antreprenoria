@@ -8,7 +8,7 @@ const { megaMenu } = require('./menu');
 // local, cu modificările încă nepublicate din panou (entitati-local.json); pe Vercel, doar ce e publicat
 const DATA_PUB = path.join(__dirname, '..', 'data', 'entitati.json'), DATA_LOCAL = path.join(__dirname, '..', 'data', 'entitati-local.json');
 const dataFile = () => (!process.env.VERCEL && fs.existsSync(DATA_LOCAL) ? DATA_LOCAL : DATA_PUB);
-const { esc, today, fmtDay, median, quantile, milLei, initials, de, cohorta } = require('./util');
+const { esc, today, fmtDay, median, quantile, milLei, initials, de, cohorta, TEME } = require('./util');
 const { tx } = require('./texte');
 const { homeBody } = require('./home');
 const { editionBody, findEdition, edLabel } = require('./edition');
@@ -78,7 +78,7 @@ function facts({ D, P }) {
 }
 
 // ---------- bucăți comune ----------
-const NAV = [['Program', '/program'], ['Cohorte', '/editii'], ['Teme', '/teme'], ['Lideri', '/lideri'], ['Comunitate', '/comunitate'], ['Parteneri', '/parteneri'], ['Despre', '/despre']];
+const NAV = [['Program', '/program'], ['Cohorte', '/editii'], ...(TEME ? [['Teme', '/teme']] : []), ['Lideri', '/lideri'], ['Comunitate', '/comunitate'], ['Parteneri', '/parteneri'], ['Despre', '/despre']];
 // varianta de brand vine din data/brand.json (activă sau cerută pentru previzualizare cu ?brand=)
 function head(title, desc, brandId) {
   const v = brand.pick(brand.load(), brandId);

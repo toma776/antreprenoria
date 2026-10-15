@@ -32,4 +32,8 @@ const tidy = (s) => String(s ?? '').replace(/\s+([,.;:!?])/g, '$1');
 // textele preluate care spun „ediție”: pe site spunem „cohortă” (aceleași forme, același gen)
 const COH = { edițiilor: 'cohortelor', edițiile: 'cohortele', ediției: 'cohortei', ediția: 'cohorta', ediții: 'cohorte', ediție: 'cohortă', Edițiile: 'Cohortele', Ediția: 'Cohorta', Ediții: 'Cohorte', Ediție: 'Cohortă' };
 const cohorta = (s) => String(s ?? '').replace(/(?<!\p{L})(Edițiile|edițiilor|edițiile|ediției|Ediția|ediția|Ediții|ediții|Ediție|ediție)(?!\p{L})/gu, (m) => COH[m]);
-module.exports = { cohorta, de, tidy, esc, today, MONTHS, fmtDay, median, quantile, milLei, initials, slug, img, logoImg };
+// pagina Teme (/teme, /teme/<id>): ascunsă; codul rămâne. Cu true revine în meniu, în footer și în linkuri.
+const TEME = false;
+// unde duce o temă: pagina ei (dacă Teme e vizibilă), altfel liderii care o predau
+const temaUrl = (t) => (!t ? '/lideri' : TEME ? (t.format === 'full-day' ? `/teme/${t.id}` : `/teme#${t.id}`) : `/lideri?tema=${t.id}#lista`);
+module.exports = { TEME, temaUrl, cohorta, de, tidy, esc, today, MONTHS, fmtDay, median, quantile, milLei, initials, slug, img, logoImg };

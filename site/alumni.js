@@ -1,7 +1,7 @@
 // Comunitatea: /comunitate (toți alumnii cohortelor încheiate: căutare după nevoie, explorare, director) și /comunitate/<id> (doar profilurile completate).
 // Un participant intră în comunitate când cohorta lui se încheie; până atunci apare doar pe pagina cohortei.
 // Cifrele de business apar numai agregat, niciodată pe om sau pe companie.
-const { esc, initials, img, milLei, slug, logoImg, de, tidy } = require('./util');
+const { esc, initials, img, milLei, slug, logoImg, de, tidy, temaUrl } = require('./util');
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : (n % 100 === 0 || n % 100 >= 20 ? 'de ' : '') + many}`;
 const avatar = (src, nume, w) => (src ? `<img src="${esc(img(src, w))}" alt="" loading="lazy">` : `<span class="ph">${esc(initials(nume || '?'))}</span>`);
@@ -194,7 +194,7 @@ function alumniBody(ctx, F, sel = {}) {
 const MON = ['ian.', 'feb.', 'mar.', 'apr.', 'mai', 'iun.', 'iul.', 'aug.', 'sep.', 'oct.', 'nov.', 'dec.'];
 const shortDay = (d) => { const [, m, z] = d.split('-').map(Number); return `${z} ${MON[m - 1]}`; };
 const cleanTitle = (t) => String(t || '').replace(/^(Atelier de Seară|COCKTAIL NETWORKING)\s*[-:]\s*/i, '');
-const themeUrl = (t) => (t.format === 'full-day' ? `/teme/${t.id}` : `/teme#${t.id}`);
+const themeUrl = temaUrl;
 // rezumatul de sus: primele fraze din descriere, cât să încapă într-un paragraf scurt
 const lede = (s, max = 230) => { const f = String(s || '').match(/[^.!?]+[.!?]+(\s|$)/g) || [s || '']; let out = ''; for (const x of f) { if (out && (out + x).length > max) break; out += x; } return out.trim().length > max + 60 ? `${out.slice(0, max).replace(/\s+\S*$/, '')}…` : out.trim(); };
 const SVG = {

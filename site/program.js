@@ -1,7 +1,7 @@
 // Pagina /program: tot ce trebuie să știi înainte să aplici, într-o singură pagină cu secțiuni (ancorele din meniu duc aici).
 // Conținutul vine din creier: descrierea și audiența de pe /despre-noi, metodologia, agenda cohortei curente, prețurile.
 // Profilul participanților apare doar agregat.
-const { esc, initials, milLei, img, de } = require('./util');
+const { esc, initials, milLei, img, de, TEME, temaUrl } = require('./util');
 const { tx } = require('./texte');
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : (n % 100 === 0 || n % 100 >= 20 ? 'de ' : '') + many}`;
@@ -86,9 +86,9 @@ function programBody(ctx, F) {
   <section class="sec sec-alt" id="format"><div class="wrap">
     <div class="sec-head row"><div><p class="eyebrow">Formatul unei cohorte</p><h2>${plural(ws.length, 'întâlnire', 'întâlniri')} într-un trimestru.</h2>
       <p class="lead">Temele full-day sunt aceleași de la o cohortă la alta; atelierele de seară s-au schimbat.</p></div>
-      <a class="link-arrow" href="/teme">Toate temele →</a></div>
+      ${TEME ? '<a class="link-arrow" href="/teme">Toate temele →</a>' : ''}</div>
     <div class="fmt">
-      <div class="fmt-card big"><b>${fullDay.length}</b><h3>Ateliere full-day</h3><ul>${fullDay.map((a) => `<li><a href="/teme/${esc(a.tema)}">${esc(T[a.tema]?.nume || cleanTitle(a.titlu))}</a></li>`).join('')}</ul></div>
+      <div class="fmt-card big"><b>${fullDay.length}</b><h3>Ateliere full-day</h3><ul>${fullDay.map((a) => `<li><a href="${esc(temaUrl(T[a.tema]))}">${esc(T[a.tema]?.nume || cleanTitle(a.titlu))}</a></li>`).join('')}</ul></div>
       ${eveningOther.length ? `<div class="fmt-card"><b>${eveningOther.length}</b><h3>Ateliere de seară</h3><ul>${eveningOther.map((a) => `<li>${esc(cleanTitle(a.titlu))}</li>`).join('')}</ul></div>` : ''}
       ${mastermind.length ? `<div class="fmt-card"><b>${mastermind.length}</b><h3>Mastermind</h3><p>${esc(firstSentence(mastermind[0].descriere))}</p></div>` : ''}
       ${networking.length ? `<div class="fmt-card"><b>${networking.length}</b><h3>Petrecerea de final</h3><p>${esc(cleanTitle(networking[0].titlu))}. ${esc(firstSentence(networking[0].descriere))}</p></div>` : ''}
