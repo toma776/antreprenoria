@@ -323,7 +323,7 @@ ${footer(F, ctx)}
 // ---------- ALUMNI ----------
 function renderAlumni(opt = {}) {
   const ctx = load(opt.brand), F = facts(ctx);
-  return `${head('Comunitatea Antreprenoria – antreprenorii care au trecut prin program', 'Comunitatea Antreprenoria: alumnii tuturor cohortelor, fiecare cu ce face și ce oferă. Caută după ce ai nevoie, explorează pe industrii și cere o conectare.', opt.brand)}
+  return `${head('Comunitatea Antreprenoria – antreprenorii care au trecut prin program', 'Comunitatea Antreprenoria: alumnii tuturor cohortelor, fiecare cu ce face și ce oferă. Caută după ce ai nevoie, explorează pe industrii și cere o conectare.', opt.brand).replace('</head>', '<link rel="stylesheet" href="/assets/cm2.css"></head>')}
 ${header(F, ctx)}
 <div class="gridlines" aria-hidden="true"></div>
 ${alumniBody(ctx, F, { sector: opt.sector, editie: opt.editie, q: opt.q })}
@@ -331,6 +331,29 @@ ${footer(F, ctx)}
 <script src="/assets/site.js"></script>
 </body></html>`;
 }
+// paginile separate ale comunității: căutarea, industriile, cohortele (site/comunitate.js, stilurile în cm2.css)
+function cmPage(opt, title, desc, body) {
+  const ctx = load(opt.brand), F = facts(ctx);
+  const b = body(ctx, F);
+  if (!b) return null;
+  const html = typeof b === 'string' ? b : b.html;
+  const t = typeof b === 'string' ? title : title.replace('%s', b.title);
+  return `${head(t, desc.replace('%s', b.title || ''), opt.brand).replace('</head>', '<link rel="stylesheet" href="/assets/cm2.css"></head>')}
+${opt.noindex ? '<meta name="robots" content="noindex">' : ''}
+${header(F, ctx)}
+${html}
+${footer(F, ctx)}
+<script src="/assets/site.js"></script>
+</body></html>`;
+}
+const CM = () => require('./comunitate');
+const renderCauta = (opt = {}) => cmPage({ ...opt, noindex: true }, opt.q ? `„${opt.q}” – căutare în comunitatea Antreprenoria` : 'Caută în comunitatea Antreprenoria',
+  'Caută printre antreprenorii comunității Antreprenoria după ce ai nevoie: un serviciu, un produs, o companie.', (ctx, F) => CM().searchBody(ctx, F, opt.q || ''));
+const renderIndustrii = (opt = {}) => cmPage(opt, 'Comunitatea Antreprenoria, pe industrii', 'Antreprenorii din comunitatea Antreprenoria, grupați după industria companiei.', (ctx) => CM().industriiBody(ctx));
+const renderIndustrie = (opt = {}) => cmPage(opt, '%s – comunitatea Antreprenoria', 'Antreprenorii din comunitatea Antreprenoria care lucrează în %s: ce face fiecare și cum ceri o conectare.', (ctx, F) => CM().industrieBody(ctx, F, opt.id));
+const renderCohorte = (opt = {}) => cmPage(opt, 'Comunitatea Antreprenoria, pe cohorte', 'Antreprenorii din comunitatea Antreprenoria, cohortă cu cohortă.', (ctx) => CM().cohorteBody(ctx));
+const renderCohortaCm = (opt = {}) => cmPage(opt, '%s – comunitatea Antreprenoria', '%s: antreprenorii care au trecut împreună prin Antreprenoria și ce fac acum.', (ctx, F) => CM().cohortaBody(ctx, F, opt.id));
+
 // pagina unui alumnus: doar cu profilul completat; opt.preview (doar local) o arată pentru oricine
 function renderAlumnus(opt = {}) {
   const ctx = load(opt.brand), F = facts(ctx), a = alumniData(ctx).L.find((x) => x.id === opt.id);
@@ -377,4 +400,4 @@ const applyOptions = () => { const ctx = load(); return aplicaOptions(ctx, facts
 // indexul comunității pentru căutarea din meniu
 const renderCommunityIndex = (opt = {}) => JSON.stringify(communityIndex(load(opt.brand)));
 
-module.exports = { renderHome3, renderDespreOld, renderHomeOld, render404, renderCommunityIndex, renderHome, renderEdition, renderProgram, renderDespre, renderTeme, renderTema, renderTraineri, renderTrainer, renderAlumni, renderAlumnus, renderParteneri, renderEditii, renderAplica, applyOptions };
+module.exports = { renderCauta, renderIndustrii, renderIndustrie, renderCohorte, renderCohortaCm, renderHome3, renderDespreOld, renderHomeOld, render404, renderCommunityIndex, renderHome, renderEdition, renderProgram, renderDespre, renderTeme, renderTema, renderTraineri, renderTrainer, renderAlumni, renderAlumnus, renderParteneri, renderEditii, renderAplica, applyOptions };

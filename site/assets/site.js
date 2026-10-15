@@ -382,7 +382,7 @@ const peopleSearch = (() => {
       cards.forEach((c) => { c.hidden = !shown.includes(c); });
       [...shown, ...cards.filter((c) => !shown.includes(c))].forEach((c) => grid.append(c));
     }
-    empty.hidden = shown.length > 0;
+    empty.hidden = shown.length > 0 || (S && !state.q);
     if (count) count.innerHTML = shown.length === cards.length ? `<b>${cards.length}</b> ${deRo(cards.length)}oameni care au predat în program` : `<b>${shown.length}</b> din ${cards.length}`;
   };
   const setFilter = (g, b) => { g.querySelectorAll('[data-tr]').forEach((x) => x.classList.toggle('on', x === b)); state[g.dataset.trGroup] = b.dataset.tr; };
@@ -487,7 +487,8 @@ const peopleSearch = (() => {
 // /alumni și /traineri deschise cu un filtru în adresă (fără #lista): pornesc direct de la filtre și listă
 (() => {
   const list = document.getElementById('lista');
-  if (!list) return;
+  // căutarea (/comunitate/cauta) își are căutarea sus: nu derulăm
+  if (!list || list.classList.contains('cs-body')) return;
   const q = new URLSearchParams(location.search);
   if (location.hash !== '#lista' && !['sector', 'editie', 'rol', 'tema', 'oras', 'q'].some((k) => q.get(k))) return;
   // după fonturi și imagini titlul de sus își schimbă înălțimea: ne repoziționăm, dacă omul n-a derulat între timp
@@ -650,37 +651,58 @@ const cmEngine = (() => {
   const sels = [...document.querySelectorAll('.cm-sel select')];
   const count = document.querySelector('.cm-count'), reset = document.querySelector('.cm-reset'), note = document.querySelector('.cm-note'), empty = document.querySelector('.cm-empty');
   const list = document.getElementById('lista');
-  const state = { q: qIn?.value.trim() || '' };
+  // /comunitate/cauta: pagina goală arată doar căutarea; cu o întrebare, rezultatele ca într-un motor de căutare
+  const S = grid.dataset.mode === 'search', main = grid.closest('main'), facets = document.querySelector('.cs-facets');
+  // pe /comunitate, cu paginile separate, formularul din hero duce la /comunitate/cauta (nu filtrează lista de jos)
+  const go = qIn?.form?.hasAttribute('data-go');
+  const state = { q: go ? '' : qIn?.value.trim() || '' };
   const f = (k) => sels.find((s) => s.dataset.f === k)?.value || '';
   const apply = () => {
+    const t0 = performance.now();
     const r = search(state.q);
     const ok = (c) => (!f('sector') || c.dataset.sector === f('sector')) && (!f('ed') || c.dataset.ed.split(' ').includes(f('ed'))) && (!f('city') || c.dataset.city === f('city'));
     const order = r.list || cards.slice().sort((a, b) => a._i - b._i);
-    const shown = order.filter(ok);
+    const shown = S && !state.q ? [] : order.filter(ok);
+    if (S) {
+      main.classList.toggle('is-empty', !state.q);
+      // fațetele: industriile în care apar rezultatele, cu câte rezultate are fiecare
+      const pool = (r.list || cards).filter((c) => !f('ed') || c.dataset.ed.split(' ').includes(f('ed')));
+      const m = {}; pool.forEach((c) => { if (c.dataset.sector) m[c.dataset.sector] = (m[c.dataset.sector] || 0) + 1; });
+      const cur = f('sector');
+      facets.innerHTML = Object.entries(m).sort((a, b) => b[1] - a[1]).map(([k, n]) => `<button type="button" data-facet="${escH(k)}" aria-pressed="${k === cur}"><span>${escH(k)}</span><b>${n}</b></button>`).join('') || '<p>Nicio industrie.</p>';
+      document.title = state.q ? `„${state.q}” – căutare în comunitatea Antreprenoria` : 'Caută în comunitatea Antreprenoria';
+    }
     cards.forEach((c) => { c.hidden = !shown.includes(c); mark(c, r.list ? r.terms : []); });
     [...shown, ...cards.filter((c) => !shown.includes(c))].forEach((c) => grid.append(c));
-    count.innerHTML = `<b>${shown.length}</b> ${shown.length === 1 ? 'membru' : (shown.length % 100 >= 20 || (shown.length && shown.length % 100 === 0) ? 'de ' : '') + 'membri'}${state.q ? ` pentru „${escH(state.q)}”` : ''}`;
+    const deN = (n) => (n % 100 >= 20 || (n && n % 100 === 0) ? 'de ' : '');
+    count.innerHTML = S ? `<b>${shown.length}</b> ${shown.length === 1 ? 'rezultat' : deN(shown.length) + 'rezultate'} pentru „${escH(state.q)}”<small> · ${((performance.now() - t0) / 1000).toFixed(3).replace('.', ',')} secunde</small>`
+      : `<b>${shown.length}</b> ${shown.length === 1 ? 'membru' : deN(shown.length) + 'membri'}${state.q ? ` pentru „${escH(state.q)}”` : ''}`;
     note.hidden = !r.partial; if (r.partial) note.textContent = 'Nimeni nu se potrivește pe toate cuvintele. Iată potrivirile parțiale:';
     empty.hidden = shown.length > 0;
-    reset.hidden = !state.q && !sels.some((s) => s.value);
+    reset.hidden = S ? !sels.some((s) => s.value) : !state.q && !sels.some((s) => s.value);
     const u = new URL(location.href);
     sels.forEach((s) => { const q = s.selectedOptions[0]?.dataset.q; q ? u.searchParams.set(s.dataset.param, q) : u.searchParams.delete(s.dataset.param); });
     state.q ? u.searchParams.set('q', state.q) : u.searchParams.delete('q');
     history.replaceState(null, '', u.pathname + u.search + u.hash);
   };
   const setQ = (v, from) => { state.q = v; if (qIn && from !== qIn) qIn.value = v; if (qBar && from !== qBar) qBar.value = v; apply(); };
-  const toList = () => list.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const toList = () => { if (!S) list.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
   [qIn, qBar].forEach((inp) => {
-    if (!inp) return;
+    if (!inp || (inp === qIn && go)) return;
     if (inp.dataset.short && matchMedia('(max-width: 480px)').matches) inp.placeholder = inp.dataset.short;
     let t;
     inp.addEventListener('input', () => { clearTimeout(t); t = setTimeout(() => setQ(inp.value.trim(), inp), 140); });
     inp.addEventListener('keydown', (e) => { if (e.key === 'Escape') { inp.value = ''; setQ('', inp); } });
   });
-  document.querySelector('.cm-search')?.addEventListener('submit', (e) => { e.preventDefault(); setQ(qIn.value.trim(), qIn); toList(); });
+  document.querySelector('.cm-search:not([data-go])')?.addEventListener('submit', (e) => { e.preventDefault(); setQ(qIn.value.trim(), qIn); toList(); });
+  if (S) {
+    facets.addEventListener('click', (e) => { const b = e.target.closest('[data-facet]'); if (!b) return; const s = sels.find((x) => x.dataset.f === 'sector'); s.value = s.value === b.dataset.facet ? '' : b.dataset.facet; apply(); });
+    // „/” duce în căutare, ca la motoarele de căutare
+    addEventListener('keydown', (e) => { if (e.key === '/' && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName)) { e.preventDefault(); qIn.focus(); qIn.select(); } });
+  }
   document.querySelectorAll('[data-idea]').forEach((b) => b.addEventListener('click', () => { setQ(b.dataset.idea); toList(); }));
   sels.forEach((s) => s.addEventListener('change', apply));
-  reset.addEventListener('click', () => { sels.forEach((s) => { s.value = ''; }); setQ(''); });
+  reset.addEventListener('click', () => { sels.forEach((s) => { s.value = ''; }); S ? apply() : setQ(''); });
   // explorarea: filele (industrie, cohortă, oraș) și felia aleasă devine filtru în director
   const tabs = [...document.querySelectorAll('.cm-tabs [role="tab"]')];
   tabs.forEach((t) => t.addEventListener('click', () => {
@@ -692,7 +714,10 @@ const cmEngine = (() => {
     setQ('');
     toList();
   }));
-  if (state.q) apply();
+  // filtrele venite prin adresă (?sector=, ?editie=) pe paginile separate
+  const p0 = new URLSearchParams(location.search);
+  sels.forEach((s) => { const v = p0.get(s.dataset.param); const o = v && [...s.options].find((x) => x.dataset.q === v); if (o && !s.value) s.value = o.value; });
+  if (state.q || S || sels.some((s) => s.value)) apply();
 
   // profilul rapid: panou lateral (de jos, pe mobil), cu ce face compania și conectarea prin echipă
   const dr = document.getElementById('cm-drawer'), panel = dr.querySelector('.cm-panel'), body = dr.querySelector('.cm-p-body');

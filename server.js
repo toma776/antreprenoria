@@ -56,7 +56,7 @@ function safe(base, rel) {
 }
 // modulele site-ului se reîncarcă la fiecare cerere, ca schimbările din data/ și site/ să apară fără repornire
 function fresh(mod) {
-  ['./site/render', './site/brand', './site/menu', './site/home', './site/util', './site/edition', './site/program', './site/despre', './site/teme', './site/aplica', './site/texte', './site/traineri', './site/alumni', './site/parteneri', './site/implicare', './site/editii', './site/home2', './site/despre2', './site/home3'].forEach((m) => delete require.cache[require.resolve(m)]);
+  ['./site/render', './site/brand', './site/menu', './site/home', './site/util', './site/edition', './site/program', './site/despre', './site/teme', './site/aplica', './site/texte', './site/traineri', './site/alumni', './site/parteneri', './site/implicare', './site/editii', './site/home2', './site/despre2', './site/home3', './site/comunitate'].forEach((m) => delete require.cache[require.resolve(m)]);
   return require(mod);
 }
 
@@ -497,6 +497,19 @@ async function handler(req, res) {
       res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' });
       const q1 = new URLSearchParams(query);
       return res.end(fresh('./site/render').renderAlumni({ brand: q1.get('brand') || undefined, sector: q1.get('sector') || undefined, editie: q1.get('editie') || undefined, q: q1.get('q') || undefined }));
+    }
+    // paginile separate ale comunității (deocamdată doar local): căutarea, industriile, cohortele
+    if (fresh('./site/util').CM_PAGES) {
+      const q3 = new URLSearchParams(query), R = fresh('./site/render'), brand = q3.get('brand') || undefined;
+      let cm = null;
+      if (url === '/comunitate/cauta') cm = R.renderCauta({ brand, q: (q3.get('q') || '').trim().slice(0, 120) });
+      else if (url === '/comunitate/industrii') cm = R.renderIndustrii({ brand });
+      else if (url === '/comunitate/cohorte') cm = R.renderCohorte({ brand });
+      else {
+        const m = /^\/comunitate\/(industrii|cohorte)\/([a-z0-9-]+)$/.exec(url);
+        if (m) cm = m[1] === 'industrii' ? R.renderIndustrie({ brand, id: m[2] }) : R.renderCohortaCm({ brand, id: m[2] });
+      }
+      if (cm) { res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' }); return res.end(cm); }
     }
     const al = AL_RE.exec(url);
     if (al) {

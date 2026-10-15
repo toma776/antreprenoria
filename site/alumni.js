@@ -1,7 +1,7 @@
 // Comunitatea: /comunitate (toți alumnii cohortelor încheiate: căutare după nevoie, explorare, director) și /comunitate/<id> (doar profilurile completate).
 // Un participant intră în comunitate când cohorta lui se încheie; până atunci apare doar pe pagina cohortei.
 // Cifrele de business apar numai agregat, niciodată pe om sau pe companie.
-const { esc, initials, img, milLei, slug, logoImg, de, tidy, temaUrl } = require('./util');
+const { esc, initials, img, milLei, slug, logoImg, de, tidy, temaUrl, CM_PAGES } = require('./util');
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : (n % 100 === 0 || n % 100 >= 20 ? 'de ' : '') + many}`;
 const avatar = (src, nume, w) => (src ? `<img src="${esc(img(src, w))}" alt="" loading="lazy">` : `<span class="ph">${esc(initials(nume || '?'))}</span>`);
@@ -47,6 +47,39 @@ function alumniData(ctx) {
 }
 const href = (a) => (a.speaker ? `/lideri/${a.id}` : a.page ? `/comunitate/${a.id}` : '');
 
+// adresele feliilor: /comunitate/industrii/<industrie>, /comunitate/cohorte/<18 | cluj-1>, /comunitate/cauta?q=
+const edKey = (e) => (e.serie === 'Cluj' ? `cluj-${e.numar}` : String(e.numar));
+const sectorUrl = (s) => (CM_PAGES ? `/comunitate/industrii/${slug(s)}` : `/comunitate?sector=${slug(s)}#lista`);
+const edCmUrl = (e) => (CM_PAGES ? `/comunitate/cohorte/${edKey(e)}` : `/comunitate?editie=${e.numar}#lista`);
+
+// un membru, cu tot ce-i trebuie profilului rapid (panoul lateral) și căutării
+const cmAttrs = (a) => `data-id="${esc(a.id)}" data-ed="${esc(a.eds.map((e) => e.id).join(' '))}" data-sector="${esc(a.sector || '')}" data-city="${esc(a.oras || '')}" data-of="${esc([...a.oferta, ...a.pentru].join(' · '))}"
+      data-eds="${esc(a.eds.map((e) => `${edLabel(e)}, ${e.sezon} ${e.an}`).join(' · '))}" data-fn="${esc(a.fn)}" data-li="${esc(a.p?.linkedin || '')}" data-url="${esc(a.org?.url || '')}" data-href="${esc(href(a))}" data-logo="${esc(a.org?.logo || '')}"`;
+const cmCard = (a, hidden = false) => `<article class="cm-card" ${hidden ? 'hidden' : ''} ${cmAttrs(a)}>
+      <button class="cm-hit" type="button" aria-haspopup="dialog" aria-label="Profilul lui ${esc(a.nume)}"></button>
+      <div class="cm-card-top">
+        <span class="cm-av">${avatar(a.imagine, a.nume, 128)}</span>
+        <span class="cm-who"><b class="cm-n">${esc(a.nume)}</b><span class="cm-co">${esc(a.org?.nume || '')}</span></span>
+      </div>
+      ${a.desc ? `<p class="cm-d">${esc(a.desc)}</p>` : '<p class="cm-d cm-d-empty">Profil în curs de completare.</p>'}
+      <div class="cm-card-ft">${a.sector ? `<span class="cm-tag">${esc(a.sector)}</span>` : ''}<span class="cm-eds">${a.eds.map(edLabel).join(' · ')}</span></div>
+    </article>`;
+// același membru, ca rezultat de motor de căutare: sursa, titlul, fragmentul cu cuvintele găsite, etichetele
+const cmRow = (a) => `<article class="cm-card cs-row" hidden ${cmAttrs(a)}>
+      <button class="cm-hit" type="button" aria-haspopup="dialog" aria-label="Profilul lui ${esc(a.nume)}"></button>
+      <div class="cs-src"><span class="cm-av">${avatar(a.imagine, a.nume, 128)}</span><span class="cs-src-t"><span class="cm-co">${esc(a.org?.nume || a.nume)}</span><cite>comunitate${a.sector ? ` › ${esc(a.sector)}` : ''} › ${esc(a.eds.map(edLabel).join(', '))}</cite></span></div>
+      <h3 class="cs-t"><b class="cm-n">${esc(a.nume)}</b>${a.fn ? `<span> · ${esc(a.fn)}</span>` : ''}</h3>
+      ${a.desc ? `<p class="cm-d">${esc(a.desc)}</p>` : '<p class="cm-d cm-d-empty">Profil în curs de completare.</p>'}
+      <p class="cs-meta">${a.sector ? `<span>${esc(a.sector)}</span>` : ''}${a.oras ? `<span>${esc(a.oras)}</span>` : ''}${a.eds.map((e) => `<span>Cohorta ${esc(edLabel(e))}, ${e.an}</span>`).join('')}</p>
+    </article>`;
+const cmDrawer = (mail) => `<div class="cm-drawer" id="cm-drawer" hidden data-mail="${esc(mail)}">
+    <div class="cm-scrim" data-close></div>
+    <aside class="cm-panel" role="dialog" aria-modal="true" aria-labelledby="cm-p-name" tabindex="-1">
+      <button class="cm-x" type="button" data-close aria-label="Închide">${I.close}</button>
+      <div class="cm-p-body"></div>
+    </aside>
+  </div>`;
+
 // sugestiile de căutare: doar cuvintele care chiar găsesc ceva în comunitate
 const IDEAS = ['SEO', 'software', 'marketing', 'construcții', 'logistică', 'consultanță', 'evenimente', 'energie', 'producție', 'recrutare', 'contabilitate', 'design', 'instalații', 'medical', 'turism', 'e-commerce', 'automatizări', 'mobilier', 'ambalaje', 'imobiliare', 'catering', 'educație'];
 const ideas = (L) => IDEAS.map((w) => [w, L.filter((a) => new RegExp(`\\b${norm(w).slice(0, Math.max(4, norm(w).length - 2))}`).test(norm(`${a.org?.nume} ${a.sector} ${a.desc}`))).length])
@@ -63,6 +96,23 @@ const I = {
   close: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>',
 };
 
+// o felie a comunității (industrie sau cohortă), ca legătură spre pagina ei
+const sliceTile = (url, label, n, members, sub = '') => `<a class="cm-tile" href="${esc(url)}">
+      <span class="cm-tile-n">${n}<small>${plural(n, 'membru', 'membri').slice(String(n).length + 1)}</small></span><b>${esc(label)}${sub ? `<small class="cm-tile-sub">${esc(sub)}</small>` : ''}</b>
+      <span class="cm-stack">${members.slice(0, 4).map((a) => `<span>${avatar(a.imagine, a.nume, 128)}</span>`).join('')}</span>
+      <i class="cm-tile-go">${I.arrow}</i></a>`;
+// explorarea de pe /comunitate, cu paginile separate: primele industrii și toate cohortele, fiecare cu pagina ei
+const exploreLinks = (d) => `<section class="sec cm-explore" id="exploreaza"><div class="wrap">
+    <div class="sec-head row"><div><p class="eyebrow">Explorează</p><h2>Comunitatea, pe felii.</h2></div>
+      <nav class="cm-tabs cm-tabs-go" aria-label="Explorează după"><a href="/comunitate/industrii">Industrii<i>${I.arrow}</i></a><a href="/comunitate/cohorte">Cohorte<i>${I.arrow}</i></a></nav></div>
+    <div class="cm-tiles">${d.sectors.slice(0, 8).map(([s, n]) => sliceTile(sectorUrl(s), s, n, d.L.filter((a) => a.sector === s))).join('')}</div>
+    <div class="cx-strip">
+      <a class="cx-strip-all" href="/comunitate/industrii">Toate cele ${d.sectors.length} de industrii ${I.arrow}</a>
+      <span class="cx-strip-k">Pe cohorte</span>
+      <div class="cx-chips">${d.eds.slice().reverse().map((e) => `<a href="${esc(edCmUrl(e))}">${esc(edLabel(e))}<small>${e.an}</small></a>`).join('')}</div>
+    </div>
+  </div></section>`;
+
 // ---------- /comunitate ----------
 function alumniBody(ctx, F, sel = {}) {
   const d = alumniData(ctx), mail = connectMail(ctx.D);
@@ -72,23 +122,12 @@ function alumniBody(ctx, F, sel = {}) {
   const shown = (x) => (!selS || x.sector === selS) && (!selE || x.eds.some((e) => e.id === selE));
   const nShown = d.L.filter(shown).length;
   const maxBand = Math.max(...d.bands.map((b) => b.n), 1);
-  const card = (a) => {
-    const h = href(a);
-    return `<article class="cm-card" ${shown(a) ? '' : 'hidden'} data-id="${esc(a.id)}" data-ed="${esc(a.eds.map((e) => e.id).join(' '))}" data-sector="${esc(a.sector || '')}" data-city="${esc(a.oras || '')}" data-of="${esc([...a.oferta, ...a.pentru].join(' · '))}"
-      data-eds="${esc(a.eds.map((e) => `${edLabel(e)}, ${e.sezon} ${e.an}`).join(' · '))}" data-fn="${esc(a.fn)}" data-li="${esc(a.p?.linkedin || '')}" data-url="${esc(a.org?.url || '')}" data-href="${esc(h)}" data-logo="${esc(a.org?.logo || '')}">
-      <button class="cm-hit" type="button" aria-haspopup="dialog" aria-label="Profilul lui ${esc(a.nume)}"></button>
-      <div class="cm-card-top">
-        <span class="cm-av">${avatar(a.imagine, a.nume, 128)}</span>
-        <span class="cm-who"><b class="cm-n">${esc(a.nume)}</b><span class="cm-co">${esc(a.org?.nume || '')}</span></span>
-      </div>
-      ${a.desc ? `<p class="cm-d">${esc(a.desc)}</p>` : '<p class="cm-d cm-d-empty">Profil în curs de completare.</p>'}
-      <div class="cm-card-ft">${a.sector ? `<span class="cm-tag">${esc(a.sector)}</span>` : ''}<span class="cm-eds">${a.eds.map(edLabel).join(' · ')}</span></div>
-    </article>`;
-  };
+  const card = (a) => cmCard(a, !shown(a));
   const tile = (key, label, n, members, extra = '') => `<button class="cm-tile" type="button" data-pick="${esc(key)}" data-val="${esc(label)}" ${extra}>
       <span class="cm-tile-n">${n}<small>${plural(n, 'membru', 'membri').slice(String(n).length + 1)}</small></span><b>${esc(label)}</b>
       <span class="cm-stack">${members.slice(0, 4).map((a) => `<span>${avatar(a.imagine, a.nume, 128)}</span>`).join('')}</span>
       <i class="cm-tile-go">${I.arrow}</i></button>`;
+  const P = CM_PAGES;
   return `<main class="cm">
   <section class="cm-hero"><div class="wrap">
     <nav class="crumbs" aria-label="Unde ești"><a href="/">Acasă</a><span>/</span><b>Comunitatea</b></nav>
@@ -96,12 +135,12 @@ function alumniBody(ctx, F, sel = {}) {
       <p class="eyebrow">Comunitatea Antreprenoria</p>
       <h1>Ai nevoie de ceva? Probabil un coleg din comunitate face exact asta.</h1>
       <p class="lead">${plural(d.L.length, 'antreprenor', 'antreprenori')} care au trecut prin program, fiecare cu un profil despre ce face, ce oferă și pentru cine. Caută după ce ai nevoie, explorează pe industrii și cere o conectare.</p>
-      <form class="cm-search" role="search" action="/comunitate#lista">
+      <form class="cm-search" role="search" ${P ? 'action="/comunitate/cauta" data-go' : 'action="/comunitate#lista"'}>
         <span class="cm-search-ic">${I.search}</span>
-        <input id="cm-q" name="q" type="search" value="${esc(sel.q || '')}" placeholder="Ce cauți? ex. servicii SEO, software de logistică, recondiționare turbine" data-short="Ce cauți? ex. servicii SEO" autocomplete="off" aria-label="Caută în comunitate după nevoie, companie sau nume">
+        <input id="cm-q" name="q" type="search" value="${P ? '' : esc(sel.q || '')}" placeholder="Ce cauți? ex. servicii SEO, software de logistică, recondiționare turbine" data-short="Ce cauți? ex. servicii SEO" autocomplete="off" aria-label="Caută în comunitate după nevoie, companie sau nume">
         <button class="btn btn-primary" type="submit">Caută</button>
       </form>
-      <div class="cm-ideas" aria-label="Căutări sugerate"><span>Încearcă:</span>${ideas(d.L).map((w) => `<button type="button" data-idea="${esc(w)}">${esc(w)}</button>`).join('')}</div>
+      <div class="cm-ideas" aria-label="Căutări sugerate"><span>Încearcă:</span>${ideas(d.L).map((w) => (P ? `<a href="/comunitate/cauta?q=${encodeURIComponent(w)}">${esc(w)}</a>` : `<button type="button" data-idea="${esc(w)}">${esc(w)}</button>`)).join('')}</div>
     </div>
     <dl class="cm-kpis" aria-label="Comunitatea în cifre">
       <div><dt>${d.L.length}</dt><dd>${de(d.L.length)}antreprenori</dd></div>
@@ -117,7 +156,7 @@ function alumniBody(ctx, F, sel = {}) {
     <li><i>${I.link}</i><span><b>Cere o conectare</b>Echipa programului face introducerea. Datele de contact rămân private.</span></li>
   </ol></div></section>
 
-  <section class="sec cm-explore" id="exploreaza"><div class="wrap">
+  ${P ? exploreLinks(d) : `  <section class="sec cm-explore" id="exploreaza"><div class="wrap">
     <div class="sec-head row"><div><p class="eyebrow">Explorează</p><h2>Comunitatea, pe felii.</h2></div>
       <div class="cm-tabs" role="tablist" aria-label="Explorează după">
         <button role="tab" aria-selected="true" data-tab="sector">Industrie</button>
@@ -127,7 +166,7 @@ function alumniBody(ctx, F, sel = {}) {
     <div class="cm-tiles" data-panel="sector">${d.sectors.map(([s, n]) => tile('sector', s, n, d.L.filter((a) => a.sector === s))).join('')}</div>
     <div class="cm-tiles" data-panel="ed" hidden>${d.eds.slice().reverse().map((e) => tile('ed', `${edLabel(e)} · ${e.sezon} ${e.an}`, e.participanti.length, d.L.filter((a) => a.eds.includes(e)), `data-id="${esc(e.id)}"`)).join('')}</div>
     ${d.cities.length ? `<div class="cm-tiles" data-panel="city" hidden>${d.cities.map(([c, n]) => tile('city', c, n, d.L.filter((a) => a.oras === c))).join('')}</div>` : ''}
-  </div></section>
+  </div></section>`}
 
   <section class="sec cm-dir" id="lista"><div class="wrap">
     <div class="cm-bar">
@@ -179,13 +218,7 @@ function alumniBody(ctx, F, sel = {}) {
     </div>
   </div></section>
 
-  <div class="cm-drawer" id="cm-drawer" hidden data-mail="${esc(mail)}">
-    <div class="cm-scrim" data-close></div>
-    <aside class="cm-panel" role="dialog" aria-modal="true" aria-labelledby="cm-p-name" tabindex="-1">
-      <button class="cm-x" type="button" data-close aria-label="Închide">${I.close}</button>
-      <div class="cm-p-body"></div>
-    </aside>
-  </div>
+  ${cmDrawer(mail)}
 </main>`;
 }
 
@@ -227,7 +260,7 @@ function alumnusBody(ctx, F, id, opt = {}) {
   return `<main class="ld mp">
   ${opt.preview ? '<div class="al-preview"><div class="wrap">Previzualizare: pagina apare pe site când profilul are descrierea companiei sau textul „despre el/ea” completat în panou.</div></div>' : ''}
   <section class="ld-hero mp-hero"><div class="wrap">
-    <nav class="crumbs" aria-label="Unde ești"><a href="/">Acasă</a><span>/</span><a href="/comunitate">Comunitatea</a>${a.sector ? `<span>/</span><a href="/comunitate?sector=${esc(slug(a.sector))}#lista">${esc(a.sector)}</a>` : ''}<span>/</span><b>${esc(a.nume)}</b></nav>
+    <nav class="crumbs" aria-label="Unde ești"><a href="/">Acasă</a><span>/</span><a href="/comunitate">Comunitatea</a>${a.sector ? `<span>/</span><a href="${esc(sectorUrl(a.sector))}">${esc(a.sector)}</a>` : ''}<span>/</span><b>${esc(a.nume)}</b></nav>
     <div class="ld-head">
       <div class="ld-pic mp-pic">${avatar(a.imagine, a.nume, 384).replace(' loading="lazy"', ' fetchpriority="high"')}<span class="mp-ring" aria-hidden="true"></span></div>
       <div class="ld-id">
@@ -257,7 +290,7 @@ function alumnusBody(ctx, F, id, opt = {}) {
         <div class="ld-card-h ld-card-row"><div><p class="ld-k">Ce face</p><h2 id="mp-co-h">${esc(o?.nume || 'Compania')}</h2></div>${o?.logo ? `<span class="mp-logo"><img src="${esc(o.logo)}" alt="${esc(o.nume)}" loading="lazy"></span>` : ''}</div>
         ${a.desc ? `<p class="mp-desc">${esc(a.desc)}</p>` : ''}
         <div class="mp-facts">
-          ${a.sector ? `<a href="/comunitate?sector=${esc(slug(a.sector))}#lista"><small>Industrie</small><b>${esc(a.sector)}</b></a>` : ''}
+          ${a.sector ? `<a href="${esc(sectorUrl(a.sector))}"><small>Industrie</small><b>${esc(a.sector)}</b></a>` : ''}
           ${o?.tip && o.tip !== 'companie' ? `<span><small>Tip</small><b>${esc(o.tip)}</b></span>` : ''}
           ${a.oras ? `<span><small>Oraș</small><b>${esc(a.oras)}</b></span>` : ''}
           ${o?.url ? `<a href="${esc(o.url)}" target="_blank" rel="noopener"><small>Site</small><b>${esc(o.url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, ''))}</b></a>` : ''}
@@ -282,7 +315,7 @@ function alumnusBody(ctx, F, id, opt = {}) {
       </section>
 
       ${colleagues.length ? `<section class="ld-card mp-peers" id="colegi" aria-labelledby="mp-c-h">
-        <div class="ld-card-h ld-card-row"><div><p class="ld-k">Colegii de cohortă</p><h2 id="mp-c-h">${esc(edLabel(last))}, ${esc(last.sezon)} ${last.an}</h2></div><a class="ld-link" href="/comunitate?editie=${last.numar}#lista">Toți ${colleagues.length + 1} →</a></div>
+        <div class="ld-card-h ld-card-row"><div><p class="ld-k">Colegii de cohortă</p><h2 id="mp-c-h">${esc(edLabel(last))}, ${esc(last.sezon)} ${last.an}</h2></div><a class="ld-link" href="${esc(edCmUrl(last))}">Toți ${colleagues.length + 1} →</a></div>
         <ul class="mp-faces">${colleagues.slice(0, 12).map((x) => `<li><a href="${esc(link(x))}" title="${esc(x.nume)}${x.org ? ` · ${esc(x.org.nume)}` : ''}">${avatar(x.imagine, x.nume, 128)}<b>${esc(x.nume)}</b><small>${esc(x.org?.nume || '')}</small></a></li>`).join('')}</ul>
       </section>` : ''}
     </div>
@@ -299,9 +332,9 @@ function alumnusBody(ctx, F, id, opt = {}) {
       ${sameSector.length ? `<section class="ld-card ld-co" aria-labelledby="mp-s-h">
         <p class="ld-k" id="mp-s-h">Tot din ${esc(a.sector)}</p>
         <ul>${sameSector.slice(0, 5).map((x) => person(x)).join('')}</ul>
-        <a class="ld-link mp-more" href="/comunitate?sector=${esc(slug(a.sector))}#lista">Toți cei ${sameSector.length + 1} →</a>
+        <a class="ld-link mp-more" href="${esc(sectorUrl(a.sector))}">Toți cei ${sameSector.length + 1} →</a>
       </section>` : ''}
-      <form class="ld-card mp-find" action="/comunitate" role="search">
+      <form class="ld-card mp-find" action="${CM_PAGES ? '/comunitate/cauta' : '/comunitate'}" role="search">
         <p class="ld-k">Caută în comunitate</p>
         <label class="mp-find-in"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input name="q" type="search" placeholder="Un serviciu, o companie…" aria-label="Caută în comunitate"></label>
         <small>${d.L.length} de antreprenori din ${plural(d.sectors.length, 'industrie', 'industrii')}</small>
@@ -316,4 +349,4 @@ function communityIndex(ctx) {
   return alumniData(ctx).L.map((a) => ({ id: a.id, n: a.nume, co: a.org?.nume || '', s: a.sector || '', d: a.desc, img: a.imagine ? img(a.imagine, 128) : '', ed: a.eds.map(edLabel).join(' · '), h: href(a), o: [...a.oferta, ...a.pentru].join(' · ') }));
 }
 
-module.exports = { alumniBody, alumnusBody, alumniData, hasPage, communityIndex, ideas, connectMail };
+module.exports = { I, plural, avatar, edUrl, edLabel, edKey, sectorUrl, edCmUrl, cmCard, cmRow, cmDrawer, sliceTile, alumniBody, alumnusBody, alumniData, hasPage, communityIndex, ideas, connectMail };
