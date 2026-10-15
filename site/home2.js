@@ -94,7 +94,8 @@ function home2Body(ctx, F) {
         <div class="x-cc-track" aria-label="Agenda cohortei">${ws.map((a) => `<i class="${a.data && a.data < t0 ? 'done' : nx && a.id === nx.id ? 'next' : ''}" title="${esc(cleanTitle(a.titlu))}${a.data ? ' · ' + fmtDay(a.data) : ''}"></i>`).join('')}</div>
       </aside>` : ''}
     </div>
-    <div class="x-marq x-marq-logos" aria-label="Companiile liderilor care predau"><div class="x-marq-in">${[0, 1].map((k) => `<div${k ? ' aria-hidden="true"' : ''}>${LOGOS.map(([o, f]) => `<span class="x-lg x-lg-${esc(o.id)}"><img src="/assets/logos/${esc(f)}" alt="${k ? '' : esc(o.nume)}" loading="lazy"></span>`).join('')}</div>`).join('')}</div></div>
+    <div class="x-marq-row"><p class="x-marq-label">Liderii care predau conduc companii precum</p>
+    <div class="x-marq x-marq-logos" aria-label="Companiile liderilor care predau"><div class="x-marq-in">${[0, 1].map((k) => `<div${k ? ' aria-hidden="true"' : ''}>${LOGOS.map(([o, f]) => `<span class="x-lg x-lg-${esc(o.id)}"><img src="/assets/logos/${esc(f)}" alt="${k ? '' : esc(o.nume)}" loading="lazy"></span>`).join('')}</div>`).join('')}</div></div></div>
   </section>
 
   <!-- 02 · navigatorul: problema ta -> tema, oamenii care o predau, următorul atelier -->

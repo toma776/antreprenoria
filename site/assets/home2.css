@@ -495,3 +495,13 @@ a.x-tile:hover { transform: translateY(-3px); box-shadow: 0 24px 50px -30px rgba
   .x-plg img { max-height: 32px; }
 }
 @media (prefers-reduced-motion: reduce) { .x-pband-in { animation: none; } .x-pband-rail { overflow-x: auto; } }
+
+/* banda din hero: eticheta discretă, în stânga (pe mobil, deasupra) */
+.x-marq-row { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; border-top: 1px solid var(--x-gline); }
+.x-marq-row .x-marq { border-top: 0; }
+.x-marq-label { max-width: 150px; margin: 0; padding: 0 8px 0 max(16px, calc((100vw - 1200px) / 2)); font: 600 11px/1.35 var(--eyebrow-font); letter-spacing: .08em; text-transform: uppercase; color: rgba(255, 255, 255, .5); box-sizing: content-box; }
+@media (max-width: 720px) {
+  .x-marq-row { grid-template-columns: 1fr; }
+  .x-marq-label { max-width: none; padding: 16px 16px 0; }
+  .x-marq-row .x-marq-logos { padding-top: 12px; }
+}
