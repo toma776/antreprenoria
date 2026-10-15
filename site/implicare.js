@@ -8,14 +8,18 @@ const FORMATE_IDS = ['atelier', 'editie', 'an'];
 // validarea datelor; întoarce { ok, errors, data }
 function validate(input) {
   const v = (k) => String(input?.[k] ?? '').trim();
-  const data = { tip: 'cerere-sponsorizare', format: v('format'), nume: v('nume'), companie: v('companie'), functie: v('functie'), email: v('email').toLowerCase(), mesaj: v('mesaj'), acord: input?.acord === true || input?.acord === 'on' };
+  const data = { tip: 'cerere-sponsorizare', format: v('format'), nume: v('nume'), companie: v('companie'), functie: v('functie'), email: v('email').toLowerCase(), telefon: v('telefon'), mesaj: v('mesaj'), acord: input?.acord === true || input?.acord === 'on' };
   const errors = {};
   if (!FORMATE_IDS.includes(data.format)) errors.format = 'Alege formatul.';
   if (data.nume.split(/\s+/).filter(Boolean).length < 2) errors.nume = 'Scrie numele și prenumele.';
   if (data.companie.length < 2) errors.companie = 'Scrie numele companiei.';
-  if (data.functie.length < 2) errors.functie = 'Scrie poziția ta în companie.';
-  else if (data.functie.length > 120) errors.functie = 'Poziția e prea lungă.';
+  // poziția e opțională
+  if (data.functie.length > 120) errors.functie = 'Poziția e prea lungă.';
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(data.email)) errors.email = 'Adresa de email nu pare corectă.';
+  const cifre = data.telefon.replace(/\D/g, '');
+  if (!data.telefon) errors.telefon = 'Scrie numărul de telefon.';
+  else if (cifre.length < 9) errors.telefon = 'Numărul de telefon pare prea scurt.';
+  else if (cifre.length > 15 || /[^\d\s+().-]/.test(data.telefon)) errors.telefon = 'Numărul de telefon nu pare corect.';
   if (data.mesaj.length > 3000) errors.mesaj = 'Mesajul e prea lung (maxim 3.000 de caractere).';
   if (!data.acord) errors.acord = 'Avem nevoie de acordul tău ca să te putem contacta.';
   return { ok: !Object.keys(errors).length, errors, data };
@@ -44,8 +48,9 @@ function implicareDialog({ formate, echipa, themes, cluj = '' }) {
     <fieldset class="af-group sp-step im-step"><legend><i class="im-n">4</i>Datele tale</legend>
       ${field('nume', 'Nume și prenume', 'type="text" autocomplete="name" autocapitalize="words" required')}
       ${field('companie', 'Companie', 'type="text" autocomplete="organization" required')}
-      ${field('functie', 'Poziția în companie', 'type="text" autocomplete="organization-title" maxlength="120" placeholder="ex. CEO, Director de marketing" required')}
+      ${field('functie', 'Poziția în companie <span class="af-opt">opțional</span>', 'type="text" autocomplete="organization-title" maxlength="120" placeholder="ex. CEO, Director de marketing"')}
       ${field('email', 'Email', 'type="email" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" required')}
+      ${field('telefon', 'Telefon', 'type="tel" autocomplete="tel" inputmode="tel" maxlength="30" placeholder="07xx xxx xxx" required')}
       <div class="af-field" data-f="mesaj"><label for="im-mesaj">Mesaj <span class="af-opt">opțional</span></label><textarea id="im-mesaj" name="mesaj" rows="3" maxlength="2500" placeholder="Ceva ce ar trebui să știm? De exemplu, perioada care ți se potrivește."></textarea><small class="af-err" role="alert"></small></div>
     </fieldset>
     <div class="af-consent" data-f="acord">

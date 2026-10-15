@@ -539,7 +539,11 @@ const peopleSearch = (() => {
     if (!form.querySelector('input[name="format"]:checked')) errs.format = 'Alege formatul.';
     if (v('nume').split(/\s+/).filter(Boolean).length < 2) errs.nume = 'Scrie numele și prenumele.';
     if (v('companie').length < 2) errs.companie = 'Scrie numele companiei.';
-    if (v('functie').length < 2) errs.functie = 'Scrie poziția ta în companie.';
+    if (v('functie').length > 120) errs.functie = 'Poziția e prea lungă.';
+    const tel = v('telefon'), cifre = tel.replace(/\D/g, '');
+    if (!tel) errs.telefon = 'Scrie numărul de telefon.';
+    else if (cifre.length < 9) errs.telefon = 'Numărul de telefon pare prea scurt.';
+    else if (cifre.length > 15 || /[^\d\s+().-]/.test(tel)) errs.telefon = 'Numărul de telefon nu pare corect.';
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v('email'))) errs.email = 'Adresa de email nu pare corectă.';
     if (!form.elements.acord.checked) errs.acord = 'Avem nevoie de acordul tău ca să te putem contacta.';
     return errs;
@@ -565,7 +569,7 @@ const peopleSearch = (() => {
     const btn = form.querySelector('[type="submit"]');
     btn.disabled = true; btn.textContent = 'Se trimite…';
     const v = (k) => form.elements[k].value.trim(), extra = v('mesaj');
-    const data = { tip: 'cerere-sponsorizare', format: form.querySelector('input[name="format"]:checked').value, nume: v('nume'), companie: v('companie'), functie: v('functie'), email: v('email'), acord: true, website: form.elements.website.value,
+    const data = { tip: 'cerere-sponsorizare', format: form.querySelector('input[name="format"]:checked').value, nume: v('nume'), companie: v('companie'), functie: v('functie'), email: v('email'), telefon: v('telefon'), acord: true, website: form.elements.website.value,
       mesaj: summary().map(([k, x]) => `${k}: ${x}`).join('\n') + (extra ? `\n\nMesaj: ${extra}` : '') };
     try {
       const r = await fetch('/api/implicare', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
