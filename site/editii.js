@@ -59,17 +59,17 @@ function editiiBody(ctx, F) {
   };
   return `<main>
   <section class="hero pg-hero"><div class="wrap">
-    <nav class="crumbs" aria-label="Unde ești"><a href="/">Acasă</a><span>/</span><b>Ediții</b></nav>
+    <nav class="crumbs" aria-label="Unde ești"><a href="/">Acasă</a><span>/</span><b>Cohorte</b></nav>
     <div class="hero-split">
       <div class="hero-copy">
-        <p class="eyebrow">Ediții</p>
-        <h1>Două ediții pe an, din ${esc(String(chrono(D)[0]?.an || ''))}.</h1>
-        <p class="lead">Fiecare ediție e un grup de în jur de 25 de antreprenori care parcurg împreună, în trei luni, cele cinci teme ale programului. În București, primăvara și toamna; din ${esc(String(D.editii.find((e) => e.serie === 'Cluj')?.an || ''))}, și la Cluj.</p>
+        <p class="eyebrow">Cohorte</p>
+        <h1>Două cohorte pe an, din ${esc(String(chrono(D)[0]?.an || ''))}.</h1>
+        <p class="lead">Fiecare cohortă e un grup de în jur de 25 de antreprenori care parcurg împreună, în trei luni, cele cinci teme ale programului. În București, primăvara și toamna; din ${esc(String(D.editii.find((e) => e.serie === 'Cluj')?.an || ''))}, și la Cluj.</p>
       </div>
       <aside class="pg-glance" aria-label="În cifre">
-        <div class="ed-live-top"><span>În cifre</span><span>toate edițiile</span></div>
+        <div class="ed-live-top"><span>În cifre</span><span>toate cohortele</span></div>
         <dl>
-          <div><dt>${plural(D.editii.length, 'ediție', 'ediții')}</dt><dd>${plural(past.length, 'încheiată', 'încheiate')}, ${plural(active.length, 'activă', 'active')}</dd></div>
+          <div><dt>${plural(D.editii.length, 'cohortă', 'cohorte')}</dt><dd>${plural(past.length, 'încheiată', 'încheiate')}, ${plural(active.length, 'activă', 'active')}</dd></div>
           <div><dt>${plural(totalPart, 'participant', 'participanți')}</dt><dd>antreprenori și manageri</dd></div>
           <div><dt>${plural(totalWs, 'atelier', 'ateliere')}</dt><dd>full-day, de seară și networking</dd></div>
         </dl>
@@ -78,19 +78,19 @@ function editiiBody(ctx, F) {
   </div></section>
 
   ${active.length ? `<section class="sec ex-now" id="acum"><div class="wrap">
-    <div class="sec-head"><p class="eyebrow">Acum</p><h2>${active.length === 1 ? 'Ediția activă.' : 'Edițiile active.'}</h2></div>
+    <div class="sec-head"><p class="eyebrow">Acum</p><h2>${active.length === 1 ? 'Cohorta activă.' : 'Cohortele active.'}</h2></div>
     <div class="ex-actives" style="--n:${active.length}">${active.map(activeCard).join('')}</div>
   </div></section>` : ''}
 
   <section class="sec sec-alt" id="arhiva"><div class="wrap">
-    <div class="sec-head"><p class="eyebrow">Arhiva</p><h2>${plural(past.length, 'ediție încheiată', 'ediții încheiate')}.</h2></div>
+    <div class="sec-head"><p class="eyebrow">Arhiva</p><h2>${plural(past.length, 'cohortă încheiată', 'cohorte încheiate')}.</h2></div>
     ${years.map((y) => `<div class="ex-year"><h3>${y}</h3><div class="ex-pasts">${past.filter((e) => e.an === y).map(pastCard).join('')}</div></div>`).join('')}
   </div></section>
 
   <section class="cta-band"><div class="wrap cta-band-in">
     <div class="cta-band-copy">
-      <p class="eyebrow">Ediția următoare</p>
-      <h2>Vrei în următoarea grupă?</h2>
+      <p class="eyebrow">Cohorta următoare</p>
+      <h2>Vrei în următoarea cohortă?</h2>
       <p>Lasă-ne datele și te anunțăm primul când se deschid înscrierile.</p>
       <div class="hero-actions"><a class="btn btn-light btn-lg" href="/aplica">Aplică</a><a class="btn btn-outline-light btn-lg" href="/program">Cum funcționează</a></div>
     </div>

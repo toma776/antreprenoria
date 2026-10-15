@@ -74,7 +74,7 @@ function facts({ D, P }) {
 }
 
 // ---------- bucăți comune ----------
-const NAV = [['Program', '/program'], ['Ediții', '/editii'], ['Teme', '/teme'], ['Lideri', '/lideri'], ['Comunitate', '/comunitate'], ['Parteneri', '/parteneri'], ['Despre', '/despre']];
+const NAV = [['Program', '/program'], ['Cohorte', '/editii'], ['Teme', '/teme'], ['Lideri', '/lideri'], ['Comunitate', '/comunitate'], ['Parteneri', '/parteneri'], ['Despre', '/despre']];
 // varianta de brand vine din data/brand.json (activă sau cerută pentru previzualizare cu ?brand=)
 function head(title, desc, brandId) {
   const v = brand.pick(brand.load(), brandId);
@@ -117,10 +117,10 @@ function header(F, ctx) {
     ${logo('header', brandId)}
     <nav class="nav" id="nav" aria-label="Meniu principal">
       ${megaMenu(ctx, F)}
-      <div class="nav-foot"><a class="btn btn-primary btn-lg" href="/aplica">Aplică</a>${F.ongoing ? `<a class="live" href="/editii/${F.ongoing.numar}" title="Pagina ediției"><i></i>Ediția #${F.ongoing.numar} în desfășurare</a>` : ''}</div>
+      <div class="nav-foot"><a class="btn btn-primary btn-lg" href="/aplica">Aplică</a>${F.ongoing ? `<a class="live" href="/editii/${F.ongoing.numar}" title="Pagina cohortei"><i></i>Cohorta #${F.ongoing.numar} în desfășurare</a>` : ''}</div>
     </nav>
     <div class="hdr-cta">
-      ${F.ongoing ? `<a class="live" href="/editii/${F.ongoing.numar}" title="Pagina ediției"><i></i>Ediția #${F.ongoing.numar} în desfășurare</a>` : ''}
+      ${F.ongoing ? `<a class="live" href="/editii/${F.ongoing.numar}" title="Pagina cohortei"><i></i>Cohorta #${F.ongoing.numar} în desfășurare</a>` : ''}
       <a class="btn btn-primary" href="/aplica">Aplică</a>
       ${menuButton()}
     </div>
@@ -295,7 +295,7 @@ ${footer(F, ctx)}
 // ---------- LISTA EDIȚIILOR ----------
 function renderEditii(opt = {}) {
   const ctx = load(opt.brand), F = facts(ctx);
-  return `${head('Edițiile Antreprenoria – în desfășurare, înscrieri și arhivă', 'Toate edițiile programului Antreprenoria: ediția în desfășurare, înscrierile deschise și arhiva edițiilor încheiate, cu participanții și atelierele lor.', opt.brand)}
+  return `${head('Cohortele Antreprenoria – în desfășurare, înscrieri și arhivă', 'Toate cohortele programului Antreprenoria: cohorta în desfășurare, înscrierile deschise și arhiva cohortelor încheiate, cu participanții și atelierele lor.', opt.brand)}
 ${header(F, ctx)}
 <div class="gridlines" aria-hidden="true"></div>
 ${editiiBody(ctx, F)}

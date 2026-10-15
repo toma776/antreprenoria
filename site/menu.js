@@ -84,6 +84,16 @@ function panels(ctx, F) {
   const editii = D.editii.slice().sort((a, b) => (b.an - a.an) || (a.sezon === b.sezon ? (a.serie === 'Cluj') - (b.serie === 'Cluj') : a.sezon === 'toamnă' ? -1 : 1));
   const strategic = D.organizatii.filter((o) => o.logo && o.roluri.some((r) => ['partener strategic', 'powered by', 'partener ediție'].includes(r.rol)));
   const team = D.program.contact.echipa;
+  // cohortele: perioada scurtă (sep.–dec. 2026), următoarea din București și începutul arhivei online
+  const LUNI = { ianuarie: 'ian.', februarie: 'feb.', martie: 'mar.', aprilie: 'apr.', mai: 'mai', iunie: 'iun.', iulie: 'iul.', august: 'aug.', septembrie: 'sep.', octombrie: 'oct.', noiembrie: 'nov.', decembrie: 'dec.' };
+  const per = (e) => { const p = /^(\p{L}+)\s*-\s*(\p{L}+)\s+(\d{4})$/u.exec((e.perioada || '').trim()); return p ? `${LUNI[p[1].toLowerCase()] || p[1]}–${LUNI[p[2].toLowerCase()] || p[2]} ${p[3]}` : `${e.sezon} ${e.an}`; };
+  const nextEd = D.editii.find((e) => e.serie === 'București' && e.numar === F.maxNr + 1);
+  // fără ea în date: sezonul de după ultima cohortă din București (toamna e urmată de primăvara anului următor)
+  const lastB = D.editii.filter((e) => e.serie === 'București').sort((x, y) => y.numar - x.numar)[0];
+  const nextSez = lastB ? (lastB.sezon === 'toamnă' ? `primăvară ${lastB.an + 1}` : `toamnă ${lastB.an}`) : 'urmează';
+  const arh = D.editii.filter((e) => e.serie === 'București' && e.participanti.length).sort((x, y) => x.numar - y.numar)[0];
+  const firstNr = arh ? arh.numar : 1, firstAn = arh ? arh.an - (arh.sezon === 'toamnă' ? 0 : 1) : D.program.de_cand;
+  const coBox = (href, nr, perioada, sub, st) => `<a class="mm-co is-${st}" href="${esc(href)}"><b>${esc(nr)}${st === 'live' ? '<i class="dot-live"></i>' : ''}</b><span>${esc(perioada)}</span><small>${esc(sub)}</small></a>`;
   // cifrele declarate ale programului (550+, 500+, 600+), după ce descriu
   const cifra = (k) => (D.program.cifre.find((c) => c.ce.includes(k)) || {}).valoare || '';
   // cui scrii, după întrebare
@@ -111,23 +121,26 @@ function panels(ctx, F) {
           <span class="mm-people">${F.next.program.flatMap((x) => x.speakeri).map((s) => P[s.persoana]).filter(Boolean).map((p) => `<span class="mm-face">${pic(p)}</span>`).join('')}</span>
           <span class="mm-more">Agenda ediției #${ong.numar} →</span></a>` : '' },
 
-    { id: 'editii', title: 'Ediții', href: '/editii', intro: `Două ediții pe an în București, plus Cluj.`,
+    // cohortele (edițiile): toate, în casete compacte, de la cea mai nouă; starea fiecăreia dintr-o privire
+    { id: 'editii', title: 'Cohorte', href: '/editii', intro: `Două cohorte pe an în București, plus Cluj. ${F.maxNr} ${de(F.maxNr)}cohorte din ${D.program.de_cand}.`,
       cols: [
-        col('Acum', [
-          ong ? link(edUrl(ong), `Antreprenoria #${ong.numar}`, `${esc(ong.perioada)} · ${held} din ${ong.ateliere.length} ${de(ong.ateliere.length)}ateliere ținute`, `<em class="mm-badge live">în desfășurare</em>`) : '',
-          F.cluj ? link(edUrl(F.cluj), `Antreprenoria Cluj #${F.cluj.numar}`, `${esc(F.cluj.perioada)} · ${F.cluj.ateliere.length} ${de(F.cluj.ateliere.length)}ateliere`, `<em class="mm-badge open">înscrieri deschise</em>`) : '',
-          link('/aplica', `Antreprenoria #${F.maxNr + 1}`, 'Următoarea ediție din București', '<em class="mm-badge">listă de așteptare</em>'),
-        ].join('')),
-        col('Arhiva', `<div class="mm-editions">${editii.filter((e) => !e.deschisa).map((e) => `<a href="${esc(edUrl(e))}"><b>${esc(edLabel(e))}</b><span>${esc(e.sezon)} ${e.an}</span><small>${e.participanti.length} ${de(e.participanti.length)}participanți</small></a>`).join('')}</div>
-          <a class="mm-all" href="/editii">Toată arhiva, cu agendele și participanții →</a>`, 'wide'),
+        col('Toate cohortele', `<div class="mm-cohorts">${[
+          coBox('/aplica', `#${F.maxNr + 1}`, nextEd ? `${nextEd.sezon} ${nextEd.an}` : nextSez, 'listă de așteptare', 'next'),
+          ...editii.filter((e) => e.ateliere.length || e.participanti.length).map((e) => {
+            const st = e === ong ? 'live' : e.deschisa ? 'open' : 'past';
+            return coBox(edUrl(e), edLabel(e), per(e), st === 'live' ? 'în desfășurare' : st === 'open' ? 'înscrieri deschise' : `${e.participanti.length} ${de(e.participanti.length)}participanți`, st);
+          }),
+          coBox('/despre#istoric', `#1–#${firstNr - 1}`, `${D.program.de_cand}–${firstAn}`, 'primele cohorte', 'old'),
+        ].join('')}</div>
+          <a class="mm-all" href="/editii">Toate cohortele, cu agendele și participanții →</a>`, 'wide'),
       ],
       feature: ong ? `<a class="mm-feature" href="${esc(edUrl(ong))}">
-          <span class="mm-kicker"><i class="dot-live"></i>Ediția #${ong.numar}</span>
+          <span class="mm-kicker"><i class="dot-live"></i>Cohorta #${ong.numar}</span>
           <b>${held} din ${ong.ateliere.length} ${de(ong.ateliere.length)}ateliere</b>
           <span class="mm-progress"><i style="width:${Math.round((held / ong.ateliere.length) * 100)}%"></i></span>
           <span class="mm-sub">${ong.participanti.length} ${de(ong.participanti.length)}participanți · ${esc(ong.locatii.filter((l) => l !== 'TBD')[0] || '')}</span>
           <span class="mm-upcoming">${upcoming.map((a) => `<span><i>${shortDay(a.data)}</i>${esc(a.titlu.replace(/^(Atelier de Seară|COCKTAIL NETWORKING)\s*[-:]\s*/i, ''))}</span>`).join('')}</span>
-          <span class="mm-more">Vezi ediția →</span></a>` : '' },
+          <span class="mm-more">Vezi cohorta →</span></a>` : '' },
 
     { id: 'teme', title: 'Teme', href: '/teme', intro: 'Curriculum-ul: teme care se repetă și se îmbunătățesc de la o ediție la alta.',
       cols: [
