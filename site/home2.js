@@ -8,6 +8,7 @@ const { tx } = require('./texte');
 const { themeInfo, pulse, NEEDS } = require('./home');
 const { everyone } = require('./traineri');
 const { alumniData } = require('./alumni');
+const { partnersData } = require('./parteneri');
 
 const edUrl = (e) => (e.serie === 'Cluj' ? `/editii/cluj-${e.numar}` : `/editii/${e.numar}`);
 const edLabel = (e) => (e.serie === 'Cluj' ? `Cluj #${e.numar}` : `#${e.numar}`);
@@ -34,8 +35,9 @@ function home2Body(ctx, F) {
   const COS = [...new Set([...invited, ...TR].map((x) => x.org).filter((n) => n && D.organizatii.some((o) => o.nume === n)))];
   // banda din hero: logo-urile companiilor liderilor (fișierele din site/assets/logos, după id-ul organizației), în ordinea liderilor
   const LOGO_FILES = Object.fromEntries((() => { try { return fs.readdirSync(path.join(__dirname, 'assets', 'logos')); } catch { return []; } })().map((f) => [f.replace(/\.[a-z]+$/, ''), f]));
+  // banda partenerilor: brandurile care au susținut programul (parteneri de cohortă, sponsori, gazde), în ordinea implicării
+  const PARTNERS = partnersData(ctx).all.map((x) => ({ o: x.o, src: x.o.logo || (LOGO_FILES[x.o.id] ? `/assets/logos/${LOGO_FILES[x.o.id]}` : null) })).filter((x) => x.src);
   const LOGOS = COS.map((n) => D.organizatii.find((o) => o.nume === n)).filter((o) => o && LOGO_FILES[o.id]).map((o) => [o, LOGO_FILES[o.id]]);
-  const partners = F.partners.filter((o) => o.logo).slice(0, 6);
   const feed = pulse(ctx, F).slice(0, 3);
   const needs = NEEDS.map(([id, label]) => ({ id, label, info: themeInfo(ctx, F, id) })).filter((x) => x.info);
 
@@ -157,11 +159,10 @@ function home2Body(ctx, F) {
         <div class="x-tile-h"><span class="x-k"><i class="dot-live"></i>Pulsul programului</span></div>
         <ul>${feed.map((f) => `<li><a href="${esc(f.href)}"><em>${KIND[f.kind] || ''}</em><b>${esc(f.title)}</b><small>${esc(f.text)}</small></a></li>`).join('')}</ul>
       </div>
-      <a class="x-tile x-partners" href="/parteneri" data-x-in>
-        <div class="x-tile-h"><span class="x-k">Parteneri</span></div>
-        <div class="x-logos">${partners.map((o) => `<span><img src="${esc(o.logo)}" alt="${esc(o.nume)}" loading="lazy"></span>`).join('')}</div>
-        <span class="x-link">Construiește un parteneriat ${ARROW}</span>
-      </a>
+      <div class="x-tile x-pband" data-x-in>
+        <div class="x-pband-h"><div><span class="x-k">Parteneri</span><h3>Companii care au ajutat Antreprenoria să crească</h3></div><a class="x-link" href="/parteneri">Construiește un parteneriat ${ARROW}</a></div>
+        <div class="x-pband-rail"><div class="x-pband-in">${[0, 1].map((k) => `<div${k ? ' aria-hidden="true"' : ''}>${PARTNERS.map(({ o, src }) => `<a class="x-plg" href="/parteneri#${esc(o.id)}" title="${esc(o.nume)}"${k ? ' tabindex="-1"' : ''}><img src="${esc(src)}" alt="${k ? '' : esc(o.nume)}" loading="lazy"></a>`).join('')}</div>`).join('')}</div></div>
+      </div>
 
     </div>
   </div></section>
