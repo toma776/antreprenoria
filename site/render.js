@@ -204,7 +204,7 @@ ${footer(F, ctx)}
 function renderDespre(opt = {}) {
   const ctx = load(opt.brand), F = facts(ctx);
   const { despre2Body } = require('./despre2');
-  return `${head('Despre Antreprenoria – programul, pentru cine e, investiția, echipa', 'Acceleratorul Romanian Business Leaders, din 2013: ce primești, cum arată o zi de atelier, pentru cine e, cât costă, organizatorul și echipa.', opt.brand)}
+  return `${head('Despre Antreprenoria – programul, pentru cine e, investiția, echipa', 'Acceleratorul Romanian Business Leaders, din 2013: ce primești, cum arată o zi de atelier, pentru cine e, cât costă și cine îl organizează.', opt.brand)}
 ${header(F, ctx)}
 ${despre2Body(ctx, F)}
 ${footer(F, ctx)}

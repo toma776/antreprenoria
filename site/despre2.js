@@ -1,6 +1,6 @@
 // Despre (varianta unită cu Program; previzualizare: /previzualizare/despre).
 // Drumul unui antreprenor care se decide: promisiunea și cifrele, ce primește, cum arată o zi și o cohortă,
-// dacă e potrivit, cât costă, dovada (istoricul), organizatorul și echipa, aplicarea. Fiecare informație apare o singură dată.
+// dacă e potrivit, cât costă, dovada (istoricul), organizatorul (RBL) și echipa, aplicarea. Fiecare informație apare o singură dată.
 // Profilul participanților apare doar agregat.
 const fs = require('fs'), path = require('path');
 const { esc, initials, milLei, img, de } = require('./util');
@@ -67,7 +67,7 @@ function despre2Body(ctx, F) {
   const raluca = team['raluca-bedereag'];
   const roleShort = (r) => r.split(' · ')[0].replace(/\s*\(.*\)$/, '');
 
-  const NAV = [['de-ce', 'Ce primești'], ['cum', 'Cum funcționează'], ['pentru-cine', 'Ești potrivit?'], ['investitie', 'Investiția'], ['istoric', 'Din 2013'], ['echipa', 'Organizatorul și echipa']];
+  const NAV = [['de-ce', 'Ce primești'], ['cum', 'Cum funcționează'], ['pentru-cine', 'Ești potrivit?'], ['investitie', 'Investiția'], ['istoric', 'Din 2013'], ['echipa', 'Organizat de RBL']];
 
   return `<main class="x">
   <!-- promisiunea și cifrele cheie -->
@@ -177,10 +177,10 @@ function despre2Body(ctx, F) {
     </div>
   </div></section>
 
-  <!-- 06 organizatorul și echipa, împreună -->
+  <!-- 06 organizat de RBL: fundația și echipa, împreună -->
   <section class="sec sec-dark dx-night" id="echipa"><span class="dx-anchor" id="rbl"></span><div class="wrap ab-rbl">
     <div>
-      <p class="eyebrow">Organizatorul și echipa</p>
+      <p class="eyebrow">Organizat de RBL</p>
       <h2>${esc(prog.organizator.nume)}</h2>
       <p>${esc(prog.organizator.descriere.split(/(?<=\.)\s+/).slice(0, 2).join(' '))}</p>
       <dl class="dx-rbl-figs">${prog.cifre.filter((c) => /RBL|pro-bono/.test(c.ce)).map((c) => `<div><dt>${esc(c.valoare)}</dt><dd>${esc(c.ce)}</dd></div>`).join('')}</dl>
