@@ -1,0 +1,102 @@
+/* Stilul „instituțional” (activ cu body.inst): aceleași pagini, dar sobre.
+   Paleta: bleumarin (--dark) pentru suprafețele închise și text, albastrul brandului (--primary) doar pentru accente,
+   neutre pentru rest. Fără aurore, sticlă, străluciri, gradiente decorative, animații de apariție; colțurile brandului. */
+.inst { --x-night: var(--dark); --x-r: calc(var(--radius) + 2px); --x-gline: rgba(255, 255, 255, .14); }
+
+/* ---------- decor scos ---------- */
+.inst .x-aurora, .inst .x-grid, .inst .x-navi-a::before, .inst .x-tile::before, .inst .xf-aurora, .inst .dx-night::before { display: none !important; }
+.inst [data-x-in] { opacity: 1 !important; transform: none !important; transition: none !important; }
+
+/* ---------- header ---------- */
+.inst .hdr::before { background: var(--dark) !important; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.inst .hdr::after { background: rgba(255, 255, 255, .1); }
+.inst .hdr.is-scrolled { box-shadow: 0 1px 0 rgba(255, 255, 255, .08); }
+@media (min-width: 1181px) {
+  .inst .mm-trigger { border-radius: var(--radius); }
+  .inst .mm-trigger:hover, .inst .mm-item.open .mm-trigger { background: rgba(255, 255, 255, .08); box-shadow: none; }
+  .inst .mm-panel { border-radius: 0; box-shadow: 0 24px 48px -32px rgba(11, 37, 69, .45); }
+}
+.inst .hdr-cta .live { border-radius: var(--radius); background: transparent; border-color: rgba(255, 255, 255, .2); }
+.inst .hdr-cta .btn-primary, .inst .nav-foot .btn-primary { border-radius: var(--radius-btn); box-shadow: none; transform: none; }
+.inst .hdr-cta .btn-primary:hover { transform: none; box-shadow: none; filter: brightness(1.08); }
+.inst .menu-btn { background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.inst .mm-feature::after { display: none; }
+
+/* ---------- hero ---------- */
+.inst .x-hero { background: var(--dark); }
+.inst .x-hero h1 { letter-spacing: -.015em; }
+.inst .x-chip { border-radius: var(--radius); background: transparent; border-color: rgba(255, 255, 255, .25); -webkit-backdrop-filter: none; backdrop-filter: none; }
+.inst .x-btn { border-radius: var(--radius-btn); box-shadow: none; }
+.inst .x-btn-glow { background: #fff; color: var(--dark); }
+.inst .x-btn-glow::after { display: none; }
+.inst .x-btn-glow:hover { transform: none; background: var(--surface-2); }
+.inst .x-btn-glass { background: transparent; border-color: rgba(255, 255, 255, .35); -webkit-backdrop-filter: none; backdrop-filter: none; }
+.inst .x-btn-glass:hover { background: rgba(255, 255, 255, .06); }
+.inst .x-glass { background: color-mix(in srgb, #fff 5%, var(--dark)); border-color: rgba(255, 255, 255, .12); -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: none; }
+.inst .x-tag { background: transparent; border: 1px solid rgba(255, 255, 255, .25); border-radius: var(--radius); }
+.inst .x-ring-fg { stroke: #fff; filter: none; }
+.inst .x-ring-bg { stroke: rgba(255, 255, 255, .12); }
+.inst .x-clock div { border-radius: var(--radius); background: transparent; border-color: rgba(255, 255, 255, .14); }
+.inst .x-cc-track i.done { background: #fff; }
+.inst .x-cc-track i.next { background: rgba(255, 255, 255, .45); animation: none; }
+.inst .x-stack > *, .inst .x-stack img, .inst .x-stack .ph { border-color: var(--dark); }
+.inst .x-marq-row { border-top-color: rgba(255, 255, 255, .1); }
+.inst .x-marq-label { color: rgba(255, 255, 255, .55); }
+
+/* ---------- secțiunile deschise ---------- */
+.inst .x-eyebrow { color: var(--primary); }
+.inst .x-hero .x-eyebrow, .inst .x-cta .x-eyebrow { color: rgba(255, 255, 255, .6); }
+.inst .x-pill { border-radius: var(--radius); }
+.inst .x-navi-q button { border-radius: var(--radius); transition: border-color .15s, background .15s; }
+.inst .x-navi-q button:hover { transform: none; border-color: var(--dark); }
+.inst .x-navi-q button[aria-selected="true"] { border-color: var(--dark); background: var(--surface); box-shadow: inset 3px 0 0 var(--primary); }
+.inst .x-navi-q button[aria-selected="true"]::after { display: none; }
+.inst .x-navi-q button[aria-selected="true"] i { color: var(--primary); }
+.inst .x-glass-light { box-shadow: none; }
+.inst .x-navi-p { animation: none; }
+.inst .x-tile { border-radius: var(--x-r); transition: border-color .15s; }
+.inst a.x-tile:hover { transform: none; box-shadow: none; border-color: var(--dark); }
+.inst .x-fit { background: var(--surface); }
+.inst .x-big { color: var(--dark); }
+.inst .x-hist i { border-radius: 2px; background: var(--surface-2); }
+.inst .x-hist i.on { background: var(--primary); box-shadow: none; transform: none; }
+.inst .x-fit-v, .inst .x-fit-v.ok, .inst .x-fit-v.low { border-radius: var(--radius); background: var(--surface-2); border-left: 3px solid var(--primary); }
+.inst .x-fit-v.low { border-left-color: var(--muted); }
+.inst .x-range input::-webkit-slider-thumb { box-shadow: none; }
+.inst .x-steps li.next > i { animation: none; box-shadow: none; background: var(--surface); }
+.inst .x-pulse em { border-radius: var(--radius); background: var(--surface-2); color: var(--dark); }
+.inst .x-plg { border-radius: var(--radius); }
+.inst .x-plg:hover { transform: none; border-color: var(--dark); }
+.inst .x-person { border-radius: var(--radius); }
+.inst .x-person:hover, .inst .x-person:hover img { transform: none; }
+.inst .x-person em { color: rgba(255, 255, 255, .75); }
+.inst .x-railsec { background: var(--bg); }
+
+/* ---------- „Locul tău” ---------- */
+.inst .x-cta { background: var(--dark); }
+.inst .x-seat { border-radius: var(--x-r); }
+.inst .x-seat:hover { transform: none; background: color-mix(in srgb, #fff 9%, var(--dark)); }
+.inst .x-seat .x-tag, .inst .x-seat .x-tag-open { background: transparent; }
+.inst .x-seat small { color: rgba(255, 255, 255, .8); }
+
+/* ---------- footer ---------- */
+.inst .xf { background: var(--dark); }
+.inst .xf-live:hover { transform: none; }
+.inst .xf-live em, .inst .xf-apply { color: #fff !important; }
+.inst .xf-cohorts a, .inst .xf-social a { border-radius: var(--radius); }
+.inst .xf-social a:hover { transform: none; background: rgba(255, 255, 255, .1); border-color: rgba(255, 255, 255, .3); }
+.inst .xf-cohorts .is-live { border-color: rgba(255, 255, 255, .45); }
+.inst .xf-cohorts .is-open span { color: rgba(255, 255, 255, .8); }
+.inst .xf-word text { fill: rgba(255, 255, 255, .05); stroke: none; }
+
+@media (max-width: 720px) {
+  .inst nav.xf-col > a { border-radius: var(--radius); }
+  .inst nav.xf-col > .xf-apply { background: #fff; color: var(--dark) !important; }
+}
+
+/* tipografia: fontul brandului, dar la lățime normală și mai puțin grea */
+.inst .x h1, .inst .x h2, .inst .x h3, .inst .x-big, .inst .x-kpis dt, .inst .x-clock b, .inst .x-ring b, .inst .x-person b, .inst .x-seat b, .inst .xf-claim, .inst .xf-cohorts b, .inst .x-co b { font-stretch: 100%; font-weight: 700; letter-spacing: -.01em; }
+.inst .x-hero h1 { font-size: clamp(34px, 4vw, 56px); line-height: 1.08; }
+.inst .x-head h2 { font-size: clamp(28px, 3vw, 40px); }
+.inst .xf-claim { font-size: clamp(26px, 3vw, 40px); }
+.inst .xf { background: color-mix(in srgb, var(--dark) 78%, #000); border-top-color: rgba(255, 255, 255, .06); }

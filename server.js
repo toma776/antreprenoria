@@ -421,7 +421,13 @@ async function handler(req, res) {
     // adresa veche de contact duce la secțiunea de contact din /despre
     if (url === '/contact') { res.writeHead(301, { Location: '/despre#contact' }); return res.end(); }
     // varianta nouă a homepage-ului e acum „/”; cea veche rămâne doar local, pentru comparație
-    if (url === '/previzualizare/acasa') { res.writeHead(301, { Location: '/' }); return res.end(); }
+    // previzualizare (doar local): homepage-ul în stilul instituțional (site/assets/inst.css, activ cu body.inst)
+    if (url === '/previzualizare/acasa' && !READ_ONLY) {
+      res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' });
+      return res.end(fresh('./site/render').renderHome({ brand: new URLSearchParams(query).get('brand') || undefined })
+        .replace('</head>', '<link rel="stylesheet" href="/assets/inst.css"><meta name="robots" content="noindex"></head>')
+        .replace('<body class="x-page">', '<body class="x-page inst">'));
+    }
     // Despre nouă e acum /despre; paginile vechi Despre și Program rămân doar local, pentru comparație
     if (url === '/previzualizare/despre') { res.writeHead(301, { Location: '/despre' }); return res.end(); }
     if ((url === '/previzualizare/despre-veche' || url === '/previzualizare/program-vechi') && !READ_ONLY) {
