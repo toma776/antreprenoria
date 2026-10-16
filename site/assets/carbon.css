@@ -13,7 +13,7 @@
 }
 
 /* ---------- colțuri drepte, fără umbre (pozele devin pătrate, ca pe ibm.com) ---------- */
-.cb .x *, .cb .hdr *, .cb .xf *, .cb .x, .cb .mm-panel { border-radius: 0 !important; box-shadow: none !important; text-shadow: none !important; }
+.cb .x *, .cb .hdr *, .cb .xf *, .cb .x, .cb .mm-panel { border-radius: var(--cb-r) !important; box-shadow: none !important; text-shadow: none !important; }
 .cb .x .x-chip, .cb .x .x-tag, .cb .x .h3-seat-tag, .cb .hdr-cta .live, .cb .x .x-pill { border-radius: 24px !important; }
 .cb .x *:focus-visible, .cb .hdr *:focus-visible, .cb .xf *:focus-visible { outline: 2px solid var(--cb-blue) !important; outline-offset: -2px !important; }
 
@@ -195,3 +195,54 @@
 .cb .x-hero .x-marq-logos .x-lg:hover img { opacity: 1; }
 .cb.inst .x-hero .x-marq-row::before, .cb.inst .x-hero .x-marq-row::after, .cb.inst .x-hero .x-marq::before, .cb.inst .x-hero .x-marq::after { display: none; }
 .cb .h3-trust .h3-rbl b { font-size: 20px; font-weight: 400; }
+
+/* ======================================================================
+   Adaptarea la brandul Antreprenoria (păstrăm structura Carbon: grila, butoanele cu săgeată, ritmul;
+   culorile, fonturile și detaliile vin din brand – data/brand.json, varianta „Albastru RBL”)
+   ====================================================================== */
+.cb {
+  /* 1. albastrul Antreprenoria în locul albastrului IBM */
+  --cb-blue: #1057A4; --cb-blue-h: #0D4A8C; --cb-blue-a: #0A3B70; --cb-link: #1057A4; --cb-link-d: #8DB8EA;
+  /* 2. griurile reci ale brandului; 3. bleumarinul în locul negrului */
+  --cb-g100: #121826; --cb-g70: #586174; --cb-g60: #6B7489; --cb-g30: #C3CDDC; --cb-g20: #DCE3EE; --cb-g10: #EAF0F8; --cb-g10h: #DDE6F2;
+  --cb-navy: #0B2545; --cb-navy-2: #12325C; --cb-g90: var(--cb-navy-2); --cb-g80: #1C3D68;
+  --primary: var(--cb-blue); --primary-soft: #E3ECF7; --dark: var(--cb-navy); --ink: var(--cb-g100); --muted: var(--cb-g70); --line: var(--cb-g20); --surface-2: var(--cb-g10);
+  /* 4. roșul RBL, doar pentru „live” */
+  --accent: #E32419;
+  /* 6–7. Archivo pentru titluri, Inter pentru text */
+  --f-display: "Archivo", system-ui, sans-serif; --f-body: "Inter", system-ui, sans-serif; --f-num: "Archivo", system-ui, sans-serif; --eyebrow-font: "Inter", system-ui, sans-serif;
+  --d-weight: 600; --d-stretch: 100%;
+  /* 9. colțuri foarte puțin rotunjite */
+  --cb-r: 3px; --radius: 3px; --radius-btn: 3px; --x-r: 3px;
+  color: var(--cb-g100);
+}
+
+/* 6. titlurile: Archivo, greutate medie; lățimea extinsă doar pentru titlul din hero */
+.cb .x h1, .cb.inst .x-hero h1 { font-family: var(--f-display); font-weight: 600; font-stretch: 112%; letter-spacing: -.015em; line-height: 1.06; }
+.cb .x h2, .cb.inst .x-head h2 { font-weight: 600; letter-spacing: -.01em; line-height: 1.15; }
+.cb .x h3, .cb .h3-steps b, .cb .h3-seat b, .cb.inst .x-seat b, .cb .x-person b, .cb .h3-rbl b, .cb .h3-trust .h3-rbl b { font-family: var(--f-display); font-weight: 600; }
+.cb.inst .xf-claim { font-weight: 600; }
+/* 8. cifrele mari: Archivo 600 */
+.cb .h3-trust b, .cb .h3-figs b, .cb.inst .x-big, .cb.inst .x-ring b, .cb.inst .x-clock b { font-family: var(--f-num); font-weight: 600; letter-spacing: -.01em; }
+.cb .x-eyebrow, .cb .x-k, .cb .x-marq-label, .cb .h3-rbl span { font-family: var(--f-body) !important; }
+.cb.inst .x-eyebrow { color: var(--cb-blue); font-weight: 600 !important; }
+.cb.inst .x-hero .x-eyebrow, .cb .h3-paths > .x-k { color: var(--cb-g70); }
+.cb .x .x-btn, .cb .x .btn, .cb .hdr-cta .btn-primary { font-family: var(--f-body); font-weight: 600; letter-spacing: 0; }
+.cb.x-page .mm-trigger { font-family: var(--f-body); font-weight: 500; letter-spacing: 0; }
+
+/* 3. bleumarinul: pașii, cardul de ajutor, footerul */
+.cb .h3-steps li > span { background: var(--cb-navy); }
+.cb.inst .xf { background: var(--cb-navy); }
+.cb.inst .x-person { background: var(--cb-navy); }
+
+/* 4. „live”: punctul roșu, rotund */
+.cb .live i, .cb .dot-live, .cb .x-tag-live i { border-radius: 50% !important; background: var(--accent); }
+
+/* 13. pozele liderilor: un strat bleumarin jos, sub nume */
+.cb .x-person::after { background: linear-gradient(180deg, transparent 45%, rgba(11, 37, 69, .92)); }
+.cb .x-person em { color: #8DB8EA; }
+
+/* tile-urile pe fundalul gri-albăstrui al secțiunilor alternative rămân albe */
+.cb.inst .x-navsec .x-tile, .cb.inst .x-navsec .x-glass-light, .cb.inst .x-navi-q button { background: #fff; }
+.cb.inst .x-navi-q button:hover { background: var(--cb-g10h); }
+.cb .x h1, .cb.inst .x-hero h1 { font-size: clamp(34px, 3.7vw, 54px); }

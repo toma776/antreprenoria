@@ -428,11 +428,11 @@ async function handler(req, res) {
         .replace('</head>', '<link rel="stylesheet" href="/assets/inst.css"><link rel="stylesheet" href="/assets/home3.css"></head>')
         .replace('<body class="x-page">', '<body class="x-page inst">'));
     }
-    // previzualizare (și pe Vercel, cu noindex): același homepage de recrutare, în stilul IBM Carbon (site/assets/carbon.css, activ cu body.cb)
+    // previzualizare (și pe Vercel, cu noindex): același homepage de recrutare, în stilul Carbon adaptat la brand (site/assets/carbon.css, activ cu body.cb)
     if (url === '/previzualizare/carbon') {
       res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' });
       return res.end(fresh('./site/render').renderHome3({ brand: new URLSearchParams(query).get('brand') || undefined })
-        .replace('</head>', '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;600&display=swap"><link rel="stylesheet" href="/assets/inst.css"><link rel="stylesheet" href="/assets/home3.css"><link rel="stylesheet" href="/assets/carbon.css"></head>')
+        .replace('</head>', '<link rel="stylesheet" href="/assets/inst.css"><link rel="stylesheet" href="/assets/home3.css"><link rel="stylesheet" href="/assets/carbon.css"></head>')
         .replace('<body class="x-page">', '<body class="x-page inst cb">')
         // headerul e alb: logo-ul color (footerul rămâne închis, cu logo-ul alb)
         .replace('antreprenoria-logo-orizontal-alb-web.png', 'antreprenoria-logo-orizontal-web.png'));
