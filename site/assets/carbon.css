@@ -325,3 +325,5 @@ a:hover > .arr:not(.arr-l), button:hover > .arr:not(.arr-l), a:hover .arr:last-c
 .cb .ed-sum-sec { padding-bottom: 16px; }
 /* săgeata din butoane: pornită sau oprită din brand (detaliile stilului) */
 .cb .x .x-btn::after, .cb .x .btn-primary::after, .cb .btn .arr, .cb .x-btn .arr, .cb .x .x-btn > svg { display: var(--btn-arrow); }
+/* pastila „Cohorta #22 în desfășurare” din header: la hover rămâne lizibilă pe headerul alb (stilul vechi o făcea albă pe alb) */
+.cb.x-page .hdr-cta a.live:hover, .cb.x-page .hdr-cta a.live:focus-visible { background: var(--cb-g10); border-color: var(--cb-g30); color: var(--cb-g100); text-decoration: none; }
