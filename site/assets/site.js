@@ -211,15 +211,45 @@ const deRo = (n) => (n % 100 >= 20 || (n && n % 100 === 0) ? 'de ' : '');
 
   // ---------- conținut care se derulează orizontal: estompare pe marginea unde mai e ceva ----------
   // (tab-uri, istoricul, meniul de secțiuni, matricea, benzile de oameni și logo-uri)
-  $$('.cur-tabs, .hist, .pg-nav .wrap, .tm-matrix-wrap, .ed-tablist, .ask-chips, .people, .logos, .ed-people').forEach((el) => {
+  // pe telefon, barele de file și filtre arată mai clar că se pot trage: o săgeată în dreapta (care se poate și apăsa)
+  // și, la prima apariție, o mișcare scurtă spre stânga și înapoi
+  const BARS = '.cur-tabs, .hist, .pg-nav .wrap, .tm-matrix-wrap, .ed-tablist, .ask-chips, .people, .logos, .ed-people, .tr-seg, .ld-tabs, .sp-seg, .cs-facets, .cm-ideas';
+  const TABS = '.pg-nav .wrap, .ed-tablist, .tr-seg, .ld-tabs, .sp-seg, .cs-facets, .cm-ideas, .cur-tabs, .ask-chips';
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let nudged = 0;
+  $$(BARS).forEach((el) => {
+    // săgeata: un buton mic, așezat peste marginea din dreapta a barei (în părintele ei)
+    let hint = null;
+    if (el.matches(TABS) && el.parentElement) {
+      const host = el.parentElement;
+      if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
+      hint = document.createElement('button');
+      hint.type = 'button'; hint.className = 'sx-more'; hint.tabIndex = -1; hint.setAttribute('aria-hidden', 'true');
+      hint.innerHTML = '<svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>';
+      hint.addEventListener('click', () => el.scrollBy({ left: el.clientWidth * 0.7, behavior: calm ? 'auto' : 'smooth' }));
+      host.appendChild(hint);
+    }
+    const place = () => { if (!hint) return; hint.style.top = el.offsetTop + 'px'; hint.style.height = el.offsetHeight + 'px'; hint.style.right = (el.offsetParent === hint.offsetParent ? el.offsetParent.clientWidth - el.offsetLeft - el.offsetWidth : 0) + 'px'; };
     const upd = () => {
-      const more = el.scrollWidth - el.clientWidth > 4;
+      const more = el.scrollWidth - el.clientWidth > 4, right = more && el.scrollLeft < el.scrollWidth - el.clientWidth - 4;
       el.classList.toggle('sx-l', more && el.scrollLeft > 4);
-      el.classList.toggle('sx-r', more && el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
+      el.classList.toggle('sx-r', right);
+      if (hint) { hint.classList.toggle('on', right && isMobile()); place(); }
     };
     el.addEventListener('scroll', upd, { passive: true });
     addEventListener('resize', upd);
     upd();
+    // mișcarea de la prima apariție: doar pe telefon, doar pentru primele două bare de pe pagină, o singură dată
+    if (el.matches(TABS) && !calm && isMobile() && 'IntersectionObserver' in window) {
+      const io = new IntersectionObserver((es) => {
+        if (!es[0].isIntersecting) return;
+        io.disconnect();
+        if (nudged >= 2 || el.scrollWidth - el.clientWidth < 24 || el.scrollLeft > 4) return;
+        nudged++;
+        setTimeout(() => { el.scrollTo({ left: Math.min(64, el.scrollWidth - el.clientWidth), behavior: 'smooth' }); setTimeout(() => el.scrollTo({ left: 0, behavior: 'smooth' }), 650); }, 450);
+      }, { threshold: 0.9 });
+      io.observe(el);
+    }
   });
 
   // ---------- meniul de secțiuni (Program, Despre, Teme): marchează secțiunea în care ești ----------
