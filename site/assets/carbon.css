@@ -325,4 +325,6 @@ a:hover > .arr:not(.arr-l), button:hover > .arr:not(.arr-l), a:hover .arr:last-c
 /* meniul lipicios al paginilor (Despre, Parteneri...) stă exact sub headerul de 64px */
 @media (min-width: 1181px) { .cb .pg-nav { top: 64px; } }
 /* între header și meniul lipicios al paginii: o linie subțire albastră (doar cât meniul stă lipit) */
-.cb .pg-nav.is-stuck { border-top-color: var(--cb-blue); box-shadow: inset 0 1px 0 var(--cb-blue); }
+.cb .pg-nav.is-stuck { border-top: 2px solid var(--cb-blue); box-shadow: none; }
+.cb .hdr.over-nav { border-bottom-color: transparent; box-shadow: none; }
+.cb .hdr.over-nav::after { opacity: 0; }

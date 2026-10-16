@@ -1027,7 +1027,8 @@ const cmEngine = (() => {
 (() => {
   const nav = document.querySelector('.pg-nav'), hdr = document.querySelector('.hdr');
   if (!nav || !hdr) return;
-  const check = () => nav.classList.toggle('is-stuck', nav.getBoundingClientRect().top <= hdr.getBoundingClientRect().bottom + 0.5);
+  // headerul primește over-nav: cât meniul e lipit, linia lui gri dispare și rămâne doar cea albastră
+  const check = () => { const on = nav.getBoundingClientRect().top <= hdr.getBoundingClientRect().bottom + 0.5; nav.classList.toggle('is-stuck', on); hdr.classList.toggle('over-nav', on); };
   addEventListener('scroll', check, { passive: true });
   addEventListener('resize', check);
   check();
