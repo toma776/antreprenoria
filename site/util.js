@@ -81,7 +81,9 @@ const versionAssets = (html) => html.replace(/((?:href|src|data-mm-src)=")\/asse
   return v ? `${attr}/assets/${rel}?v=${v}"` : m;
 });
 // ultimul pas pentru fiecare pagină HTML: săgețile și imaginile rămase cu adresa site-ului vechi (logo-uri puse direct în src) -> copiile locale
-const finishHtml = (html) => versionAssets(arrows(html).replace(/https:\/\/antreprenoria\.ro\/images\/[^"'\s)<>]+/g, (u) => localImg(u)));
+// „Sari la conținut” (primul element focusabil) și id-ul conținutului principal
+const skipLink = (html) => html.replace(/<main(?![^>]*\sid=)/, '<main id="main"').replace(/<body([^>]*)>/, '<body$1><a class="skip" href="#main">Sari la conținut</a>');
+const finishHtml = (html) => skipLink(versionAssets(arrows(html).replace(/https:\/\/antreprenoria\.ro\/images\/[^"'\s)<>]+/g, (u) => localImg(u))));
 // paginile separate ale comunității (căutarea, industriile, cohortele): publicate, și local, și pe Vercel
 const CM_PAGES = true;
 module.exports = { finishHtml, localImg, arrows, CM_PAGES, TEME, temaUrl, cohorta, de, tidy, esc, today, MONTHS, fmtDay, median, quantile, milLei, initials, slug, img, logoImg };
