@@ -240,6 +240,14 @@ function cmsEdit(b) {
 async function handler(req, res) {
   const [rawPath, query = ''] = req.url.split('#')[0].split('?');
   const url = decodeURIComponent(rawPath);
+  // paginile site-ului: săgețile din text devin săgeata desenată a butoanelor (site/util.js › arrows)
+  if (!/^\/(manage|api|assets)(\/|$)/.test(url)) {
+    const end = res.end.bind(res);
+    res.end = (body, ...rest) => {
+      // antetele vin prin writeHead (nu se pot citi după), așa că recunoaștem paginile după început
+      return end(typeof body === 'string' && /^\s*<!doctype html/i.test(body) ? fresh('./site/util').arrows(body) : body, ...rest);
+    };
+  }
   try {
     // o singură adresă pentru fiecare pagină: /program/ duce la /program (API-ul, fișierele și panoul rămân cum sunt)
     if ((req.method === 'GET' || req.method === 'HEAD') && url.length > 1 && url.endsWith('/') && !/^\/(api|assets|manage)(\/|$)/.test(url)) {

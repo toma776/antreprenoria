@@ -35,9 +35,9 @@
   display: inline-flex; justify-content: space-between; align-items: center; gap: 32px; min-height: 48px; padding: 0 16px; border: 1px solid transparent;
   font: 400 14px/1.29 var(--f-body); letter-spacing: .16px; transform: none !important; filter: none !important; transition: background .11s, color .11s, border-color .11s;
 }
-.cb .x .x-btn, .cb .x .btn-lg { min-width: 200px; min-height: 64px; padding: 0 16px 0 16px; align-items: flex-start; padding-top: 14px; }
+.cb .x .x-btn, .cb .x .btn-lg { min-width: 200px; min-height: 64px; padding: 0 16px; align-items: center; } /* textul și săgeata, centrate pe verticală */
 .cb .x .x-btn svg, .cb .x .btn svg { width: 16px; height: 16px; flex: none; }
-.cb .x .x-btn:not(:has(svg))::after, .cb .x .btn-primary:not(:has(svg))::after { content: "→"; margin-left: auto; font-size: 18px; line-height: 1; }
+.cb .x .x-btn:not(:has(svg))::after, .cb .x .btn-primary:not(:has(svg))::after { content: ""; flex: none; width: 16px; height: 16px; margin-left: auto; background: currentColor; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat; }
 .cb.inst .x-btn-glow, .cb .x .btn-primary, .cb .hdr-cta .btn-primary { background: var(--cb-blue) !important; color: #fff !important; border-color: transparent !important; }
 .cb.inst .x-btn-glow:hover, .cb .x .btn-primary:hover, .cb .hdr-cta .btn-primary:hover { background: var(--cb-blue-h) !important; }
 .cb.inst .x-btn-glow:active, .cb .x .btn-primary:active { background: var(--cb-blue-a) !important; }
@@ -307,3 +307,11 @@
 .cb .sp-marq-it:hover { transform: none; border-color: var(--cb-blue); }
 .cb main .sp-fw-c { border-radius: 50% !important; }
 .cb .sp-fw-n { z-index: 2; }
+
+/* săgeata desenată, aceeași peste tot: înlocuiește caracterele „→” și „←” din texte (site/util.js › arrows) */
+.arr { display: inline-block; flex: none; width: 1em; height: 1em; margin-left: .15em; vertical-align: -.14em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform .15s; }
+.arr-l { margin: 0 .15em 0 0; transform: scaleX(-1); }
+a:hover > .arr:not(.arr-l), button:hover > .arr:not(.arr-l), a:hover .arr:last-child:not(.arr-l) { transform: translateX(2px); }
+/* butoanele de pe tot site-ul: textul și săgeata centrate pe verticală, săgeata la dreapta */
+.cb .btn, .cb .x-btn { align-items: center; }
+.cb .btn .arr, .cb .x-btn .arr { width: 16px; height: 16px; vertical-align: middle; }

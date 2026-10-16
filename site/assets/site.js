@@ -260,11 +260,11 @@ const deRo = (n) => (n % 100 >= 20 || (n && n % 100 === 0) ? 'de ' : '');
     if (!v.ca || !v.rol || !v.nevoie) { out.innerHTML = '<b>Mai ai o întrebare</b>Răspunde la toate trei ca să vezi rezultatul.'; return; }
     const tema = { vanzari: 'Vânzări și Motorul de Vânzări', echipa: 'Cultura organizațională', strategie: 'Modelul de business', finantare: 'atelierul de seară de Finanțare' }[v.nevoie];
     if (v.ca === 'sub') {
-      out.innerHTML = `<b>Poate puțin prea devreme</b>Programul e gândit pentru companii de peste 500.000 €. Intră pe lista de așteptare și te anunțăm când ești pregătit sau când apare un format potrivit. <a href="/aplica">Lista de așteptare →</a>`;
+      out.innerHTML = `<b>Poate puțin prea devreme</b>Programul e gândit pentru companii de peste 500.000 €. Intră pe lista de așteptare și te anunțăm când ești pregătit sau când apare un format potrivit. <a href="/aplica">Lista de așteptare <svg class="arr" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>`;
     } else if (v.rol === 'altul') {
-      out.innerHTML = `<b>Recomandă-l cuiva din conducere</b>Atelierele sunt pentru fondatori și manageri de top, cei care pot duce schimbările în companie. <a href="/despre#pentru-cine">Trimite-le programul →</a>`;
+      out.innerHTML = `<b>Recomandă-l cuiva din conducere</b>Atelierele sunt pentru fondatori și manageri de top, cei care pot duce schimbările în companie. <a href="/despre#pentru-cine">Trimite-le programul <svg class="arr" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>`;
     } else {
-      out.innerHTML = `<b>Pari potrivit pentru Antreprenoria</b>Pentru ce vrei să rezolvi, te interesează mai ales ${tema}. <a href="/aplica">Aplică acum →</a>`;
+      out.innerHTML = `<b>Pari potrivit pentru Antreprenoria</b>Pentru ce vrei să rezolvi, te interesează mai ales ${tema}. <a href="/aplica">Aplică acum <svg class="arr" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>`;
     }
   });
 })();
@@ -738,7 +738,7 @@ const cmEngine = (() => {
         ${mail ? `<a class="btn btn-primary btn-lg" href="mailto:${escH(mail)}?subject=${subj}&body=${txt}">Cere o conectare</a>` : ''}
         ${d.url ? `<a class="btn btn-ghost" href="${escH(d.url)}" target="_blank" rel="noopener">Site ↗</a>` : ''}
         ${d.li ? `<a class="btn btn-ghost" href="${escH(d.li)}" target="_blank" rel="noopener">LinkedIn ↗</a>` : ''}
-        ${d.href ? `<a class="btn btn-ghost" href="${escH(d.href)}">Pagina completă →</a>` : ''}
+        ${d.href ? `<a class="btn btn-ghost" href="${escH(d.href)}">Pagina completă <svg class="arr" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>` : ''}
       </div>
       <p class="cm-p-fine">Echipa programului face introducerea. Datele de contact ale membrilor nu sunt publice.</p>
       ${same.length ? `<div class="cm-p-sec"><h3>Tot din ${escH(d.sector)}</h3><div class="cm-p-same">${same.map((x) => `<button type="button" data-open="${escH(x.dataset.id)}"><span class="cm-av">${x.querySelector('.cm-av').innerHTML}</span><span><b>${escH(x.querySelector('.cm-n').textContent)}</b><span>${escH(x.querySelector('.cm-co').textContent)}</span></span></button>`).join('')}</div></div>` : ''}`;
@@ -971,7 +971,7 @@ const cmEngine = (() => {
     const r = cmEngine.search(index, q), L = r.list || [];
     const mail = box.dataset.mail;
     if (!L.length) {
-      res.innerHTML = `<div class="mmc-none"><b>Nimic încă pentru „${escH(q)}”.</b><span>Spune-ne ce cauți: echipa întreabă în comunitate și revine cu un om potrivit.</span>${mail ? `<a href="mailto:${escH(mail)}?subject=${encodeURIComponent(`Caut în comunitate: ${q}`)}">Cere o recomandare →</a>` : ''}</div>`;
+      res.innerHTML = `<div class="mmc-none"><b>Nimic încă pentru „${escH(q)}”.</b><span>Spune-ne ce cauți: echipa întreabă în comunitate și revine cu un om potrivit.</span>${mail ? `<a href="mailto:${escH(mail)}?subject=${encodeURIComponent(`Caut în comunitate: ${q}`)}">Cere o recomandare <svg class="arr" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>` : ''}</div>`;
       active = -1; return;
     }
     res.innerHTML = `${r.partial ? '<p class="mmc-note">Potriviri parțiale:</p>' : ''}${L.slice(0, 5).map((x, i) => `<a class="mmc-r" id="mmc-r${i}" role="option" aria-selected="false" href="${x.h ? escH(x.h) : `/comunitate?q=${encodeURIComponent(q)}&membru=${encodeURIComponent(x.id)}#lista`}">

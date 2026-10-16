@@ -36,6 +36,21 @@ const cohorta = (s) => String(s ?? '').replace(/(?<!\p{L})(Edițiile|edițiilor|
 const TEME = false;
 // unde duce o temă: pagina ei (dacă Teme e vizibilă), altfel liderii care o predau
 const temaUrl = (t) => (!t ? '/lideri' : TEME ? (t.format === 'full-day' ? `/teme/${t.id}` : `/teme#${t.id}`) : `/lideri?tema=${t.id}#lista`);
+// săgețile: caracterele „→” și „←” din textul paginilor devin săgeata desenată a butoanelor (aceeași peste tot);
+// în <script>, <style>, <title>, <textarea> și în atribute rămân cum sunt
+const ARR_SVG = (d) => `<svg class="arr${d ? ' arr-l' : ''}" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>`;
+function arrows(html) {
+  let skip = null;
+  return html.split(/(<[^>]+>)/).map((part) => {
+    if (part[0] === '<') {
+      const m = /^<(\/?)(script|style|title|textarea)\b/i.exec(part);
+      if (m) skip = m[1] ? null : m[2].toLowerCase();
+      return part;
+    }
+    if (skip || !/[→←]/.test(part)) return part;
+    return part.replace(/\s?→/g, (x) => (x.length > 1 ? ' ' : '') + ARR_SVG()).replace(/←\s?/g, (x) => ARR_SVG(true) + (x.length > 1 ? ' ' : ''));
+  }).join('');
+}
 // paginile separate ale comunității (căutarea, industriile, cohortele): publicate, și local, și pe Vercel
 const CM_PAGES = true;
-module.exports = { CM_PAGES, TEME, temaUrl, cohorta, de, tidy, esc, today, MONTHS, fmtDay, median, quantile, milLei, initials, slug, img, logoImg };
+module.exports = { arrows, CM_PAGES, TEME, temaUrl, cohorta, de, tidy, esc, today, MONTHS, fmtDay, median, quantile, milLei, initials, slug, img, logoImg };
