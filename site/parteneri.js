@@ -234,7 +234,7 @@ function parteneriBody(ctx, F) {
       <p class="lead">Codul fiscal permite companiilor să direcționeze o parte din impozit către sponsorizări. Altfel spus: aceiași bani ajung fie la buget, fie la antreprenorii care cresc economia.</p>
     </div>
     <div class="sp-calc" role="group" aria-label="Calculator: cât poți direcționa">
-      <div class="sp-calc-seg" role="tablist"><button type="button" class="on" data-m="profit" role="tab" aria-selected="true">Impozit pe profit</button><button type="button" data-m="micro" role="tab" aria-selected="false">Microîntreprindere</button></div>
+      <div class="sp-calc-seg" role="group" aria-label="Tipul de impozitare"><button type="button" class="on" data-m="profit" aria-pressed="true">Impozit pe profit</button><button type="button" data-m="micro" aria-pressed="false">Microîntreprindere</button></div>
       <label class="sp-calc-f" data-m="profit"><span>Cifra de afaceri anuală</span><span class="sp-calc-in"><input type="text" inputmode="numeric" id="sp-ca" value="10.000.000" autocomplete="off"><i>lei</i></span></label>
       <label class="sp-calc-f"><span data-lbl>Impozitul pe profit anual</span><span class="sp-calc-in"><input type="text" inputmode="numeric" id="sp-imp" value="150.000" autocomplete="off"><i>lei</i></span></label>
       <div class="sp-calc-out"><span>Poți direcționa până la</span><b id="sp-tax-v">–</b><small id="sp-tax-why"></small></div>

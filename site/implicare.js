@@ -30,14 +30,14 @@ function validate(input) {
 function implicareDialog({ formate, echipa, themes, cluj = '' }) {
   const field = (name, label, attrs) => `<div class="af-field" data-f="${name}">
         <label for="im-${name}">${label}</label>
-        <input id="im-${name}" name="${name}" ${attrs}><small class="af-err" role="alert"></small>
+        <input id="im-${name}" name="${name}" aria-describedby="im-${name}-err" ${attrs}><small class="af-err" id="im-${name}-err"></small>
       </div>`;
   return `<dialog class="im-dlg" id="implica" aria-labelledby="im-title">
   <form class="af im-form" id="im-form" novalidate method="dialog">
     <div class="im-head"><h2 id="im-title">Susține programul</h2><button type="button" class="im-x" data-im-close aria-label="Închide">✕</button></div>
-    <fieldset class="sp-step im-step" data-f="format"><legend><i>1</i>Formatul</legend>
+    <fieldset class="sp-step im-step" data-f="format" aria-describedby="im-format-err"><legend><i>1</i>Formatul</legend>
       <div class="sp-tiers">${formate.map((f) => `<label class="sp-tier"><input type="radio" name="format" value="${f.id}" data-rol="${esc(f.rol)}" data-t="${esc(f.titlu)}"><span><small>${esc(f.rol)}</small><b>${esc(f.titlu)}</b><em>${esc(f.text.replace('{cluj}', cluj))}</em></span></label>`).join('')}</div>
-      <small class="af-err" role="alert"></small>
+      <small class="af-err" id="im-format-err"></small>
     </fieldset>
     <fieldset class="sp-step im-step" data-only="atelier" hidden><legend><i>2</i>Tema atelierului</legend>
       <div class="sp-chips">${themes.map((t, i) => `<label><input type="radio" name="tema" value="${esc(t.nume)}" data-f="${esc(t.format)}"${i === 0 ? ' checked' : ''}><span>${esc(t.nume)}<small>${t.format === 'seară' ? 'seară' : 'o zi'}</small></span></label>`).join('')}</div>
@@ -51,11 +51,11 @@ function implicareDialog({ formate, echipa, themes, cluj = '' }) {
       ${field('functie', 'Poziția în companie <span class="af-opt">opțional</span>', 'type="text" autocomplete="organization-title" maxlength="120" placeholder="ex. CEO, Director de marketing"')}
       ${field('email', 'Email', 'type="email" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" required')}
       ${field('telefon', 'Telefon', 'type="tel" autocomplete="tel" inputmode="tel" maxlength="30" placeholder="07xx xxx xxx" required')}
-      <div class="af-field" data-f="mesaj"><label for="im-mesaj">Mesaj <span class="af-opt">opțional</span></label><textarea id="im-mesaj" name="mesaj" rows="3" maxlength="2500" placeholder="Ceva ce ar trebui să știm? De exemplu, perioada care ți se potrivește."></textarea><small class="af-err" role="alert"></small></div>
+      <div class="af-field" data-f="mesaj"><label for="im-mesaj">Mesaj <span class="af-opt">opțional</span></label><textarea id="im-mesaj" name="mesaj" aria-describedby="im-mesaj-err" rows="3" maxlength="2500" placeholder="Ceva ce ar trebui să știm? de exemplu, perioada care ți se potrivește."></textarea><small class="af-err" id="im-mesaj-err"></small></div>
     </fieldset>
     <div class="af-consent" data-f="acord">
-      <label><input type="checkbox" name="acord" required><span>Sunt de acord ca Fundația Romanian Business Leaders să folosească aceste date ca să mă contacteze despre implicarea în program. <a class="af-policy" href="/confidentialitate" target="_blank" rel="noopener">Politica de confidențialitate</a></span></label>
-      <small class="af-err" role="alert"></small>
+      <label><input type="checkbox" name="acord" required aria-describedby="im-acord-err"><span>Sunt de acord ca Fundația Romanian Business Leaders să folosească aceste date ca să mă contacteze despre implicarea în program. <a class="af-policy" href="/confidentialitate" target="_blank" rel="noopener">Politica de confidențialitate</a></span></label>
+      <small class="af-err" id="im-acord-err"></small>
     </div>
     <input class="af-hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
     <div class="af-submit"><button class="btn btn-primary btn-lg" type="submit">Trimite</button><small>Primești propunerea pe email în câteva zile lucrătoare.</small></div>

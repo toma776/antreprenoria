@@ -63,8 +63,10 @@ const deRo = (n) => (n % 100 >= 20 || (n && n % 100 === 0) ? 'de ' : '');
   // fiecare [data-tabs] are butoane [role=tab][data-tab] și panouri [data-panel]; săgețile stânga/dreapta mută selecția
   $$('[data-tabs]').forEach((box) => {
     const tabs = $$('[role="tab"]', box);
+    // fiecare panou e numit de fila lui; doar fila aleasă e în ordinea de Tab
+    tabs.forEach((x, i) => { const p = x.getAttribute('aria-controls') && document.getElementById(x.getAttribute('aria-controls')); if (p) { if (!x.id) x.id = `tab-btn-${x.dataset.tab || i}`; p.setAttribute('aria-labelledby', x.id); } x.tabIndex = x.getAttribute('aria-selected') === 'true' ? 0 : -1; });
     const select = (t, focus) => {
-      tabs.forEach((x) => x.setAttribute('aria-selected', String(x === t)));
+      tabs.forEach((x) => { x.setAttribute('aria-selected', String(x === t)); x.tabIndex = x === t ? 0 : -1; });
       $$('[data-panel]', box).forEach((p) => (p.hidden = p.dataset.panel !== t.dataset.tab));
       // rândurile de tab-uri care se derulează orizontal (pe mobil) aduc tab-ul ales în vizor
       const row = t.parentElement;
@@ -415,10 +417,10 @@ const peopleSearch = (() => {
       cards.forEach((c) => { c.hidden = !shown.includes(c); });
       [...shown, ...cards.filter((c) => !shown.includes(c))].forEach((c) => grid.append(c));
     }
-    empty.hidden = shown.length > 0 || (S && !state.q);
+    empty.hidden = shown.length > 0;
     if (count) count.innerHTML = shown.length === cards.length ? `<b>${cards.length}</b> ${deRo(cards.length)}oameni care au predat în program` : `<b>${shown.length}</b> din ${cards.length}`;
   };
-  const setFilter = (g, b) => { g.querySelectorAll('[data-tr]').forEach((x) => x.classList.toggle('on', x === b)); state[g.dataset.trGroup] = b.dataset.tr; };
+  const setFilter = (g, b) => { g.querySelectorAll('[data-tr]').forEach((x) => { x.classList.toggle('on', x === b); x.setAttribute('aria-pressed', String(x === b)); }); state[g.dataset.trGroup] = b.dataset.tr; };
   document.querySelectorAll('[data-tr-group]').forEach((g) => g.addEventListener('click', (e) => {
     const b = e.target.closest('[data-tr]');
     if (!b) return;
@@ -584,7 +586,9 @@ const peopleSearch = (() => {
   };
   const boxes = () => $$f('.af-field[data-f], .af-group[data-f], .af-consent[data-f]');
   const show = (errs) => {
-    boxes().forEach((f) => { const m = errs[f.dataset.f]; f.classList.toggle('bad', !!m); const e = f.querySelector(':scope > .af-err'); if (e) e.textContent = m || ''; });
+    boxes().forEach((f) => { const m = errs[f.dataset.f]; f.classList.toggle('bad', !!m); const e = f.querySelector(':scope > .af-err'); if (e) e.textContent = m || ''; f.querySelectorAll('input:not([type="radio"]):not([type="hidden"]), textarea').forEach((i) => i.setAttribute('aria-invalid', m ? 'true' : 'false')); if (f.matches('fieldset')) f.setAttribute('aria-invalid', m ? 'true' : 'false'); });
+    const n = Object.values(errs).filter(Boolean).length;
+    if (n) { status.className = 'af-status err'; status.textContent = n === 1 ? 'Un câmp trebuie completat sau corectat.' : `${n} câmpuri trebuie completate sau corectate.`; }
     const first = form.querySelector('.bad input, .bad textarea');
     if (first) first.focus();
   };
@@ -712,7 +716,7 @@ const cmEngine = (() => {
     count.innerHTML = S ? `<b>${shown.length}</b> ${shown.length === 1 ? 'rezultat' : deN(shown.length) + 'rezultate'} pentru „${escH(state.q)}”<small> · ${((performance.now() - t0) / 1000).toFixed(3).replace('.', ',')} secunde</small>`
       : `<b>${shown.length}</b> ${shown.length === 1 ? 'membru' : deN(shown.length) + 'membri'}${state.q ? ` pentru „${escH(state.q)}”` : ''}`;
     note.hidden = !r.partial; if (r.partial) note.textContent = 'Nimeni nu se potrivește pe toate cuvintele. Iată potrivirile parțiale:';
-    empty.hidden = shown.length > 0;
+    empty.hidden = shown.length > 0 || (S && !state.q);
     reset.hidden = S ? !sels.some((s) => s.value) : !state.q && !sels.some((s) => s.value);
     const u = new URL(location.href);
     sels.forEach((s) => { const q = s.selectedOptions[0]?.dataset.q; q ? u.searchParams.set(s.dataset.param, q) : u.searchParams.delete(s.dataset.param); });
@@ -910,7 +914,7 @@ const cmEngine = (() => {
     }
     $$('.sp-calc-seg button', calc).forEach((b) => b.addEventListener('click', () => {
       mode = b.dataset.m;
-      $$('.sp-calc-seg button', calc).forEach((x) => { x.classList.toggle('on', x === b); x.setAttribute('aria-selected', String(x === b)); });
+      $$('.sp-calc-seg button', calc).forEach((x) => { x.classList.toggle('on', x === b); x.setAttribute('aria-pressed', String(x === b)); });
       $('.sp-calc-f[data-m="profit"]', calc).hidden = mode !== 'profit';
       $('[data-lbl]', calc).textContent = mode === 'micro' ? 'Impozitul pe venit anual (micro)' : 'Impozitul pe profit anual';
       update();

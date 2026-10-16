@@ -120,17 +120,19 @@ const ARROW = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m-4.
 const BACK = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M16 10H5m4.5-5-5 5 5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
 function fieldHtml(f, D, opts, pre) {
-  const id = `f-${f.k}`, err = `<small class="af-err" id="e-${f.k}" role="alert"></small>`;
+  // eroarea fiecărui câmp e legată de el (aria-describedby); anunțul de ansamblu îl face #af-status
+  const id = `f-${f.k}`, err = `<small class="af-err" id="e-${f.k}"></small>`;
+  const desc = ` aria-describedby="${f.hint ? `h-${f.k} ` : ''}e-${f.k}"`, req = f.req ? ' aria-required="true"' : '';
   const hint = f.hint ? `<small class="af-hint" id="h-${f.k}">${esc(f.hint)}</small>` : '';
   const show = f.showIf ? ` data-show="${esc(f.showIf.join('='))}" hidden` : '';
   if (['text', 'email', 'tel', 'cui'].includes(f.t)) {
     const attrs = { text: `type="text"${f.auto === 'name' ? ' autocapitalize="words"' : ''}`, email: 'type="email" inputmode="email" autocapitalize="off" spellcheck="false"', tel: 'type="tel" inputmode="tel"', cui: 'type="text" autocapitalize="characters" spellcheck="false"' }[f.t];
     return `<div class="af-field" data-f="${f.k}"${show}><label for="${id}">${esc(f.label)}</label>
-      <input id="${id}" name="${f.k}" ${attrs}${f.auto ? ` autocomplete="${f.auto}"` : ''}${f.ph ? ` placeholder="${esc(f.ph)}"` : ''}${f.hint ? ` aria-describedby="h-${f.k}"` : ''} maxlength="200">${hint}${err}</div>`;
+      <input id="${id}" name="${f.k}" ${attrs}${f.auto ? ` autocomplete="${f.auto}"` : ''}${f.ph ? ` placeholder="${esc(f.ph)}"` : ''}${desc}${req} maxlength="200">${hint}${err}</div>`;
   }
   if (f.t === 'area') {
     return `<div class="af-field" data-f="${f.k}"><label for="${id}">${esc(f.label)}${f.req ? '' : ' <span class="af-opt">opțional</span>'}</label>
-      <textarea id="${id}" name="${f.k}" rows="4" maxlength="2000"${f.min ? ` data-min="${f.min}"` : ''} placeholder="${esc(f.ph || '')}"${f.hint ? ` aria-describedby="h-${f.k}"` : ''}></textarea>
+      <textarea id="${id}" name="${f.k}" rows="4" maxlength="2000"${f.min ? ` data-min="${f.min}"` : ''} placeholder="${esc(f.ph || '')}"${desc}${req}></textarea>
       <div class="ax-meta">${hint}${f.min ? `<small class="ax-count" data-for="${f.k}" aria-hidden="true"></small>` : ''}</div>${err}</div>`;
   }
   if (f.t === 'one' || f.t === 'many') {
@@ -138,14 +140,14 @@ function fieldHtml(f, D, opts, pre) {
     const cls = { chips: 'af-chips', seg: 'ax-seg', seg3: 'ax-seg ax-seg3', cards: 'ax-cards' }[f.ui];
     const warn = f.warn ? `<small class="af-note" data-warn="${f.k}" hidden>${esc(f.warn.sub500k)}</small>` : '';
     return `<div class="af-field" data-f="${f.k}"${show}><span class="af-label" id="l-${f.k}">${esc(f.label)}${f.req ? '' : ' <span class="af-opt">opțional</span>'}</span>${f.hint ? `<small class="af-hint ax-hint-top">${esc(f.hint)}</small>` : ''}
-      <div class="${cls}" role="${f.t === 'one' ? 'radiogroup' : 'group'}" aria-labelledby="l-${f.k}"${f.max ? ` data-max="${f.max}"` : ''}>${f.opts.map(([k, l, d]) => `<label><input type="${type}" name="${f.k}" value="${esc(k)}"><span>${f.ui === 'cards' ? `<b>${esc(l)}</b><small>${esc(d)}</small>` : esc(l)}</span></label>`).join('')}</div>${warn}${err}</div>`;
+      <div class="${cls}" role="${f.t === 'one' ? 'radiogroup' : 'group'}" aria-labelledby="l-${f.k}"${desc}${f.t === 'one' ? req : ''}${f.max ? ` data-max="${f.max}"` : ''}>${f.opts.map(([k, l, d]) => `<label><input type="${type}" name="${f.k}" value="${esc(k)}"><span>${f.ui === 'cards' ? `<b>${esc(l)}</b><small>${esc(d)}</small>` : esc(l)}</span></label>`).join('')}</div>${warn}${err}</div>`;
   }
   if (f.t === 'editie') {
-    return `<div class="af-field" data-f="editie"><span class="af-label">${esc(f.label)}</span><div class="af-eds">${opts.map((o) => `<label class="af-ed"><input type="radio" name="editie" value="${esc(o.id)}" ${o.id === pre.id ? 'checked' : ''}>
+    return `<div class="af-field" data-f="editie"><span class="af-label" id="l-editie">${esc(f.label)}</span><div class="af-eds" role="radiogroup" aria-labelledby="l-editie"${desc}${req}>${opts.map((o) => `<label class="af-ed"><input type="radio" name="editie" value="${esc(o.id)}" ${o.id === pre.id ? 'checked' : ''}>
       <span><b>${esc(o.title)}</b><em class="${o.href ? 'open' : ''}">${esc(o.tag)}</em><small>${esc(o.sub)}</small></span></label>`).join('')}</div>${err}</div>`;
   }
   if (f.t === 'consent') {
-    return `<div class="af-consent" data-f="acord"><label><input type="checkbox" name="acord"><span>${esc(tx(D, 'aplica.acord'))} <a class="af-policy" href="/confidentialitate" target="_blank" rel="noopener">Politica de confidențialitate</a></span></label>${err}</div>`;
+    return `<div class="af-consent" data-f="acord"><label><input type="checkbox" name="acord"${desc}${req}><span>${esc(tx(D, 'aplica.acord'))} <a class="af-policy" href="/confidentialitate" target="_blank" rel="noopener">Politica de confidențialitate</a></span></label>${err}</div>`;
   }
   return '';
 }

@@ -221,9 +221,10 @@ function home2Footer(ctx, F, { logo, nav }) {
       </a>` : ''}
     </div>
 
+    <h2 class="sr-only">Despre Antreprenoria, pe scurt</h2>
     <div class="xf-grid">
-      <nav class="xf-col" aria-label="Explorează"><h4>Explorează</h4>${nav.map(([t, u]) => `<a href="${u}">${t}</a>`).join('')}<a href="/despre#contact">Contact</a><a class="xf-apply" href="/aplica">Aplică ${ARROW}</a></nav>
-      <div class="xf-col"><h4>Cohorte</h4>
+      <nav class="xf-col" aria-label="Linkuri în subsol"><h3>Explorează</h3>${nav.map(([t, u]) => `<a href="${u}">${t}</a>`).join('')}<a href="/despre#contact">Contact</a><a class="xf-apply" href="/aplica">Aplică ${ARROW}</a></nav>
+      <div class="xf-col"><h3>Cohorte</h3>
         <div class="xf-cohorts">
           <small class="xf-ch">Poți intra</small>
           ${F.cluj ? `<a class="is-open" href="${edUrl(F.cluj)}"><b>Cluj #${F.cluj.numar}</b><span>înscrieri deschise</span></a>` : ''}<a class="is-next" href="/aplica"><b>#${F.maxNr + 1}</b><span>listă de așteptare</span></a>
@@ -233,7 +234,7 @@ function home2Footer(ctx, F, { logo, nav }) {
         </div>
         <a class="xf-all" href="/editii">Toate cohortele ${ARROW}</a>
       </div>
-      <div class="xf-col xf-contact"><h4>Vorbește cu noi</h4>
+      <div class="xf-col xf-contact"><h3>Vorbește cu noi</h3>
         ${person(team['raluca-bedereag'], 'Pentru participanți')}
         ${person(team['larisa-slavenie'], 'Parteneriate')}
         <p class="xf-addr">${ICON.pin}<span>Calea Dorobanți 42, et. 3, ap. 5<br>Sector 1, București</span></p>

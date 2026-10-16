@@ -68,6 +68,9 @@
     box?.classList.toggle('bad', !!msg);
     const input = form.querySelector(`[name="${k}"]`);
     if (input && !['radio', 'checkbox'].includes(input.type)) input.setAttribute('aria-invalid', msg ? 'true' : 'false');
+    // la alegeri (variante, cohortă, acord), starea „invalid” o poartă grupul sau bifa
+    const grp = box?.querySelector('[role="radiogroup"], [role="group"]') || (input && input.type === 'checkbox' && k === 'acord' ? input : null);
+    if (grp) grp.setAttribute('aria-invalid', msg ? 'true' : 'false');
   };
   const touched = new Set();
   const check = (k) => { const f = FIELDS.find((x) => x.k === k); if (!f) return true; const m = fieldError(f, read()); show(k, m); return !m; };
@@ -119,7 +122,9 @@
       if (bad.length) {
         const el = form.querySelector(`[data-f="${bad[0]}"]`);
         el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        setTimeout(() => { const i = form.querySelector(`[name="${bad[0]}"]`); if (i && !['radio', 'checkbox'].includes(i.type)) i.focus({ preventScroll: true }); }, 300);
+        // focusul pe primul câmp cu probleme (și la alegeri, pe prima variantă), plus un anunț cu câte sunt
+        setTimeout(() => { const i = form.querySelector(`[name="${bad[0]}"]:checked`) || form.querySelector(`[name="${bad[0]}"]`); if (i) i.focus({ preventScroll: true }); }, 300);
+        status.className = 'af-status err'; status.textContent = bad.length === 1 ? 'Un câmp trebuie completat sau corectat.' : `${bad.length} câmpuri trebuie completate sau corectate.`;
         return;
       }
       if (cur === N) return submit();

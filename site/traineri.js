@@ -118,7 +118,7 @@ function traineriBody(ctx, F) {
 
   <section class="sec tr-list-sec" id="lista"><div class="wrap">
     <div class="tr-bar" role="search">
-      <div class="tr-seg" data-tr-group="rol" role="group" aria-label="Rol"><button class="on" data-tr="">Toți <i>${L.length}</i></button>${[['antreprenor invitat', 'Antreprenori invitați'], ['trainer', 'Traineri'], ['facilitator', 'Facilitatori']].map(([k, l]) => `<button data-tr="${esc(k)}">${l} <i>${n(k)}</i></button>`).join('')}</div>
+      <div class="tr-seg" data-tr-group="rol" role="group" aria-label="Rol"><button class="on" data-tr="" aria-pressed="true">Toți <i>${L.length}</i></button>${[['antreprenor invitat', 'Antreprenori invitați'], ['trainer', 'Traineri'], ['facilitator', 'Facilitatori']].map(([k, l]) => `<button data-tr="${esc(k)}" aria-pressed="false">${l} <i>${n(k)}</i></button>`).join('')}</div>
       <label class="tr-sel"><span class="sr">Temă</span><select id="tr-tema"><option value="">Toate temele</option>${themes.map((t) => `<option value="${esc(t.id)}">${esc(t.nume)}</option>`).join('')}</select></label>
       <div class="tr-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><input id="tr-q" type="search" placeholder="Caută după nume sau companie" autocomplete="off" aria-label="Caută printre traineri și invitați după nume sau companie"></div>
     </div>

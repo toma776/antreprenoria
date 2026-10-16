@@ -379,3 +379,22 @@ a:hover > .arr:not(.arr-l), button:hover > .arr:not(.arr-l), a:hover .arr:last-c
 .skip { position: fixed; left: 12px; top: -60px; z-index: 100; padding: 10px 14px; border-radius: var(--radius-btn); background: var(--cb-blue, var(--primary)); color: #fff; font: 600 14px/1 var(--f-body); text-decoration: none; transition: top .15s; }
 .skip:focus { top: 12px; outline: 2px solid var(--ink); outline-offset: 2px; }
 #main:focus { outline: none; }
+
+/* ---------- accesibilitate: detalii ---------- */
+/* text doar pentru cititoarele de ecran */
+.sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+/* footerul: titlurile coloanelor sunt acum h3, cu același aspect */
+.xf h3 { margin: 0 0 14px; font: 700 11.5px/1.2 var(--eyebrow-font); letter-spacing: .1em; text-transform: uppercase; color: var(--dark-muted); }
+@media (max-width: 720px) { nav.xf-col h3 { grid-column: 1 / -1; margin-bottom: 4px; } }
+/* 12. contrast: texte care erau puțin sub 4,5:1 */
+.cb.inst .x-cta .x-lead, .cb.inst .x-cta p { color: rgba(255, 255, 255, .92); }
+.cb .ed-badge.live { color: color-mix(in srgb, var(--accent) 80%, #000); }
+.cb .cm-d-empty { opacity: 1; }
+.cb .day-list li.break { opacity: 1; color: var(--muted); }
+.cb .tr-seg button i { opacity: 1; }
+.cb .xf-ch { color: rgba(255, 255, 255, .72); }
+/* 16. zone de apăsare: selectoarele din filtre ocupă toată eticheta; linkurile mici au cel puțin 24px înălțime */
+.cb .cm-sel select { align-self: stretch; min-height: 42px; }
+.cb .xf-acts a, .cb .x-link, .cb .ld-link, .cb .cx-more-h a { min-height: 24px; display: inline-flex; align-items: center; }
+/* 17. ce primește focus se vede, chiar dacă animația de apariție nu a pornit încă */
+.rv [data-rv]:focus-within, .rv [data-rv]:focus, .rv [data-x-in]:focus-within, .rv [data-x-in]:focus { opacity: 1; transform: none; }

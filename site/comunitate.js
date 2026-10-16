@@ -52,6 +52,7 @@ function searchBody(ctx, F, q = '') {
 
   <section class="cs-body" id="lista"><div class="wrap cs-grid">
     <div class="cs-main">
+      <h2 class="sr-only">Rezultatele căutării</h2>
       <div class="cm-status"><p class="cm-count" aria-live="polite"></p><button class="cm-reset" type="button" hidden>Șterge filtrele</button></div>
       <p class="cm-note" hidden></p>
       <div class="cm-grid cs-list" data-mode="search">${d.L.map(cmRow).join('')}</div>
