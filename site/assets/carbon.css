@@ -416,3 +416,14 @@ a:hover > .arr:not(.arr-l), button:hover > .arr:not(.arr-l), a:hover .arr:last-c
 .cb .mi-colt-liber span:nth-child(2) { top: 19px; left: 8px; }
 .cb .mi-colt-liber span:nth-child(3) { top: 19px; left: 19px; }
 .cb .mi-colt-liber:is([aria-expanded="true"], .on) span:nth-child(2) { top: 8px; left: 19px; }
+/* butonul de meniu, puțin mai mare: caseta 40px, pătratul mare 13px, cele mici 6px (spațiul din jur rămâne strâns) */
+.cb .menu-btn { width: 40px; height: 40px; }
+.cb .mi-mare-si-doua-mici span:nth-child(1) { top: 7px; left: 7px; width: 13px; height: 13px; }
+.cb .mi-mare-si-doua-mici span:nth-child(2) { top: 10px; left: 24px; width: 6px; height: 6px; }
+.cb .mi-mare-si-doua-mici span:nth-child(3) { top: 24px; left: 10px; width: 6px; height: 6px; }
+.cb .mi-mare-si-doua-mici:is([aria-expanded="true"], .on) span:nth-child(1) { top: 17px; left: 17px; }
+.cb .mi-colt-liber span { width: 8px; height: 8px; }
+.cb .mi-colt-liber span:nth-child(1) { top: 9px; left: 9px; }
+.cb .mi-colt-liber span:nth-child(2) { top: 21px; left: 9px; }
+.cb .mi-colt-liber span:nth-child(3) { top: 21px; left: 21px; }
+.cb .mi-colt-liber:is([aria-expanded="true"], .on) span:nth-child(2) { top: 9px; left: 21px; }
