@@ -1,16 +1,8 @@
-/* Previzualizare: homepage-ul în stilul IBM Carbon (activ cu body.cb, peste inst.css și home3.css).
-   Carbon: IBM Plex Sans, colțuri drepte, fără umbre, grilă cu gutiere de 1px, gri 100/90/10, albastru 60 (#0f62fe) pentru acțiuni,
-   butoane dreptunghiulare cu textul la stânga și săgeata la dreapta, titluri subțiri (300), etichete mici. */
-.cb {
-  --cb-blue: #0f62fe; --cb-blue-h: #0050e6; --cb-blue-a: #002d9c; --cb-link: #0f62fe; --cb-link-d: #78a9ff;
-  --cb-g100: #161616; --cb-g90: #262626; --cb-g80: #393939; --cb-g70: #525252; --cb-g60: #6f6f6f; --cb-g30: #c6c6c6; --cb-g20: #e0e0e0; --cb-g10: #f4f4f4; --cb-g10h: #e8e8e8;
-  --f-display: 'IBM Plex Sans', system-ui, sans-serif; --f-body: 'IBM Plex Sans', system-ui, sans-serif; --f-num: 'IBM Plex Sans', system-ui, sans-serif; --eyebrow-font: 'IBM Plex Sans', system-ui, sans-serif;
-  --d-weight: 300; --d-stretch: 100%; --d-track: 0;
-  --primary: var(--cb-blue); --primary-soft: #edf5ff; --dark: var(--cb-g100); --ink: var(--cb-g100); --muted: var(--cb-g70); --line: var(--cb-g20);
-  --bg: #fff; --surface: #fff; --surface-2: var(--cb-g10); --dark-ink: var(--cb-g10); --dark-muted: var(--cb-g30);
-  --radius: 0px; --radius-btn: 0px; --x-r: 0px; --shadow: none;
-  background: #fff; color: var(--cb-g100); font-family: var(--f-body); -webkit-font-smoothing: antialiased;
-}
+/* Stilul site-ului: structura inspirată din IBM Carbon (grila, butoanele cu săgeata la dreapta, benzile de secțiuni, fără umbre),
+   adaptată brandului Antreprenoria. Activ cu body.cb (peste inst.css și home3.css), pe toate paginile.
+   Culorile, fonturile, greutățile, colțurile și detaliile stilului (înălțimea headerului și a butoanelor, linia de accent, săgeata)
+   vin din brand: data/brand.json -> /assets/brand.css, editabile din panou (Branding). Aici nu se scriu culori sau fonturi direct. */
+.cb { background: var(--bg); color: var(--ink); font-family: var(--f-body); -webkit-font-smoothing: antialiased; }
 
 /* ---------- colțuri drepte, fără umbre (pozele devin pătrate, ca pe ibm.com) ---------- */
 .cb .x *, .cb .hdr *, .cb .xf *, .cb .x, .cb .mm-panel { border-radius: var(--cb-r) !important; box-shadow: none !important; text-shadow: none !important; }
@@ -32,10 +24,10 @@
 
 /* ---------- butoanele Carbon: dreptunghiulare, textul la stânga, săgeata la dreapta ---------- */
 .cb .x .x-btn, .cb .x .btn, .cb .hdr-cta .btn-primary {
-  display: inline-flex; justify-content: space-between; align-items: center; gap: 32px; min-height: 48px; padding: 0 16px; border: 1px solid transparent;
+  display: inline-flex; justify-content: space-between; align-items: center; gap: 32px; min-height: var(--btn-h); padding: 0 16px; border: 1px solid transparent;
   font: 400 14px/1.29 var(--f-body); letter-spacing: .16px; transform: none !important; filter: none !important; transition: background .11s, color .11s, border-color .11s;
 }
-.cb .x .x-btn, .cb .x .btn-lg { min-width: 200px; min-height: 64px; padding: 0 16px; align-items: center; } /* textul și săgeata, centrate pe verticală */
+.cb .x .x-btn, .cb .x .btn-lg { min-width: 200px; min-height: var(--btn-h-lg); padding: 0 16px; align-items: center; } /* textul și săgeata, centrate pe verticală */
 .cb .x .x-btn svg, .cb .x .btn svg { width: 16px; height: 16px; flex: none; }
 .cb .x .x-btn:not(:has(svg))::after, .cb .x .btn-primary:not(:has(svg))::after { content: ""; flex: none; width: 16px; height: 16px; margin-left: auto; background: currentColor; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat; }
 .cb.inst .x-btn-glow, .cb .x .btn-primary, .cb .hdr-cta .btn-primary { background: var(--cb-blue) !important; color: #fff !important; border-color: transparent !important; }
@@ -46,7 +38,7 @@
 .cb .hdr-cta .btn-primary { min-height: 48px; min-width: 0; padding: 0 16px; align-items: center; }
 .cb .hdr-cta .btn-primary::after { content: none; }
 .cb .x .x-link, .cb .x .h3-links a, .cb .x a.x-link { color: var(--cb-link); font-weight: 400; }
-.cb .x .x-link:hover { color: #0043ce; text-decoration: underline; }
+.cb .x .x-link:hover { color: var(--cb-blue-h); text-decoration: underline; }
 
 /* ---------- header: negru, compact ---------- */
 .cb.inst .hdr::before { background: var(--cb-g100) !important; }
@@ -116,7 +108,7 @@
 
 /* ---------- apelul final și footerul ---------- */
 .cb.inst .x-cta { background: var(--cb-blue); }
-.cb.inst .x-cta .x-eyebrow { color: #d0e2ff; }
+.cb.inst .x-cta .x-eyebrow { color: var(--primary-soft); }
 .cb.inst .x-seat { background: rgba(0, 0, 0, .18); border: 0; }
 .cb.inst .x-seat:hover { background: rgba(0, 0, 0, .3); }
 .cb.inst .x-cta .x-btn-glow { background: #fff !important; color: var(--cb-g100) !important; }
@@ -197,33 +189,29 @@
 .cb .h3-trust .h3-rbl b { font-size: 20px; font-weight: 400; }
 
 /* ======================================================================
-   Adaptarea la brandul Antreprenoria (păstrăm structura Carbon: grila, butoanele cu săgeată, ritmul;
-   culorile, fonturile și detaliile vin din brand – data/brand.json, varianta „Albastru RBL”)
+   Variabilele stilului, din tokenurile brandului (nu se scriu culori aici; se schimbă din panou › Branding)
    ====================================================================== */
 .cb {
-  /* 1. albastrul Antreprenoria în locul albastrului IBM */
-  --cb-blue: #1057A4; --cb-blue-h: #0D4A8C; --cb-blue-a: #0A3B70; --cb-link: #1057A4; --cb-link-d: #8DB8EA;
-  /* 2. griurile reci ale brandului; 3. bleumarinul în locul negrului */
-  --cb-g100: #121826; --cb-g70: #586174; --cb-g60: #6B7489; --cb-g30: #C3CDDC; --cb-g20: #DCE3EE; --cb-g10: #EAF0F8; --cb-g10h: #DDE6F2;
-  --cb-navy: #0B2545; --cb-navy-2: #12325C; --cb-g90: var(--cb-navy-2); --cb-g80: #1C3D68;
-  --primary: var(--cb-blue); --primary-soft: #E3ECF7; --dark: var(--cb-navy); --ink: var(--cb-g100); --muted: var(--cb-g70); --line: var(--cb-g20); --surface-2: var(--cb-g10);
-  /* 4. roșul RBL, doar pentru „live” */
-  --accent: #E32419;
-  /* 6–7. Archivo pentru titluri, Inter pentru text */
-  --f-display: "Archivo", system-ui, sans-serif; --f-body: "Inter", system-ui, sans-serif; --f-num: "Archivo", system-ui, sans-serif; --eyebrow-font: "Inter", system-ui, sans-serif;
-  --d-weight: 600; --d-stretch: 100%;
-  /* 9. colțuri foarte puțin rotunjite */
-  --cb-r: 3px; --radius: 3px; --radius-btn: 3px; --x-r: 3px;
-  color: var(--cb-g100);
+  /* albastrul brandului: acțiuni, linkuri, accente; varianta la hover și la apăsare */
+  --cb-blue: var(--primary); --cb-blue-h: var(--primary-hover, color-mix(in srgb, var(--primary) 85%, #000)); --cb-blue-a: color-mix(in srgb, var(--primary) 70%, #000);
+  --cb-link: var(--primary); --cb-link-d: color-mix(in srgb, var(--primary) 45%, #fff);
+  /* griurile reci: textul, textul secundar, liniile, fundalul secțiunilor alternative */
+  --cb-g100: var(--ink); --cb-g70: var(--muted); --cb-g60: color-mix(in srgb, var(--muted) 85%, #fff);
+  --cb-g30: color-mix(in srgb, var(--line) 75%, var(--muted)); --cb-g20: var(--line); --cb-g10: var(--surface-2); --cb-g10h: color-mix(in srgb, var(--surface-2) 92%, var(--ink));
+  /* bleumarinul: footerul, numerele pașilor, stratul de sub pozele liderilor */
+  --cb-navy: var(--dark); --cb-navy-2: var(--dark-2); --cb-g90: var(--dark-2); --cb-g80: color-mix(in srgb, var(--dark-2) 80%, #fff);
+  /* colțurile */
+  --cb-r: var(--radius); --x-r: var(--radius);
+  color: var(--ink);
 }
 
 /* 6. titlurile: Archivo, greutate medie; lățimea extinsă doar pentru titlul din hero */
-.cb .x h1, .cb.inst .x-hero h1 { font-family: var(--f-display); font-weight: 600; font-stretch: 112%; letter-spacing: -.015em; line-height: 1.06; }
-.cb .x h2, .cb.inst .x-head h2 { font-weight: 600; letter-spacing: -.01em; line-height: 1.15; }
-.cb .x h3, .cb .h3-steps b, .cb .h3-seat b, .cb.inst .x-seat b, .cb .x-person b, .cb .h3-rbl b, .cb .h3-trust .h3-rbl b { font-family: var(--f-display); font-weight: 600; }
-.cb.inst .xf-claim { font-weight: 600; }
+.cb .x h1, .cb.inst .x-hero h1 { font-family: var(--f-display); font-weight: var(--d-weight); font-stretch: var(--d-stretch-hero); letter-spacing: var(--d-track); line-height: 1.06; }
+.cb .x h2, .cb.inst .x-head h2 { font-weight: var(--d-weight); font-stretch: var(--d-stretch); letter-spacing: var(--d-track); line-height: 1.15; }
+.cb .x h3, .cb .h3-steps b, .cb .h3-seat b, .cb.inst .x-seat b, .cb .x-person b, .cb .h3-rbl b, .cb .h3-trust .h3-rbl b { font-family: var(--f-display); font-weight: var(--d-weight); }
+.cb.inst .xf-claim { font-weight: var(--d-weight); }
 /* 8. cifrele mari: Archivo 600 */
-.cb .h3-trust b, .cb .h3-figs b, .cb.inst .x-big, .cb.inst .x-ring b, .cb.inst .x-clock b { font-family: var(--f-num); font-weight: 600; letter-spacing: -.01em; }
+.cb .h3-trust b, .cb .h3-figs b, .cb.inst .x-big, .cb.inst .x-ring b, .cb.inst .x-clock b { font-family: var(--f-num); font-weight: var(--d-weight); letter-spacing: var(--d-track); }
 .cb .x-eyebrow, .cb .x-k, .cb .x-marq-label, .cb .h3-rbl span { font-family: var(--f-body) !important; }
 .cb.inst .x-eyebrow { color: var(--cb-blue); font-weight: 600 !important; }
 .cb.inst .x-hero .x-eyebrow, .cb .h3-paths > .x-k { color: var(--cb-g70); }
@@ -239,8 +227,8 @@
 .cb .live i, .cb .dot-live, .cb .x-tag-live i { border-radius: 50% !important; background: var(--accent); }
 
 /* 13. pozele liderilor: un strat bleumarin jos, sub nume */
-.cb .x-person::after { background: linear-gradient(180deg, transparent 45%, rgba(11, 37, 69, .92)); }
-.cb .x-person em { color: #8DB8EA; }
+.cb .x-person::after { background: linear-gradient(180deg, transparent 45%, color-mix(in srgb, var(--dark) 92%, transparent)); }
+.cb .x-person em { color: var(--cb-link-d); }
 
 /* tile-urile pe fundalul gri-albăstrui al secțiunilor alternative rămân albe */
 .cb.inst .x-navsec .x-tile, .cb.inst .x-navsec .x-glass-light, .cb.inst .x-navi-q button { background: #fff; }
@@ -256,9 +244,9 @@
 .cb main *:not(.live i):not(.dot-live):not(.tag-live i):not(.sp-fw-c) { border-radius: var(--cb-r) !important; }
 .cb main .x-chip, .cb main .x-tag, .cb main .h3-seat-tag, .cb main .x-pill { border-radius: 24px !important; }
 /* titlurile paginilor: Archivo semibold; cel din hero, ușor lățit */
-.cb main h1 { font-weight: 600; font-stretch: 112%; letter-spacing: -.015em; }
-.cb main h2 { font-weight: 600; font-stretch: 100%; letter-spacing: -.01em; }
-.cb main h3 { font-weight: 600; font-stretch: 100%; }
+.cb main h1 { font-weight: var(--d-weight); font-stretch: var(--d-stretch-hero); letter-spacing: var(--d-track); }
+.cb main h2 { font-weight: var(--d-weight); font-stretch: var(--d-stretch); letter-spacing: var(--d-track); }
+.cb main h3 { font-weight: var(--d-weight); font-stretch: var(--d-stretch); }
 .cb main .eyebrow { color: var(--cb-blue); font-family: var(--f-body); }
 /* butoanele: dreptunghiulare, fără umbre și fără săritura la hover */
 .cb main .btn { box-shadow: none !important; transform: none !important; }
@@ -266,7 +254,7 @@
 .cb main .btn-primary:hover { background: var(--cb-blue-h); border-color: var(--cb-blue-h); }
 
 /* Despre: panoul „O cohortă, pe scurt” e acum deschis */
-.cb.inst .x-hero .dx-glance dt { color: var(--cb-blue); font-weight: 600; font-stretch: 100%; }
+.cb.inst .x-hero .dx-glance dt { color: var(--cb-blue); font-weight: var(--d-weight); font-stretch: var(--d-stretch); }
 .cb.inst .x-hero .dx-glance dd, .cb.inst .x-hero .dx-proof { color: var(--cb-g70); }
 .cb.inst .x-hero .dx-proof b, .cb.inst .x-hero .dx-proof strong, .cb.inst .x-hero .dx-proof dt { color: var(--cb-blue); }
 
@@ -288,7 +276,7 @@
 .cb .sp-hero .btn-outline-light { border-color: var(--cb-blue); color: var(--cb-blue); background: transparent; }
 .cb .sp-hero .btn-outline-light:hover { background: var(--cb-blue); color: #fff; }
 .cb .sp-hero .sp-cta { box-shadow: none; }
-.cb .sp-hero-figs dt { color: var(--cb-g100); font-weight: 600; font-stretch: 100%; }
+.cb .sp-hero-figs dt { color: var(--cb-g100); font-weight: var(--d-weight); font-stretch: var(--d-stretch); }
 /* roata: pe fundal deschis, nodurile albe cu chenar, cel activ cu albastru */
 .cb .sp-fw-ring { stroke: var(--cb-g30); }
 .cb .sp-fw-prog { stroke: var(--cb-blue) !important; filter: none; }
@@ -298,7 +286,7 @@
 .cb .sp-fw-n.on { color: var(--cb-g100); border-color: var(--cb-blue); box-shadow: inset 0 -2px 0 var(--cb-blue) !important; }
 .cb .sp-fw-n.on i { background: var(--cb-blue); color: #fff; }
 .cb .sp-fw-c { background: var(--cb-g10); }
-.cb .sp-fw-v b { color: var(--cb-g100); font-weight: 600; font-stretch: 100%; }
+.cb .sp-fw-v b { color: var(--cb-g100); font-weight: var(--d-weight); font-stretch: var(--d-stretch); }
 .cb .sp-fw-v span { color: var(--cb-g70); }
 .cb .sp-fw-v em { color: var(--cb-blue); }
 /* banda de logo-uri a partenerilor: gri-albăstrui, logo-urile pe carduri albe cu chenar */
@@ -318,14 +306,14 @@ a:hover > .arr:not(.arr-l), button:hover > .arr:not(.arr-l), a:hover .arr:last-c
 .cb .hdr.is-scrolled { box-shadow: 0 1px 0 var(--cb-g20); }
 /* headerul pe desktop: aceeași înălțime și înainte, și după scroll, cu aer în jurul butonului „Aplică” (10px sus și jos) */
 @media (min-width: 1181px) {
-  .cb.x-page .hdr-in, .cb.x-page .hdr.is-scrolled .hdr-in { height: 64px; }
-  .cb.x-page .mm-trigger { height: 64px; }
-  .cb .hdr-cta .btn-primary { min-height: 44px; height: 44px; }
+  .cb.x-page .hdr-in, .cb.x-page .hdr.is-scrolled .hdr-in { height: var(--hdr-h); }
+  .cb.x-page .mm-trigger { height: var(--hdr-h); }
+  .cb .hdr-cta .btn-primary { min-height: calc(var(--hdr-h) - 20px); height: calc(var(--hdr-h) - 20px); }
 }
 /* meniul lipicios al paginilor (Despre, Parteneri...) stă exact sub headerul de 64px */
-@media (min-width: 1181px) { .cb .pg-nav { top: 64px; } }
+@media (min-width: 1181px) { .cb .pg-nav { top: var(--hdr-h); } }
 /* între header și meniul lipicios al paginii: o linie subțire albastră (doar cât meniul stă lipit) */
-.cb .pg-nav.is-stuck { border-top: 2px solid var(--cb-blue); box-shadow: none; }
+.cb .pg-nav.is-stuck { border-top: var(--accent-line) solid var(--cb-blue); box-shadow: none; }
 .cb .hdr.over-nav { border-bottom-color: transparent; box-shadow: none; }
 .cb .hdr.over-nav::after { opacity: 0; }
 /* logo-urile companiilor care au crescut cu programul (Despre, homepage): duc la oamenii companiei din comunitate */
@@ -335,3 +323,5 @@ a:hover > .arr:not(.arr-l), button:hover > .arr:not(.arr-l), a:hover .arr:last-c
 .af-policy { color: var(--primary); text-decoration: underline; text-underline-offset: 2px; white-space: nowrap; }
 /* paginile cohortelor: sub lista de sectoare din rezumat, același spațiu ca deasupra */
 .cb .ed-sum-sec { padding-bottom: 16px; }
+/* săgeata din butoane: pornită sau oprită din brand (detaliile stilului) */
+.cb .x .x-btn::after, .cb .x .btn-primary::after, .cb .btn .arr, .cb .x-btn .arr, .cb .x .x-btn > svg { display: var(--btn-arrow); }

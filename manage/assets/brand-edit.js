@@ -48,7 +48,8 @@ const tipoForm = (v) => { const T = v.tipografie; return ROLURI.map(([k, l]) => 
     <div class="f"><label>Font</label><select data-t="font">${opt(Object.keys(FONTS).map((f) => [f, f]), T[k].font)}</select></div>
     ${k === 'titluri' ? `<div class="f2"><div class="f"><label>Grosime</label><select data-t="greutate">${opt([400, 500, 600, 700, 800, 900].map((w) => [w, w]), T[k].greutate)}</select></div>
       <div class="f"><label>Spațiere între litere</label><select data-t="spatiere">${opt(['-0.04em', '-0.03em', '-0.02em', '-0.01em', '0em', '0.01em'].map((x) => [x, x]), T[k].spatiere)}</select></div></div>
-      <div class="f"><label>Lățime <small>(doar pentru Archivo)</small></label><select data-t="latime">${opt(['88%', '94%', '100%', '106%', '112%', '118%', '125%'].map((x) => [x, x]), T[k].latime)}</select></div>` : ''}
+      <div class="f2"><div class="f"><label>Lățime <small>(doar pentru Archivo)</small></label><select data-t="latime">${opt(['88%', '94%', '100%', '106%', '112%', '118%', '125%'].map((x) => [x, x]), T[k].latime)}</select></div>
+        <div class="f"><label>Lățimea titlului din hero</label><select data-t="latime_hero">${opt(['88%', '94%', '100%', '106%', '112%', '118%', '125%'].map((x) => [x, x]), T[k].latime_hero || T[k].latime)}</select></div></div>` : ''}
   </div>`).join(''); };
 const tipoPrev = (v) => { const T = v.tipografie, st = (t) => `'${t.font}', ${t.rezerva || 'system-ui, sans-serif'}`; ROLURI.forEach(([k]) => loadFont(T[k].font));
   return `<div class="b-prev-site"><small style="font-family:${st(T.etichete)}">ACCELERATORUL RBL</small><b style="font-family:${st(T.titluri)};font-weight:${T.titluri.greutate};font-stretch:${T.titluri.latime};letter-spacing:${T.titluri.spatiere};font-size:26px;line-height:1.1">Crește-ți compania alături de antreprenorii care au făcut-o deja.</b><p style="font-family:${st(T.text)}">Trei luni de ateliere cu lideri de business români. Diacritice: ă â î ș ț.</p><span style="font-family:${st(T.cifre)};font-size:34px;font-weight:${T.titluri.greutate}">6,4 mil. lei</span></div>`; };
@@ -67,7 +68,22 @@ const logoForm = (v) => { const L = v.logo, ids = L.variante.map((x) => [x.id, x
 const logoPrev = (v) => { const L = v.logo, f = (id) => L.variante.find((x) => x.id === id); const h = f(L.pe_site.header), ft = f(L.pe_site.footer);
   return `<div class="b-prev-hdr"><img src="${esc(h?.web || h?.fisier || '')}" alt=""><span>Program · Cohorte · Teme</span></div><div class="b-prev-ftr"><img src="${esc(ft?.web || ft?.fisier || '')}" alt=""></div>`; };
 
-const ED_SEC = { culori: ['Culori', culoriForm, culoriPrev], tipografie: ['Tipografie', tipoForm, tipoPrev], forme: ['Forme', formeForm, formePrev], logo: ['Logo', logoForm, logoPrev] };
+/* ---------- detaliile stilului ---------- */
+const STIL0 = { inaltime_header: '64px', inaltime_buton: '48px', inaltime_buton_mare: '64px', linie_accent: '2px', sageata_butoane: true, ghid: [] };
+const PX = (list) => list.map((x) => [x, x]);
+const stilForm = (v) => { const S = { ...STIL0, ...(v.stil || {}) }; return `<div class="fs"><h4>Dimensiuni</h4>
+    <div class="f2"><div class="f"><label>Înălțimea headerului (desktop)</label><select data-s="inaltime_header">${opt(PX(['56px', '60px', '64px', '72px', '80px']), S.inaltime_header)}</select></div>
+      <div class="f"><label>Grosimea liniei de accent</label><select data-s="linie_accent">${opt(PX(['1px', '2px', '3px', '4px']), S.linie_accent)}</select></div></div>
+    <div class="f2"><div class="f"><label>Înălțimea butoanelor</label><select data-s="inaltime_buton">${opt(PX(['40px', '44px', '48px', '52px', '56px']), S.inaltime_buton)}</select></div>
+      <div class="f"><label>Butonul mare de acțiune</label><select data-s="inaltime_buton_mare">${opt(PX(['48px', '56px', '64px', '72px']), S.inaltime_buton_mare)}</select></div></div>
+    <div class="f"><label style="display:flex;align-items:center;gap:8px"><input type="checkbox" data-s="sageata_butoane" ${S.sageata_butoane ? 'checked' : ''}> Săgeata la dreapta, în butoane</label></div></div>
+  <div class="fs"><h4>Ghidul stilului</h4><div class="f"><label>O regulă pe rând <small>(apare în Branding, pentru oricine lucrează la site)</small></label><textarea data-s="ghid" rows="12">${esc(S.ghid.join('\n'))}</textarea></div></div>`; };
+const stilPrev = (v) => { const S = { ...STIL0, ...(v.stil || {}) }, c = (t) => v.culori.find((x) => x.token === t)?.hex;
+  const ar = S.sageata_butoane ? ' →' : '';
+  return `<div class="b-prev-site" style="border-radius:${v.forme.raza}"><div style="border-bottom:${S.linie_accent} solid ${c('primary')};height:${S.inaltime_header};display:flex;align-items:center;justify-content:space-between;padding:0 10px;background:#fff"><small>header · ${S.inaltime_header}</small><span class="b-prev-btn" style="background:${c('primary')};color:#fff;border-radius:${v.forme.raza_buton}">Aplică</span></div>
+    <p style="margin:12px 0 8px"><span class="b-prev-btn" style="display:inline-flex;align-items:center;min-height:${S.inaltime_buton_mare};background:${c('primary')};color:#fff;border-radius:${v.forme.raza_buton}">Aplică pentru un loc${ar}</span></p>
+    <p style="margin:0"><span class="b-prev-btn" style="display:inline-flex;align-items:center;min-height:${S.inaltime_buton};background:transparent;border:1px solid ${c('primary')};color:${c('primary')};border-radius:${v.forme.raza_buton}">Verifică dacă te califici${ar}</span></p></div>`; };
+const ED_SEC = { culori: ['Culori', culoriForm, culoriPrev], tipografie: ['Tipografie', tipoForm, tipoPrev], forme: ['Forme', formeForm, formePrev], logo: ['Logo', logoForm, logoPrev], stil: ['Detaliile stilului', stilForm, stilPrev] };
 function openBrandEditor(sec, varId) {
   const v = JSON.parse(JSON.stringify(window.BRAND_DATA.variante.find((x) => x.id === varId)));
   BE = { v, sec };
@@ -78,9 +94,10 @@ function openBrandEditor(sec, varId) {
 function readForm() {
   const f = $('#b-form'), v = BE.v;
   if (BE.sec === 'culori') $$('.b-color', f).forEach((row) => { const c = v.culori[row.dataset.i], hex = $('[data-c=hex]', row).value.trim(); if (/^#[0-9a-f]{6}$/i.test(hex)) c.hex = hex.toUpperCase(); });
-  if (BE.sec === 'tipografie') $$('[data-rol]', f).forEach((box) => { const t = v.tipografie[box.dataset.rol]; $$('[data-t]', box).forEach((s) => { t[s.dataset.t] = s.dataset.t === 'greutate' ? Number(s.value) : s.value; }); if (box.dataset.rol === 'titluri' && !FONTS[t.font]?.w) t.latime = '100%'; });
+  if (BE.sec === 'tipografie') $$('[data-rol]', f).forEach((box) => { const t = v.tipografie[box.dataset.rol]; $$('[data-t]', box).forEach((s) => { t[s.dataset.t] = s.dataset.t === 'greutate' ? Number(s.value) : s.value; }); if (box.dataset.rol === 'titluri' && !FONTS[t.font]?.w) { t.latime = '100%'; t.latime_hero = '100%'; } });
   if (BE.sec === 'forme') $$('[data-f]', f).forEach((s) => { v.forme[s.dataset.f] = s.value; });
   if (BE.sec === 'logo') $$('[data-l]', f).forEach((s) => { v.logo.pe_site[s.dataset.l] = s.value; });
+  if (BE.sec === 'stil') { v.stil = { ...STIL0, ...(v.stil || {}) }; $$('[data-s]', f).forEach((s) => { const k = s.dataset.s; v.stil[k] = s.type === 'checkbox' ? s.checked : k === 'ghid' ? s.value.split('\n').map((x) => x.trim()).filter(Boolean) : s.value; }); }
   $('#b-prev').innerHTML = ED_SEC[BE.sec][2](v);
 }
 async function uploadFile(file) {

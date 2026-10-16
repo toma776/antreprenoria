@@ -701,3 +701,12 @@ tr.ap-detail td { background: var(--panel-2); }
 .ap-ans dl { margin: 0; display: grid; gap: 2px; }
 .ap-ans dt { font-size: 11.5px; color: var(--muted); margin-top: 6px; }
 .ap-ans dd { margin: 0; font-size: 13px; white-space: pre-wrap; }
+
+/* Branding › Detaliile stilului: valorile, o mostră de butoane și linia de accent, ghidul stilului */
+.b-stil { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.b-stil-demo { display: grid; gap: 10px; justify-items: start; padding: 16px; border: 1px solid var(--line); background: #fff; }
+.b-stil-btn { display: inline-flex; align-items: center; justify-content: space-between; gap: 28px; min-width: 220px; padding: 0 16px; border: 1px solid transparent; font-size: 14px; font-weight: 600; }
+.b-stil-btn.ghost { background: transparent; }
+.b-stil-line { display: block; width: 100%; padding-top: 6px; color: var(--muted); }
+.b-ghid { margin: 10px 0 0; padding-left: 20px; display: grid; gap: 6px; font-size: 13.5px; line-height: 1.5; }
+@media (max-width: 900px) { .b-stil { grid-template-columns: 1fr; } }

@@ -14,13 +14,17 @@ function pick(B, preview) {
 }
 
 const stack = (t) => `"${t.font}", ${t.rezerva}`;
+// detaliile stilului (Branding › Detaliile stilului); valorile implicite sunt cele ale stilului de acum
+const STIL = { inaltime_header: '64px', inaltime_buton: '48px', inaltime_buton_mare: '64px', linie_accent: '2px', sageata_butoane: true };
+const stil = (v) => ({ ...STIL, ...(v.stil || {}) });
 function tokens(v) {
-  const T = v.tipografie, F = v.forme;
+  const T = v.tipografie, F = v.forme, S = stil(v);
   return [
     ...v.culori.map((c) => `--${c.token}: ${c.hex};`),
     `--f-display: ${stack(T.titluri)};`, `--f-body: ${stack(T.text)};`, `--f-num: ${stack(T.cifre)};`, `--eyebrow-font: ${stack(T.etichete)};`,
-    `--d-weight: ${T.titluri.greutate};`, `--d-stretch: ${T.titluri.latime};`, `--d-track: ${T.titluri.spatiere};`,
+    `--d-weight: ${T.titluri.greutate};`, `--d-stretch: ${T.titluri.latime};`, `--d-stretch-hero: ${T.titluri.latime_hero || T.titluri.latime};`, `--d-track: ${T.titluri.spatiere};`,
     `--radius: ${F.raza};`, `--radius-btn: ${F.raza_buton};`, `--shadow: ${F.umbra};`,
+    `--hdr-h: ${S.inaltime_header};`, `--btn-h: ${S.inaltime_buton};`, `--btn-h-lg: ${S.inaltime_buton_mare};`, `--accent-line: ${S.linie_accent};`, `--btn-arrow: ${S.sageata_butoane ? 'inline-block' : 'none'};`,
     `color-scheme: ${v.schema};`,
   ].join(' ');
 }
@@ -33,4 +37,4 @@ function css() {
 
 const fontsHref = (v) => `https://fonts.googleapis.com/css2?${v.google_fonts}&display=swap`;
 
-module.exports = { load, pick, css, fontsHref, FILE };
+module.exports = { load, pick, css, fontsHref, FILE, STIL, stil };

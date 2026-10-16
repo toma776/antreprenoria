@@ -4,30 +4,30 @@
   "variante": [
     {
       "id": "a",
-      "nume": "Albastru RBL",
-      "descriere": "Evoluția brandului actual. Păstrează albastrul și roșul pe care oamenii le recunosc, dar le dă mai mult aer și o tipografie lată, sigură pe ea.",
-      "de_ce": "Continuitate cu RBL și cu cele 22 de ediții. Riscul cel mai mic.",
+      "nume": "Antreprenoria · instituțional",
+      "descriere": "Stilul site-ului: structură curată, inspirată din IBM Carbon (grilă, benzi de secțiuni, butoane cu săgeata la dreapta, fără umbre), adaptată brandului Antreprenoria: albastrul și bleumarinul brandului, griuri reci, Archivo și Inter, colțuri de 3px.",
+      "de_ce": "Pare instituțional și sigur pe el, nu „făcut cu AI”: puține culori, ierarhie clară, accentul albastru doar unde e o acțiune. Păstrează albastrul și roșul pe care oamenii le recunosc de la RBL.",
       "schema": "light",
       "culori": [
         {
           "token": "primary",
           "nume": "Albastru Antreprenoria",
           "hex": "#1057A4",
-          "rol": "principală: butoane, linkuri, accente",
+          "rol": "acțiuni: butoane, linkuri, file active, linia de accent",
           "principala": true
         },
         {
           "token": "dark",
           "nume": "Bleumarin",
           "hex": "#0B2545",
-          "rol": "secțiuni închise, footer",
+          "rol": "footerul, numerele pașilor, stratul de sub pozele liderilor",
           "principala": true
         },
         {
           "token": "accent",
           "nume": "Roșu RBL",
           "hex": "#E32419",
-          "rol": "accent rar: „live”, urgență",
+          "rol": "doar pentru „live” (cohorta în desfășurare)",
           "principala": true
         },
         {
@@ -40,7 +40,7 @@
         {
           "token": "bg",
           "nume": "Hârtie",
-          "hex": "#F5F7FB",
+          "hex": "#FFFFFF",
           "rol": "fundalul paginii",
           "principala": true
         },
@@ -61,7 +61,7 @@
           "token": "surface-2",
           "nume": "Suprafață 2",
           "hex": "#EAF0F8",
-          "rol": "secțiuni alternative"
+          "rol": "secțiunile alternative, panourile din hero, fundalul tile-urilor"
         },
         {
           "token": "muted",
@@ -73,7 +73,13 @@
           "token": "line",
           "nume": "Linii",
           "hex": "#DCE3EE",
-          "rol": "borduri, separatoare"
+          "rol": "liniile dintre secțiuni, chenarele, separatoarele"
+        },
+        {
+          "token": "primary-hover",
+          "nume": "Albastru la hover",
+          "hex": "#0D4A8C",
+          "rol": "butoanele principale, la trecerea mouse-ului"
         },
         {
           "token": "primary-ink",
@@ -109,10 +115,11 @@
       "tipografie": {
         "titluri": {
           "font": "Archivo",
-          "greutate": 800,
-          "latime": "112%",
-          "spatiere": "-0.02em",
-          "rezerva": "system-ui, sans-serif"
+          "greutate": 600,
+          "latime": "100%",
+          "spatiere": "-0.01em",
+          "rezerva": "system-ui, sans-serif",
+          "latime_hero": "112%"
         },
         "text": {
           "font": "Inter",
@@ -128,9 +135,9 @@
         }
       },
       "forme": {
-        "raza": "6px",
-        "raza_buton": "6px",
-        "umbra": "0 1px 2px rgba(11, 37, 69, .06), 0 12px 32px -16px rgba(11, 37, 69, .25)"
+        "raza": "3px",
+        "raza_buton": "3px",
+        "umbra": "none"
       },
       "google_fonts": "family=Archivo:wdth,wght@62..125,400..900&family=Inter:wght@400;500;600;700",
       "logo": {
@@ -208,6 +215,25 @@
           "favicon": "/assets/identitate/favicon-32.png",
           "apple_touch": "/assets/identitate/favicon-180.png"
         }
+      },
+      "stil": {
+        "inaltime_header": "64px",
+        "inaltime_buton": "48px",
+        "inaltime_buton_mare": "64px",
+        "linie_accent": "2px",
+        "sageata_butoane": true,
+        "ghid": [
+          "Fundal alb; secțiunile alternează alb cu gri-albăstrui (Suprafață 2), separate de linii subțiri.",
+          "Albastrul brandului doar pentru acțiuni: butoane, linkuri, fila activă, linia de accent. Roșul RBL doar pentru „live”.",
+          "Headerul e alb, cu logo-ul color; footerul e bleumarin și încheie pagina.",
+          "Hero-urile sunt deschise: titlul mare în Archivo, lățit doar acolo; restul titlurilor la lățime normală.",
+          "Butoanele sunt dreptunghiulare, cu textul la stânga și săgeata la dreapta, centrate pe verticală; butonul mare de acțiune e mai înalt.",
+          "O singură săgeată desenată pe tot site-ul, în butoane și în linkuri; se mișcă puțin la hover.",
+          "Fără umbre, fără degradeuri, aurore sau animații decorative; structura o dau liniile și benzile de culoare.",
+          "Colțuri de 3px peste tot; pozele oamenilor sunt pătrate. Rotunde rămân doar etichetele mici și punctul „live”.",
+          "Cifrele mari în Archivo semibold; etichetele (eyebrow) în Inter, cu albastrul brandului.",
+          "Meniul lipicios al paginii stă sub header; cât e lipit, între ele apare doar linia albastră de accent."
+        ]
       }
     }
   ],

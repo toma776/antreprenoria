@@ -27,6 +27,22 @@ function logoHtml(v) {
       <b>${esc(x.nume)}${w.length ? ` <span class="tag ok">pe site: ${w.join(', ')}</span>` : ''}</b>
       <small>${esc(x.folosire)} · ${esc(x.dimensiuni)} · ${esc(x.sursa)}</small></a>`; }).join('')}</div>`;
 }
+// detaliile stilului: înălțimi, linia de accent, săgeata din butoane, plus ghidul (regulile după care e construit site-ul)
+const STIL_DEF = { inaltime_header: '64px', inaltime_buton: '48px', inaltime_buton_mare: '64px', linie_accent: '2px', sageata_butoane: true, ghid: [] };
+function stilHtml(v) {
+  const S = { ...STIL_DEF, ...(v.stil || {}) }, c = (t) => esc(colorOf(v, t));
+  const arrow = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  return `<h4 class="bh">Detaliile stilului ${CMS.on ? `<button class="sm b-edit" data-bedit="stil" data-var="${esc(v.id)}">Editează</button>` : ''}</h4>
+    <div class="b-stil">
+      <dl class="kv"><dt>Înălțimea headerului</dt><dd>${esc(S.inaltime_header)} (desktop)</dd><dt>Butoane</dt><dd>${esc(S.inaltime_buton)}; butonul mare de acțiune ${esc(S.inaltime_buton_mare)}</dd><dt>Săgeata din butoane</dt><dd>${S.sageata_butoane ? 'da, la dreapta, centrată pe verticală' : 'nu'}</dd><dt>Linia de accent</dt><dd>${esc(S.linie_accent)}, în culoarea principală</dd></dl>
+      <div class="b-stil-demo" style="font-family:${fontStack(v.tipografie.text)}">
+        <span class="b-stil-btn" style="background:${c('primary')};color:${c('primary-ink')};border-radius:${esc(v.forme.raza_buton)};min-height:${esc(S.inaltime_buton_mare)}">Aplică pentru un loc ${S.sageata_butoane ? arrow : ''}</span>
+        <span class="b-stil-btn ghost" style="border-color:${c('primary')};color:${c('primary')};border-radius:${esc(v.forme.raza_buton)};min-height:${esc(S.inaltime_buton)}">Verifică dacă te califici ${S.sageata_butoane ? arrow : ''}</span>
+        <span class="b-stil-line" style="border-top:${esc(S.linie_accent)} solid ${c('primary')}"><small>linia de accent</small></span>
+      </div>
+    </div>
+    ${S.ghid.length ? `<details class="all-colors" open><summary>Ghidul stilului (${S.ghid.length} reguli)</summary><ol class="b-ghid">${S.ghid.map((r) => `<li>${esc(r)}</li>`).join('')}</ol></details>` : ''}`;
+}
 function variantHtml(v, activ) {
   const T = v.tipografie, isOn = v.id === activ;
   const main = v.culori.filter((c) => c.principala), rest = v.culori.filter((c) => !c.principala);
@@ -52,8 +68,8 @@ function variantHtml(v, activ) {
     <h4 class="bh">Tipografie ${CMS.on ? `<button class="sm b-edit" data-bedit="tipografie" data-var="${esc(v.id)}">Editează</button>` : ''}</h4>
     <div class="type-spec" style="background:${esc(colorOf(v, 'bg'))};color:${esc(colorOf(v, 'ink'))};border-radius:${esc(v.forme.raza)}">
       <div>
-        <small style="color:${esc(colorOf(v, 'muted'))}">Titluri · ${esc(T.titluri.font)} ${T.titluri.greutate}${T.titluri.latime !== '100%' ? ` · lățime ${esc(T.titluri.latime)}` : ''}</small>
-        <p class="ts-display" style="font-family:${fontStack(T.titluri)};font-weight:${T.titluri.greutate};font-stretch:${esc(T.titluri.latime)};letter-spacing:${esc(T.titluri.spatiere)}">Crește-ți compania alături de antreprenorii care au făcut-o deja.</p>
+        <small style="color:${esc(colorOf(v, 'muted'))}">Titluri · ${esc(T.titluri.font)} ${T.titluri.greutate}${T.titluri.latime !== '100%' ? ` · lățime ${esc(T.titluri.latime)}` : ''}${T.titluri.latime_hero && T.titluri.latime_hero !== T.titluri.latime ? ` · titlul din hero la ${esc(T.titluri.latime_hero)}` : ''}</small>
+        <p class="ts-display" style="font-family:${fontStack(T.titluri)};font-weight:${T.titluri.greutate};font-stretch:${esc(T.titluri.latime_hero || T.titluri.latime)};letter-spacing:${esc(T.titluri.spatiere)}">Crește-ți compania alături de antreprenorii care au făcut-o deja.</p>
       </div>
       <div>
         <small style="color:${esc(colorOf(v, 'muted'))}">Text · ${esc(T.text.font)} · Cifre · ${esc(T.cifre.font)} · Etichete · ${esc(T.etichete.font)}</small>
@@ -68,7 +84,9 @@ function variantHtml(v, activ) {
     </div>
 
     <h4 class="bh">Forme ${CMS.on ? `<button class="sm b-edit" data-bedit="forme" data-var="${esc(v.id)}">Editează</button>` : ''}</h4>
-    <dl class="kv"><dt>Colțuri carduri</dt><dd>${esc(v.forme.raza)}</dd><dt>Colțuri butoane</dt><dd>${esc(v.forme.raza_buton)}</dd><dt>Schemă</dt><dd>${v.schema === 'dark' ? 'fundal închis' : 'fundal deschis'}</dd></dl>
+    <dl class="kv"><dt>Colțuri carduri</dt><dd>${esc(v.forme.raza)}</dd><dt>Colțuri butoane</dt><dd>${esc(v.forme.raza_buton)}</dd><dt>Umbre</dt><dd>${v.forme.umbra === 'none' ? 'fără umbre' : 'cu umbră'}</dd><dt>Schemă</dt><dd>${v.schema === 'dark' ? 'fundal închis' : 'fundal deschis'}</dd></dl>
+
+    ${stilHtml(v)}
 
     <h4 class="bh">Homepage în această variantă</h4>
     <div class="bv-preview"><iframe src="/?brand=${encodeURIComponent(v.id)}" title="Previzualizare ${esc(v.nume)}" loading="lazy" tabindex="-1"></iframe></div>

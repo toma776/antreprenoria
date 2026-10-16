@@ -100,7 +100,7 @@ function readEditari() {
 // entitățile se reconstruiesc imediat, ca site-ul local și panoul să arate modificarea
 // brandul (culori, fonturi, forme, logo): publicat în data/brand.json; local, plus modificările nepublicate = data/brand-local.json
 const BRAND = path.join(DATA, 'brand.json'), BRAND_LOCAL = path.join(DATA, 'brand-local.json');
-const BRAND_SECT = ['culori', 'tipografie', 'forme', 'google_fonts', 'logo'];
+const BRAND_SECT = ['culori', 'tipografie', 'forme', 'google_fonts', 'logo', 'stil'];
 const patchBrand = (B, list) => { list.forEach((x) => { const v = B.variante.find((y) => y.id === x.p[0]); if (v && BRAND_SECT.includes(x.p[1])) v[x.p[1]] = JSON.parse(JSON.stringify(x.v)); }); return B; };
 const brandWorking = () => readJurnal().intrari.filter((x) => x.tinta === 'brand').reduce((B, x) => patchBrand(B, x.patch), readJson(BRAND, { variante: [] }));
 function writeBrandLocal() {
