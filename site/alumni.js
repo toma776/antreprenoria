@@ -48,6 +48,13 @@ function alumniData(ctx) {
 }
 const href = (a) => (a.speaker ? `/lideri/${a.id}` : a.page ? `/comunitate/${a.id}` : '');
 
+// „pagina” unei companii pe site: profilul omului ei din comunitate, dacă e unul singur cu pagină;
+// altfel lista comunității, căutată după numele companiei
+const companyUrl = (L, o) => {
+  const m = L.filter((a) => a.org?.id === o.id), hs = m.map(href).filter(Boolean);
+  return m.length === 1 && hs.length === 1 ? hs[0] : `/comunitate?q=${encodeURIComponent(o.nume.replace(/\s*\(.*\)$/, ''))}#lista`;
+};
+
 // adresele feliilor: /comunitate/industrii/<industrie>, /comunitate/cohorte/<18 | cluj-1>, /comunitate/cauta?q=
 const edKey = (e) => (e.serie === 'Cluj' ? `cluj-${e.numar}` : String(e.numar));
 const sectorUrl = (s) => (CM_PAGES ? `/comunitate/industrii/${slug(s)}` : `/comunitate?sector=${slug(s)}#lista`);
@@ -350,4 +357,4 @@ function communityIndex(ctx) {
   return alumniData(ctx).L.map((a) => ({ id: a.id, n: a.nume, co: a.org?.nume || '', s: a.sector || '', d: a.desc, img: a.imagine ? img(a.imagine, 128) : '', ed: a.eds.map(edLabel).join(' · '), h: href(a), o: [...a.oferta, ...a.pentru].join(' · ') }));
 }
 
-module.exports = { I, plural, avatar, edUrl, edLabel, edKey, sectorUrl, edCmUrl, cmCard, cmRow, cmDrawer, sliceTile, alumniBody, alumnusBody, alumniData, hasPage, communityIndex, ideas, connectMail };
+module.exports = { companyUrl, I, plural, avatar, edUrl, edLabel, edKey, sectorUrl, edCmUrl, cmCard, cmRow, cmDrawer, sliceTile, alumniBody, alumnusBody, alumniData, hasPage, communityIndex, ideas, connectMail };

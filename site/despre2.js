@@ -5,6 +5,7 @@
 const fs = require('fs'), path = require('path');
 const { esc, initials, milLei, img, de } = require('./util');
 const { tx } = require('./texte');
+const { alumniData, companyUrl } = require('./alumni');
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : (n % 100 === 0 || n % 100 >= 20 ? 'de ' : '') + many}`;
 const avatar = (p, w = 128) => (p?.imagine ? `<img src="${esc(img(p.imagine, w))}" alt="" loading="lazy">` : `<span class="ph">${esc(initials(p?.nume || '?'))}</span>`);
@@ -45,6 +46,7 @@ function despre2Body(ctx, F) {
   const LOGO_FILES = Object.fromEntries((() => { try { return fs.readdirSync(path.join(__dirname, 'assets', 'logos')); } catch { return []; } })().map((f) => [f.replace(/\.[a-z]+$/, ''), f]));
   const caMax = (o) => Math.max(0, ...closed.flatMap((e) => e.participanti.filter((p) => p.organizatie === o.id).map((p) => p.cifra_afaceri || 0)));
   const logoOf = (o) => o.logo || (LOGO_FILES[o.id] ? `/assets/logos/${LOGO_FILES[o.id]}` : null);
+  const AL = alumniData(ctx).L; // logo-urile duc la oamenii companiei din comunitate
   const alumni = D.organizatii.filter((o) => logoOf(o) && inClosed(o)).map((o) => ({ ...o, logo: logoOf(o) }))
     // ordinea: după mărimea companiei (cifra de afaceri declarată decide doar ordinea, nu se afișează)
     .sort((a, b) => caMax(b) - caMax(a));
@@ -142,7 +144,7 @@ function despre2Body(ctx, F) {
       </div>
     </div>
     ${alumni.length ? `<div class="dx-alumni"><h3 class="who-h">Companii care au crescut și cu ajutorul programului</h3>
-      <div class="ab-logos dx-logos">${alumni.map((o) => ({ ...o, nume: o.nume.replace(/\s*\(.*\)$/, '') })).map((o) => (o.logo ? `<span title="${esc(o.nume)}"><img src="${esc(o.logo)}" alt="${esc(o.nume)}" loading="lazy"></span>` : `<span><b>${esc(o.nume)}</b></span>`)).join('')}</div></div>` : ''}
+      <div class="ab-logos dx-logos">${alumni.map((o) => ({ ...o, url: companyUrl(AL, o), nume: o.nume.replace(/\s*\(.*\)$/, '') })).map((o) => `<span><a href="${esc(o.url)}" title="${esc(o.nume)} în comunitate">${o.logo ? `<img src="${esc(o.logo)}" alt="${esc(o.nume)}" loading="lazy">` : `<b>${esc(o.nume)}</b>`}</a></span>`).join('')}</div></div>` : ''}
   </div></section>
 
   <!-- 04 investiția -->

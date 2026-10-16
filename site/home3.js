@@ -8,7 +8,7 @@ const { esc, initials, fmtDay, today, img, de, temaUrl, TEME } = require('./util
 const { tx } = require('./texte');
 const { themeInfo, NEEDS } = require('./home');
 const { everyone } = require('./traineri');
-const { alumniData } = require('./alumni');
+const { alumniData, companyUrl } = require('./alumni');
 const { partnersData } = require('./parteneri');
 
 const edUrl = (e) => (e.serie === 'Cluj' ? `/editii/cluj-${e.numar}` : `/editii/${e.numar}`);
@@ -179,7 +179,7 @@ function home3Body(ctx, F) {
   <!-- 04 · dovezile: companiile care au crescut, liderii, partenerii -->
   <section class="x-sec h3-proof"><div class="wrap">
     <div class="x-head x-head-row"><div><p class="x-eyebrow"><span>Rezultate</span></p><h2>Companii care au crescut și cu ajutorul programului.</h2></div><a class="x-link" href="/comunitate">Toată comunitatea ${ARROW}</a></div>
-    <div class="h3-grown">${grown.slice(0, 9).map((o) => `<span title="${esc(o.nume.replace(/\s*\(.*\)$/, ''))}"><img src="${esc(o.logo)}" alt="${esc(o.nume.replace(/\s*\(.*\)$/, ''))}" loading="lazy"></span>`).join('')}</div>
+    <div class="h3-grown">${grown.slice(0, 9).map((o) => `<span><a href="${esc(companyUrl(AL.L, o))}" title="${esc(o.nume.replace(/\s*\(.*\)$/, ''))} în comunitate"><img src="${esc(o.logo)}" alt="${esc(o.nume.replace(/\s*\(.*\)$/, ''))}" loading="lazy"></a></span>`).join('')}</div>
     <div class="h3-figs">
       <div><b>${AL.L.length}</b><span>${de(AL.L.length)}antreprenori în comunitate, din ${AL.sectors.length} ${de(AL.sectors.length)}industrii</span></div>
       <div><b>${AL.medianAng}</b><span>${de(AL.medianAng)}angajați la mediană, în companiile din comunitate</span></div>
