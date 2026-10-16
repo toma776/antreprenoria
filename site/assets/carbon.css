@@ -253,7 +253,7 @@
 /* liniile verticale decorative ale paginilor dispar: structura o dau secțiunile */
 .cb .gridlines { display: none; }
 /* colțuri de 3px peste tot (pozele de profil devin pătrate, ca pe homepage); punctele „live” rămân rotunde */
-.cb main *:not(.live i):not(.dot-live):not(.tag-live i) { border-radius: var(--cb-r) !important; }
+.cb main *:not(.live i):not(.dot-live):not(.tag-live i):not(.sp-fw-c) { border-radius: var(--cb-r) !important; }
 .cb main .x-chip, .cb main .x-tag, .cb main .h3-seat-tag, .cb main .x-pill { border-radius: 24px !important; }
 /* titlurile paginilor: Archivo semibold; cel din hero, ușor lățit */
 .cb main h1 { font-weight: 600; font-stretch: 112%; letter-spacing: -.015em; }
@@ -278,3 +278,32 @@
 .cb .mp-ring { display: none; }
 .cb .mp-connect { background: var(--cb-navy) !important; }
 .cb .mp-connect::before, .cb .mp-connect::after { display: none; }
+
+/* Parteneri: hero-ul deschis, ca pe homepage și pe Despre */
+.cb .sp-hero { --sp-ink: var(--cb-g100); --sp-muted: var(--cb-g70); --sp-line: var(--cb-g20); background: #fff; color: var(--cb-g100); border-bottom: 1px solid var(--cb-g20); }
+.cb .sp-hero::before, .cb .sp-hero::after { display: none; }
+.cb .sp-hero h1 { color: var(--cb-g100); }
+.cb .sp-hero h1 em { color: var(--cb-blue); }
+.cb .sp-hero .eyebrow { color: var(--cb-blue); }
+.cb .sp-hero .btn-outline-light { border-color: var(--cb-blue); color: var(--cb-blue); background: transparent; }
+.cb .sp-hero .btn-outline-light:hover { background: var(--cb-blue); color: #fff; }
+.cb .sp-hero .sp-cta { box-shadow: none; }
+.cb .sp-hero-figs dt { color: var(--cb-g100); font-weight: 600; font-stretch: 100%; }
+/* roata: pe fundal deschis, nodurile albe cu chenar, cel activ cu albastru */
+.cb .sp-fw-ring { stroke: var(--cb-g30); }
+.cb .sp-fw-prog { stroke: var(--cb-blue) !important; filter: none; }
+.cb .sp-fw-orbit circle { fill: var(--cb-blue); filter: none; }
+.cb .sp-fw-n { background: #fff; border-color: var(--cb-g20); color: var(--cb-g70); }
+.cb .sp-fw-n i { background: var(--cb-g10); color: var(--cb-g100); }
+.cb .sp-fw-n.on { color: var(--cb-g100); border-color: var(--cb-blue); box-shadow: inset 0 -2px 0 var(--cb-blue) !important; }
+.cb .sp-fw-n.on i { background: var(--cb-blue); color: #fff; }
+.cb .sp-fw-c { background: var(--cb-g10); }
+.cb .sp-fw-v b { color: var(--cb-g100); font-weight: 600; font-stretch: 100%; }
+.cb .sp-fw-v span { color: var(--cb-g70); }
+.cb .sp-fw-v em { color: var(--cb-blue); }
+/* banda de logo-uri a partenerilor: gri-albăstrui, logo-urile pe carduri albe cu chenar */
+.cb .sp-marq { background: var(--cb-g10); border-top-color: var(--cb-g20); }
+.cb .sp-marq-it { border: 1px solid var(--cb-g20); }
+.cb .sp-marq-it:hover { transform: none; border-color: var(--cb-blue); }
+.cb main .sp-fw-c { border-radius: 50% !important; }
+.cb .sp-fw-n { z-index: 2; }
