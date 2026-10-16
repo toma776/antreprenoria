@@ -323,7 +323,16 @@ a:hover > .arr:not(.arr-l), button:hover > .arr:not(.arr-l), a:hover .arr:last-c
 .af-policy { color: var(--primary); text-decoration: underline; text-underline-offset: 2px; white-space: nowrap; }
 /* paginile cohortelor: sub lista de sectoare din rezumat, același spațiu ca deasupra */
 .cb .ed-sum-sec { padding-bottom: 16px; }
-/* săgeata din butoane: pornită sau oprită din brand (detaliile stilului) */
-.cb .x .x-btn::after, .cb .x .btn-primary::after, .cb .btn .arr, .cb .x-btn .arr, .cb .x .x-btn > svg { display: var(--btn-arrow); }
+/* săgeata din butoane: pornită sau oprită din brand (detaliile stilului).
+   ::after e săgeata doar la butoanele fără săgeată desenată; la celelalte e vechea strălucire galbenă, care rămâne ascunsă */
+.cb .x .x-btn:not(:has(svg))::after, .cb .x .btn-primary:not(:has(svg))::after, .cb .btn .arr, .cb .x-btn .arr, .cb .x .x-btn > svg { display: var(--btn-arrow); }
+.cb .x .x-btn:has(svg)::after { display: none; }
+
+/* fără accente galbene decorative (străluciri, degradeuri); galbenul rămâne doar pentru texte și cifre pe fundal închis */
+.cb .cm-hero { background: var(--bg); }
+.cb .cm-band i { background: var(--cb-blue); }
+.cb .sp-calc-out { background: var(--cb-g10); }
 /* pastila „Cohorta #22 în desfășurare” din header: la hover rămâne lizibilă pe headerul alb (stilul vechi o făcea albă pe alb) */
 .cb.x-page .hdr-cta a.live:hover, .cb.x-page .hdr-cta a.live:focus-visible { background: var(--cb-g10); border-color: var(--cb-g30); color: var(--cb-g100); text-decoration: none; }
+/* fără străluciri decorative nici pe benzile închise, în meniul Comunitate sau pe paginile de profil (ghidul stilului: fără umbre și străluciri) */
+.cb .cta-band::before, .cb .sp-out::before, .cb .sp-final::before, .cb .mmc-main::before, .cb .mp-hero::before, .cb .dx-night::before { display: none; }
