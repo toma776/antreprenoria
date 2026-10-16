@@ -132,7 +132,7 @@ function despre2Body(ctx, F) {
       <div>
         <h3 class="who-h">Cifra de afaceri a companiei</h3>
         <div class="crit">${criterii.map(([a, b]) => `<div><b>${a}</b><span>${b}</span></div>`).join('')}</div>
-        <a class="btn btn-light btn-lg dx-who-cta" href="/aplica">Verifică dacă te încadrezi</a>
+        <a class="btn btn-light btn-lg dx-who-cta" href="/aplica">Aplică pentru un loc</a>
       </div>
       <div>
         <h3 class="who-h">Cine a participat până acum</h3>
