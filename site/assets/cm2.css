@@ -209,3 +209,7 @@ a.cm-tile { text-decoration: none; }
 /* sugestiile din hero-ul /comunitate, ca legături spre căutare */
 .cm-ideas a { padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; background: color-mix(in srgb, var(--surface) 70%, transparent); color: var(--ink); font: 500 13.5px/1.2 var(--f-body); text-decoration: none; transition: border-color .15s, color .15s, background .15s; }
 .cm-ideas a:hover { border-color: var(--primary); color: var(--primary); background: var(--surface); }
+/* pagina goală a căutării: coloana centrală nu se lățește după titlu (pe telefon ieșea din ecran) */
+.cs.is-empty .cs-top .wrap { grid-template-columns: minmax(0, 1fr); }
+.cs.is-empty .cs-brand, .cs.is-empty .cs-search, .cs.is-empty .cs-pop { max-width: 100%; }
+.cs-brand h1 { overflow-wrap: anywhere; }
