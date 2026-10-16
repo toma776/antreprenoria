@@ -123,7 +123,7 @@ function home3Body(ctx, F) {
     <div class="wrap h3-trust">
       <div><b>${new Date().getFullYear() - prog.de_cand} ani</b><span>de program, din ${prog.de_cand}</span></div>
       <div><b>${F.maxNr} ${de(F.maxNr)}cohorte</b><span>în București, plus Cluj</span></div>
-      <div><b>${esc(cifra('IMM'))}</b><span>companii în programele RBL</span></div>
+      <div><b>${esc(cifra('IMM'))}</b><span>businessuri transformate</span></div>
       <div><b>${TR.length} ${de(TR.length)}lideri</b><span>fondatori, CEO și traineri</span></div>
       <div class="h3-rbl"><span>Organizat de</span><b>Romanian Business Leaders</b></div>
     </div>
