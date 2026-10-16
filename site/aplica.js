@@ -21,9 +21,9 @@ const STEPS = [
     { k: 'vechime', t: 'one', ui: 'seg', label: 'De câți ani există compania?', req: true, opts: [['sub-3', 'Sub 3 ani'], ['3-5', '3–5 ani'], ['5-10', '5–10 ani'], ['peste-10', 'Peste 10 ani']] },
     { k: 'rol', t: 'one', ui: 'seg', label: 'Rolul tău în companie', req: true, opts: [['fondator', 'Fondator / CEO'], ['asociat', 'Asociat'], ['director', 'Director general'], ['alt-rol', 'Alt rol de conducere']] },
   ] },
-  { id: 'cifre', titlu: 'Cifrele', sub: 'Unde e compania azi și cât de repede a crescut până aici.', nota: 'Cifrele rămân confidențiale. Le vede doar comitetul de selecție.', fields: [
+  { id: 'cifre', titlu: 'Cifrele', sub: 'Unde e compania azi și cât de repede a crescut până aici.', nota: 'Cifrele rămân confidențiale. Le vede doar comisia de selecție.', fields: [
     { k: 'cifra_afaceri', t: 'one', ui: 'seg3', label: 'Cifra de afaceri pe ultimul an', req: true, opts: [['sub-500k', 'Sub 500.000 €'], ['500k-1m', '0,5 – 1 mil. €'], ['1m-3m', '1 – 3 mil. €'], ['3m-10m', '3 – 10 mil. €'], ['10m-25m', '10 – 25 mil. €'], ['peste-25m', 'Peste 25 mil. €']],
-      warn: { sub500k: 'Programul e gândit pentru companii de la 500.000 € în sus. Poți continua: dacă ești foarte aproape de prag și ai o creștere puternică, comitetul ia în calcul și asta.' } },
+      warn: { sub500k: 'Programul e gândit pentru companii de la 500.000 € în sus. Poți continua: dacă ești foarte aproape de prag și ai o creștere puternică, comisia ia în calcul și asta.' } },
     { k: 'crestere', t: 'one', ui: 'seg', label: 'Cum a evoluat cifra de afaceri în ultimii 2 ani?', req: true, opts: [['scadere', 'A scăzut'], ['stabila', 'Stabilă'], ['10-30', 'Creștere 10–30%'], ['30-50', 'Creștere 30–50%'], ['peste-50', 'Peste 50%']] },
     { k: 'angajati', t: 'one', ui: 'seg', label: 'Câți oameni lucrează în companie?', req: true, opts: [['1-9', '1–9'], ['10-49', '10–49'], ['50-99', '50–99'], ['100-249', '100–249'], ['250+', '250+']] },
     { k: 'profit', t: 'one', ui: 'seg3', label: 'Compania e profitabilă?', req: true, opts: [['da', 'Da'], ['zero', 'Pe zero'], ['nu', 'Încă nu']] },
@@ -183,7 +183,7 @@ function aplicaBody(ctx, F, opt = {}) {
           <ul class="ax-crit">
             <li><i>01</i><div><b>O afacere care crește</b><span>O cifră de afaceri de cel puțin <strong>500.000 €</strong> pe an și dorința de a duce compania la nivelul următor.</span></div></li>
             <li><i>02</i><div><b>Ambiția ta contează cel mai mult</b><span>Poți veni din orice industrie, cu orice model de business. Ne interesează cât de departe vrei să duci compania și cât de deschis ești să lucrezi la ea.</span></div></li>
-            <li><i>03</i><div><b>Fiecare aplicare, citită cu atenție</b><span><strong>Comitetul de selecție</strong> se uită la cifre, la echipă, la ambiția și la disponibilitatea ta, ca să formeze o grupă în care toți au de câștigat. Primești răspunsul în cel mult <strong>10 zile lucrătoare</strong>.</span></div></li>
+            <li><i>03</i><div><b>Fiecare aplicare, citită cu atenție</b><span><strong>Comisia de selecție</strong> se uită la cifre, la echipă, la ambiția și la disponibilitatea ta, ca să formeze o grupă în care toți au de câștigat. Primești răspunsul în cel mult <strong>10 zile lucrătoare</strong>.</span></div></li>
           </ul>
           <p class="ax-why">Când în sală sunt antreprenori cu ambiții pe măsură, fiecare învață și de la ceilalți. De asta alegem grupa cu grijă.</p>
           <div class="ax-start">

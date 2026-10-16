@@ -138,7 +138,7 @@ function home3Body(ctx, F) {
     <div class="h3-join-grid">
       <ol class="h3-steps">
         <li><span>1</span><div><b>Aplici online</b><p>Șapte pași scurți despre companie, echipă și ambiție. Aproximativ 6 minute, cu salvare pe parcurs.</p></div></li>
-        <li><span>2</span><div><b>Comitetul de selecție analizează</b><p>Ne uităm la cifre, la modelul de business, la echipă și la cât de departe vrei să duci compania. Răspunsul vine în cel mult 10 zile lucrătoare.</p></div></li>
+        <li><span>2</span><div><b>Comisia de selecție analizează</b><p>Ne uităm la cifre, la modelul de business, la echipă și la cât de departe vrei să duci compania. Răspunsul vine în cel mult 10 zile lucrătoare.</p></div></li>
         <li><span>3</span><div><b>Intri în cohortă</b><p>Trei luni, ${ws.length || 9} întâlniri, aproximativ 25 de colegi antreprenori și acces la comunitatea RBL.</p></div></li>
         <li class="h3-steps-cta"><a class="btn btn-primary btn-lg" href="/aplica">Începe aplicarea</a><a class="x-link" href="/despre#pentru-cine">Criteriile complete ${ARROW}</a></li>
       </ol>

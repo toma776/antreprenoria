@@ -70,7 +70,7 @@
       bars.forEach((b, i) => b.classList.toggle('on', v >= C.bins[i][0] && v < C.bins[i][1]));
       const vd = out('verdict');
       let t, cls = 'ok';
-      if (v < C.prag) { t = 'Sub pragul de aproximativ 500.000 € pe an. Aplică totuși dacă ai un avantaj inovativ: comitetul se uită și la ambiție.'; cls = 'low'; }
+      if (v < C.prag) { t = 'Sub pragul de aproximativ 500.000 € pe an. Aplică totuși dacă ai un avantaj inovativ: comisia se uită și la ambiție.'; cls = 'low'; }
       else if (v < C.q1) t = `Ai fi printre companiile mai mici din cohortă, cu mult loc de creștere. Jumătate dintre colegi au între ${money(C.q1)} și ${money(C.q3)}.`;
       else if (v <= C.q3) t = `Ești în inima cohortei: jumătate dintre companii au între ${money(C.q1)} și ${money(C.q3)}.`;
       else t = 'Ai fi printre companiile mari din cohortă: ai multe de dat și de luat în discuțiile dintre egali.';

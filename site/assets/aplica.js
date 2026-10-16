@@ -192,9 +192,9 @@
     form.innerHTML = `<div class="ax-done" tabindex="-1">
       <span class="ax-done-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
       <h2>Mulțumim, ${esc(d.nume.split(/\s+/)[0])}.</h2>
-      <p class="lead">Aplicarea ta pentru <b>${esc(ed)}</b> a ajuns la comitetul de selecție.</p>
+      <p class="lead">Aplicarea ta pentru <b>${esc(ed)}</b> a ajuns la comisia de selecție.</p>
       <ol class="ax-next-steps">
-        <li><b>Analiza aplicării</b><span>Comitetul se uită la cifre, la echipă și, mai ales, la ambiția ta.</span></li>
+        <li><b>Analiza aplicării</b><span>Comisia se uită la cifre, la echipă și, mai ales, la ambiția ta.</span></li>
         <li><b>O discuție scurtă</b><span>Dacă avem întrebări, te sunăm pentru câteva minute.</span></li>
         <li><b>Decizia, în cel mult 10 zile lucrătoare</b><span>Primești răspunsul pe email, la ${esc(d.email)}.</span></li>
       </ol>
