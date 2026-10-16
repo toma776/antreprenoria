@@ -5,7 +5,7 @@
     {
       "id": "a",
       "nume": "Antreprenoria · instituțional",
-      "descriere": "Stilul site-ului: structură curată, inspirată din IBM Carbon (grilă, benzi de secțiuni, butoane cu săgeata la dreapta, fără umbre), adaptată brandului Antreprenoria: albastrul și bleumarinul brandului, griuri reci, Archivo și Inter, colțuri de 3px.",
+      "descriere": "Stilul site-ului: structură curată (grilă, benzi de secțiuni, butoane cu săgeata la dreapta, fără umbre), în culorile brandului Antreprenoria: albastrul și bleumarinul, griuri reci, Archivo și Inter, colțuri de 3px.",
       "de_ce": "Pare instituțional și sigur pe el, nu „făcut cu AI”: puține culori, ierarhie clară, accentul albastru doar unde e o acțiune. Păstrează albastrul și roșul pe care oamenii le recunosc de la RBL.",
       "schema": "light",
       "culori": [
