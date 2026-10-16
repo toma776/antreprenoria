@@ -246,3 +246,35 @@
 .cb.inst .x-navsec .x-tile, .cb.inst .x-navsec .x-glass-light, .cb.inst .x-navi-q button { background: #fff; }
 .cb.inst .x-navi-q button:hover { background: var(--cb-g10h); }
 .cb .x h1, .cb.inst .x-hero h1 { font-size: clamp(34px, 3.7vw, 54px); }
+
+/* ======================================================================
+   Stilul pe tot site-ul: celelalte pagini (Despre, Cohorte, Lideri, Comunitate, Parteneri, Aplică)
+   ====================================================================== */
+/* liniile verticale decorative ale paginilor dispar: structura o dau secțiunile */
+.cb .gridlines { display: none; }
+/* colțuri de 3px peste tot (pozele de profil devin pătrate, ca pe homepage); punctele „live” rămân rotunde */
+.cb main *:not(.live i):not(.dot-live):not(.tag-live i) { border-radius: var(--cb-r) !important; }
+.cb main .x-chip, .cb main .x-tag, .cb main .h3-seat-tag, .cb main .x-pill { border-radius: 24px !important; }
+/* titlurile paginilor: Archivo semibold; cel din hero, ușor lățit */
+.cb main h1 { font-weight: 600; font-stretch: 112%; letter-spacing: -.015em; }
+.cb main h2 { font-weight: 600; font-stretch: 100%; letter-spacing: -.01em; }
+.cb main h3 { font-weight: 600; font-stretch: 100%; }
+.cb main .eyebrow { color: var(--cb-blue); font-family: var(--f-body); }
+/* butoanele: dreptunghiulare, fără umbre și fără săritura la hover */
+.cb main .btn { box-shadow: none !important; transform: none !important; }
+.cb main .btn-primary { background: var(--cb-blue); border-color: var(--cb-blue); color: #fff; }
+.cb main .btn-primary:hover { background: var(--cb-blue-h); border-color: var(--cb-blue-h); }
+
+/* Despre: panoul „O cohortă, pe scurt” e acum deschis */
+.cb.inst .x-hero .dx-glance dt { color: var(--cb-blue); font-weight: 600; font-stretch: 100%; }
+.cb.inst .x-hero .dx-glance dd, .cb.inst .x-hero .dx-proof { color: var(--cb-g70); }
+.cb.inst .x-hero .dx-proof b, .cb.inst .x-hero .dx-proof strong, .cb.inst .x-hero .dx-proof dt { color: var(--cb-blue); }
+
+/* Parteneri: titlul fără degradeu, galbenul brandului plin */
+.cb .sp-hero h1 em { background: none; -webkit-background-clip: border-box; background-clip: border-box; color: var(--highlight, #FADC3A); }
+.cb.inst .x-hero .dx-proof { border-top-color: var(--cb-g20); }
+/* paginile de profil: poza fără umbră și inel, cardul de conectare pe bleumarin */
+.cb .ld-pic, .cb .ld-pic img, .cb .mp-pic img { box-shadow: none !important; }
+.cb .mp-ring { display: none; }
+.cb .mp-connect { background: var(--cb-navy) !important; }
+.cb .mp-connect::before, .cb .mp-connect::after { display: none; }

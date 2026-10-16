@@ -417,25 +417,16 @@ async function handler(req, res) {
     if (!fresh('./site/util').TEME && /^\/teme(\/|$)/.test(url)) { res.writeHead(301, { Location: '/despre' }); return res.end(); }
     // Program e acum parte din Despre: adresa veche (și ancorele ei) duce acolo
     if (url === '/program') { res.writeHead(301, { Location: '/despre' }); return res.end(); }
-    const PAGES = { '/': 'renderHome', '/despre': 'renderDespre', '/teme': 'renderTeme' };
+    const PAGES = { '/': 'renderHome3', '/despre': 'renderDespre', '/teme': 'renderTeme' };
     // adresa veche de contact duce la secțiunea de contact din /despre
     if (url === '/contact') { res.writeHead(301, { Location: '/despre#contact' }); return res.end(); }
     // varianta nouă a homepage-ului e acum „/”; cea veche rămâne doar local, pentru comparație
-    // previzualizare (doar local): homepage-ul în stilul instituțional (site/assets/inst.css, activ cu body.inst)
-    if (url === '/previzualizare/acasa' && !READ_ONLY) {
+    // homepage-ul de recrutare, în stilul Carbon adaptat la brand, e acum „/” (și stilul e pe tot site-ul): previzualizările lui duc acolo;
+    // homepage-ul de dinainte („2029”) rămâne doar local, pentru comparație
+    if (url === '/previzualizare/acasa' || url === '/previzualizare/carbon') { res.writeHead(301, { Location: '/' }); return res.end(); }
+    if (url === '/previzualizare/acasa-2029' && !READ_ONLY) {
       res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' });
-      return res.end(fresh('./site/render').renderHome3({ brand: new URLSearchParams(query).get('brand') || undefined })
-        .replace('</head>', '<link rel="stylesheet" href="/assets/inst.css"><link rel="stylesheet" href="/assets/home3.css"></head>')
-        .replace('<body class="x-page">', '<body class="x-page inst">'));
-    }
-    // previzualizare (și pe Vercel, cu noindex): același homepage de recrutare, în stilul Carbon adaptat la brand (site/assets/carbon.css, activ cu body.cb)
-    if (url === '/previzualizare/carbon') {
-      res.writeHead(200, { 'Content-Type': TYPES['.html'], 'Cache-Control': 'no-store' });
-      return res.end(fresh('./site/render').renderHome3({ brand: new URLSearchParams(query).get('brand') || undefined })
-        .replace('</head>', '<link rel="stylesheet" href="/assets/inst.css"><link rel="stylesheet" href="/assets/home3.css"><link rel="stylesheet" href="/assets/carbon.css"></head>')
-        .replace('<body class="x-page">', '<body class="x-page inst cb">')
-        // headerul e alb: logo-ul color (footerul rămâne închis, cu logo-ul alb)
-        .replace('antreprenoria-logo-orizontal-alb-web.png', 'antreprenoria-logo-orizontal-web.png'));
+      return res.end(fresh('./site/render').renderHome({ brand: new URLSearchParams(query).get('brand') || undefined }));
     }
     // Despre nouă e acum /despre; paginile vechi Despre și Program rămân doar local, pentru comparație
     if (url === '/previzualizare/despre') { res.writeHead(301, { Location: '/despre' }); return res.end(); }

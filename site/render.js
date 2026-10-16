@@ -88,9 +88,11 @@ function head(title, desc, brandId) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="${esc(brand.fontsHref(v))}" rel="stylesheet">
 <link rel="stylesheet" href="/assets/brand.css"><link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/menu-icon.css"><link rel="stylesheet" href="/assets/home2.css">
+<!-- stilul site-ului: Carbon adaptat la brand (inst.css scoate decorul, carbon.css aduce stilul; home3.css e homepage-ul) -->
+<link rel="stylesheet" href="/assets/inst.css"><link rel="stylesheet" href="/assets/home3.css"><link rel="stylesheet" href="/assets/carbon.css">
 <script>/* animațiile de la scroll pornesc doar cu JS și fără „reduce motion” */if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('rv')</script>${favicons(v)}
 <meta name="robots" content="noindex, nofollow"><!-- tot site-ul e deocamdată neindexat (și antetul X-Robots-Tag din vercel.json) -->
-</head><body class="x-page">`;
+</head><body class="x-page inst cb">`;
 }
 // logo-ul: varianta potrivită fundalului din fiecare loc (data/brand.json › variante › logo › pe_site);
 // header-ul A și footerul sunt gri închis, deci logo cu text alb; header-ul deschis al lui B folosește logo-ul cu text gri
@@ -101,7 +103,8 @@ function logoUse(brandId) {
   return { ...LOGO_DEFAULT, ...(v.logo?.pe_site || {}) };
 }
 function logo(where, brandId) {
-  const id = logoUse(brandId)[where];
+  // în stilul Carbon headerul e alb: acolo merge logo-ul color
+  const id = where === 'header' ? 'orizontal' : logoUse(brandId)[where];
   // fișierul variantei alese (versiunea ușoară pentru web, dacă există); un logo înlocuit din panou apare direct
   const x = brand.pick(brand.load(), brandId).logo?.variante?.find((y) => y.id === id);
   const src = x?.web || x?.fisier || `${LOGO_DIR}antreprenoria-logo-${id}-web.png`;
