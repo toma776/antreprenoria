@@ -62,8 +62,26 @@ function arrows(html) {
     return part.replace(/\s?→/g, (x) => (x.length > 1 ? ' ' : '') + ARR_SVG()).replace(/←\s?/g, (x) => ARR_SVG(true) + (x.length > 1 ? ' ' : ''));
   }).join('');
 }
+// versiunea unui fișier din /assets (după conținut): /assets/site.css -> /assets/site.css?v=3f2a91c0
+// fișierul cu ?v= se păstrează în browser un an (server.js › sendFile); orice modificare schimbă versiunea
+const ASSETS_DIR = require('path').join(__dirname, 'assets');
+const VERS = new Map();
+function assetVersion(rel) {
+  const fs = require('fs'), f = require('path').join(ASSETS_DIR, rel);
+  if (!f.startsWith(ASSETS_DIR)) return null;
+  let st; try { st = fs.statSync(f); } catch { return null; }
+  const c = VERS.get(f);
+  if (c && c.m === st.mtimeMs && c.s === st.size) return c.v;
+  const v = require('crypto').createHash('md5').update(fs.readFileSync(f)).digest('hex').slice(0, 8);
+  VERS.set(f, { m: st.mtimeMs, s: st.size, v });
+  return v;
+}
+const versionAssets = (html) => html.replace(/((?:href|src|data-mm-src)=")\/assets\/([^"?#]+\.(?:css|js|png|jpe?g|webp|svg|gif|ico))"/g, (m, attr, rel) => {
+  const v = assetVersion(decodeURIComponent(rel));
+  return v ? `${attr}/assets/${rel}?v=${v}"` : m;
+});
 // ultimul pas pentru fiecare pagină HTML: săgețile și imaginile rămase cu adresa site-ului vechi (logo-uri puse direct în src) -> copiile locale
-const finishHtml = (html) => arrows(html).replace(/https:\/\/antreprenoria\.ro\/images\/[^"'\s)<>]+/g, (u) => localImg(u));
+const finishHtml = (html) => versionAssets(arrows(html).replace(/https:\/\/antreprenoria\.ro\/images\/[^"'\s)<>]+/g, (u) => localImg(u)));
 // paginile separate ale comunității (căutarea, industriile, cohortele): publicate, și local, și pe Vercel
 const CM_PAGES = true;
 module.exports = { finishHtml, localImg, arrows, CM_PAGES, TEME, temaUrl, cohorta, de, tidy, esc, today, MONTHS, fmtDay, median, quantile, milLei, initials, slug, img, logoImg };

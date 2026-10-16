@@ -10,7 +10,7 @@ const MONTHS = ['ian.', 'feb.', 'mar.', 'apr.', 'mai', 'iun.', 'iul.', 'aug.', '
 const shortDay = (d) => { const [, m, z] = d.split('-').map(Number); return `${z} ${MONTHS[m - 1]}`; };
 const edUrl = (e) => (e.serie === 'Cluj' ? `/editii/cluj-${e.numar}` : `/editii/${e.numar}`);
 const edLabel = (e) => (e.serie === 'Cluj' ? `Cluj #${e.numar}` : `#${e.numar}`);
-const pic = (p) => (p.imagine ? `<img src="${esc(img(p.imagine, 256))}" alt="" loading="lazy">` : `<span class="ph">${esc(p.nume.split(' ').map((x) => x[0]).join('').slice(0, 2))}</span>`);
+const pic = (p) => (p.imagine ? `<img src="${esc(img(p.imagine, 128))}" alt="" loading="lazy">` : `<span class="ph">${esc(p.nume.split(' ').map((x) => x[0]).join('').slice(0, 2))}</span>`);
 
 // o legătură din panou: titlu + descriere scurtă
 const link = (href, title, desc, extra = '') => `<a class="mm-link" href="${esc(href)}"><b>${title}</b>${desc ? `<span>${desc}</span>` : ''}${extra}</a>`;
@@ -217,6 +217,8 @@ function panels(ctx, F) {
   ];
 }
 
+// pozele din panouri au data-mm-src în loc de src: panourile închise sunt doar ascunse vizual, așa că altfel s-ar descărca
+// toate (zeci de poze) pe fiecare pagină; site.js le pune la loc când se deschide (sau e pe cale să se deschidă) panoul
 function megaMenu(ctx, F) {
   return panels(ctx, F).filter((p) => p.id !== 'program' && (TEME || p.id !== 'teme')).sort((a, b) => (b.id === 'despre') - (a.id === 'despre')).map((p) => `
     <div class="mm-item" data-mm="${p.id}">
@@ -228,7 +230,7 @@ function megaMenu(ctx, F) {
           ${p.feature ? `<div class="mm-aside">${p.feature}</div>` : ''}
         </div>`}
       </div>
-    </div>`).join('');
+    </div>`).join('').replace(/<img src="/g, '<img data-mm-src="');
 }
 
 module.exports = { megaMenu };

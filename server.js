@@ -31,14 +31,16 @@ function sendJson(res, code, obj) {
   res.writeHead(code, { 'Content-Type': TYPES['.json'], 'Cache-Control': 'no-store' });
   res.end(typeof obj === 'string' ? obj : JSON.stringify(obj));
 }
-function sendFile(res, file) {
+// cache: local, browserul verifică fișierul la fiecare încărcare (modificările apar imediat);
+// pe Vercel, fișierul cerut cu ?v=<versiune> se păstrează un an (versiunea se schimbă odată cu el), restul o oră în browser și o zi pe CDN
+function sendFile(res, file, versioned = false) {
+  const cache = !READ_ONLY ? 'no-cache' : versioned ? 'public, max-age=31536000, immutable' : 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800';
   fs.readFile(file, (err, buf) => {
     if (err) {
       res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
       return res.end('404 – ' + path.relative(ROOT, file || ''));
     }
-    // no-cache: browserul verifică fișierul la fiecare încărcare, ca modificările de CSS/JS să apară imediat
-    res.writeHead(200, { 'Content-Type': TYPES[path.extname(file).toLowerCase()] || 'application/octet-stream', 'Cache-Control': 'no-cache' });
+    res.writeHead(200, { 'Content-Type': TYPES[path.extname(file).toLowerCase()] || 'application/octet-stream', 'Cache-Control': cache });
     res.end(buf);
   });
 }
@@ -439,7 +441,7 @@ async function handler(req, res) {
       res.writeHead(200, { 'Content-Type': TYPES['.css'], 'Cache-Control': 'no-store' });
       return res.end(fresh('./site/brand').css());
     }
-    if (url.startsWith('/assets/')) return sendFile(res, safe(path.join(ROOT, 'site', 'assets'), url.slice('/assets/'.length)) || '');
+    if (url.startsWith('/assets/')) return sendFile(res, safe(path.join(ROOT, 'site', 'assets'), url.slice('/assets/'.length)) || '', /(^|&)v=[0-9a-f]{8}(&|$)/.test(query));
     // paginile site-ului se generează la fiecare cerere din data/entitati.json și data/brand.json
     // pagina Teme e ascunsă (site/util.js › TEME): adresele ei duc la /program
     if (!fresh('./site/util').TEME && /^\/teme(\/|$)/.test(url)) { res.writeHead(301, { Location: '/despre' }); return res.end(); }

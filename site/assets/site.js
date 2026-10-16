@@ -10,7 +10,10 @@ const deRo = (n) => (n % 100 >= 20 || (n && n % 100 === 0) ? 'de ' : '');
   const items = $$('.mm-item');
   const desktop = matchMedia('(min-width: 1181px)');
 
+  // pozele unui panou se încarcă la prima deschidere (vezi site/menu.js)
+  const loadPics = (item) => item?.querySelectorAll('img[data-mm-src]').forEach((i) => { i.src = i.dataset.mmSrc; i.removeAttribute('data-mm-src'); });
   function setOpen(item, open) {
+    if (open) loadPics(item);
     item.classList.toggle('open', open);
     $('.mm-trigger', item).setAttribute('aria-expanded', String(open));
   }
@@ -24,7 +27,7 @@ const deRo = (n) => (n % 100 >= 20 || (n && n % 100 === 0) ? 'de ' : '');
   let timer;
   items.forEach((item) => {
     const trigger = $('.mm-trigger', item);
-    item.addEventListener('mouseenter', () => { if (!desktop.matches) return; clearTimeout(timer); timer = setTimeout(() => openOnly(item), 90); });
+    item.addEventListener('mouseenter', () => { if (!desktop.matches) return; loadPics(item); clearTimeout(timer); timer = setTimeout(() => openOnly(item), 90); });
     // panoul rămâne deschis cât timp cineva scrie în el (căutarea din Comunitate), chiar dacă mouse-ul pleacă
     item.addEventListener('mouseleave', () => { if (!desktop.matches) return; clearTimeout(timer); if (item.contains(document.activeElement) && document.activeElement.matches('input')) return; timer = setTimeout(closeAll, 160); });
     trigger.addEventListener('click', () => {
