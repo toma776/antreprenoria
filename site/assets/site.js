@@ -234,7 +234,7 @@ const deRo = (n) => (n % 100 >= 20 || (n && n % 100 === 0) ? 'de ' : '');
       hint.addEventListener('click', () => el.scrollBy({ left: el.clientWidth * 0.7, behavior: calm ? 'auto' : 'smooth' }));
       host.appendChild(hint);
     }
-    const place = () => { if (!hint) return; hint.style.top = el.offsetTop + 'px'; hint.style.height = el.offsetHeight + 'px'; hint.style.right = (el.offsetParent === hint.offsetParent ? el.offsetParent.clientWidth - el.offsetLeft - el.offsetWidth : 0) + 'px'; };
+    const place = () => { if (!hint || !el.offsetParent) return; hint.style.top = el.offsetTop + 'px'; hint.style.height = el.offsetHeight + 'px'; hint.style.right = (el.offsetParent && el.offsetParent === hint.offsetParent ? el.offsetParent.clientWidth - el.offsetLeft - el.offsetWidth : 0) + 'px'; }; // bara ascunsă: nu are offsetParent
     const upd = () => {
       const more = el.scrollWidth - el.clientWidth > 4, right = more && el.scrollLeft < el.scrollWidth - el.clientWidth - 4;
       el.classList.toggle('sx-l', more && el.scrollLeft > 4);
