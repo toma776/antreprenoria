@@ -398,3 +398,9 @@ a:hover > .arr:not(.arr-l), button:hover > .arr:not(.arr-l), a:hover .arr:last-c
 .cb .xf-acts a, .cb .x-link, .cb .ld-link, .cb .cx-more-h a { min-height: 24px; display: inline-flex; align-items: center; }
 /* 17. ce primește focus se vede, chiar dacă animația de apariție nu a pornit încă */
 .rv [data-rv]:focus-within, .rv [data-rv]:focus, .rv [data-x-in]:focus-within, .rv [data-x-in]:focus { opacity: 1; transform: none; }
+
+/* săgeata și pe celelalte butoane-link (ex. „Aplică pentru un loc” din banda de final): text la stânga, săgeata la dreapta */
+.cb .x a.btn:not(:has(svg)):not(.btn-primary):not([target="_blank"])::after { content: ""; flex: none; width: 16px; height: 16px; margin-left: auto; background: currentColor; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat; display: var(--btn-arrow); }
+/* butonul secundar de lângă el (ex. „Cluj #1”): chenar albastru, ca butonul secundar din hero */
+.cb .cta-band .btn-outline-light { background: transparent; border: 1px solid var(--cb-blue); color: var(--cb-blue); }
+.cb .cta-band .btn-outline-light:hover { background: var(--cb-blue); color: #fff; }
