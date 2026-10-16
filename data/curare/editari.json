@@ -855,6 +855,291 @@
       },
       "zitec": {
         "descriere": "Companie românească de software și transformare digitală, fondată în 2003, care dezvoltă platforme pentru servicii financiare, logistică, retail, sănătate și sector public. Are câteva sute de angajați și certificare B Corp."
+      },
+      "micul-fermier-branduri-proprii": {
+        "url": "https://www.micul-fermier.ro/"
+      },
+      "bisbags": {
+        "url": "https://www.bisbags.ro/"
+      },
+      "helix-logistics-development": {
+        "url": "https://helixlogistics.ro/"
+      },
+      "mht-experience": {
+        "url": "https://mht-experience.ro/"
+      },
+      "abeauty-clinique": {
+        "url": "https://abeauty.ro/"
+      },
+      "cga-infrastructure": {
+        "url": "https://www.cgainfrastructure.ro/"
+      },
+      "soft-tehnica": {
+        "url": "https://soft-tehnica.com/"
+      },
+      "asertivo": {
+        "url": "https://asertivo.ro/"
+      },
+      "evamar": {
+        "url": "https://evamar.ro/"
+      },
+      "yda-proiect-consulting": {
+        "url": "https://ydaproiect.ro/"
+      },
+      "teckstar": {
+        "url": "https://teckstar.ro/"
+      },
+      "dotro": {
+        "url": "https://www.dotro.ro/"
+      },
+      "conacul-olarilor": {
+        "url": "https://conaculolarilor.ro/"
+      },
+      "magnolia-cafe": {
+        "url": "https://magnoliaurbancafe.ro/"
+      },
+      "secure-visio-services": {
+        "url": "https://svs-it.ro/"
+      },
+      "caracteristic": {
+        "url": "https://caracteristic.ro/"
+      },
+      "vexio": {
+        "url": "https://www.vexio.ro/"
+      },
+      "it-genetics": {
+        "url": "https://www.it-genetics.ro/"
+      },
+      "trisport": {
+        "url": "https://www.trisport.ro/"
+      },
+      "chilli": {
+        "url": "https://addsomechilli.com/"
+      },
+      "custom-tanks": {
+        "url": "https://customtanks.ro/"
+      },
+      "danco-vision": {
+        "url": "https://www.dancovision.ro/"
+      },
+      "next": {
+        "url": "https://nextisolutions.ro/"
+      },
+      "dezimed": {
+        "url": "https://dezimed.ro/"
+      },
+      "pro-fiduciaria": {
+        "url": "https://profiduciaria.ro/"
+      },
+      "northo": {
+        "url": "https://www.northo.ro/"
+      },
+      "webit-factory": {
+        "url": "https://webitfactory.io/"
+      },
+      "iviteb": {
+        "url": "https://iviteb.com/"
+      },
+      "pavajdevis": {
+        "url": "https://pavajdevis.ro/"
+      },
+      "aov-architecture": {
+        "url": "https://www.aov-architecture.ro/"
+      },
+      "sirius-crewing": {
+        "url": "https://www.siriuscrewing.com/"
+      },
+      "mkor-consulting": {
+        "url": "https://mkor.ro/"
+      },
+      "grupul-dyad": {
+        "url": "https://dyad.ro/"
+      },
+      "brutariile-frontera": {
+        "url": "https://frontera.ro/"
+      },
+      "terano-construct": {
+        "url": "https://terano.ro/"
+      },
+      "floraria-tria-s": {
+        "url": "https://www.florariatrias.ro/"
+      },
+      "glas-expert": {
+        "url": "https://xglas.eu/"
+      },
+      "digital-atelier-studio": {
+        "url": "https://digitalatelierstudio.ro/"
+      },
+      "era-group-expense-reduction-analysts": {
+        "url": "https://www.eragroup.com/"
+      },
+      "skytree": {
+        "url": "https://www.skytree.ro/"
+      },
+      "blue-island-productions": {
+        "url": "https://blueisland.ro/"
+      },
+      "dem-media": {
+        "url": "https://demmedia.ro/"
+      },
+      "vapro-romania": {
+        "url": "https://www.vapro.ro/"
+      },
+      "cartobello": {
+        "url": "https://cartobello.ro/"
+      },
+      "unioncont-expert": {
+        "url": "https://www.unioncont.ro/"
+      },
+      "firmadeconta-ro": {
+        "url": "https://www.firmadeconta.ro/"
+      },
+      "acda-agentia-de-consultanta-pentru-dezvoltarea-afacerilor": {
+        "url": "https://acda.ro/"
+      },
+      "revicon": {
+        "url": "https://revicon.ro/"
+      },
+      "the-beauty-education": {
+        "url": "https://thebeautyeducation.com/"
+      },
+      "podocliniq": {
+        "url": "https://podocliniq.ro/"
+      },
+      "wiren": {
+        "url": "https://www.wiren.ro/"
+      },
+      "continental-fast-line": {
+        "url": "https://cfl.ro/"
+      },
+      "casa-antonie": {
+        "url": "https://www.casa-antonie.ro/"
+      },
+      "plametco": {
+        "url": "https://www.plametco.ro/"
+      },
+      "g-e-s-good-eco-solution-packaging": {
+        "url": "https://gespackaging.ro/"
+      },
+      "rogri-impex": {
+        "url": "https://rogri.ro/"
+      },
+      "asyco-safety-trade": {
+        "url": "https://www.echipam.ro/"
+      },
+      "firma-de-evaluare-si-consultanta": {
+        "url": "https://www.myfairvalue.ro/"
+      },
+      "tehnoconstruct-ro": {
+        "url": "https://www.tehnoconstruct.ro/"
+      },
+      "lime-medical": {
+        "url": "https://limemedical.ro/"
+      },
+      "activ-property-services": {
+        "url": "https://activpropertyservices.ro/"
+      },
+      "just-ideas": {
+        "url": "https://just-ideas.ro/"
+      },
+      "techbolide": {
+        "url": "https://techbolide.com/"
+      },
+      "biotechnics-implant": {
+        "url": "https://biotechnics.ro/"
+      },
+      "sfera-business": {
+        "url": "https://sferabusiness.com/"
+      },
+      "nord-garage": {
+        "url": "https://www.nordgarage.ro/"
+      },
+      "eagle-energy-group": {
+        "url": "https://eagleenergygroup.ro/"
+      },
+      "kurat": {
+        "url": "https://kurat.ro/"
+      },
+      "asanorii": {
+        "url": "https://www.asanorii.ro/"
+      },
+      "cyberevent": {
+        "url": "https://www.cyberevent.ro/"
+      },
+      "balluff": {
+        "url": "https://www.balluff.ro/"
+      },
+      "qualmont-fost-railing-design": {
+        "url": "https://qualmont.ro/"
+      },
+      "vibroblast": {
+        "url": "https://vibroblast.ro/"
+      },
+      "good2go-romania": {
+        "url": "https://www.good2go.ro/"
+      },
+      "uniline-tcs": {
+        "url": "https://uniline-tcs.ro/"
+      },
+      "upgrade-education": {
+        "url": "https://upgrade.education/"
+      },
+      "multi-dent-identity": {
+        "url": "https://identity.ro/"
+      },
+      "potcoava-mountain-hideaway": {
+        "url": "https://potcoava.ro/"
+      },
+      "as-recover": {
+        "url": "https://asrecover.ro/"
+      },
+      "ashadetare": {
+        "url": "https://www.ashadetare.ro/"
+      },
+      "bright-goals": {
+        "url": "https://brightgoals.ro/"
+      },
+      "creditfix": {
+        "url": "https://www.creditfix.ro/"
+      },
+      "boom-car-service": {
+        "url": "https://boomcarservice.ro/"
+      },
+      "dropshot-coffee-roasters": {
+        "url": "https://dropshot.coffee/"
+      },
+      "handlekraft-warehouse-solution": {
+        "url": "https://handlekraft.ro/"
+      },
+      "perla-eco-clin": {
+        "url": "https://perlaecoclin.ro/"
+      },
+      "triumvirate-labs": {
+        "url": "https://www.tvl.tech/"
+      },
+      "infraweb-managed-services-provider": {
+        "url": "https://infraweb.ro/"
+      },
+      "color-magic-2000": {
+        "url": "https://colormagic.ro/"
+      },
+      "enter-hr-professional": {
+        "url": "https://enterhr.ro/"
+      },
+      "cornico-snack-food": {
+        "url": "https://www.cornico.ro/"
+      },
+      "boho-forest": {
+        "url": "https://bohoforest.ro/"
+      },
+      "thaice-cream": {
+        "url": "https://thaicecream.ro/"
+      },
+      "puntoup": {
+        "url": "https://puntoup.com/"
+      },
+      "thecon": {
+        "url": "https://thecon.ro/"
       }
     },
     "editii": {

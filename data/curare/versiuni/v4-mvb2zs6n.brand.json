@@ -1,0 +1,271 @@
+{
+  "_despre": "Identitatea vizuală a site-ului. „activ” e varianta folosită pe site; se schimbă din panou (/manage/branding). Fiecare variantă are setul complet de token-uri (culori, fonturi, forme) din care se generează /assets/brand.css.",
+  "activ": "a",
+  "variante": [
+    {
+      "id": "a",
+      "nume": "Antreprenoria · instituțional",
+      "descriere": "Stilul site-ului: structură curată (grilă, benzi de secțiuni, butoane cu săgeata la dreapta, fără umbre), în culorile brandului Antreprenoria: albastrul și bleumarinul, griuri reci, Archivo și Inter, colțuri de 3px.",
+      "de_ce": "Pare instituțional și sigur pe el, nu „făcut cu AI”: puține culori, ierarhie clară, accentul albastru doar unde e o acțiune. Păstrează albastrul și roșul pe care oamenii le recunosc de la RBL.",
+      "schema": "light",
+      "culori": [
+        {
+          "token": "primary",
+          "nume": "Albastru Antreprenoria",
+          "hex": "#1057A4",
+          "rol": "acțiuni: butoane, linkuri, file active, linia de accent",
+          "principala": true
+        },
+        {
+          "token": "dark",
+          "nume": "Bleumarin",
+          "hex": "#0B2545",
+          "rol": "footerul, numerele pașilor, stratul de sub pozele liderilor",
+          "principala": true
+        },
+        {
+          "token": "accent",
+          "nume": "Roșu RBL",
+          "hex": "#E32419",
+          "rol": "doar pentru „live” (cohorta în desfășurare)",
+          "principala": true
+        },
+        {
+          "token": "highlight",
+          "nume": "Galben",
+          "hex": "#FADC3A",
+          "rol": "evidențieri, cifre pe fundal închis",
+          "principala": true
+        },
+        {
+          "token": "bg",
+          "nume": "Hârtie",
+          "hex": "#FFFFFF",
+          "rol": "fundalul paginii",
+          "principala": true
+        },
+        {
+          "token": "ink",
+          "nume": "Cerneală",
+          "hex": "#121826",
+          "rol": "text",
+          "principala": true
+        },
+        {
+          "token": "surface",
+          "nume": "Suprafață",
+          "hex": "#FFFFFF",
+          "rol": "carduri"
+        },
+        {
+          "token": "surface-2",
+          "nume": "Suprafață 2",
+          "hex": "#EAF0F8",
+          "rol": "secțiunile alternative, panourile din hero, fundalul tile-urilor"
+        },
+        {
+          "token": "muted",
+          "nume": "Text secundar",
+          "hex": "#586174",
+          "rol": "texte secundare"
+        },
+        {
+          "token": "line",
+          "nume": "Linii",
+          "hex": "#DCE3EE",
+          "rol": "liniile dintre secțiuni, chenarele, separatoarele"
+        },
+        {
+          "token": "primary-hover",
+          "nume": "Albastru la hover",
+          "hex": "#0D4A8C",
+          "rol": "butoanele principale, la trecerea mouse-ului"
+        },
+        {
+          "token": "primary-ink",
+          "nume": "Text pe principală",
+          "hex": "#FFFFFF",
+          "rol": "text pe butoane"
+        },
+        {
+          "token": "primary-soft",
+          "nume": "Principală deschisă",
+          "hex": "#E3ECF7",
+          "rol": "fundaluri discrete"
+        },
+        {
+          "token": "dark-2",
+          "nume": "Bleumarin 2",
+          "hex": "#12325C",
+          "rol": "carduri pe fundal închis"
+        },
+        {
+          "token": "dark-ink",
+          "nume": "Text pe închis",
+          "hex": "#F2F6FC",
+          "rol": "text pe fundal închis"
+        },
+        {
+          "token": "dark-muted",
+          "nume": "Text secundar pe închis",
+          "hex": "#A9B8D0",
+          "rol": "texte secundare pe fundal închis"
+        }
+      ],
+      "tipografie": {
+        "titluri": {
+          "font": "Archivo",
+          "greutate": 600,
+          "latime": "100%",
+          "spatiere": "-0.01em",
+          "rezerva": "system-ui, sans-serif",
+          "latime_hero": "112%"
+        },
+        "text": {
+          "font": "Inter",
+          "rezerva": "system-ui, sans-serif"
+        },
+        "cifre": {
+          "font": "Archivo",
+          "rezerva": "system-ui, sans-serif"
+        },
+        "etichete": {
+          "font": "Inter",
+          "rezerva": "system-ui, sans-serif"
+        }
+      },
+      "forme": {
+        "raza": "3px",
+        "raza_buton": "3px",
+        "umbra": "none"
+      },
+      "google_fonts": "family=Archivo:wdth,wght@62..125,400..900&family=Inter:wght@400;500;600;700",
+      "logo": {
+        "_despre": "Logo-ul de pe site-ul vechi (două fișiere originale) și variantele făcute din ele pentru noul site: aceleași forme, doar recolorate sau decupate. Eticheta verde arată unde apare fiecare pe site.",
+        "variante": [
+          {
+            "id": "logo",
+            "nume": "Logo complet",
+            "fisier": "/assets/identitate/antreprenoria-logo.png",
+            "fundal": "deschis",
+            "dimensiuni": "1800×600",
+            "sursa": "original, de pe antreprenoria.ro",
+            "folosire": "documente și materiale pe fundal alb"
+          },
+          {
+            "id": "logo-alb",
+            "nume": "Logo complet, text alb",
+            "fisier": "/assets/identitate/antreprenoria-logo-alb.png",
+            "fundal": "închis",
+            "dimensiuni": "1716×580",
+            "sursa": "derivat: textul gri devenit alb",
+            "folosire": "materiale pe fundal închis"
+          },
+          {
+            "id": "orizontal",
+            "nume": "Logo fără slogan",
+            "fisier": "/assets/identitate/antreprenoria-logo-orizontal.png",
+            "fundal": "deschis",
+            "dimensiuni": "1713×562",
+            "sursa": "derivat: fără slogan",
+            "folosire": "antete pe fundal deschis",
+            "web": "/assets/identitate/antreprenoria-logo-orizontal-web.png"
+          },
+          {
+            "id": "orizontal-alb",
+            "nume": "Logo fără slogan, text alb",
+            "fisier": "/assets/identitate/antreprenoria-logo-orizontal-alb.png",
+            "fundal": "închis",
+            "dimensiuni": "1713×562",
+            "sursa": "derivat: fără slogan, text alb",
+            "folosire": "header-ul și footerul site-ului (gri închis)",
+            "web": "/assets/identitate/antreprenoria-logo-orizontal-alb-web.png"
+          },
+          {
+            "id": "simbol",
+            "nume": "Simbol",
+            "fisier": "/assets/identitate/antreprenoria-simbol.png",
+            "fundal": "deschis",
+            "dimensiuni": "200×210",
+            "sursa": "original, de pe antreprenoria.ro",
+            "folosire": "spații mici, avatar, panou"
+          },
+          {
+            "id": "simbol-alb",
+            "nume": "Simbol alb",
+            "fisier": "/assets/identitate/antreprenoria-simbol-alb.png",
+            "fundal": "închis",
+            "dimensiuni": "200×210",
+            "sursa": "derivat: forma albă, flamurile transparente",
+            "folosire": "peste fotografii sau culoarea principală"
+          },
+          {
+            "id": "favicon",
+            "nume": "Iconița de tab",
+            "fisier": "/assets/identitate/favicon-180.png",
+            "fundal": "deschis",
+            "dimensiuni": "32, 180, 512 px",
+            "sursa": "derivat: simbolul pe pătrat transparent",
+            "folosire": "tab-ul browserului, ecranul principal al telefonului"
+          }
+        ],
+        "pe_site": {
+          "header": "orizontal-alb",
+          "footer": "orizontal-alb",
+          "favicon": "/assets/identitate/favicon-32.png",
+          "apple_touch": "/assets/identitate/favicon-180.png"
+        }
+      },
+      "stil": {
+        "inaltime_header": "64px",
+        "inaltime_buton": "48px",
+        "inaltime_buton_mare": "64px",
+        "linie_accent": "2px",
+        "sageata_butoane": true,
+        "ghid": [
+          "Fundal alb; secțiunile alternează alb cu gri-albăstrui (Suprafață 2), separate de linii subțiri.",
+          "Albastrul brandului doar pentru acțiuni: butoane, linkuri, fila activă, linia de accent. Roșul RBL doar pentru „live”.",
+          "Headerul e alb, cu logo-ul color; footerul e bleumarin și încheie pagina.",
+          "Hero-urile sunt deschise: titlul mare în Archivo, lățit doar acolo; restul titlurilor la lățime normală.",
+          "Butoanele sunt dreptunghiulare, cu textul la stânga și săgeata la dreapta, centrate pe verticală; butonul mare de acțiune e mai înalt.",
+          "O singură săgeată desenată pe tot site-ul, în butoane și în linkuri; se mișcă puțin la hover.",
+          "Fără umbre, fără degradeuri, aurore sau animații decorative; structura o dau liniile și benzile de culoare.",
+          "Colțuri de 3px peste tot; pozele oamenilor sunt pătrate. Rotunde rămân doar etichetele mici și punctul „live”.",
+          "Cifrele mari în Archivo semibold; etichetele (eyebrow) în Inter, cu albastrul brandului.",
+          "Meniul lipicios al paginii stă sub header; cât e lipit, între ele apare doar linia albastră de accent."
+        ]
+      }
+    }
+  ],
+  "icon_meniu": {
+    "_despre": "Iconul butonului de meniu pe mobil și tabletă: trei cercuri pline înscrise într-un pătrat imaginar. Fiecare variantă are o așezare cu meniul închis și o mișcare la deschidere. Se schimbă din panou (Branding).",
+    "activ": "mare-si-doua-mici",
+    "culori": "brand",
+    "moduri_culoare": [
+      {
+        "id": "mono",
+        "nume": "Monocrom",
+        "descriere": "Cercurile în culoarea textului; X-ul în culoarea principală"
+      },
+      {
+        "id": "brand",
+        "nume": "Culorile brandului",
+        "descriere": "Fiecare cerc în altă culoare a brandului (principală, accent, evidențiere)"
+      }
+    ],
+    "variante": [
+      {
+        "id": "mare-si-doua-mici",
+        "nume": "Mare și două mici",
+        "descriere": "Un cerc mare în stânga sus și doi „colegi” mai mici.",
+        "la_deschidere": "Cercul mare se mută în colțul din dreapta jos."
+      },
+      {
+        "id": "colt-liber",
+        "nume": "Colț liber",
+        "descriere": "Trei colțuri ale pătratului, al patrulea liber.",
+        "la_deschidere": "Cercul din stânga jos se mută în dreapta sus."
+      }
+    ]
+  }
+}
