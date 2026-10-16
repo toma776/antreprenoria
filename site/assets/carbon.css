@@ -54,7 +54,7 @@
 .cb.inst .hdr::after { background: var(--cb-g80); }
 @media (min-width: 1181px) {
   .cb.x-page .hdr-in { height: 56px; }
-  .cb.x-page .hdr.is-scrolled .hdr-in { height: 48px; }
+  .cb.x-page .hdr.is-scrolled .hdr-in { height: 56px; } /* la scroll, headerul rămâne la fel de înalt: butonul „Aplică” își păstrează spațiul de sus și de jos */
   .cb.x-page .mm-trigger { height: 56px; padding: 0 16px; color: var(--cb-g30); font: 400 14px/1 var(--f-body); letter-spacing: .16px; }
   .cb.inst .mm-trigger:hover, .cb.inst .mm-item.open .mm-trigger { background: var(--cb-g80); color: #fff; }
   .cb.inst .mm-panel { border-top: 1px solid var(--cb-g80); }
@@ -315,3 +315,12 @@ a:hover > .arr:not(.arr-l), button:hover > .arr:not(.arr-l), a:hover .arr:last-c
 /* butoanele de pe tot site-ul: textul și săgeata centrate pe verticală, săgeata la dreapta */
 .cb .btn, .cb .x-btn { align-items: center; }
 .cb .btn .arr, .cb .x-btn .arr { width: 16px; height: 16px; vertical-align: middle; }
+.cb .hdr.is-scrolled { box-shadow: 0 1px 0 var(--cb-g20); }
+/* headerul pe desktop: aceeași înălțime și înainte, și după scroll, cu aer în jurul butonului „Aplică” (10px sus și jos) */
+@media (min-width: 1181px) {
+  .cb.x-page .hdr-in, .cb.x-page .hdr.is-scrolled .hdr-in { height: 64px; }
+  .cb.x-page .mm-trigger { height: 64px; }
+  .cb .hdr-cta .btn-primary { min-height: 44px; height: 44px; }
+}
+/* meniul lipicios al paginilor (Despre, Parteneri...) stă exact sub headerul de 64px */
+@media (min-width: 1181px) { .cb .pg-nav { top: 64px; } }
