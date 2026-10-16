@@ -275,7 +275,7 @@ function trainerBody(ctx, F, id) {
         <ul>${peers.map((x) => `<li><a href="/lideri/${esc(x.p.id)}">${avatar(x.p, 128)}<span><b>${esc(x.p.nume)}</b><small>${esc(x.org || ROL[x.rol] || '')}</small></span></a></li>`).join('')}</ul>
       </section>` : ''}
       <div class="ld-card ld-cta">
-        <b>Vrei să lucrezi cu oameni ca ${esc(first)}?</b>
+        <b>Vrei să lucrezi cu oameni precum ${esc(first)}?</b>
         <p>Trei luni de ateliere, un grup selectat de antreprenori și comunitatea RBL.</p>
         <a class="btn btn-primary" href="/aplica">Aplică la Antreprenoria</a>
         <a class="ld-link" href="/lideri">Toți liderii →</a>
