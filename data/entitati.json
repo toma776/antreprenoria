@@ -2,7 +2,7 @@
   "meta": {
     "sursa": "https://antreprenoria.ro",
     "extras_la": "2026-10-08",
-    "generat": "2026-10-16T14:46:59.102Z",
+    "generat": "2026-10-16T14:47:10.892Z",
     "pagini": 11,
     "metoda": "paginile edițiilor (/antreprenoria-16 … /antreprenoria-22, /antreprenoria-cluj) + /despre-noi + /contact; companii, organizații, aliasuri, parteneri și teme curate manual în data/curare/"
   },
@@ -21008,7 +21008,7 @@
       "nume": "Kamun",
       "tip": "companie",
       "sector": "HoReCa & food",
-      "url": null,
+      "url": "https://kamun.ro/",
       "logo": null,
       "descriere": "Kamun nu este doar un simplu fast-food, ci un concept construit cu ambiția de a deveni cel mai bun fast-food din România. Totul pornește de la un principiu simplu: ingrediente proaspete și preparate pregătite zilnic. Motto: „Totul fresh, în fiecare zi.”",
       "incert": false,
