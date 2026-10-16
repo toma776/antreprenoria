@@ -220,7 +220,7 @@ function trainerBody(ctx, F, id) {
       <div class="ld-id">
         <p class="ld-badges"><span class="ld-badge">${esc(ROL[d.rol] || 'Invitat')}</span>${d.eds.length >= 5 ? `<span class="ld-badge ld-badge-soft">Revine din ${yr0}</span>` : ''}</p>
         <h1>${esc(p.nume)}</h1>
-        ${d.fn || orgName ? `<p class="ld-org-line">${d.fn ? `${esc(d.fn)}${orgName ? ' · ' : ''}` : ''}${orgName ? `<a href="#companie">${esc(orgName)}</a>` : ''}</p>` : ''}
+        ${d.fn || orgName ? `<p class="ld-org-line">${d.fn ? `${esc(d.fn)}${orgName ? ' · ' : ''}` : ''}${orgName ? `<span class="ld-org">${esc(orgName)}</span>` : ''}</p>` : ''}
         <p class="ld-sum">${esc(sum)}</p>
         <div class="ld-act">
           ${nx ? `<a class="btn btn-primary" href="${edUrl(nx.e)}#agenda"><i class="dot-live"></i>Următorul atelier: ${fmtDay(nx.w.data)}</a>` : ''}
