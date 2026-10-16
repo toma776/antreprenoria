@@ -655,7 +655,8 @@ const cmEngine = (() => {
   const S = grid.dataset.mode === 'search', main = grid.closest('main'), facets = document.querySelector('.cs-facets');
   // pe /comunitate, cu paginile separate, formularul din hero duce la /comunitate/cauta (nu filtrează lista de jos)
   const go = qIn?.form?.hasAttribute('data-go');
-  const state = { q: go ? '' : qIn?.value.trim() || '' };
+  // căutarea venită prin adresă (?q=, de ex. din căutarea din meniu): pe /comunitate stă în bara listei și filtrează direct
+  const state = { q: (go ? qBar?.value : qIn?.value)?.trim() || '' };
   const f = (k) => sels.find((s) => s.dataset.f === k)?.value || '';
   const apply = () => {
     const t0 = performance.now();

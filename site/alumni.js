@@ -171,7 +171,7 @@ function alumniBody(ctx, F, sel = {}) {
 
   <section class="sec cm-dir" id="lista"><div class="wrap">
     <div class="cm-bar">
-      <div class="cm-bar-q"><span class="cm-search-ic">${I.search}</span><input id="cm-q2" type="search" placeholder="Caută în comunitate" autocomplete="off" aria-label="Caută în comunitate"></div>
+      <div class="cm-bar-q"><span class="cm-search-ic">${I.search}</span><input id="cm-q2" type="search" value="${P ? esc(sel.q || '') : ''}" placeholder="Caută în comunitate" autocomplete="off" aria-label="Caută în comunitate"></div>
       <label class="cm-sel"><span>Industrie</span><select data-f="sector" data-param="sector"><option value="">Toate</option>${d.sectors.map(([s, n]) => `<option value="${esc(s)}" data-q="${esc(slug(s))}" ${selS === s ? 'selected' : ''}>${esc(s)} (${n})</option>`).join('')}</select></label>
       <label class="cm-sel"><span>Cohortă</span><select data-f="ed" data-param="editie"><option value="">Toate</option>${d.eds.slice().reverse().map((e) => `<option value="${esc(e.id)}" data-q="${esc(String(e.numar))}" ${selE === e.id ? 'selected' : ''}>${esc(edLabel(e))} · ${esc(e.sezon)} ${e.an}</option>`).join('')}</select></label>
       ${d.cities.length ? `<label class="cm-sel"><span>Oraș</span><select data-f="city" data-param="oras"><option value="">Toate</option>${d.cities.map(([c, n]) => `<option value="${esc(c)}" data-q="${esc(slug(c))}">${esc(c)} (${n})</option>`).join('')}</select></label>` : ''}
