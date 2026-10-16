@@ -274,13 +274,12 @@ function alumnusBody(ctx, F, id, opt = {}) {
       <div class="ld-id">
         <p class="ld-badges"><span class="ld-badge">Alumni ${esc(a.eds.map(edLabel).join(', '))}</span>${a.sector ? `<span class="ld-badge ld-badge-soft">${esc(a.sector)}</span>` : ''}${partner ? '<span class="ld-badge mp-badge-gold">Revenit ca partener</span>' : ''}${a.speaker ? '<span class="ld-badge mp-badge-gold">Speaker</span>' : ''}</p>
         <h1>${esc(a.nume)}</h1>
-        ${a.fn || o ? `<p class="ld-org-line">${a.fn ? `${esc(a.fn)}${o ? ' · ' : ''}` : ''}${o ? `<span class="ld-org">${esc(o.nume)}</span>` : ''}</p>` : ''}
+        ${a.fn || o ? `<p class="ld-org-line">${a.fn ? `${esc(a.fn)}${o ? ' · ' : ''}` : ''}${o ? (o.url ? `<a class="ld-org" href="${esc(o.url)}" target="_blank" rel="noopener">${esc(o.nume)}</a>` : `<span class="ld-org">${esc(o.nume)}</span>`) : ''}</p>` : ''}
         <p class="ld-sum">${esc(p.bio || lede(a.desc) || `A participat la Antreprenoria ${a.eds.map(edLabel).join(', ')}${o ? `, cu ${o.nume}` : ''}.`)}</p>
         <div class="ld-act">
           <a class="btn btn-primary" href="${esc(connect)}">Cere o conectare</a>
-          ${o?.url ? `<a class="btn btn-ghost" href="${esc(o.url)}" target="_blank" rel="noopener">Site ${SVG.out}</a>` : ''}
           ${p.linkedin ? `<a class="btn btn-ghost" href="${esc(p.linkedin)}" target="_blank" rel="noopener">LinkedIn ${SVG.out}</a>` : ''}
-          <button class="btn btn-ghost mp-share" type="button" data-share>${SVG.link}<span>Copiază linkul</span></button>
+          ${o?.url ? `<a class="btn btn-ghost" href="${esc(o.url)}" target="_blank" rel="noopener">Vezi website ${SVG.out}</a>` : `<button class="btn btn-ghost mp-share" type="button" data-share>${SVG.link}<span>Copiază linkul</span></button>`}
         </div>
       </div>
       <dl class="ld-kpi" aria-label="Pe scurt">

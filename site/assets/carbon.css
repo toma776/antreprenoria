@@ -444,3 +444,7 @@ a:hover > .arr:not(.arr-l), button:hover > .arr:not(.arr-l), a:hover .arr:last-c
 .cb .mi-mare-si-doua-mici:is([aria-expanded="true"], .on) span:nth-child(1) { top: 7px; left: 7px; transform: translate(13px, 13px); }
 .cb .mi-colt-liber:is([aria-expanded="true"], .on) span:nth-child(2) { top: 21px; left: 9px; transform: translate(12px, -12px); }
 @media (prefers-reduced-motion: reduce) { .cb .menu-btn span { transition: none; } }
+
+/* numele companiei de sub numele alumnului: link spre site-ul companiei, când îl avem */
+.ld-org-line a.ld-org, .cm-p-co a { color: var(--primary); text-decoration: none; }
+.ld-org-line a.ld-org:hover, .cm-p-co a:hover { text-decoration: underline; text-underline-offset: 3px; }

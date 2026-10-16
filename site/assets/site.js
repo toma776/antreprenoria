@@ -768,13 +768,13 @@ const cmEngine = (() => {
     const subj = encodeURIComponent(`Cerere de conectare: ${name}${co ? ` (${co})` : ''}`);
     const txt = encodeURIComponent(`Bună,\n\nAș vrea să fiu pus în legătură cu ${name}${co ? ` de la ${co}` : ''}, din comunitatea Antreprenoria.\n\nDe ce: \n\nMulțumesc!`);
     body.innerHTML = `
-      <div class="cm-p-head"><span class="cm-p-av">${av}</span><div><p class="cm-p-eds">Alumni ${escH(d.eds)}</p><h2 id="cm-p-name">${escH(name)}</h2><p class="cm-p-co">${escH([d.fn, co].filter(Boolean).join(' · '))}</p></div></div>
+      <div class="cm-p-head"><span class="cm-p-av">${av}</span><div><p class="cm-p-eds">Alumni ${escH(d.eds)}</p><h2 id="cm-p-name">${escH(name)}</h2><p class="cm-p-co">${escH(d.fn || '')}${d.fn && co ? ' · ' : ''}${co ? (d.url ? `<a href="${escH(d.url)}" target="_blank" rel="noopener">${escH(co)}</a>` : escH(co)) : ''}</p></div></div>
       ${d.sector || d.city ? `<div class="cm-p-tags">${d.sector ? `<span class="cm-tag">${escH(d.sector)}</span>` : ''}${d.city ? `<span class="cm-tag">${escH(d.city)}</span>` : ''}</div>` : ''}
       <div class="cm-p-sec"><h3>Ce face</h3><p>${c._d ? (c._terms?.length ? marked(c, c._terms) : escH(c._d)) : 'Profilul e în curs de completare.'}</p></div>
       <div class="cm-p-sec cm-p-soon"><h3>Ce oferă și pentru cine</h3><p>Se completează împreună cu fiecare membru: servicii, produse și clienții potriviți.</p></div>
       <div class="cm-p-act">
         ${mail ? `<a class="btn btn-primary btn-lg" href="mailto:${escH(mail)}?subject=${subj}&body=${txt}">Cere o conectare</a>` : ''}
-        ${d.url ? `<a class="btn btn-ghost" href="${escH(d.url)}" target="_blank" rel="noopener">Site ↗</a>` : ''}
+        ${d.url ? `<a class="btn btn-ghost" href="${escH(d.url)}" target="_blank" rel="noopener">Vezi website ↗</a>` : ''}
         ${d.li ? `<a class="btn btn-ghost" href="${escH(d.li)}" target="_blank" rel="noopener">LinkedIn ↗</a>` : ''}
         ${d.href ? `<a class="btn btn-ghost" href="${escH(d.href)}">Pagina completă <svg class="arr" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>` : ''}
       </div>
