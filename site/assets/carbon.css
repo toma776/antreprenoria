@@ -438,3 +438,9 @@ a:hover > .arr:not(.arr-l), button:hover > .arr:not(.arr-l), a:hover .arr:last-c
 .cb .mi-mare-si-doua-mici span:nth-child(2) { top: 10px; left: 25px; width: 7px; height: 7px; border-radius: 2px !important; }
 .cb .mi-mare-si-doua-mici span:nth-child(3) { top: 25px; left: 10px; width: 7px; height: 7px; border-radius: 2px !important; }
 .cb .mi-mare-si-doua-mici:is([aria-expanded="true"], .on) span:nth-child(1) { top: 20px; left: 20px; }
+/* butonul de meniu: mișcarea pătratului mare se face prin transform (fluidă, fără recalcularea paginii la fiecare cadru),
+   cu o curbă uniformă; poziția de pornire rămâne aceeași, la deschidere se mută cu 13px în dreapta jos */
+.cb .menu-btn span { transition: transform .32s cubic-bezier(.4, 0, .2, 1), background-color .25s ease; will-change: transform; }
+.cb .mi-mare-si-doua-mici:is([aria-expanded="true"], .on) span:nth-child(1) { top: 7px; left: 7px; transform: translate(13px, 13px); }
+.cb .mi-colt-liber:is([aria-expanded="true"], .on) span:nth-child(2) { top: 21px; left: 9px; transform: translate(12px, -12px); }
+@media (prefers-reduced-motion: reduce) { .cb .menu-btn span { transition: none; } }
