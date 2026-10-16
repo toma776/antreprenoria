@@ -274,7 +274,7 @@ function alumnusBody(ctx, F, id, opt = {}) {
       <div class="ld-id">
         <p class="ld-badges"><span class="ld-badge">Alumni ${esc(a.eds.map(edLabel).join(', '))}</span>${a.sector ? `<span class="ld-badge ld-badge-soft">${esc(a.sector)}</span>` : ''}${partner ? '<span class="ld-badge mp-badge-gold">Revenit ca partener</span>' : ''}${a.speaker ? '<span class="ld-badge mp-badge-gold">Speaker</span>' : ''}</p>
         <h1>${esc(a.nume)}</h1>
-        ${a.fn || o ? `<p class="ld-org-line">${a.fn ? `${esc(a.fn)}${o ? ' · ' : ''}` : ''}${o ? `<a href="#companie">${esc(o.nume)}</a>` : ''}</p>` : ''}
+        ${a.fn || o ? `<p class="ld-org-line">${a.fn ? `${esc(a.fn)}${o ? ' · ' : ''}` : ''}${o ? `<span class="ld-org">${esc(o.nume)}</span>` : ''}</p>` : ''}
         <p class="ld-sum">${esc(p.bio || lede(a.desc) || `A participat la Antreprenoria ${a.eds.map(edLabel).join(', ')}${o ? `, cu ${o.nume}` : ''}.`)}</p>
         <div class="ld-act">
           <a class="btn btn-primary" href="${esc(connect)}">Cere o conectare</a>
