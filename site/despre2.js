@@ -88,7 +88,7 @@ function despre2Body(ctx, F) {
           <div><dt>3 luni</dt><dd>${esc(ong.perioada.replace(/\s*-\s*/, '–'))}</dd></div>
           <div><dt>${ws.length}</dt><dd>întâlniri: ${fullDay.length} full-day, ${evening.length} de seară, plus petrecerea de final</dd></div>
           <div><dt>~25</dt><dd>de antreprenori selectați, între egali</dd></div>
-          <div><dt>${speakers}</dt><dd>${de(speakers)}lideri care predau din ce au construit</dd></div>
+          <div><dt>${speakers}</dt><dd>${de(speakers)}lideri în program</dd></div>
         </dl>
         <div class="dx-proof"><b>${esc(cifra('IMM'))}</b><span>companii au trecut prin programele RBL din ${prog.de_cand}</span></div>
       </aside>
