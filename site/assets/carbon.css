@@ -427,3 +427,8 @@ a:hover > .arr:not(.arr-l), button:hover > .arr:not(.arr-l), a:hover .arr:last-c
 .cb .mi-colt-liber span:nth-child(2) { top: 21px; left: 9px; }
 .cb .mi-colt-liber span:nth-child(3) { top: 21px; left: 21px; }
 .cb .mi-colt-liber:is([aria-expanded="true"], .on) span:nth-child(2) { top: 9px; left: 21px; }
+/* butonul de meniu: aceeași distanță (3px) între pătratul mare și cele mici, și închis, și deschis */
+.cb .mi-mare-si-doua-mici span:nth-child(1) { top: 7px; left: 7px; }
+.cb .mi-mare-si-doua-mici span:nth-child(2) { top: 10px; left: 23px; }
+.cb .mi-mare-si-doua-mici span:nth-child(3) { top: 23px; left: 10px; }
+.cb .mi-mare-si-doua-mici:is([aria-expanded="true"], .on) span:nth-child(1) { top: 19px; left: 19px; }
