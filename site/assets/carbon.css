@@ -333,3 +333,5 @@ a:hover > .arr:not(.arr-l), button:hover > .arr:not(.arr-l), a:hover .arr:last-c
 .cb .dx-logos span:has(> a:hover), .cb .h3-grown span:has(> a:hover) { border-color: var(--cb-blue); }
 .cb .dx-logos span > a:focus-visible, .cb .h3-grown span > a:focus-visible { outline: 2px solid var(--cb-blue); outline-offset: 2px; }
 .af-policy { color: var(--primary); text-decoration: underline; text-underline-offset: 2px; white-space: nowrap; }
+/* paginile cohortelor: sub lista de sectoare din rezumat, același spațiu ca deasupra */
+.cb .ed-sum-sec { padding-bottom: 16px; }
