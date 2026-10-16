@@ -1022,3 +1022,13 @@ const cmEngine = (() => {
     setTimeout(() => { t.textContent = was; b.classList.remove('done'); }, 1800);
   });
 })();
+
+// meniul lipicios al paginilor (.pg-nav): când stă lipit sub header, primește clasa is-stuck (între ele apare o linie albastră)
+(() => {
+  const nav = document.querySelector('.pg-nav'), hdr = document.querySelector('.hdr');
+  if (!nav || !hdr) return;
+  const check = () => nav.classList.toggle('is-stuck', nav.getBoundingClientRect().top <= hdr.getBoundingClientRect().bottom + 0.5);
+  addEventListener('scroll', check, { passive: true });
+  addEventListener('resize', check);
+  check();
+})();
