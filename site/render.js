@@ -133,7 +133,6 @@ function header(F, ctx) {
     </nav>
     <div class="hdr-cta">
       ${F.ongoing ? `<a class="live" href="/editii/${F.ongoing.numar}" title="Pagina cohortei"><i></i>Cohorta #${F.ongoing.numar} în desfășurare</a>` : ''}
-      <a class="btn btn-primary" href="/aplica">Aplică</a>
       ${menuButton()}
     </div>
   </div><div class="mm-scrim" hidden></div></header>`;

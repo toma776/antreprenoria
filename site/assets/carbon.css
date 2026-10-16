@@ -404,3 +404,15 @@ a:hover > .arr:not(.arr-l), button:hover > .arr:not(.arr-l), a:hover .arr:last-c
 /* butonul secundar de lângă el (ex. „Cluj #1”): chenar albastru, ca butonul secundar din hero */
 .cb .cta-band .btn-outline-light { background: transparent; border: 1px solid var(--cb-blue); color: var(--cb-blue); }
 .cb .cta-band .btn-outline-light:hover { background: var(--cb-blue); color: #fff; }
+
+/* butonul de meniu (mobil): caseta mai strânsă (36px în loc de 44px) și toate trei formele pătrate cu colțuri rotunjite, ca cea mare */
+.cb .menu-btn { width: 36px; height: 36px; }
+.cb .menu-btn span { border-radius: 1.5px !important; }
+.cb .mi-mare-si-doua-mici span:nth-child(1) { top: 7px; left: 7px; border-radius: 3px !important; }
+.cb .mi-mare-si-doua-mici span:nth-child(2) { top: 10px; left: 21px; }
+.cb .mi-mare-si-doua-mici span:nth-child(3) { top: 21px; left: 10px; }
+.cb .mi-mare-si-doua-mici:is([aria-expanded="true"], .on) span:nth-child(1) { top: 17px; left: 17px; }
+.cb .mi-colt-liber span:nth-child(1) { top: 8px; left: 8px; }
+.cb .mi-colt-liber span:nth-child(2) { top: 19px; left: 8px; }
+.cb .mi-colt-liber span:nth-child(3) { top: 19px; left: 19px; }
+.cb .mi-colt-liber:is([aria-expanded="true"], .on) span:nth-child(2) { top: 8px; left: 19px; }
