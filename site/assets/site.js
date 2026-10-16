@@ -1077,19 +1077,3 @@ const cmEngine = (() => {
   addEventListener('resize', check);
   check();
 })();
-
-// benzile care se derulează singure (logo-uri, oameni, parteneri): un buton „Oprește derularea”, ca oricine să le poată opri
-(() => {
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return; // acolo nu se mișcă deloc
-  document.querySelectorAll('.x-marq, .x-rail, .x-pband, .sp-marq').forEach((band) => {
-    const b = document.createElement('button');
-    b.type = 'button'; b.className = 'mq-pause'; b.setAttribute('aria-pressed', 'false');
-    const label = () => { const on = band.classList.contains('is-paused'); b.setAttribute('aria-pressed', String(on)); b.innerHTML = on ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z"/></svg><span>Pornește derularea</span>' : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg><span>Oprește derularea</span>'; };
-    b.addEventListener('click', () => { band.classList.toggle('is-paused'); label(); });
-    label();
-    // banda e estompată pe margini sau taie ce iese din ea: butonul stă în părintele ei, peste colțul din dreapta-jos
-    const cs = getComputedStyle(band), host = (cs.maskImage && cs.maskImage !== 'none') || (cs.webkitMaskImage && cs.webkitMaskImage !== 'none') || cs.overflow !== 'visible' ? band.parentElement : band;
-    if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
-    host.appendChild(b);
-  });
-})();

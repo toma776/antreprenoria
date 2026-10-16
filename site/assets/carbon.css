@@ -372,14 +372,8 @@ a:hover > .arr:not(.arr-l), button:hover > .arr:not(.arr-l), a:hover .arr:last-c
 .cb .cm-sel:focus-within, .cb .cm-bar-q:focus-within, .cb .cm-search:focus-within, .cb .mp-find-in:focus-within, .cb .tr-sel:focus-within, .cb .tr-search:focus-within { outline: 2px solid var(--cb-blue); outline-offset: 2px; }
 .cb .cs-top .cm-search:focus-within { outline-color: #fff; }
 
-/* 7. benzile care se derulează singure: se opresc și când un link din ele are focus, și din butonul de pauză */
-.x-marq:focus-within .x-marq-in, .x-rail:focus-within .x-rail-in, .x-pband:focus-within .x-pband-in,
-.is-paused .x-marq-in, .is-paused .x-rail-in, .is-paused .x-pband-in, .is-paused .sp-marq-in { animation-play-state: paused !important; }
-.mq-pause { position: absolute; right: 8px; bottom: 6px; z-index: 4; display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border: 1px solid var(--cb-g20, var(--line)); border-radius: var(--radius-btn); background: var(--surface); color: var(--ink); font: 600 12px/1 var(--f-body); cursor: pointer; opacity: .9; }
-.mq-pause:hover { opacity: 1; border-color: var(--cb-blue, var(--primary)); }
-.mq-pause svg { width: 12px; height: 12px; fill: currentColor; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
-.mq-pause span { white-space: nowrap; }
-@media (max-width: 720px) { .mq-pause span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } .mq-pause { padding: 6px; } }
+/* 7. benzile care se derulează singure se opresc când un link din ele are focus (navigare cu tastatura) */
+.x-marq:focus-within .x-marq-in, .x-rail:focus-within .x-rail-in, .x-pband:focus-within .x-pband-in { animation-play-state: paused !important; }
 
 /* 10. „Sari la conținut”: ascuns până primește focus (primul Tab pe pagină) */
 .skip { position: fixed; left: 12px; top: -60px; z-index: 100; padding: 10px 14px; border-radius: var(--radius-btn); background: var(--cb-blue, var(--primary)); color: #fff; font: 600 14px/1 var(--f-body); text-decoration: none; transition: top .15s; }
