@@ -58,6 +58,16 @@ function impactData(ctx, d) {
   const { D } = ctx;
   const part = D.editii.flatMap((e) => e.participanti);
   const ca = part.map((p) => p.cifra_afaceri).filter((x) => x != null), ang = part.map((p) => p.angajati).filter((x) => x != null);
+  // sumele și mediile pe companie: o companie venită cu mai mulți oameni sau în mai multe cohorte intră o singură dată, cu ultimele cifre raportate
+  const byOrg = new Map();
+  D.editii.slice().sort((a, b) => a.an - b.an || (a.sezon === b.sezon ? 0 : a.sezon === 'primăvară' ? -1 : 1)).forEach((e) => e.participanti.forEach((p) => {
+    if (!p.organizatie) return; // fără companie în registru (și fără cifre): nu intră în sume
+    const k = p.organizatie, o = byOrg.get(k) || {};
+    if (p.cifra_afaceri != null) o.ca = p.cifra_afaceri;
+    if (p.angajati != null) o.ang = p.angajati;
+    byOrg.set(k, o);
+  }));
+  const caOrg = [...byOrg.values()].map((o) => o.ca).filter((x) => x != null), angOrg = [...byOrg.values()].map((o) => o.ang).filter((x) => x != null);
   const docEds = D.editii.filter((e) => e.participanti.length);
   const nEd = Math.max(...D.editii.filter((e) => e.serie === 'București' && !/pregătire/i.test(e.status || '')).map((e) => e.numar));
   // ore de lucru pe format, din agendele atelierelor
@@ -72,8 +82,8 @@ function impactData(ctx, d) {
   const hCluj = wsCluj.reduce((s, a) => s + (H[a.format] || 0), 0);
   return {
     nEd, ani: new Date().getFullYear() - D.program.de_cand, de_cand: D.program.de_cand, antreprenori: nEd * GRUPA,
-    sumCa: ca.reduce((s, x) => s + x, 0), sumAng: ang.reduce((s, x) => s + x, 0), nPart: part.length, nDocEds: docEds.length,
-    avgCa: ca.length ? ca.reduce((s, x) => s + x, 0) / ca.length : 0, avgAng: ang.length ? ang.reduce((s, x) => s + x, 0) / ang.length : 0,
+    sumCa: caOrg.reduce((s, x) => s + x, 0), sumAng: angOrg.reduce((s, x) => s + x, 0), nPart: part.length, nOrg: byOrg.size, nDocEds: docEds.length,
+    avgCa: caOrg.length ? caOrg.reduce((s, x) => s + x, 0) / caOrg.length : 0, avgAng: angOrg.length ? angOrg.reduce((s, x) => s + x, 0) / angOrg.length : 0,
     medCa: median(ca), medAng: median(ang), H, wsEd: wsEd.length, hEd, wsCluj: wsCluj.length, hCluj, hasCluj: !!cluj,
   };
 }
@@ -180,7 +190,7 @@ function parteneriBody(ctx, F) {
     <div class="sec-head"><p class="eyebrow">De ce Antreprenoria</p><h2>Nu sponsorizezi un eveniment. Investești în cei care țin economia în mișcare.</h2></div>
     <div class="sp-why">
       <article><b>${mil(I.medCa)} <em>mil. lei</em></b><h3>Decidenți, nu curioși</h3><p>Cifra de afaceri a participantului tipic, cu ${plural(Math.round(I.medAng), 'angajat', 'angajați')}. În sală stau fondatori și manageri selectați, care decid.</p></article>
-      <article><b>${mld(I.sumCa)} <em>mld. lei</em></b><h3>Economia reală</h3><p>Cifra de afaceri cumulată a celor ${nr(I.nPart)} de companii din ultimele ${I.nDocEds} ${de(I.nDocEds)}cohorte, cu ${nr(I.sumAng)} de angajați.</p></article>
+      <article><b>${mld(I.sumCa)} <em>mld. lei</em></b><h3>Economia reală</h3><p>Cifra de afaceri cumulată a celor ${nr(I.nOrg)} de companii din ultimele ${I.nDocEds} ${de(I.nDocEds)}cohorte, cu ${nr(I.sumAng)} de angajați.</p></article>
       <article><b>${GRUPA} <em>× o zi</em></b><h3>Timp, nu impresii</h3><p>O grupă mică, o zi întreagă de lucru aplicat pe o temă. Brandul tău e asociat cu problema pe care o rezolvă.</p></article>
       <article><b>${d.ciclu.length || d.all.length}</b><h3>${d.ciclu.length ? 'Alumni deveniți parteneri' : 'Branduri alături de noi'}</h3><p>${d.ciclu.length ? 'Companii care au trecut prin program ca participanți și s-au întors să-l susțină. Comunitatea crește și dă înapoi.' : 'Companii care au susținut programul cohortă cu cohortă.'}</p></article>
     </div>

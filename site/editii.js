@@ -63,11 +63,11 @@ function editiiBody(ctx, F) {
     <div class="hero-split">
       <div class="hero-copy">
         <p class="eyebrow">Cohorte</p>
-        <h1>Două cohorte pe an, din ${esc(String(chrono(D)[0]?.an || ''))}.</h1>
+        <h1>Două cohorte pe an, din ${esc(String(D.program.de_cand))}.</h1>
         <p class="lead">Fiecare cohortă e un grup de în jur de 25 de antreprenori care parcurg împreună, în trei luni, cele cinci teme ale programului. În București, primăvara și toamna; din ${esc(String(D.editii.find((e) => e.serie === 'Cluj')?.an || ''))}, și la Cluj.</p>
       </div>
       <aside class="pg-glance" aria-label="În cifre">
-        <div class="ed-live-top"><span>În cifre</span><span>toate cohortele</span></div>
+        <div class="ed-live-top"><span>În cifre</span><span>cohortele din ${esc(String(chrono(D)[0]?.an || ''))} încoace</span></div>
         <dl>
           <div><dt>${plural(D.editii.length, 'cohortă', 'cohorte')}</dt><dd>${plural(past.length, 'încheiată', 'încheiate')}, ${plural(active.length, 'activă', 'active')}</dd></div>
           <div><dt>${plural(totalPart, 'participant', 'participanți')}</dt><dd>antreprenori și manageri</dd></div>

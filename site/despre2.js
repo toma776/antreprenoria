@@ -165,8 +165,8 @@ function despre2Body(ctx, F) {
       <a class="link-arrow" href="/editii">Toate cohortele →</a></div>
     <div class="ab-stats">
       <div><b>${F.participanti}</b><span>${de(F.participanti)}antreprenori și manageri în cohortele #${first.numar}–#${F.maxNr}</span></div>
-      <div><b>${speakers}</b><span>${de(speakers)}lideri care au predat</span></div>
-      <div><b>${F.ateliere}</b><span>${de(F.ateliere)}ateliere în arhivă</span></div>
+      <div><b>${speakers}</b><span>${de(speakers)}lideri în program</span></div>
+      <div><b>${F.ateliere}</b><span>${de(F.ateliere)}întâlniri programate</span></div>
       <div><b>${F.ciclu.length}</b><span>${de(F.ciclu.length)}companii revenite ca parteneri</span></div>
     </div>
     <div class="hist dx-hist">

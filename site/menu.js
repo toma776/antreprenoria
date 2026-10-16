@@ -136,7 +136,7 @@ function panels(ctx, F) {
       ],
       feature: ong ? `<a class="mm-feature" href="${esc(edUrl(ong))}">
           <span class="mm-kicker"><i class="dot-live"></i>Cohorta #${ong.numar}</span>
-          <b>${held} din ${ong.ateliere.length} ${de(ong.ateliere.length)}ateliere</b>
+          <b>${held} din ${ong.ateliere.length} ${de(ong.ateliere.length)}întâlniri</b>
           <span class="mm-progress"><i style="width:${Math.round((held / ong.ateliere.length) * 100)}%"></i></span>
           <span class="mm-sub">${ong.participanti.length} ${de(ong.participanti.length)}participanți · ${esc(ong.locatii.filter((l) => l !== 'TBD')[0] || '')}</span>
           <span class="mm-upcoming">${upcoming.map((a) => `<span><i>${shortDay(a.data)}</i>${esc(a.titlu.replace(/^(Atelier de Seară|COCKTAIL NETWORKING)\s*[-:]\s*/i, ''))}</span>`).join('')}</span>

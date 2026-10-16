@@ -10,7 +10,8 @@ const edLabel = (e) => (e.serie === 'Cluj' ? `Cluj #${e.numar}` : `#${e.numar}`)
 const chrono = (D) => D.editii.slice().sort((a, b) => a.an - b.an || (a.sezon === b.sezon ? (a.serie === 'Cluj') - (b.serie === 'Cluj') : a.sezon === 'primăvară' ? -1 : 1));
 // o cohortă e încheiată (participanții intră în comunitate) doar după „Arhivează” din panou: starea „Ediție închisă”
 const ended = (e) => /închis|încheiat/i.test(e.status || '');
-const median = (a) => { const s = a.filter((x) => x != null).sort((x, y) => x - y); return s.length ? s[Math.floor(s.length / 2)] : null; };
+// mediana: la un număr par de valori, media celor două din mijloc (ca în util.js)
+const median = (a) => { const s = a.filter((x) => x != null).sort((x, y) => x - y); return s.length ? (s.length % 2 ? s[(s.length - 1) / 2] : (s[s.length / 2 - 1] + s[s.length / 2]) / 2) : null; };
 const quantile = (a, q) => { const s = a.filter((x) => x != null).sort((x, y) => x - y); return s.length ? s[Math.floor((s.length - 1) * q)] : null; };
 const norm = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
@@ -42,7 +43,7 @@ function alumniData(ctx) {
   const BANDS = [[0, 1e6, 'sub 1'], [1e6, 5e6, '1–5'], [5e6, 20e6, '5–20'], [20e6, 50e6, '20–50'], [50e6, Infinity, 'peste 50']];
   const bands = BANDS.map(([lo, hi, label]) => ({ label, n: [...caByOrg.values()].filter((v) => v >= lo && v < hi).length }));
   return { L, eds, companies: new Set(L.map((a) => a.org?.id).filter(Boolean)).size, sectors: count((a) => a.sector), cities: count((a) => a.oras), bands,
-    q1: quantile(parts.map((x) => x.cifra_afaceri), 0.25), q3: quantile(parts.map((x) => x.cifra_afaceri), 0.75), medianCa: median(parts.map((x) => x.cifra_afaceri)), medianAng: median(parts.map((x) => x.angajati)),
+    q1: quantile(parts.map((x) => x.cifra_afaceri), 0.25), q3: quantile(parts.map((x) => x.cifra_afaceri), 0.75), medianCa: median(parts.map((x) => x.cifra_afaceri)), medianAng: Math.round(median(parts.map((x) => x.angajati))),
     ciclu: D.organizatii.filter((o) => o.ciclu) };
 }
 const href = (a) => (a.speaker ? `/lideri/${a.id}` : a.page ? `/comunitate/${a.id}` : '');

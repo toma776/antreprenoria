@@ -214,7 +214,7 @@ function home2Footer(ctx, F, { logo, nav }) {
         <div class="xf-social"><a href="https://www.linkedin.com/company/antreprenoria" rel="noopener" aria-label="LinkedIn">${ICON.linkedin}</a><a href="https://www.facebook.com/antreprenoria/" rel="noopener" aria-label="Facebook">${ICON.facebook}</a></div>
       </div>
       ${ong ? `<a class="xf-live x-glass" href="${edUrl(ong)}#agenda">
-        <span class="xf-live-top"><span class="x-tag"><i class="dot-live"></i>Live</span><span>Cohorta #${ong.numar} · ${held} din ${ws.length} ateliere</span></span>
+        <span class="xf-live-top"><span class="x-tag"><i class="dot-live"></i>Live</span><span>Cohorta #${ong.numar} · ${held} din ${ws.length} întâlniri</span></span>
         ${nx ? `<b>${esc(cleanTitle(nx.titlu))}</b><span class="xf-live-m">${fmtDay(nx.data)} · ${startOf(nx)}${nx.locatie && nx.locatie !== 'TBD' ? ' · ' + esc(nx.locatie) : ''}</span>` : `<b>${esc(ong.perioada)}</b>`}
         <span class="x-cc-track">${ws.map((a) => `<i class="${a.data && a.data < t0 ? 'done' : nx && a.id === nx.id ? 'next' : ''}"></i>`).join('')}</span>
         <em>Vezi agenda ${ARROW}</em>
@@ -227,7 +227,7 @@ function home2Footer(ctx, F, { logo, nav }) {
         <div class="xf-cohorts">
           <small class="xf-ch">Poți intra</small>
           ${F.cluj ? `<a class="is-open" href="${edUrl(F.cluj)}"><b>Cluj #${F.cluj.numar}</b><span>înscrieri deschise</span></a>` : ''}<a class="is-next" href="/aplica"><b>#${F.maxNr + 1}</b><span>listă de așteptare</span></a>
-          ${ong ? `<small class="xf-ch">Acum</small><a class="is-live xf-wide" href="${edUrl(ong)}"><b>#${ong.numar}<i class="dot-live"></i></b><span>${esc(ong.sezon)} ${ong.an} · ${held} din ${ws.length} ateliere ținute</span></a>` : ''}
+          ${ong ? `<small class="xf-ch">Acum</small><a class="is-live xf-wide" href="${edUrl(ong)}"><b>#${ong.numar}<i class="dot-live"></i></b><span>${esc(ong.sezon)} ${ong.an} · ${held} din ${ws.length} întâlniri ținute</span></a>` : ''}
           <small class="xf-ch">Încheiate</small>
           ${recent.filter((e) => e !== ong).slice(0, 2).map((e) => `<a href="${edUrl(e)}"><b>#${e.numar}</b><span>${esc(e.sezon)} ${e.an}</span></a>`).join('')}
         </div>

@@ -41,22 +41,28 @@ function editionBody(ctx, F, e) {
   const STATE = { live: ['În desfășurare', 'live'], open: ['Înscrieri deschise', 'open'], soon: ['Urmează', 'open'], past: ['Încheiată', 'done'] }[state];
 
   // oamenii cohortei: cine a vorbit / va vorbi, la ce atelier
+  const RANK = { trainer: 0, 'antreprenor invitat': 1, facilitator: 2 };
   const speakers = new Map();
   ws.forEach((a) => a.program.forEach((x) => x.speakeri.forEach((s) => {
     const p = P[s.persoana];
     if (!p) return;
     const org = O[s.organizatie]?.nume || (s.companie && s.companie !== 'Trainer' ? s.companie : '') || O[p.organizatii[0]]?.nume || '';
-    const cur = speakers.get(p.id) || { p, rol: s.rol, org, ateliere: [] };
+    // un om cu mai multe roluri în cohortă e numărat o dată, cu rolul principal: trainer, apoi invitat, apoi facilitator
+    const rol = s.rol === 'invitat' ? 'facilitator' : s.rol;
+    const cur = speakers.get(p.id) || { p, rol, org, ateliere: [] };
+    if (RANK[rol] < RANK[cur.rol]) cur.rol = rol;
     if (!cur.ateliere.includes(a)) cur.ateliere.push(a);
     speakers.set(p.id, cur);
   })));
   const people = [...speakers.values()].sort((a, b) => (a.rol === 'trainer' ? 0 : 1) - (b.rol === 'trainer' ? 0 : 1) || a.ateliere[0].nr - b.ateliere[0].nr);
-  const trainers = people.filter((x) => x.rol === 'trainer').length;
+  const trainers = people.filter((x) => x.rol === 'trainer').length, guests = people.filter((x) => x.rol === 'antreprenor invitat').length, facil = people.filter((x) => x.rol === 'facilitator').length;
 
   // participanți: cifre doar agregate
   const part = e.participanti;
   const ca = part.map((p) => p.cifra_afaceri), ang = part.map((p) => p.angajati);
-  const companies = new Set(part.map((p) => p.organizatie || p.nume));
+  const medAng = median(ang) == null ? null : Math.round(median(ang)); // angajați: număr întreg
+  // companiile: doar cele din registru (un participant fără companie nu e numărat ca firmă)
+  const companies = new Set(part.map((p) => p.organizatie).filter(Boolean));
   const sectors = {};
   [...companies].forEach((id) => { const s = O[id]?.sector; if (s) sectors[s] = (sectors[s] || 0) + 1; });
   const sectorList = Object.entries(sectors).sort((a, b) => b[1] - a[1]);
@@ -124,7 +130,7 @@ function editionBody(ctx, F, e) {
   // ---------- cifre ----------
   const stats = `<section class="proof"><div class="wrap proof-in">
     <div class="stat"><b><span data-count="${ws.length}">${ws.length}</span></b><span>${de(ws.length)}întâlniri, din care ${fullDay} ${de(fullDay)}ateliere full-day</span></div>
-    <div class="stat"><b><span data-count="${people.length}">${people.length}</span></b><span>${de(people.length)}traineri și antreprenori invitați</span></div>
+    <div class="stat"><b><span data-count="${people.length}">${people.length}</span></b><span>${de(people.length)}traineri, antreprenori invitați${facil ? ' și facilitatori' : ''}</span></div>
     ${part.length ? `<div class="stat"><b><span data-count="${part.length}">${part.length}</span></b><span>${de(part.length)}participanți din ${plural(companies.size, 'companie', 'companii')}</span></div>`
       : `<div class="stat"><b>~<span data-count="25">25</span></b><span>locuri, pentru antreprenori selectați</span></div>`}
     ${ca.filter(Boolean).length >= 5 ? `<div class="stat"><b><span data-count="${(median(ca) / 1e6).toFixed(1)}" data-dec="1">${milLei(median(ca))}</span><em> mil. lei</em></b><span>cifra de afaceri mediană a companiilor participante</span></div>` : ''}
@@ -168,13 +174,13 @@ function editionBody(ctx, F, e) {
   // ---------- oamenii cohortei ----------
   const peopleSec = people.length ? `<section class="sec sec-alt" id="oameni"><div class="wrap">
     <div class="sec-head row"><div><p class="eyebrow">Traineri și antreprenori invitați</p><h2>${plural(people.length, 'om', 'oameni')} care vorbesc din ce au trăit.</h2>
-      <p class="lead">${plural(trainers, 'trainer', 'traineri')} pentru partea aplicată și ${plural(people.length - trainers, 'antreprenor invitat', 'antreprenori invitați')} care povestesc cum au rezolvat exact problema zilei.</p></div>
+      <p class="lead">${plural(trainers, 'trainer', 'traineri')} pentru partea aplicată, ${plural(guests, 'antreprenor invitat', 'antreprenori invitați')} care povestesc cum au rezolvat exact problema zilei${facil ? ` și ${plural(facil, 'facilitator', 'facilitatori')} pentru atelierele de seară` : ''}.</p></div>
       <a class="link-arrow" href="/lideri">Toți trainerii →</a></div>
-    ${[['Traineri', people.filter((x) => x.rol === 'trainer')], ['Antreprenori invitați', people.filter((x) => x.rol !== 'trainer')]].filter(([, l]) => l.length).map(([h, list]) => `
+    ${[['Traineri', people.filter((x) => x.rol === 'trainer')], ['Antreprenori invitați', people.filter((x) => x.rol === 'antreprenor invitat')], ['Facilitatori', people.filter((x) => x.rol === 'facilitator')]].filter(([, l]) => l.length).map(([h, list]) => `
     <h3 class="ed-people-h">${h} <span>${list.length}</span></h3>
     <div class="ed-people" style="--n:${cols(list.length)}">${list.map((x) => `<a class="ed-person" href="/lideri/${esc(x.p.id)}">
       ${avatar(x.p)}
-      <span class="ed-role ${x.rol === 'trainer' ? 'tr' : ''}">${x.rol === 'trainer' ? 'Trainer' : 'Invitat'}</span>
+      <span class="ed-role ${x.rol === 'trainer' ? 'tr' : ''}">${x.rol === 'trainer' ? 'Trainer' : x.rol === 'facilitator' ? 'Facilitator' : 'Invitat'}</span>
       <b>${esc(x.p.nume)}</b><span>${esc(x.org)}</span>
       <small>${x.ateliere.map((a) => esc(cleanTitle(a.titlu))).join(' · ')}</small>
     </a>`).join('')}</div>`).join('')}
@@ -186,7 +192,7 @@ function editionBody(ctx, F, e) {
     <div class="alumni-grid">
       <div class="figures">
         ${ca.filter(Boolean).length >= 5 ? `<div class="fig"><b>${milLei(quantile(ca, 0.25))}–${milLei(quantile(ca, 0.75))}<em> mil. lei</em></b><span>cifra de afaceri a jumătății „de mijloc” a companiilor</span></div>` : ''}
-        ${ang.filter(Boolean).length >= 5 ? `<div class="fig"><b><span data-count="${median(ang)}">${median(ang)}</span></b><span>${de(median(ang))}angajați, la mediană</span></div>` : ''}
+        ${ang.filter(Boolean).length >= 5 ? `<div class="fig"><b><span data-count="${medAng}">${medAng}</span></b><span>${de(medAng)}angajați, la mediană</span></div>` : ''}
         <div class="fig"><b><span data-count="${companies.size}">${companies.size}</span></b><span>${de(companies.size)}companii</span></div>
       </div>
       <div class="sectors">${sectorList.slice(0, 9).map(([s, n]) => `<div class="sector"><span>${esc(s)}</span><i style="--w:${(n / maxSector) * 100}%"></i><b>${n}</b></div>`).join('')}</div>
@@ -259,7 +265,7 @@ function editionBody(ctx, F, e) {
             <div><dt>Întâlniri</dt><dd>${ws.length}</dd><small>${fullDay} full-day</small></div>
             <div><dt>Traineri și invitați</dt><dd>${people.length}</dd><small>${trainers} ${de(trainers)}traineri</small></div>
             <div><dt>Participanți</dt><dd>${part.length}</dd><small>${plural(companies.size, 'companie', 'companii')}</small></div>
-            ${ca.filter(Boolean).length >= 5 ? `<div><dt>CA mediană</dt><dd>${milLei(median(ca))}<em> mil. lei</em></dd><small>${median(ang) ? `${median(ang)} ${de(median(ang))}angajați, la mediană` : ''}</small></div>` : ''}
+            ${ca.filter(Boolean).length >= 5 ? `<div><dt>CA mediană</dt><dd>${milLei(median(ca))}<em> mil. lei</em></dd><small>${medAng ? `${medAng} ${de(medAng)}angajați, la mediană` : ''}</small></div>` : ''}
           </dl>
           ${topSectors.length ? `<div class="ed-sum-sec"><span>Sectoare</span>${topSectors.map(([s, n]) => `<em>${esc(s)} · ${n}</em>`).join('')}${sectorList.length > 4 ? `<em>+${sectorList.length - 4}</em>` : ''}</div>` : ''}
         </aside>

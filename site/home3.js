@@ -97,7 +97,7 @@ function home3Body(ctx, F) {
           <div class="h3-now">
             <div class="x-ring h3-ring" style="--p:${pct}">
               <svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="${R}" class="x-ring-bg"/><circle cx="60" cy="60" r="${R}" class="x-ring-fg" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - pct)}"/></svg>
-              <span><b>${held}<small>/${ws.length}</small></b><em>ateliere</em></span>
+              <span><b>${held}<small>/${ws.length}</small></b><em>întâlniri</em></span>
             </div>
             ${nx ? `<div class="x-count" data-x-countdown="${nx.data}T${startOf(nx)}:00">
               <span class="x-k">Următorul atelier începe în</span>
@@ -182,7 +182,7 @@ function home3Body(ctx, F) {
     <div class="h3-grown">${grown.slice(0, 9).map((o) => `<span title="${esc(o.nume.replace(/\s*\(.*\)$/, ''))}"><img src="${esc(o.logo)}" alt="${esc(o.nume.replace(/\s*\(.*\)$/, ''))}" loading="lazy"></span>`).join('')}</div>
     <div class="h3-figs">
       <div><b>${AL.L.length}</b><span>${de(AL.L.length)}antreprenori în comunitate, din ${AL.sectors.length} ${de(AL.sectors.length)}industrii</span></div>
-      <div><b>${F.medianAng}</b><span>${de(F.medianAng)}angajați la mediană, în companiile participanților</span></div>
+      <div><b>${AL.medianAng}</b><span>${de(AL.medianAng)}angajați la mediană, în companiile din comunitate</span></div>
       <div><b>${F.ciclu.length}</b><span>${de(F.ciclu.length)}companii s-au întors ca parteneri</span></div>
     </div>
   </div></section>
