@@ -54,7 +54,7 @@ function implicareDialog({ formate, echipa, themes, cluj = '' }) {
       <div class="af-field" data-f="mesaj"><label for="im-mesaj">Mesaj <span class="af-opt">opțional</span></label><textarea id="im-mesaj" name="mesaj" rows="3" maxlength="2500" placeholder="Ceva ce ar trebui să știm? De exemplu, perioada care ți se potrivește."></textarea><small class="af-err" role="alert"></small></div>
     </fieldset>
     <div class="af-consent" data-f="acord">
-      <label><input type="checkbox" name="acord" required><span>Sunt de acord ca Fundația Romanian Business Leaders să folosească aceste date ca să mă contacteze despre implicarea în program.</span></label>
+      <label><input type="checkbox" name="acord" required><span>Sunt de acord ca Fundația Romanian Business Leaders să folosească aceste date ca să mă contacteze despre implicarea în program. <a class="af-policy" href="/confidentialitate" target="_blank" rel="noopener">Politica de confidențialitate</a></span></label>
       <small class="af-err" role="alert"></small>
     </div>
     <input class="af-hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">

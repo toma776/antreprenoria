@@ -36,6 +36,11 @@
     ],
     "qualities": [
       75
+    ],
+    "localPatterns": [
+      {
+        "pathname": "^/assets/vechi/.*$"
+      }
     ]
   }
 }

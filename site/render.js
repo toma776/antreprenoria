@@ -44,6 +44,10 @@ function load(brandId, preview) {
   const coh = (m) => ({ ...m, titlu: cohorta(m.titlu), puncte: (m.puncte || []).map(cohorta) });
   D.program.metodologie = (D.program.metodologie || []).map(coh);
   D.editii.forEach((e) => { e.metodologie = (e.metodologie || []).map(coh); });
+  // pozele generice de pe site-ul vechi („fără chip”) nu sunt poze: în locul lor apar inițialele
+  const generic = (u) => (u && /\/user-(img|woman)\.png$/i.test(u) ? null : u);
+  D.oameni.forEach((p) => { p.imagine = generic(p.imagine); });
+  D.editii.forEach((e) => e.participanti.forEach((x) => { x.imagine = generic(x.imagine); }));
   const P = Object.fromEntries(D.oameni.map((p) => [p.id, p]));
   const O = Object.fromEntries(D.organizatii.map((o) => [o.id, o]));
   const T = Object.fromEntries(D.teme.map((t) => [t.id, t]));

@@ -145,7 +145,7 @@ function fieldHtml(f, D, opts, pre) {
       <span><b>${esc(o.title)}</b><em class="${o.href ? 'open' : ''}">${esc(o.tag)}</em><small>${esc(o.sub)}</small></span></label>`).join('')}</div>${err}</div>`;
   }
   if (f.t === 'consent') {
-    return `<div class="af-consent" data-f="acord"><label><input type="checkbox" name="acord"><span>${esc(tx(D, 'aplica.acord'))}</span></label>${err}</div>`;
+    return `<div class="af-consent" data-f="acord"><label><input type="checkbox" name="acord"><span>${esc(tx(D, 'aplica.acord'))} <a class="af-policy" href="/confidentialitate" target="_blank" rel="noopener">Politica de confidențialitate</a></span></label>${err}</div>`;
   }
   return '';
 }

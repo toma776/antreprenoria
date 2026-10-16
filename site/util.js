@@ -16,11 +16,22 @@ const logoImg = (o) => {
   return o.url ? `<a class="logo-link" href="${esc(o.url)}" target="_blank" rel="noopener" title="${esc(o.nume)} · site ↗">${inner}</a>` : inner;
 };
 
-// pozele de pe antreprenoria.ro au până la 800px; pe Vercel le cerem redimensionate (și în WebP) prin optimizarea de imagini
+// imaginile de pe site-ul vechi (antreprenoria.ro/images/...) sunt copiate în proiect, la /assets/vechi/... (aceeași cale);
+// site-ul nu mai depinde de site-ul vechi. O imagine fără copie locală rămâne cu adresa veche.
+const OLD_IMG = 'https://antreprenoria.ro/images/';
+const VECHI_DIR = require('path').join(__dirname, 'assets', 'vechi');
+const localImg = (u) => {
+  if (!u || !u.startsWith(OLD_IMG)) return u;
+  const rest = u.slice(OLD_IMG.length);
+  try { if (require('fs').existsSync(require('path').join(VECHI_DIR, decodeURIComponent(rest)))) return `/assets/vechi/${rest}`; } catch { /* adresă invalidă: rămâne cea veche */ }
+  return u;
+};
+// pozele au până la 800px; pe Vercel le cerem redimensionate (și în WebP) prin optimizarea de imagini
 // (vercel.json › images); local rămân cum sunt. Lățimile trebuie să fie printre cele din vercel.json › images.sizes.
 const IMG_SIZES = [128, 256, 384, 640];
 const img = (u, w = 384) => {
-  if (!u || !process.env.VERCEL || !/^https:\/\/antreprenoria\.ro\//.test(u)) return u;
+  u = localImg(u);
+  if (!u || !process.env.VERCEL || !(u.startsWith('/assets/vechi/') || u.startsWith(OLD_IMG))) return u;
   const size = IMG_SIZES.find((s) => s >= w) || IMG_SIZES[IMG_SIZES.length - 1];
   return `/_vercel/image?url=${encodeURIComponent(u)}&w=${size}&q=75`;
 };
@@ -51,6 +62,8 @@ function arrows(html) {
     return part.replace(/\s?→/g, (x) => (x.length > 1 ? ' ' : '') + ARR_SVG()).replace(/←\s?/g, (x) => ARR_SVG(true) + (x.length > 1 ? ' ' : ''));
   }).join('');
 }
+// ultimul pas pentru fiecare pagină HTML: săgețile și imaginile rămase cu adresa site-ului vechi (logo-uri puse direct în src) -> copiile locale
+const finishHtml = (html) => arrows(html).replace(/https:\/\/antreprenoria\.ro\/images\/[^"'\s)<>]+/g, (u) => localImg(u));
 // paginile separate ale comunității (căutarea, industriile, cohortele): publicate, și local, și pe Vercel
 const CM_PAGES = true;
-module.exports = { arrows, CM_PAGES, TEME, temaUrl, cohorta, de, tidy, esc, today, MONTHS, fmtDay, median, quantile, milLei, initials, slug, img, logoImg };
+module.exports = { finishHtml, localImg, arrows, CM_PAGES, TEME, temaUrl, cohorta, de, tidy, esc, today, MONTHS, fmtDay, median, quantile, milLei, initials, slug, img, logoImg };

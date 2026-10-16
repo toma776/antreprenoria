@@ -139,7 +139,7 @@ function editionBody(ctx, F, e) {
   </div></section>`;
 
   // ---------- agenda ----------
-  const agenda = `<section class="sec" id="agenda"><div class="wrap">
+  const agenda = `<section class="sec" id="agenda"><span id="agenda-section" aria-hidden="true"></span><!-- ancora de pe site-ul vechi --><div class="wrap">
     <div class="sec-head row"><div><p class="eyebrow">Agenda</p><h2>${plural(ws.length, 'întâlnire', 'întâlniri')}, de la viziune la petrecerea de final.</h2>
       <p class="lead">Fiecare atelier full-day are aceeași structură: dimineața training, după-amiaza doi antreprenori care povestesc cum au făcut, seara networking.</p></div></div>
     <div class="agenda">${ws.map((a) => {
@@ -187,7 +187,7 @@ function editionBody(ctx, F, e) {
   </div></section>` : '';
 
   // ---------- colegii de cohortă ----------
-  const partSec = part.length ? `<section class="sec sec-dark" id="participanti"><div class="wrap">
+  const partSec = part.length ? `<section class="sec sec-dark" id="participanti"><span id="participant-section" aria-hidden="true"></span><!-- ancora de pe site-ul vechi --><div class="wrap">
     <div class="sec-head"><p class="eyebrow">Colegii de cohortă</p><h2>${plural(part.length, 'antreprenor', 'antreprenori și manageri')}, ${plural(sectorList.length, 'sector', 'sectoare')}.</h2></div>
     <div class="alumni-grid">
       <div class="figures">
@@ -272,7 +272,7 @@ function editionBody(ctx, F, e) {
       </div>
     </div></section>`;
 
-    const agendaPast = `<section class="sec ed-past-sec" id="agenda"><div class="wrap">
+    const agendaPast = `<section class="sec ed-past-sec" id="agenda"><span id="agenda-section" aria-hidden="true"></span><!-- ancora de pe site-ul vechi --><div class="wrap">
       <div class="sec-head"><p class="eyebrow">Agenda</p><h2>Ce s-a discutat.</h2></div>
       <div class="agenda ag-compact">${ws.map((a) => {
         const ppl = facesOf(a);
@@ -293,7 +293,7 @@ function editionBody(ctx, F, e) {
         <div class="ed-chips">${part.map((p) => { const o = O[p.organizatie]; return `<div class="ed-chip">${avatar({ nume: p.nume, imagine: p.imagine })}<span><b>${esc(p.nume)}</b><span>${esc(o?.nume || '')}</span>${o?.sector ? `<small>${esc(o.sector)}</small>` : ''}</span></div>`; }).join('')}</div>`],
       ['parteneri', 'Parteneri', allPartners.length, `<div class="ed-logos">${allPartners.map((o) => `<div class="ed-logo"><div class="logo-cell">${logoImg(o)}</div><span>${strategic.includes(o) ? 'Partener strategic' : sponsorOf(o.id).map((a) => esc(cleanTitle(a.titlu))).join(' · ') || 'Partener'}</span></div>`).join('')}</div>`],
     ].filter((t) => t[2]);
-    const peoplePast = TABS.length ? `<section class="sec sec-alt ed-past-sec" id="oameni"><div class="wrap">
+    const peoplePast = TABS.length ? `<section class="sec sec-alt ed-past-sec" id="oameni"><span id="participant-section" aria-hidden="true"></span><!-- ancora de pe site-ul vechi: colegii sunt în filele de aici --><div class="wrap">
       <div class="sec-head"><p class="eyebrow">Oamenii cohortei</p><h2>Cine a fost în sală.</h2></div>
       <div class="ed-tabs" data-tabs>
         <div class="ed-tablist" role="tablist" aria-label="Oamenii cohortei">${TABS.map(([k, l, n], j) => `<button role="tab" data-tab="${k}" aria-selected="${j === 0}" aria-controls="tab-${k}">${l}<em>${n}</em></button>`).join('')}</div>

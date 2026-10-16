@@ -12,7 +12,9 @@
   const status = $('#af-status'), nav = $('.ax-nav', form), next = $('.ax-next', form);
   const KEY = 'antreprenoria-aplica-v2';
   const qs = new URLSearchParams(location.search);
-  let cur = 0, maxSeen = 0, token = null, saving = null;
+  let cur = 0, maxSeen = 0, token = null, saving = null, sending = false;
+  // ciorna din browser expiră după 30 de zile (date personale pe un calculator care poate fi al altcuiva)
+  const DRAFT_DAYS = 30;
 
   // ---------- reguli (aceleași ca pe server) ----------
   function validCUI(v) {
@@ -57,7 +59,7 @@
     });
     sync();
   };
-  const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ token, cur, maxSeen, d: read() })); } catch (e) {} };
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ token, cur, maxSeen, d: read(), t: Date.now() })); } catch (e) {} };
 
   // ---------- afișarea erorilor ----------
   const show = (k, msg) => {
@@ -121,7 +123,8 @@
         return;
       }
       if (cur === N) return submit();
-      push(cur); // pasul 1 trebuie salvat ca să avem tokenul; restul pleacă în fundal
+      // pasul 1 trebuie salvat ca să avem tokenul; restul pleacă în fundal. Dacă salvarea nu reușește, omul află (răspunsurile rămân în browser)
+      push(cur).then(({ r }) => { if (!r || !r.ok) { status.className = 'af-status err'; status.textContent = 'Nu am putut salva pasul pe server. Răspunsurile tale rămân aici și le trimitem la final; verifică legătura la internet.'; } });
       if (cur === 1) await saving;
     }
     cur = Math.max(0, Math.min(N, to));
@@ -158,10 +161,13 @@
 
   // ---------- trimiterea ----------
   async function submit() {
+    if (sending) return; // un Enter în plus nu mai trimite a doua oară
+    sending = true;
     next.disabled = true; next.querySelector('span').textContent = 'Se trimite…';
     if (saving) await saving;
     const { r, j } = await push(N, true);
     if (r && r.ok) return done();
+    sending = false;
     next.disabled = false; next.querySelector('span').textContent = 'Trimite aplicarea';
     if (r && r.status === 422 && j.errors) {
       const first = FIELDS.find((f) => j.errors[f.k]);
@@ -196,6 +202,7 @@
   async function start() {
     let st = null;
     try { st = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {}
+    if (st?.t && Date.now() - st.t > DRAFT_DAYS * 864e5) { st = null; try { localStorage.removeItem(KEY); } catch (e) {} }
     const reia = qs.get('reia');
     if (reia) {
       const j = await fetch(`/api/aplica?reia=${encodeURIComponent(reia)}`).then((r) => (r.ok ? r.json() : null)).catch(() => null);

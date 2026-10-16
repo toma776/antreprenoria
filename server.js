@@ -45,10 +45,23 @@ function sendFile(res, file) {
 function body(req) {
   return new Promise((ok, err) => {
     let b = '';
-    req.on('data', (c) => { b += c; if (b.length > 1e6) req.destroy(); });
-    req.on('end', () => { try { ok(b ? JSON.parse(b) : {}); } catch (e) { err(e); } });
+    // peste 1 MB: restul se citește și se aruncă, iar cererea primește un răspuns de eroare (nu rămâne agățată)
+    let big = false;
+    req.on('data', (c) => { if (big) return; b += c; if (b.length > 1e6) { big = true; b = ''; err(new Error('prea mare')); } });
+    req.on('end', () => { if (big) return; try { ok(b ? JSON.parse(b) : {}); } catch (e) { err(e); } });
   });
 }
+// limita de trimiteri pe formulare: cel mult `max` cereri în `min` minute de la aceeași adresă IP
+const HITS = new Map();
+function tooMany(req, key, max, min) {
+  const ip = String(req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').split(',')[0].trim();
+  const now = Date.now(), k = key + '|' + ip, list = (HITS.get(k) || []).filter((t) => now - t < min * 60e3);
+  list.push(now); HITS.set(k, list);
+  if (HITS.size > 5000) for (const [x, l] of HITS) if (!l.some((t) => now - t < 60 * 60e3)) HITS.delete(x);
+  return list.length > max;
+}
+// apelurile către Supabase nu așteaptă la nesfârșit: după 10 secunde, formularul primește „nedisponibil”
+const SB_TIMEOUT = 10e3;
 // Previne ieșirea din directorul permis (../).
 function safe(base, rel) {
   const p = path.normalize(path.join(base, rel));
@@ -56,7 +69,7 @@ function safe(base, rel) {
 }
 // modulele site-ului se reîncarcă la fiecare cerere, ca schimbările din data/ și site/ să apară fără repornire
 function fresh(mod) {
-  ['./site/render', './site/brand', './site/menu', './site/home', './site/util', './site/edition', './site/program', './site/despre', './site/teme', './site/aplica', './site/texte', './site/traineri', './site/alumni', './site/parteneri', './site/implicare', './site/editii', './site/home2', './site/despre2', './site/home3', './site/comunitate'].forEach((m) => delete require.cache[require.resolve(m)]);
+  ['./site/render', './site/brand', './site/menu', './site/home', './site/util', './site/edition', './site/program', './site/despre', './site/teme', './site/aplica', './site/texte', './site/traineri', './site/alumni', './site/parteneri', './site/implicare', './site/editii', './site/home2', './site/despre2', './site/home3', './site/comunitate', './site/redirects'].forEach((m) => delete require.cache[require.resolve(m)]);
   return require(mod);
 }
 
@@ -245,10 +258,15 @@ async function handler(req, res) {
     const end = res.end.bind(res);
     res.end = (body, ...rest) => {
       // antetele vin prin writeHead (nu se pot citi după), așa că recunoaștem paginile după început
-      return end(typeof body === 'string' && /^\s*<!doctype html/i.test(body) ? fresh('./site/util').arrows(body) : body, ...rest);
+      return end(typeof body === 'string' && /^\s*<!doctype html/i.test(body) ? fresh('./site/util').finishHtml(body) : body, ...rest);
     };
   }
   try {
+    // adresele site-ului vechi (antreprenoria.ro) duc, într-un singur pas, la pagina nouă potrivită (site/redirects.js)
+    if ((req.method === 'GET' || req.method === 'HEAD') && !/^\/(api|assets|manage)(\/|$)/.test(url)) {
+      const to = fresh('./site/redirects').oldUrl(url);
+      if (to) { res.writeHead(301, { Location: to }); return res.end(); }
+    }
     // o singură adresă pentru fiecare pagină: /program/ duce la /program (API-ul, fișierele și panoul rămân cum sunt)
     if ((req.method === 'GET' || req.method === 'HEAD') && url.length > 1 && url.endsWith('/') && !/^\/(api|assets|manage)(\/|$)/.test(url)) {
       res.writeHead(301, { Location: url.replace(/\/+$/, '') + (query ? '?' + query : '') });
@@ -260,6 +278,7 @@ async function handler(req, res) {
     }
     // aplicarea în pași: fiecare pas trimis se salvează (pasul 1 = contactul, pentru remindere); la final, finalizata = true
     if (url === '/api/aplica' && req.method === 'POST') {
+      if (tooMany(req, 'aplica', 40, 10)) return sendJson(res, 429, { error: 'Prea multe trimiteri. Încearcă din nou peste câteva minute.' });
       const input = await body(req).catch(() => null);
       if (!input) return sendJson(res, 400, { error: 'Cerere invalidă.' });
       if (input.website) return sendJson(res, 200, { ok: true }); // câmpul-capcană pentru roboți
@@ -272,8 +291,8 @@ async function handler(req, res) {
       const token = /^[0-9a-f-]{36}$/i.test(input.token || '') ? input.token : null;
       const rec = ap.record(v.data, { token, pas, finalizata, pagina: String(req.headers.referer || '').slice(0, 300) });
       // aplicările merg în Supabase prin funcția aplicare_salveaza (cheia publică nu poate citi tabelul)
-      const r = await fetch(`${SUPABASE.url}/rest/v1/rpc/aplicare_salveaza`, { method: 'POST', headers: { apikey: SUPABASE.key, 'Content-Type': 'application/json' }, body: JSON.stringify({ p: rec }) }).catch(() => null);
-      if (!r || !r.ok) { console.error('aplicare nesalvată', r && r.status, r && await r.text()); return sendJson(res, 503, { error: 'nedisponibil' }); }
+      const r = await fetch(`${SUPABASE.url}/rest/v1/rpc/aplicare_salveaza`, { method: 'POST', headers: { apikey: SUPABASE.key, 'Content-Type': 'application/json' }, body: JSON.stringify({ p: rec }), signal: AbortSignal.timeout(SB_TIMEOUT) }).catch(() => null);
+      if (!r || !r.ok) { console.error('aplicare nesalvată', r ? r.status : 'fără răspuns'); return sendJson(res, 503, { error: 'nedisponibil' }); }
       return sendJson(res, 200, { ok: true, token: await r.json().catch(() => null) });
     }
     // reluarea unei aplicări neterminate din linkul de reminder (/aplica?reia=<token>)
@@ -288,6 +307,7 @@ async function handler(req, res) {
     if (url === '/api/aplica-model' && req.method === 'GET') return sendJson(res, 200, fresh('./site/aplica').STEPS);
     // formularul „Susține programul” (/parteneri): sponsorizare, găzduire, mentorat; salvat în Supabase (tabelul implicari)
     if (url === '/api/implicare' && req.method === 'POST') {
+      if (tooMany(req, 'implicare', 5, 10)) return sendJson(res, 429, { error: 'Prea multe trimiteri. Încearcă din nou peste câteva minute.' });
       const input = await body(req).catch(() => null);
       if (!input) return sendJson(res, 400, { error: 'Cerere invalidă.' });
       if (input.website) return sendJson(res, 200, { ok: true }); // câmpul-capcană pentru roboți
@@ -295,8 +315,8 @@ async function handler(req, res) {
       if (!v.ok) return sendJson(res, 422, { error: 'Verifică câmpurile marcate.', errors: v.errors });
       const d = v.data;
       const rec = { tip: d.tip, nume: d.nume, companie: d.companie, functie: d.functie || null, email: d.email, telefon: d.telefon || null, mesaj: d.mesaj || null, acord: true, sursa_pagina: String(req.headers.referer || '').slice(0, 300) || null };
-      const r = await fetch(`${SUPABASE.url}/rest/v1/implicari`, { method: 'POST', headers: { apikey: SUPABASE.key, 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify(rec) }).catch(() => null);
-      if (!r || !r.ok) { console.error('implicare nesalvată', r && r.status, r && await r.text()); return sendJson(res, 503, { error: 'nedisponibil' }); }
+      const r = await fetch(`${SUPABASE.url}/rest/v1/implicari`, { method: 'POST', headers: { apikey: SUPABASE.key, 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify(rec), signal: AbortSignal.timeout(SB_TIMEOUT) }).catch(() => null);
+      if (!r || !r.ok) { console.error('implicare nesalvată', r ? r.status : 'fără răspuns'); return sendJson(res, 503, { error: 'nedisponibil' }); }
       return sendJson(res, 200, { ok: true });
     }
     if (url === '/api/implicari' && req.method === 'GET') {
@@ -428,6 +448,9 @@ async function handler(req, res) {
     const PAGES = { '/': 'renderHome3', '/despre': 'renderDespre', '/teme': 'renderTeme' };
     // adresa veche de contact duce la secțiunea de contact din /despre
     if (url === '/contact') { res.writeHead(301, { Location: '/despre#contact' }); return res.end(); }
+    // paginile legale: până au varianta lor pe site, trimit (temporar, 302) la politicile Fundației RBL, operatorul datelor
+    const LEGAL = { '/confidentialitate': 'https://www.rbls.ro/politica-de-confidentialitate/', '/termeni-si-conditii': 'https://www.rbls.ro/termeni-si-conditii/', '/politica-cookies': 'https://www.rbls.ro/politica-cookies/' };
+    if (LEGAL[url]) { res.writeHead(302, { Location: LEGAL[url] }); return res.end(); }
     // varianta nouă a homepage-ului e acum „/”; cea veche rămâne doar local, pentru comparație
     // homepage-ul de recrutare, în stilul Carbon adaptat la brand, e acum „/” (și stilul e pe tot site-ul): previzualizările lui duc acolo;
     // homepage-ul de dinainte („2029”) rămâne doar local, pentru comparație
@@ -547,7 +570,8 @@ module.exports = handler;
 
 // local: node server.js pornește serverul; pe Vercel (presetul Node), server.js rulează ca funcție și primește toate cererile
 if (require.main === module) {
-  http.createServer(handler).listen(PORT, () => {
+  // doar pe calculatorul acesta (127.0.0.1): panoul și listele de aplicări nu trebuie să fie vizibile altora din aceeași rețea
+  http.createServer(handler).listen(PORT, '127.0.0.1', () => {
     console.log(`Antreprenoria – site:   http://localhost:${PORT}/`);
     console.log(`Antreprenoria – panou:  http://localhost:${PORT}/manage`);
   });
